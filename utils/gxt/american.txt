@@ -1477,17 +1477,17 @@ Accelerate
 [FEC_CCF]
 Configuration
 
-[FEC_CF1]
-Setup 1
+[FEC_CF1]   
+Classic
 
-[FEC_CF2]
-Setup 2
+[FEC_CF2]   
+Standard
 
-[FEC_CF3]
-Setup 3
+[FEC_CF3]   
+Classic
 
-[FEC_CF4]
-Setup 4
+[FEC_CF4]   
+Standard
 
 [FEC_CDP]
 Controller Display
@@ -14431,6 +14431,133 @@ PED DENSITY
 
 [FEM_CAR]
 CAR DENSITY
+
+{______________________________Vice Extended______________________________}
+[FEC_AIM]
+Auto aiming
+
+[FEC_LSX]
+Look sensitivity X
+
+[FEC_LSY]   
+Look sensitivity Y
+
+[FEC_ASX]   
+Aiming sensitivity X
+
+[FEC_ASY]   
+Aiming sensitivity Y
+
+[FEC_IVL]   
+Invert vertically
+
+[FEC_LZN]   
+Left stick deadzone
+
+[FEC_RZN]   
+Right stick deadzone
+
+[FEC_VBF]   
+Vibration force
+
+[FEC_PRS]   
+Previous radio station
+
+[FEC_NRS]   
+Next radio station
+
+[FEC_RTC]   
+Rotate camera
+
+[FET_AGC]   
+GAMEPAD CONFIGURATION
+
+[FET_AGS]   
+GAMEPAD SETTINGS
+
+[FEC_FOV]   
+Field of view
+
+[FEC_ACV]   
+Auto-centering in vehicle
+
+[FEC_RVD]   
+Relative vehicle while driveby
+
+[FEC_DOM]   
+DOOM Mode
+
+[GA_22]
+Just one car!
+
+[GA_23]
+You don't have enough money to buy this modification
+
+[GA_24]
+You already have this modification
+
+[LG_39]
+Property for sale
+
+[FEC_WAL]
+Walk
+
+[FEC_RZO]
+Radar zoom
+
+[FEC_REL]
+Reload weapon
+
+[FED_GPS]
+GPS
+
+[FEC_DS5]
+DUALSENSE
+
+[FEC_ATK]
+Attack
+
+[FET_SGP]
+Store gallery photos
+
+[FES_SAV]
+You cannot save the game at this time. To save the game, you must not be on a mission, not move or have a wanted level.
+
+[FET_AUT]
+Autosave
+
+[FEM_SL9]
+Autosave File Not Present
+
+[FEO_OTH]
+Other settings
+
+[LG_40]
+Bomb shop
+
+[LG_41]
+Race
+
+[LG_42]
+Pharmacy
+
+[FEC_LTS]
+Left turn signals
+
+[FEC_RTS]
+Right turn signals
+
+[FEC_EML]
+Emergency lights
+
+[CLTHST1]
+Use ~h~~k~~PED_CYCLE_WEAPON_LEFT~ ~h~~k~~PED_CYCLE_WEAPON_RIGHT~ ~h~~k~~PED_JUMPING~ ~w~ to choose clothes. To buy clothes, press ~h~~k~~PED_ANSWER_PHONE~ ~w~. Press ~h~~k~~VEHICLE_ENTER_EXIT~ to leave the store
+
+[CLTHST2]
+You don't have enough money to buy this item
+
+[FED_BRL]
+Borderless
 
 { end of file }
 [DUMMY]

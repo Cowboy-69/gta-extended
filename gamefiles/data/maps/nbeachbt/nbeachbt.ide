@@ -1,0 +1,209 @@
+objs
+3990, nbecland01, nbtecland, 1, 144, 0
+3991, nbecland03, nbtecland, 1, 144, 0
+3992, nbecland05, nbtecland, 1, 144, 0
+3993, nbt_road03, generic, 1, 144, 0
+3994, nbt_road05, generic, 1, 144, 0
+3995, nbecland09, nbtecland, 1, 144, 0
+3996, nbecland11, nbtecland, 1, 164, 0
+3997, nbecland12, nbtecland, 1, 144, 0
+3998, nbt_mansion01, nbt_mansion01, 1, 112, 128
+3999, nbt_mansion02, nbt_mansion02, 1, 112, 128
+4000, nbeachbit02, nbtsmallres, 1, 112, 128
+4001, nbeachbit03, nbtsmallres, 1, 140, 128
+4002, nbtshopfronts01, nbtroofnext, 1, 144, 128
+4003, nbeachbit04, nbtrooftop, 1, 200, 128
+4004, nbeachbit05, nbtsmallres, 1, 112, 128
+4005, nbeachbit06, nbtsmallres, 1, 112, 128
+4006, nbt_hotel04, nbt_hotel04, 1, 180, 128
+4007, nbt_hotel02, nbt_hotel02, 1, 144, 128
+4008, nbt_hotel05, nbt_hotel05, 1, 220, 128
+4009, nbt_hotel01, nbt_hotel01, 1, 112, 128
+4010, nbt_hotel03, nbt_hotel03, 1, 200, 128
+4011, nbt_hotel06, nbt_hotel06, 1, 112, 128
+4012, newbuilding01, newbuilding01, 1, 112, 128
+4013, nbtshopfronts02, nbtshopfronts02, 1, 160, 128
+4014, nbhospgrnd, nbhospital, 1, 144, 128
+4015, LODospgrnd, LODnbeach, 1, 750, 128
+4016, nbt_rooftopstart, nbtrooftop, 1, 150, 128
+4017, plank01, nbtrooftop, 1, 80, 128
+4018, plank02, nbtrooftop, 1, 80, 128
+4019, nbt_skip, nbtrooftop, 1, 80, 128
+4020, nbt_pizzaplace, nbt_pizzaplace, 1, 144, 128
+4021, nbt_mansionbase01, nbt_mansionbase01, 1, 140, 0
+4022, mansionfence, mansionfence, 1, 80, 132
+4023, nbt_mansiontrees01, generic, 1, 250, 132
+4024, nbt_mansion03, nbt_mansion03, 1, 112, 128
+4025, nbt_mansionbase02, nbt_mansionbase02, 1, 112, 0
+4026, nbt_mansiontrees02, generic, 1, 250, 132
+4027, nbt_tikiprops01, tikiprops01, 1, 80, 128
+4028, nbt_hoteltrees01, generic, 1, 80, 132
+4029, nbt_hoteltrees02, generic, 1, 80, 132
+4030, nbt_hotel03glass, nbt_hotel03glass, 1, 80, 132
+4031, nbt_hotel07, nbt_hotel07, 1, 112, 128
+4032, nbt_hotel07fence, nbt_hotel07fence, 1, 80, 132
+4033, nubuilding1glass, nubuilding1glass, 1, 80, 132
+4034, nbeach_police, nb_police, 1, 112, 128
+4035, LODach_police, LODnbeach, 1, 750, 128
+4036, nbt_hotel06balcony, nbt_hotel06balcony, 1, 80, 132
+4037, nbt_mans04balcony, nbt_mans04balcony, 1, 80, 132
+4038, nbeachbit03rails, nbeachbit03rails, 1, 250, 132
+4039, nbecland12gates, nbecland12gates, 1, 144, 132
+4040, LOD_hotel04, LODnbeachbtbig, 1, 1200, 128
+4041, LODcland03, LODnbeachbtbig, 1, 1200, 128
+4042, LODcland05, LODnbeach, 1, 750, 128
+4043, LODchbta, LODnbeach, 1, 750, 128
+4044, LOD_mansion01, LODnbeach, 1, 750, 128
+4045, LOD_mansion02, LODnbeach, 1, 700, 128
+4046, LODachbit02, LODnbeach, 1, 750, 128
+4047, LODachbit03, LODnbeach, 1, 750, 128
+4048, LODshopfronts01, LODnbeach, 1, 750, 128
+4049, LODachbit04, LODnbeach, 1, 750, 128
+4050, LODachbit05, LODnbeach, 1, 750, 128
+4051, LODachbit06, LODnbeach, 1, 750, 128
+4052, LODcland01, LODnbeachbtbig, 1, 1200, 128
+4053, LOD_hotel02, LODnbeachbtbig, 1, 1200, 128
+4054, LOD_rooftopstart, LODnbeach, 1, 750, 128
+4055, LOD_hotel01, LODnbeachbtbig, 1, 1200, 128
+4056, LOD_hotel03, LODnbeachbtbig, 1, 1200, 128
+4057, LOD_hotel06, LODnbeachbtbig, 1, 1000, 128
+4058, LODbuilding01, LODnbeach, 1, 750, 128
+4059, LODshopfronts02, LODnbeach, 1, 750, 128
+4060, LOD_pizzaplace, LODnbeach, 1, 750, 132
+4061, LOD_mansionbase01, LODnbeach, 1, 750, 128
+4062, LOD_mansion03, LODnbeach, 1, 750, 128
+4063, LOD_mansionbase02, LODnbeach, 1, 750, 128
+4064, LOD_hotel07, LODnbeach, 1, 750, 128
+4065, nbt_mansion04, nbt_mansion04, 1, 112, 128
+4066, LOD_hotel05, LODnbeachbtbig, 1, 1200, 128
+4067, nbecland12bball, nbecland12bball, 1, 80, 132
+4068, LODroadx, LODnbeach, 1, 750, 128
+4069, LODcland09, LODnbeachbtbig, 1, 1200, 128
+4070, nbt_mansiontrees03, generic, 1, 250, 132
+4071, nbroada1, nbtecland, 1, 144, 0
+4072, LODoada1, LODnbeachbtbig, 1, 1200, 128
+4073, nbt_mansiontrees04, generic, 1, 250, 132
+4074, nbt_mansiontrees05, generic, 1, 250, 132
+4075, nbt_mnsnwtr02, nbt_mnsnwtr, 1, 100, 132
+4076, nbt_mnsnwtr01, nbt_mnsnwtr, 1, 100, 132
+4077, nbtroadx, nbtecland, 1, 200, 0
+4078, beachbta, nbtecland, 1, 144, 0
+4079, nbt_road04, generic, 1, 144, 0
+4080, nbt_road02, generic, 1, 160, 0
+4081, LOD_road04, LODnbeach, 1, 750, 128
+4082, LOD_road02, LODnbeach, 1, 750, 128
+4083, LODcland12, LODnbeach, 1, 750, 128
+4084, jewler_shop, jwlr, 1, 25, 32
+4085, jewler_opac_stf, jwlr, 1, 100, 100
+4086, nbeachbit04b, nbtrooftop, 1, 144, 128
+4087, LODachbit04b, LODnbeach, 1, 750, 128
+4088, nbtshopfronts01b, nbtroofnext, 1, 144, 128
+4089, LODshopfronts01b, LODnbeach, 1, 750, 128
+4090, nbtgardoor, nbtroofnext, 1, 144, 128
+4091, nbt_road01, generic, 1, 164, 0
+4092, nbt_road06, generic, 1, 144, 0
+4093, nbt_road07, generic, 1, 144, 0
+4094, nbt_road08, generic, 1, 144, 0
+4095, nbt_road09, generic, 1, 144, 0
+4096, nbt_road10, generic, 1, 144, 0
+4097, nbt_road11, generic, 1, 220, 0
+4098, LOD_road01, LODnbeach, 1, 750, 0
+4099, LODcland11, LODnbeach, 1, 750, 0
+4100, LOD_road11, LODnbeach, 1, 750, 0
+4101, LOD_road10, LODnbeachbtbig, 1, 1200, 0
+4102, LOD_road09, LODnbeachbtbig, 1, 1200, 0
+4103, LOD_road06, LODnbeach, 1, 750, 0
+4104, LOD_road08, LODnbeachbtbig, 1, 1200, 0
+4105, LOD_road07, LODnbeachbtbig, 1, 1200, 0
+4106, nbchbit04bgrd1, nbtrooftop, 1, 144, 0
+4107, nbchbit04grd2, nbtrooftop, 1, 144, 0
+4108, nbtshpfrts1bgrd, nbtroofnext, 1, 144, 0
+4109, nbtshpfrnts1grd, nbtroofnext, 1, 144, 0
+4110, nbtgardoor02, nbt_hotel06, 1, 144, 128
+4111, nbecland10, shared_beach, 1, 230, 0
+4112, nbeachsand1, shared_beach, 1, 230, 0
+4113, nbeachsand2, shared_beach, 1, 230, 0
+4114, beachbt, shared_beach, 1, 230, 0
+4115, beachbtb, shared_beach, 1, 230, 0
+4116, beachbtb2, shared_beach, 1, 230, 0
+4117, nbeachsand2b, shared_beach, 1, 230, 0
+4118, beachblend05, shared_beach, 1, 299, 132
+4119, beachblend06, shared_beach, 1, 299, 132
+4120, beachblend07, shared_beach, 1, 299, 132
+4121, LODcland10, LODnbeach, 1, 1200, 128
+4122, LODachsand1, LODnbeachbtbig, 1, 1200, 128
+4123, LODachsand2, LODnbeachbtbig, 1, 1200, 128
+4124, LODchbt, LODnbeachbtbig, 1, 1200, 128
+4125, LODchbtb, LODnbeach, 1, 1200, 128
+4126, LODchbtb2, LODnbeach, 1, 1200, 128
+4127, LODachsand2b, LODnbeachbtbig, 1, 1200, 128
+4128, nbchbtjetty01, nbchbtjetty, 1, 80, 128
+4129, LODhbtjetty01, LODnbeach, 1, 1000, 128
+4130, newpools, nbt_mnsnwtr, 1, 100, 132
+4131, nbchbtjetty02, nbchbtjetty, 1, 100, 128
+4132, LODhbtjetty02, LODnbeach, 1, 1000, 128
+4133, nbtshopfronts02b, nbtshopfronts02, 1, 144, 128
+4134, LODshopfronts02b, LODnbeach, 1, 750, 128
+4135, LODhbit04grd2, LODnbeach, 1, 750, 128
+4136, LODshpfrnts1grd, LODnbeach, 1, 750, 128
+4137, LODhbit04bgrd1, LODnbeach, 1, 750, 128
+4138, LODshpfrts1bgrd, LODnbeach, 1, 750, 128
+4139, nbtgardoor03, nbt_mansionbase01, 1, 144, 128
+4141, lodcpaynspray, LODnbeachbtbig, 1, 790, 128
+4142, nbecpaynspray, nbeachpayns, 1, 80, 128
+4145, nbecpnsdoor, nbeachpayns, 1, 80, 128
+4147, nbeachwater1, nbt_mnsnwtr, 1, 150, 132
+4148, nbec_divingbds, nbecdiving, 1, 200, 128
+4149, nbeachvegy1, generic, 1, 250, 132
+4150, nbeachvegy2, generic, 1, 250, 132
+4151, nbeachbridge, nbeachbridge, 1, 140, 0
+4152, nbecland014, nbtecland, 1, 144, 0
+4153, nbecland013, nbtecland, 1, 144, 0
+4154, nbhospgrnd02, nbhospital, 1, 144, 0
+4155, nbt_hotel0402, nbt_hotel04, 1, 180, 0
+4156, nbt_hotel0702, nbt_hotel07, 1, 112, 0
+4157, nbt_mansion0402, nbt_mansion04, 1, 112, 0
+4158, nbeach_police02, nb_police, 1, 112, 0
+4159, nbt_hotel0602, nbt_hotel06, 1, 112, 0
+4160, newbuilding0102, newbuilding01, 1, 112, 0
+4161, nbt_hotel0302, nbt_hotel03, 1, 200, 0
+4162, nbt_hotel0202, nbt_hotel02, 1, 144, 0
+4163, nbt_hotel0102, nbt_hotel01, 1, 112, 0
+4164, nbecbtwbrdge, nbecbtwbrdge, 1, 220, 128
+4165, lodcbtwbrdge, LODnbeach, 1, 750, 0
+4166, LOD_road05, LODnbeachbtbig, 1, 1200, 0
+4167, LOD_mansion04, LODnbeach, 1, 750, 128
+4168, LOD_road03, LODnbeachbtbig, 1, 1200, 0
+4169, nbtshopfronts02win, nbtshopfronts02, 1, 160, 132
+4146, nbecnssignight_nt, nbeachpayns, 1, 70, 132
+end
+tobj
+4140, nbechneon2, nbeachneon, 1, 290, 132, 22, 5
+4143, nbecpnsneon1, nbeachneon, 1, 290, 132, 22, 5
+4144, nbecnssignday_dy, nbeachpayns, 1, 70, 132, 22, 5
+end
+path
+end
+2dfx
+4008, -44.7195, 25.7032, 4.11394, 255, 255, 255, 150, 0, "coronastar", "shad_exp", 100, 2, 1.5, 2, 40, 1, 0, 0, 0
+4008, -40.4745, 32.4362, 4.11394, 255, 255, 255, 150, 0, "coronastar", "shad_exp", 100, 2, 1.5, 2, 40, 1, 0, 0, 0
+4008, -36.5897, 37.6405, 4.11394, 255, 255, 255, 150, 0, "coronastar", "shad_exp", 100, 2, 1.5, 2, 40, 1, 0, 0, 0
+4008, -33.2299, 42.7086, 4.11394, 255, 255, 255, 150, 0, "coronastar", "shad_exp", 100, 2, 1.5, 2, 40, 1, 0, 0, 0
+4008, -30.0565, 47.1787, 4.11394, 255, 255, 255, 150, 0, "coronastar", "shad_exp", 100, 2, 1.5, 2, 40, 1, 0, 0, 0
+4008, -26.0859, 51.8721, 4.11394, 255, 255, 255, 150, 0, "coronastar", "shad_exp", 100, 2, 1.5, 2, 40, 1, 0, 0, 0
+4008, -21.5706, 57.1291, 4.11394, 255, 255, 255, 150, 0, "coronastar", "shad_exp", 100, 2, 1.5, 2, 40, 1, 0, 0, 0
+4020, -1.71645, -1.5495, -4.79971, 255, 255, 255, 150, 3, 3, 0.629742, -0.776805, -4.79064e-007, 0.629742, -0.776805, -4.79064e-007
+4020, 2.07994, 1.47388, -4.79971, 255, 255, 255, 150, 3, 3, 0.629742, -0.776805, -4.79064e-007, 0.629742, -0.776805, -4.79064e-007
+4027, 3.44247, 9.573, 1.77111, 184, 155, 229, 150, 1, 3, 0, 0, -0.005, 0.18
+4027, -9.01889, 3.76434, 1.77111, 184, 155, 229, 150, 1, 3, 0, 0, -0.005, 0.18
+4027, -9.37875, -3.28882, 1.77111, 184, 155, 229, 150, 1, 3, 0, 0, -0.005, 0.18
+4027, -3.08667, -9.72174, 1.77111, 184, 155, 229, 150, 1, 3, 0, 0, -0.005, 0.18
+4027, 1.90387, -9.92719, 1.77111, 184, 155, 229, 150, 1, 3, 0, 0, -0.005, 0.18
+4027, 8.95663, -5.00049, 1.77111, 184, 155, 229, 150, 1, 3, 0, 0, -0.005, 0.18
+4027, 9.99643, 1.12921, 1.77111, 184, 155, 229, 150, 1, 3, 0, 0, -0.005, 0.18
+4027, -2.54971, 9.56848, 1.77111, 184, 155, 229, 150, 1, 3, 0, 0, -0.005, 0.18
+4033, 8.29425, -24.0818, 5.32735, 196, 0, 0, 200, 0, "coronastar", "shad_exp", 100, 5, 1.5, 3, 40, 4, 0, 0, 0
+4033, -10.9271, -8.60007, 5.32735, 196, 0, 0, 200, 0, "coronastar", "shad_exp", 100, 5, 1.5, 3, 40, 4, 0, 0, 0
+4033, -10.9271, -24.0391, 5.32735, 196, 0, 0, 200, 0, "coronastar", "shad_exp", 100, 5, 1.5, 3, 40, 4, 0, 0, 0
+4033, 7.60907, -8.65305, 5.32735, 196, 0, 0, 200, 0, "coronastar", "shad_exp", 100, 5, 1.5, 3, 40, 4, 0, 0, 0
+end
