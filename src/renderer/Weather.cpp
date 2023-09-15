@@ -20,6 +20,9 @@
 #include "ZoneCull.h"
 #include "SpecialFX.h"
 #include "Replay.h"
+#ifdef VEHICLE_MODS
+#include "Garages.h"
+#endif
 
 int32 CWeather::SoundHandle = -1;
 
@@ -203,7 +206,11 @@ void CWeather::Update(void)
 	}
 	if (WhenToPlayLightningSound && CTimer::GetTimeInMilliseconds() > WhenToPlayLightningSound) {
 		DMAudio.PlayOneShot(SoundHandle, SOUND_LIGHTNING, LightningDuration);
+#ifdef IMPROVED_MENU_AND_INPUT
+		CPad::GetPad(0)->StartShake(40 * LightningDuration + 100, 2 * LightningDuration + 80, 2 * LightningDuration + 80);
+#else
 		CPad::GetPad(0)->StartShake(40 * LightningDuration + 100, 2 * LightningDuration + 80);
+#endif
 		WhenToPlayLightningSound = 0;
 	}
 
@@ -245,7 +252,12 @@ void CWeather::Update(void)
 		CloudCoverage = 1.0f - InterpolationValue;
 	else
 		CloudCoverage = 0.0f;
+#ifdef IMPROVED_TECH_PART // Moon disappearing fix
+	if ((NewWeatherType != WEATHER_SUNNY && OldWeatherType != WEATHER_EXTRA_SUNNY) &&
+		(NewWeatherType != WEATHER_EXTRA_SUNNY && OldWeatherType != WEATHER_SUNNY))
+#else
 	if (NewWeatherType != WEATHER_SUNNY && OldWeatherType != WEATHER_EXTRA_SUNNY)
+#endif
 		CloudCoverage += InterpolationValue;
 	
 	// Fog
@@ -428,6 +440,12 @@ void CWeather::AddRain()
 {
 	if (CCullZones::CamNoRain() || CCullZones::PlayerNoRain())
 		return;
+#ifdef VEHICLE_MODS // it's not raining in the mod garage
+	if (CGarages::bPlayerInModGarage) {
+		Rain = 0.0f;
+		return;
+	}
+#endif
 	if (TheCamera.GetLookingLRBFirstPerson()) {
 		CVehicle* pVehicle = FindPlayerVehicle();
 		if (pVehicle && pVehicle->CarHasRoof()) {
@@ -459,6 +477,38 @@ void CWeather::AddRain()
 	int numSplashes = 2.0f * Rain;
 	CVector pos, dir;
 	for(int i = 0; i < numDrops; i++){
+#ifdef FIRST_PERSON
+		bool bShowNearDroplets = true;
+
+		if (FindPlayerVehicle() && TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON)
+			bShowNearDroplets = FindPlayerVehicle()->IsOpenTopVehicle();
+
+		if (bShowNearDroplets) {
+			pos.x = CGeneral::GetRandomNumberInRange(0, (int)SCREEN_WIDTH);
+			pos.y = CGeneral::GetRandomNumberInRange(0, (int)SCREEN_HEIGHT / 5);
+			pos.z = 0.0f;
+			dir.x = 0.0f;
+			dir.y = CGeneral::GetRandomNumberInRange(30.0f, 40.0f);
+			dir.z = 0.0f;
+			CParticle::AddParticle(PARTICLE_RAINDROP_2D, pos, dir, nil, CGeneral::GetRandomNumberInRange(0.1f, 0.75f), 0, 0, (int)Rain & 3, 0);
+
+			pos.x = CGeneral::GetRandomNumberInRange(0, (int)SCREEN_WIDTH);
+			pos.y = CGeneral::GetRandomNumberInRange((int)SCREEN_HEIGHT / 5, (int)SCREEN_HEIGHT / 2);
+			pos.z = 0.0f;
+			dir.x = 0.0f;
+			dir.y = CGeneral::GetRandomNumberInRange(30.0f, 40.0f);
+			dir.z = 0.0f;
+			CParticle::AddParticle(PARTICLE_RAINDROP_2D, pos, dir, nil, CGeneral::GetRandomNumberInRange(0.1f, 0.75f), 0, 0, (int)Rain & 3, 0);
+
+			pos.x = CGeneral::GetRandomNumberInRange(0, (int)SCREEN_WIDTH);
+			pos.y = 0.0f;
+			pos.z = 0.0f;
+			dir.x = 0.0f;
+			dir.y = CGeneral::GetRandomNumberInRange(30.0f, 40.0f);
+			dir.z = 0.0f;
+			CParticle::AddParticle(PARTICLE_RAINDROP_2D, pos, dir, nil, CGeneral::GetRandomNumberInRange(0.1f, 0.75f), 0, 0, (int)Rain & 3, 0);
+		}
+#else
 		pos.x = CGeneral::GetRandomNumberInRange(0, (int)SCREEN_WIDTH);
 		pos.y = CGeneral::GetRandomNumberInRange(0, (int)SCREEN_HEIGHT/5);
 		pos.z = 0.0f;
@@ -482,6 +532,7 @@ void CWeather::AddRain()
 		dir.y = CGeneral::GetRandomNumberInRange(30.0f, 40.0f);
 		dir.z = 0.0f;
 		CParticle::AddParticle(PARTICLE_RAINDROP_2D, pos, dir, nil, CGeneral::GetRandomNumberInRange(0.1f, 0.75f), 0, 0, (int)Rain&3, 0);
+#endif
 
 		float dist = CGeneral::GetRandomNumberInRange(0.0f, Max(10.0f*Rain, 40.0f)/2.0f);
 		float angle;

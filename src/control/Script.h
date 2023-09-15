@@ -471,6 +471,9 @@ public:
 	static bool bPlayerIsInTheStatium;
 	static uint8 RiotIntensity;
 	static bool bPlayerHasMetDebbieHarry;
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+	static bool bMissionWasPassed;
+#endif
 
 	static void Init();
 	static void Process();

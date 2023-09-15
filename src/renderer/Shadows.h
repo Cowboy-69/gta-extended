@@ -2,8 +2,13 @@
 
 #define MAX_STOREDSHADOWS    48
 #define MAX_POLYBUNCHES      380
+#ifdef IMPROVED_TECH_PART // particles
+#define MAX_STATICSHADOWS    160
+#define MAX_PERMAMENTSHADOWS 160
+#else
 #define MAX_STATICSHADOWS    48
 #define MAX_PERMAMENTSHADOWS 48
+#endif
 
 
 

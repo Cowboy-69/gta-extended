@@ -774,6 +774,13 @@ CEntity::SetRwObjectAlpha(int32 alpha)
 	}
 }
 
+#ifdef CLIMBING
+bool CEntity::HasClimbable()
+{
+	return !bIsStatic && ((m_modelIndex < MI_BRASS_KNUCKLES || m_modelIndex > MI_MINIGUN2) && m_modelIndex != MI_BEACHBALL);
+}
+#endif
+
 bool IsEntityPointerValid(CEntity* pEntity)
 {
 	if (!pEntity)

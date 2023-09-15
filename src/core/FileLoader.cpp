@@ -29,6 +29,9 @@
 #include "Streaming.h"
 #include "ColStore.h"
 #include "Occlusion.h"
+#ifdef NEW_VEHICLE_LOADER
+#include "AudioSamples.h"
+#endif
 
 char CFileLoader::ms_line[256];
 
@@ -189,6 +192,25 @@ CFileLoader::LoadCollisionFile(const char *filename, uint8 colSlot)
 	assert(fd > 0);
 
 	while(CFileMgr::Read(fd, (char*)&header, sizeof(header))){
+#ifdef VICE_CRY
+		assert(header.ident == 'LLOC');
+		CFileMgr::Read(fd, (char*)col_buff, header.size);
+		memcpy(modelname, col_buff, 24);
+
+		mi = CModelInfo::GetModelInfo(modelname, nil);
+		if(mi){
+			if(mi->GetColModel() && mi->DoesOwnColModel()){
+				LoadCollisionModel(col_buff+24, *mi->GetColModel(), modelname);
+			}else{
+				CColModel *model = new CColModel;
+				model->level = colSlot;
+				LoadCollisionModel(col_buff+24, *model, modelname);
+				mi->SetColModel(model, true);
+			}
+		}else{
+			debug("colmodel %s can't find a modelinfo\n", modelname);
+		}
+#else
 		assert(header.ident == 'LLOC');
 		CFileMgr::Read(fd, (char*)work_buff, header.size);
 		memcpy(modelname, work_buff, 24);
@@ -206,6 +228,7 @@ CFileLoader::LoadCollisionFile(const char *filename, uint8 colSlot)
 		}else{
 			debug("colmodel %s can't find a modelinfo\n", modelname);
 		}
+#endif
 	}
 
 	CFileMgr::CloseFile(fd);
@@ -224,6 +247,29 @@ CFileLoader::LoadCollisionFileFirstTime(uint8 *buffer, uint32 size, uint8 colSlo
 	int modelIndex;
 
 	while(size > 8){
+#ifdef VICE_CRY
+		header = (ColHeader*)buffer;
+		modelsize = header->size;
+		if(header->ident != 'LLOC')
+			return size-8 < CDSTREAM_SECTOR_SIZE;
+		memcpy(modelname, buffer+8, 24);
+		memcpy(col_buff, buffer+32, modelsize-24);
+		size -= 32 + (modelsize-24);
+		buffer += 32 + (modelsize-24);
+		if(modelsize > 15*1024)
+			debug("colmodel %s is huge, size %d\n", modelname, modelsize);
+
+		mi = CModelInfo::GetModelInfo(modelname, &modelIndex);
+		if(mi){
+			CColStore::IncludeModelIndex(colSlot, modelIndex);
+			CColModel *model = new CColModel;
+			model->level = colSlot;
+			LoadCollisionModel(col_buff, *model, modelname);
+			mi->SetColModel(model, true);
+		}else{
+			debug("colmodel %s can't find a modelinfo\n", modelname);
+		}
+#else
 		header = (ColHeader*)buffer;
 		modelsize = header->size;
 		if(header->ident != 'LLOC')
@@ -245,6 +291,7 @@ CFileLoader::LoadCollisionFileFirstTime(uint8 *buffer, uint32 size, uint8 colSlo
 		}else{
 			debug("colmodel %s can't find a modelinfo\n", modelname);
 		}
+#endif
 	}
 	return true;
 }
@@ -258,6 +305,32 @@ CFileLoader::LoadCollisionFile(uint8 *buffer, uint32 size, uint8 colSlot)
 	ColHeader *header;
 
 	while(size > 8){
+#ifdef VICE_CRY
+		header = (ColHeader*)buffer;
+		modelsize = header->size;
+		if(header->ident != 'LLOC')
+			return size-8 < CDSTREAM_SECTOR_SIZE;
+		memcpy(modelname, buffer+8, 24);
+		memcpy(col_buff, buffer+32, modelsize-24);
+		size -= 32 + (modelsize-24);
+		buffer += 32 + (modelsize-24);
+		if(modelsize > 15*1024)
+			debug("colmodel %s is huge, size %d\n", modelname, modelsize);
+
+		mi = CModelInfo::GetModelInfo(modelname, CColStore::GetSlot(colSlot)->minIndex, CColStore::GetSlot(colSlot)->maxIndex);
+		if(mi){
+			if(mi->GetColModel()){
+				LoadCollisionModel(col_buff, *mi->GetColModel(), modelname);
+			}else{
+				CColModel *model = new CColModel;
+				model->level = colSlot;
+				LoadCollisionModel(col_buff, *model, modelname);
+				mi->SetColModel(model, true);
+			}
+		}else{
+			debug("colmodel %s can't find a modelinfo\n", modelname);
+		}
+#else
 		header = (ColHeader*)buffer;
 		modelsize = header->size;
 		if(header->ident != 'LLOC')
@@ -282,6 +355,7 @@ CFileLoader::LoadCollisionFile(uint8 *buffer, uint32 size, uint8 colSlot)
 		}else{
 			debug("colmodel %s can't find a modelinfo\n", modelname);
 		}
+#endif
 	}
 	return true;
 }
@@ -601,7 +675,10 @@ CFileLoader::LoadObjectTypes(const char *filename)
 		CARS,
 		PEDS,
 		PATH,
-		TWODFX
+		TWODFX,
+#ifdef NEW_VEHICLE_LOADER
+		NEWCARS,
+#endif
 	};
 	char *line;
 	int fd;
@@ -631,6 +708,9 @@ CFileLoader::LoadObjectTypes(const char *filename)
 			else if(isLine4(line, 'p','e','d','s')) section = PEDS;
 			else if(isLine4(line, 'p','a','t','h')) section = PATH;
 			else if(isLine4(line, '2','d','f','x')) section = TWODFX;
+#ifdef NEW_VEHICLE_LOADER
+			else if(isLine4(line, 'n','e','w','c')) section = NEWCARS;
+#endif
 		}else if(isLine3(line, 'e','n','d')){
 			section = NONE;
 		}else switch(section){
@@ -675,6 +755,11 @@ CFileLoader::LoadObjectTypes(const char *filename)
 		case TWODFX:
 			Load2dEffect(line);
 			break;
+#ifdef NEW_VEHICLE_LOADER
+		case NEWCARS:
+			LoadAnotherVehicleObject(line);
+			break;
+#endif
 		}
 	}
 	CFileMgr::CloseFile(fd);
@@ -1096,6 +1181,344 @@ CFileLoader::Load2dEffect(const char *line)
 	CTxdStore::PopCurrentTxd();
 }
 
+#ifdef WANTED_PATHS
+void CFileLoader::LoadWantedPathNode(const char* line, int pathID, int pathNode)
+{
+	float x, y, z;
+
+	sscanf(line, "%f %f %f", &x, &y, &z);
+
+	ThePaths.StoreWantedNode(pathID, pathNode, x, y, z);
+}
+#endif
+
+#ifdef NEW_VEHICLE_LOADER
+void CFileLoader::LoadAnotherVehicleObject(const char* line)
+{
+	char param[10];
+	int id;
+	CVehicleModelInfo* mi;
+
+	sscanf(line, "%s", &param);
+	if (strcmp(param, "default") == 0) {
+		char model[24], txd[24];
+		char type[8], handlingId[16], gamename[32], animFile[16], vehclass[12];
+		uint32 frequency, comprules;
+		int32 level, misc;
+		float wheelScale;
+		char* p;
+		char policeRadio[13];
+
+		sscanf(line, "%s %d %s %s %s %s %s %s %s %d %d %x %d %f %s",
+			&param, &id, model, txd,
+			type, handlingId, gamename, animFile, vehclass,
+			&frequency, &level, &comprules, &misc, &wheelScale, policeRadio);
+
+		mi = CModelInfo::AddVehicleModel(id);
+		mi->SetModelName(model);
+		mi->SetTexDictionary(txd);
+		mi->SetAnimFile(animFile);
+		strcpy(mi->m_anotherAnimFileName, animFile);
+		mi->m_level = level;
+		mi->m_compRules = comprules;
+
+		for (p = gamename; *p; p++)
+			if (*p == '_') *p = ' ';
+		for (int i = 0; i < 32; i++)
+			mi->m_fullGameName[i] = gamename[i];
+
+		if(strcmp(type, "car") == 0){
+			mi->m_wheelId = misc;
+			mi->m_wheelScale = wheelScale;
+			mi->m_vehicleType = VEHICLE_TYPE_CAR;
+		}else if(strcmp(type, "boat") == 0){
+			mi->m_vehicleType = VEHICLE_TYPE_BOAT;
+		}else if(strcmp(type, "train") == 0){
+			mi->m_vehicleType = VEHICLE_TYPE_TRAIN;
+		}else if(strcmp(type, "heli") == 0){
+			mi->m_vehicleType = VEHICLE_TYPE_HELI;
+		}else if(strcmp(type, "plane") == 0){
+			mi->m_planeLodId = misc;
+			mi->m_wheelScale = 1.0f;
+			mi->m_vehicleType = VEHICLE_TYPE_PLANE;
+		}else if(strcmp(type, "bike") == 0){
+			mi->m_bikeSteerAngle = misc;
+			mi->m_wheelScale = wheelScale;
+			mi->m_vehicleType = VEHICLE_TYPE_BIKE;
+		}else
+			assert(0);
+
+		if (strcmp(policeRadio, "motorbike") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_MOTOBIKE;
+		else if (strcmp(policeRadio, "wagon") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_STATION_WAGON;
+		else if (strcmp(policeRadio, "garbagetruck") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_GARBAGE_TRUCK;
+		else if (strcmp(policeRadio, "twodoor") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_TUDOOR;
+		else if (strcmp(policeRadio, "sedan") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_SEDAN;
+		else if (strcmp(policeRadio, "coach") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_COACH;
+		else if (strcmp(policeRadio, "hearse") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_HEARSE;
+		else if (strcmp(policeRadio, "moped") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_MOPED;
+		else if (strcmp(policeRadio, "plane") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_PLANE;
+		else if (strcmp(policeRadio, "boat") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_BOAT;
+		else if (strcmp(policeRadio, "golfcart") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_GOLF_CART;
+		else if (strcmp(policeRadio, "dinghy") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_DINGHY;
+		else if (strcmp(policeRadio, "offroad") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_OFFROAD;
+		else if (strcmp(policeRadio, "sportscar") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_SPORTS_CAR;
+		else if (strcmp(policeRadio, "rig") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_RIG;
+		else if (strcmp(policeRadio, "tank") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_TANK;
+		else if (strcmp(policeRadio, "bus") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_BUS;
+		else if (strcmp(policeRadio, "cruiser") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_CRUISER;
+		else if (strcmp(policeRadio, "firetruck") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_FIRE_TRUCK;
+		else if (strcmp(policeRadio, "lowrider") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_LOWRIDER;
+		else if (strcmp(policeRadio, "van") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_VAN;
+		else if (strcmp(policeRadio, "truck") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_TRUCK;
+		else if (strcmp(policeRadio, "ambulance") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_AMBULANCE;
+		else if (strcmp(policeRadio, "taxi") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_TAXI;
+		else if (strcmp(policeRadio, "pickup") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_PICKUP;
+		else if (strcmp(policeRadio, "icecream") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_ICE_CREAM_VAN;
+		else if (strcmp(policeRadio, "buggy") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_BUGGY;
+		else if (strcmp(policeRadio, "helicopter") == 0 || strcmp(policeRadio, "heli") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_HELICOPTER;
+		else if (strcmp(policeRadio, "policecar") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_POLICE_CAR;
+		else if (strcmp(policeRadio, "swatvan") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_SWAT_VAN;
+		else if (strcmp(policeRadio, "speedboat") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_SPEEDBOAT;
+		else
+			mi->m_policeRadioIndex = 0;
+
+		mi->vehicleShadowData.fHeightMultiplier = 1.0f;
+		mi->vehicleShadowData.fWidthMultiplier = 1.0f;
+		mi->vehicleShadowData.fSizeMultiplier = 1.0f;
+
+		if(strcmp(vehclass, "normal") == 0)
+			mi->m_vehicleClass = CCarCtrl::NORMAL;
+		else if(strcmp(vehclass, "poorfamily") == 0)
+			mi->m_vehicleClass = CCarCtrl::POOR;
+		else if(strcmp(vehclass, "richfamily") == 0)
+			mi->m_vehicleClass = CCarCtrl::RICH;
+		else if(strcmp(vehclass, "executive") == 0)
+			mi->m_vehicleClass = CCarCtrl::EXEC;
+		else if(strcmp(vehclass, "worker") == 0)
+			mi->m_vehicleClass = CCarCtrl::WORKER;
+		else if(strcmp(vehclass, "big") == 0)
+			mi->m_vehicleClass = CCarCtrl::BIG;
+		else if(strcmp(vehclass, "taxi") == 0)
+			mi->m_vehicleClass = CCarCtrl::TAXI;
+		else if(strcmp(vehclass, "moped") == 0)
+			mi->m_vehicleClass = CCarCtrl::MOPED;
+		else if(strcmp(vehclass, "motorbike") == 0)
+			mi->m_vehicleClass = CCarCtrl::MOTORBIKE;
+		else if(strcmp(vehclass, "leisureboat") == 0)
+			mi->m_vehicleClass = CCarCtrl::LEISUREBOAT;
+		else if(strcmp(vehclass, "workerboat") == 0)
+			mi->m_vehicleClass = CCarCtrl::WORKERBOAT;
+		else if(strcmp(vehclass, "ignore") == 0) {
+			mi->m_vehicleClass = -1;
+			return;
+		}
+
+		CCarCtrl::AddToCarArray(id, mi->m_vehicleClass);
+		mi->m_frequency = frequency;
+	} else if (strcmp(param, "handling") == 0) {
+		char *start, *end;
+		char handlingLine[300];
+		char delim[4];
+		char* word;
+		int field, handlingId;
+		int keepGoing;
+
+		strcpy(handlingLine, line);
+
+		field = 0;
+		strcpy(delim, " \t");
+		for(word = strtok(handlingLine, delim); word; word = strtok(nil, delim)){
+			switch(field){
+			case  1: 
+				mi = (CVehicleModelInfo*)CModelInfo::GetModelInfo(atof(word)); 
+				mi->handlingData.bBike = mi->m_vehicleType == VEHICLE_TYPE_BIKE ? 1 : 0;
+				break;
+			case  2: mi->handlingData.fMass = atof(word); break;
+			case  3: mi->handlingData.Dimension.x = atof(word); break;
+			case  4: mi->handlingData.Dimension.y = atof(word); break;
+			case  5: mi->handlingData.Dimension.z = atof(word); break;
+			case  6: mi->handlingData.CentreOfMass.x = atof(word); break;
+			case  7: mi->handlingData.CentreOfMass.y = atof(word); break;
+			case  8: mi->handlingData.CentreOfMass.z = atof(word); break;
+			case  9: mi->handlingData.nPercentSubmerged = atoi(word); break;
+			case 10: mi->handlingData.fTractionMultiplier = atof(word); break;
+			case 11: mi->handlingData.fTractionLoss = atof(word); break;
+			case 12: mi->handlingData.fTractionBias = atof(word); break;
+			case 13: mi->handlingData.Transmission.nNumberOfGears = atoi(word); break;
+			case 14: mi->handlingData.Transmission.fMaxVelocity = atof(word); break;
+			case 15: mi->handlingData.Transmission.fEngineAcceleration = atof(word) * 0.4; break;
+			case 16: mi->handlingData.Transmission.nDriveType = word[0]; break;
+			case 17: mi->handlingData.Transmission.nEngineType = word[0]; break;
+			case 18: mi->handlingData.fBrakeDeceleration = atof(word); break;
+			case 19: mi->handlingData.fBrakeBias = atof(word); break;
+			case 20: mi->handlingData.bABS = !!atoi(word); break;
+			case 21: mi->handlingData.fSteeringLock = atof(word); break;
+			case 22: mi->handlingData.fSuspensionForceLevel = atof(word); break;
+			case 23: mi->handlingData.fSuspensionDampingLevel = atof(word); break;
+			case 24: mi->handlingData.fSeatOffsetDistance = atof(word); break;
+			case 25: mi->handlingData.fCollisionDamageMultiplier = atof(word); break;
+			case 26: mi->handlingData.nMonetaryValue = atoi(word); break;
+			case 27: mi->handlingData.fSuspensionUpperLimit = atof(word); break;
+			case 28: mi->handlingData.fSuspensionLowerLimit = atof(word); break;
+			case 29: mi->handlingData.fSuspensionBias = atof(word); break;
+			case 30: mi->handlingData.fSuspensionAntidiveMultiplier = atof(word); break;
+			case 31:
+				sscanf(word, "%x", &mi->handlingData.Flags);
+				mi->handlingData.Transmission.Flags = mi->handlingData.Flags;
+				break;
+			case 32: mi->handlingData.FrontLights = atoi(word); break;
+			case 33: mi->handlingData.RearLights = atoi(word); break;
+			}
+			field++;
+		}
+		mod_HandlingManager.ConvertDataToGameUnits(&mi->handlingData);
+	} else if (strcmp(param, "handling2") == 0) {
+		char *start, *end;
+		char handlingLine[201];
+		char delim[4];
+		char* word;
+		int field, handlingId;
+		int keepGoing;
+
+		sscanf(line, "%s %d",
+			&param, &id);
+
+		mi = (CVehicleModelInfo*)CModelInfo::GetModelInfo(id);
+
+		strcpy(handlingLine, line);
+
+		field = 0;
+		strcpy(delim, " \t");
+		if (mi->handlingData.Flags & HANDLING_IS_BIKE) {
+			for (word = strtok(handlingLine, delim); word; word = strtok(nil, delim)) {
+				switch (field) {
+				case  2: mi->bikeHandlingData.fLeanFwdCOM = atof(word); break;
+				case  3: mi->bikeHandlingData.fLeanFwdForce = atof(word); break;
+				case  4: mi->bikeHandlingData.fLeanBakCOM = atof(word); break;
+				case  5: mi->bikeHandlingData.fLeanBackForce = atof(word); break;
+				case  6: mi->bikeHandlingData.fMaxLean = atof(word); break;
+				case  7: mi->bikeHandlingData.fFullAnimLean = atof(word); break;
+				case  8: mi->bikeHandlingData.fDesLean = atof(word); break;
+				case  9: mi->bikeHandlingData.fSpeedSteer = atof(word); break;
+				case 10: mi->bikeHandlingData.fSlipSteer = atof(word); break;
+				case 11: mi->bikeHandlingData.fNoPlayerCOMz = atof(word); break;
+				case 12: mi->bikeHandlingData.fWheelieAng = atof(word); break;
+				case 13: mi->bikeHandlingData.fStoppieAng = atof(word); break;
+				case 14: mi->bikeHandlingData.fWheelieSteer = atof(word); break;
+				case 15: mi->bikeHandlingData.fWheelieStabMult = atof(word); break;
+				case 16: mi->bikeHandlingData.fStoppieStabMult = atof(word); break;
+				}
+				field++;
+			}
+			mod_HandlingManager.ConvertBikeDataToGameUnits(&mi->bikeHandlingData);
+		} else if (mi->handlingData.Flags & HANDLING_IS_HELI || mi->handlingData.Flags & HANDLING_IS_PLANE) {
+			for(word = strtok(handlingLine, delim); word; word = strtok(nil, delim)){
+				switch(field){
+				case  2: mi->flyingHandlingData.fThrust = atof(word); break;
+				case  3: mi->flyingHandlingData.fThrustFallOff = atof(word); break;
+				case  4: mi->flyingHandlingData.fYaw = atof(word); break;
+				case  5: mi->flyingHandlingData.fYawStab = atof(word); break;
+				case  6: mi->flyingHandlingData.fSideSlip = atof(word); break;
+				case  7: mi->flyingHandlingData.fRoll = atof(word); break;
+				case  8: mi->flyingHandlingData.fRollStab = atof(word); break;
+				case  9: mi->flyingHandlingData.fPitch = atof(word); break;
+				case 10: mi->flyingHandlingData.fPitchStab = atof(word); break;
+				case 11: mi->flyingHandlingData.fFormLift = atof(word); break;
+				case 12: mi->flyingHandlingData.fAttackLift = atof(word); break;
+				case 13: mi->flyingHandlingData.fMoveRes = atof(word); break;
+				case 14: mi->flyingHandlingData.vecTurnRes.x = atof(word); break;
+				case 15: mi->flyingHandlingData.vecTurnRes.y = atof(word); break;
+				case 16: mi->flyingHandlingData.vecTurnRes.z = atof(word); break;
+				case 17: mi->flyingHandlingData.vecSpeedRes.x = atof(word); break;
+				case 18: mi->flyingHandlingData.vecSpeedRes.y = atof(word); break;
+				case 19: mi->flyingHandlingData.vecSpeedRes.z = atof(word); break;
+				}
+				field++;
+			}
+		} else if (mi->handlingData.Flags & HANDLING_IS_BOAT) {
+			for(word = strtok(handlingLine, delim); word; word = strtok(nil, delim)){
+				switch(field){
+				case  2: mi->boatHandlingData.fThrustY = atof(word); break;
+				case  3: mi->boatHandlingData.fThrustZ = atof(word); break;
+				case  4: mi->boatHandlingData.fThrustAppZ = atof(word); break;
+				case  5: mi->boatHandlingData.fAqPlaneForce = atof(word); break;
+				case  6: mi->boatHandlingData.fAqPlaneLimit = atof(word); break;
+				case  7: mi->boatHandlingData.fAqPlaneOffset = atof(word); break;
+				case  8: mi->boatHandlingData.fWaveAudioMult = atof(word); break;
+				case  9: mi->boatHandlingData.vecMoveRes.x = atof(word); break;
+				case 10: mi->boatHandlingData.vecMoveRes.y = atof(word); break;
+				case 11: mi->boatHandlingData.vecMoveRes.z = atof(word); break;
+				case 12: mi->boatHandlingData.vecTurnRes.x = atof(word); break;
+				case 13: mi->boatHandlingData.vecTurnRes.y = atof(word); break;
+				case 14: mi->boatHandlingData.vecTurnRes.z = atof(word); break;
+				case 15: mi->boatHandlingData.fLook_L_R_BehindCamHeight = atof(word); break;
+				}
+				field++;
+			}
+		}
+	} else if (strcmp(param, "sounds") == 0) {
+		sscanf(line, "%s %d",
+			&param, &id);
+
+		mi = (CVehicleModelInfo*)CModelInfo::GetModelInfo(id);
+
+		if (mi->handlingData.Flags & HANDLING_IS_BOAT) {
+			sscanf(line, "%s %d %d %f %d %f %d",
+				&param, &id,
+				&mi->boatSoundData.volume, &mi->boatSoundData.volumeModificator, 
+				&mi->boatSoundData.frequency, &mi->boatSoundData.frequencyModificator, &mi->boatSoundData.bEngineType);
+		} else {
+			sscanf(line, "%s %d %d %d %d %d %d %d %d",
+				&param, &id,
+				&mi->vehicleSampleData.m_nAccelerationSampleIndex, &mi->vehicleSampleData.m_nBank, &mi->vehicleSampleData.m_nHornSample,
+				&mi->vehicleSampleData.m_nHornFrequency, &mi->vehicleSampleData.m_nSirenOrAlarmSample,
+				&mi->vehicleSampleData.m_nSirenOrAlarmFrequency, &mi->vehicleSampleData.m_bDoorType);
+		}
+	} else if (strcmp(param, "shadow") == 0) {
+		sscanf(line, "%s %d",
+			&param, &id);
+
+		mi = (CVehicleModelInfo*)CModelInfo::GetModelInfo(id);
+
+		sscanf(line, "%s %d %f %f %f",
+			&param, &id,
+			&mi->vehicleShadowData.fHeightMultiplier, &mi->vehicleShadowData.fWidthMultiplier, &mi->vehicleShadowData.fSizeMultiplier);
+	}
+	// loading carcols into VehicleModelInfo.cpp, LoadVehicleColours
+}
+#endif
+
 void
 CFileLoader::LoadScene(const char *filename)
 {
@@ -1107,6 +1530,9 @@ CFileLoader::LoadScene(const char *filename)
 		OCCL,
 		PICK,
 		PATH,
+#ifdef WANTED_PATHS
+		WANTED,
+#endif
 	};
 	char *line;
 	int fd;
@@ -1116,6 +1542,12 @@ CFileLoader::LoadScene(const char *filename)
 	section = NONE;
 	pathIndex = -1;
 	debug("Creating objects from %s...\n", filename);
+
+#ifdef WANTED_PATHS
+	int maxWantedPathNodes;
+	int currentWantedPathNode;
+	int wantedPathID;
+#endif
 
 	fd = CFileMgr::OpenFile(filename, "rb");
 	assert(fd > 0);
@@ -1130,6 +1562,9 @@ CFileLoader::LoadScene(const char *filename)
 			else if(isLine4(line, 'p','i','c','k')) section = PICK;
 			else if(isLine4(line, 'p','a','t','h')) section = PATH;
 			else if(isLine4(line, 'o','c','c','l')) section = OCCL;
+#ifdef WANTED_PATHS
+			else if (isLine4(line, 'w', 'a', 'n', 't', 'e', 'd')) section = WANTED;
+#endif
 		}else if(isLine3(line, 'e','n','d')){
 			section = NONE;
 		}else switch(section){
@@ -1165,6 +1600,19 @@ CFileLoader::LoadScene(const char *filename)
 					pathIndex = -1;
 			}
 			break;
+#ifdef WANTED_PATHS
+		case WANTED:
+			if (pathIndex == -1) {
+				sscanf(line, "%i %i", &wantedPathID, &maxWantedPathNodes);
+				currentWantedPathNode = 0;
+				pathIndex = 0;
+			} else {
+				LoadWantedPathNode(line, wantedPathID, currentWantedPathNode);
+				currentWantedPathNode++;
+				if (currentWantedPathNode == maxWantedPathNodes)
+					pathIndex = -1;
+			}
+#endif
 		}
 	}
 	CFileMgr::CloseFile(fd);

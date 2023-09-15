@@ -14,6 +14,24 @@ enum {
 	CARWHEEL_REAR_RIGHT
 };
 
+#ifdef VEHICLE_MODS // upgrade types
+enum eUpgradeTypes {
+	UPGRADE_WHEELS,
+	UPGRADE_SPOILER,
+	UPGRADE_SKIRTS,
+	UPGRADE_ROOF_SCOOP,
+	UPGRADE_BONNET_SCOOP,
+	UPGRADE_VENTS,
+	UPGRADE_SUPERCHARGER,
+	NUM_UPGRADES,
+};
+
+struct sUpgradeInfo {
+	int m_nUpgradeModelIndex;
+	int m_nTempUpgradeModelIndex;
+	int m_nUpgradeNumber;
+};
+#endif
 
 class CAutomobile : public CVehicle
 {
@@ -77,6 +95,26 @@ public:
 	uint8 m_nDriveWheelsOnGroundPrev;
 	float m_fGasPedalAudio;
 	tWheelState m_aWheelState[4];
+#ifdef IMPROVED_VEHICLES_2
+	bool m_bIndicatorState[2];
+#endif
+
+#ifdef VEHICLE_MODS
+	int m_nWindowTintLevel;
+	int m_nTempWindowTintLevel;
+	int m_nAddSuspensionForceLevel;
+	int m_nTempAddSuspensionForceLevel;
+	int m_nRimsColor;
+	int m_nTempRimsColor;
+	int m_nSpoilerColor;
+	int m_nTempSpoilerColor;
+	float m_fAddBrakeDeceleration;
+	sUpgradeInfo m_aUpgrades[NUM_UPGRADES];
+	float m_fCarbRotation;
+	RpAtomic* m_aDefaultBonnetOkAtomic;
+	RpAtomic* m_aDefaultBonnetDamAtomic;
+	bool bHasHydraulics;
+#endif
 
 	static bool m_sAllTaxiLights;
 
@@ -121,6 +159,9 @@ public:
 	void ProcessBuoyancy(void);
 	void DoDriveByShootings(void);
 	void DoHoverSuspensionRatios(void);
+#ifdef NEW_CHEATS // AIRWAYS
+	void DoHoverAboveSurface(void);
+#endif
 	int32 RcbanditCheckHitWheels(void);
 	int32 RcbanditCheck1CarWheels(CPtrList &list);
 	void PlaceOnRoadProperly(void);
@@ -142,6 +183,9 @@ public:
 	void SetPanelDamage(int32 component, ePanels panel, bool noFlyingComponents = false);
 	void SetBumperDamage(int32 component, ePanels panel, bool noFlyingComponents = false);
 	void SetDoorDamage(int32 component, eDoors door, bool noFlyingComponents = false);
+#ifdef IMPROVED_VEHICLES
+	void SetWheelMissing(int32 wheel);
+#endif
 
 	void TellHeliToGoToCoors(float x, float y, float z, uint8 speed);
 	void TellPlaneToGoToCoors(float x, float y, float z, uint8 speed);
@@ -156,6 +200,20 @@ public:
 	void HideAllComps(void);
 	void ShowAllComps(void);
 	void ReduceHornCounter(void);
+#ifdef IMPROVED_VEHICLES_2
+	void DoVehicleLights(void);
+	void SetFrameLightStatus(eCarNodes frameNode, eLightStatus status);
+	eLightStatus GetFrameLightStatus(eCarNodes frameNode);
+#endif
+
+#ifdef VEHICLE_MODS
+	void TrySetRandomCarMod(bool bForce = false);
+	void SetWheels(int modelIndex);
+	void SetWheelNumber(int modelIndex);
+	int GetWheelModelIndexFromWheelNumber();
+	void SetUpgrade(int modelIndex, bool temporary);
+	void RemoveUpgrade(eUpgradeTypes upgradeType, bool temporary);
+#endif
 
 	void PopBoot(void);
 	void PopBootUsingPhysics(void);
@@ -173,3 +231,10 @@ public:
 
 extern CVector vecHunterGunPos;
 extern bool bAllCarCheat;
+
+#ifdef VEHICLE_MODS
+RwObject* GetCurrentAtomicObjectCB(RwObject* object, void* data);
+#endif
+#ifdef IMPROVED_VEHICLES_2
+RwObject* GetWindowAtomicObjectCB(RwObject* object, void* data);
+#endif

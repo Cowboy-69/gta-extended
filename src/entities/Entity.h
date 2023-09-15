@@ -179,6 +179,10 @@ public:
 	void ModifyMatrixForBannerInWind(void);
 	void ProcessLightsForEntity(void);
 	void SetRwObjectAlpha(int32 alpha);
+
+#ifdef CLIMBING
+	bool HasClimbable();
+#endif
 };
 
 bool IsEntityPointerValid(CEntity*);

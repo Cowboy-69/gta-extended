@@ -24,12 +24,31 @@
 #include "PedPlacement.h"
 #include "VarConsole.h"
 #include "SaveBuf.h"
+#ifdef SWIMMING
+#include "Floater.h"
+#include "Particle.h"
+#endif
+#ifdef IMPROVED_MENU_AND_INPUT
+#include "Frontend.h"
+#endif
+#ifdef IMPROVED_TECH_PART // skiped phone calls
+#include "AudioManager.h"
+#endif
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE // TEMPORARY
+#include "GenericGameStorage.h"
+#endif
 
 #define PAD_MOVE_TO_GAME_WORLD_MOVE 60.0f
 
 bool CPlayerPed::bDontAllowWeaponChange;
 #ifndef MASTER
 bool CPlayerPed::bDebugPlayerInfo;
+#endif
+
+#ifdef NEW_CHEATS // init
+bool CPlayerPed::bInvincibleCheat;
+bool CPlayerPed::bNoWantedCheat;
+bool CPlayerPed::bRCRocketCheat;
 #endif
 
 const uint32 CPlayerPed::nSaveStructSize =
@@ -101,11 +120,34 @@ CPlayerPed::CPlayerPed(void) : CPed(PEDTYPE_PLAYER1)
 #ifdef FREE_CAM
 	m_bFreeAimActive = false;
 #endif
+
+#ifdef FIRING_AND_AIMING
+	bIsPlayerAiming = false;
+#endif
+
+#ifdef SWIMMING
+	bIsTiredSwimmingFast = false;
+#endif
+
+#ifdef IMPROVED_MENU_AND_INPUT
+	bIsAutoAiming = false;
+#endif
+
+#ifdef IMPROVED_TECH_PART // skiped phone calls
+	m_bSkipPhoneCall = false;
+#endif
+
+#ifdef FEATURES_INI // HealthRegenerationUpToHalf
+	m_nHealthRegenerationTime = 0;
+#endif
 }
 
 void
 CPlayerPed::ClearWeaponTarget()
 {
+#ifdef IMPROVED_MENU_AND_INPUT
+	bIsAutoAiming = false;
+#endif
 	if (m_nPedType == PEDTYPE_PLAYER1) {
 		SetWeaponLockOnTarget(nil);
 		TheCamera.ClearPlayerWeaponMode();
@@ -200,6 +242,345 @@ CPlayerPed::ReactivatePlayerPed(int32 index)
 	CWorld::Add(CWorld::Players[index].m_pPed);
 }
 
+#ifdef CROUCH
+void CPlayerPed::ProcessCrouch(void)
+{
+	if (!bIsDucking)
+		return;
+
+	CAnimBlendAssociation* curCrouchIdleAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_IDLE);
+	CAnimBlendAssociation* curCrouchForwardAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_FORWARD);
+	CAnimBlendAssociation* curCrouchBackwardAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_BACKWARD);
+	CAnimBlendAssociation* curCrouchRollLeftAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_ROLL_L);
+	CAnimBlendAssociation* curCrouchRollRightAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_ROLL_R);
+	bool bIsCurRollAnim = curCrouchRollLeftAssoc || curCrouchRollRightAssoc;
+	bool bIsCurMoveAnim = curCrouchForwardAssoc || curCrouchBackwardAssoc;
+
+	CAnimBlendAssociation* curCrouchFireAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_WEAPON_CROUCHFIRE);
+
+	CPad* pad = GetPadFromPlayer(this);
+	int16 padUpDown = pad->GetPedWalkUpDown();
+	int16 padLeftRight = pad->GetPedWalkLeftRight();
+
+	if (curCrouchForwardAssoc)
+		curCrouchForwardAssoc->speed = Clamp(m_fMoveSpeed - 0.5f, 0.5f, 1.0f);
+
+	if (curCrouchBackwardAssoc)
+		curCrouchBackwardAssoc->speed = Clamp(m_fMoveSpeed - 0.5f, 0.5f, 1.0f);
+
+	if (m_nPedState == PED_ROLL)
+	{
+		if (!bIsCurRollAnim)
+			RestorePreviousState();
+
+		return;
+	}
+
+	if (bIsPlayerAiming && GetWeapon()->GetInfo()->m_nWeaponSlot == WEAPONSLOT_SNIPER)
+		return;
+
+	if (bIsPlayerAiming || TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON) {
+		TheCamera.Cams[TheCamera.ActiveCam].m_fTargetCameraPosZ = 0.4f;
+
+		if ((m_fMoveSpeed < 0.1f || (padLeftRight != 0 && padUpDown == 0)) && !curCrouchIdleAssoc && !bIsCurRollAnim || m_nPedState == PED_ROLL)
+			curCrouchIdleAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_IDLE, 4.0f);
+
+		if (pad->GetTarget() && m_fMoveSpeed > 0.1f && (!curCrouchIdleAssoc || curCrouchIdleAssoc && curCrouchIdleAssoc->blendAmount >= 1.0f) && !bIsCurMoveAnim && !bIsCurRollAnim && 
+			(padLeftRight < -20 || padLeftRight > 20)) {
+
+			if (curCrouchForwardAssoc)
+				delete curCrouchForwardAssoc;
+
+			if (curCrouchBackwardAssoc)
+				delete curCrouchBackwardAssoc;
+
+			if (curCrouchFireAssoc) {
+				delete curCrouchFireAssoc;
+				ClearWeaponTarget();
+			}
+
+			float angleToFace;
+			angleToFace = CGeneral::GetRadianAngleBetweenPoints(
+				GetPosition().x - TheCamera.GetRight().x, GetPosition().y - TheCamera.GetRight().y,
+				GetPosition().x, GetPosition().y);
+			angleToFace = CGeneral::LimitRadianAngle(angleToFace);
+			m_fRotationCur = CGeneral::LimitRadianAngle(m_fRotationCur);
+			m_fRotationCur = angleToFace;
+
+			bDontAllowWeaponChange = true;
+
+			SetPedState(PED_ROLL);
+
+			delete curCrouchIdleAssoc;
+
+			if (padLeftRight < 0) {
+				curCrouchRollLeftAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_ROLL_L, 4.0f);
+				curCrouchRollLeftAssoc->SetFinishCallback(FinishRollCB, this);
+			} else if (padLeftRight > 0) {
+				curCrouchRollRightAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_ROLL_R, 4.0f);
+				curCrouchRollRightAssoc->SetFinishCallback(FinishRollCB, this);
+			}
+
+			return;
+		}
+
+		if (m_fMoveSpeed > 0.1 && !bIsCurRollAnim) {
+			if (padUpDown != 0) {
+				if (padUpDown < 0) {
+					if (!curCrouchForwardAssoc)
+						curCrouchForwardAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_FORWARD, 4.0f);
+				} else if (padUpDown > 0) {
+					if (!curCrouchBackwardAssoc)
+						curCrouchBackwardAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_BACKWARD, 4.0f);
+				}
+			}
+		}
+	} else if (pad) {
+		if (m_fMoveSpeed < 0.1f) {
+			TheCamera.Cams[TheCamera.ActiveCam].m_fTargetCameraPosZ = 0.6f;
+		
+			if (!curCrouchIdleAssoc)
+				curCrouchIdleAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_IDLE, 4.0f);
+		}
+
+		if (m_fMoveSpeed > 0.1f) {
+			TheCamera.Cams[TheCamera.ActiveCam].m_fTargetCameraPosZ = 0.3f;
+
+			if (curCrouchIdleAssoc && !curCrouchForwardAssoc || curCrouchBackwardAssoc)
+				curCrouchForwardAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_FORWARD, 4.0f);
+		}
+	}
+}
+
+void CPlayerPed::FinishRollCB(CAnimBlendAssociation* assoc, void* arg)
+{
+	assoc->blendDelta = -1000.0f;
+
+	bDontAllowWeaponChange = false;
+
+	CPlayerPed* ped = (CPlayerPed*)arg;
+
+	CAnimManager::BlendAnimation(ped->GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_IDLE, 1000.0f);
+}
+#endif
+
+#ifdef SWIMMING
+void CPlayerPed::ProcessSwimming(void)
+{
+	if (!bIsSwimming)
+		return;
+
+	if (bIsPlayerAiming)
+		bIsPlayerAiming = false;
+
+	if (m_pFire)
+		m_pFire->Extinguish();
+
+	AnimationId otherAnims[] = { ANIM_STD_ROLLOUT_LHS, ANIM_STD_ROLLOUT_RHS, ANIM_STD_FALL, ANIM_STD_FALL_GLIDE, 
+								   ANIM_STD_JUMP_GLIDE, ANIM_STD_JUMP_LAUNCH, ANIM_STD_FALL_ONBACK, ANIM_STD_FALL_ONBACK };
+	for (int i = 0; i < ARRAY_SIZE(otherAnims); i++) {
+		CAnimBlendAssociation* curAnimAssoc = RpAnimBlendClumpGetAssociation(GetClump(), otherAnims[i]);
+		if (curAnimAssoc) {
+			curAnimAssoc->flags |= ASSOC_DELETEFADEDOUT;
+			curAnimAssoc->blendDelta = -4.0f;
+		}
+	}
+
+	CAnimBlendAssociation* curSwimBreastAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_SWIM_BREAST);
+	CAnimBlendAssociation* curSwimCrawlAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_SWIM_CRAWL);
+	CAnimBlendAssociation* curSwimTreadAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_SWIM_TREAD);
+
+	SetPosition(CVector(GetPosition().x, GetPosition().y, mod_Buoyancy.m_waterlevel - 0.41f));
+
+	CPad* pad = GetPadFromPlayer(this);
+	int16 padUpDown = pad->GetPedWalkUpDown();
+	int16 padLeftRight = pad->GetPedWalkLeftRight();
+
+	if (m_fMoveSpeed < 0.1f && !curSwimTreadAssoc)
+		curSwimTreadAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_SWIM_TREAD, 4.0f);
+
+	float magnitude = 0.05f;
+	if (pad->GetSprint() && (padLeftRight != 0 || padUpDown != 0)) {
+		if (m_fCurrentStamina <= -150.0f)
+			bIsTiredSwimmingFast = true;
+
+		if (!bIsTiredSwimmingFast) {
+			UseSprintEnergy();
+
+			magnitude = 0.1f;
+		}
+	}
+	
+	if ((!pad->GetSprint() || curSwimTreadAssoc) && m_fCurrentStamina < 0.0f)
+		bIsTiredSwimmingFast = true;
+
+	if (m_fMoveSpeed > 0.1f && (padLeftRight != 0 || padUpDown != 0)) {
+		if (pad->GetSprint() && !bIsTiredSwimmingFast && !curSwimCrawlAssoc)
+			curSwimCrawlAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_SWIM_CRAWL, 4.0f);
+		else if ((!pad->GetSprint() || bIsTiredSwimmingFast) && !curSwimBreastAssoc)
+			curSwimBreastAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_SWIM_BREAST, 4.0f);
+
+		if (m_vecMoveSpeed.Magnitude2D() < magnitude)
+			ApplyMoveForce(GetForward() * 0.7f);
+	}
+
+	ApplyMoveForce(CVector(-m_vecMoveSpeed.x * 3.0f, -m_vecMoveSpeed.y * 3.0f, 0.0f));
+
+	if (!curSwimBreastAssoc && curSwimCrawlAssoc) {
+		DMAudio.PlayOneShot(m_audioEntityId, SOUND_MOVING_IN_WATER, 0.0f);
+
+		RwRGBA waterSprayCol = { 48, 48, 64, 0 };
+		CVector waterSprayPos = GetPosition() + GetForward() * 0.25f + CVector(0.0f, 0.0f, 1.0f);
+		CParticle::AddParticle(PARTICLE_WATERSPRAY, waterSprayPos, -m_vecMoveSpeed, nil, 0.6f, waterSprayCol);
+	}
+
+	if (pad->JumpJustDown()) {
+		CEntity* hitEntity;
+		CColPoint hitPoint;
+		bool isHit = CWorld::ProcessLineOfSight(GetPosition() + CVector(0.0f, 0.0f, 0.5f), GetPosition() + CVector(0.0f, 0.0f, 0.5f) + GetForward() * 1.5f, hitPoint, hitEntity, false, true, false, false, false, true);
+		if (!isHit)
+			isHit = CWorld::ProcessLineOfSight(GetPosition() + CVector(0.0f, 0.0f, 0.75f), GetPosition() + CVector(0.0f, 0.0f, 0.75f) + GetForward() * 1.5f, hitPoint, hitEntity, false, true, false, false, false, true);
+		
+		if (isHit && CWorld::GetIsLineOfSightClear(GetPosition(), GetPosition() + CVector(0.0f, 0.0f, 3.0f), false, true, false, false, false, true)) {
+			CVehicle* hitVehicle = (CVehicle*)hitEntity;
+			if (hitVehicle->IsBoat()) {
+				CVector startPos = hitPoint.point + GetForward() * 0.5f + CVector(0.0f, 0.0f, 3.0f);
+				CVector endPos = startPos - CVector(0.0f, 0.0f, 3.0f);
+				if (CWorld::ProcessLineOfSight(startPos, endPos, hitPoint, hitEntity, false, true, false, false, false, true)) {
+					bIsSwimming = false;
+					bAffectedByGravity = true;
+
+					SetPosition(hitPoint.point);
+
+					AddWeaponModel(GetWeapon()->GetInfo()->m_nModelId);
+
+					return;
+				}
+			}
+		}
+
+		CColPoint hitForwardPoint;
+		CColPoint hitBackwardPoint;
+		CColPoint hitJumpBPoint;
+		if (CanPedClimbingThis(hitForwardPoint, hitBackwardPoint, hitJumpBPoint)) {
+			if (curSwimBreastAssoc) {
+				delete curSwimBreastAssoc;
+			}
+
+			if (curSwimCrawlAssoc) {
+				delete curSwimCrawlAssoc;
+			}
+
+			if (curSwimTreadAssoc) {
+				delete curSwimTreadAssoc;
+			}
+
+			bIsSwimming = false;
+			bAffectedByGravity = true;
+
+			AddWeaponModel(GetWeapon()->GetInfo()->m_nModelId);
+
+			StartClimbing(hitForwardPoint, hitBackwardPoint, hitJumpBPoint);
+		}
+	}
+}
+#endif
+
+#ifdef FIRING_AND_AIMING
+void CPlayerPed::ProcessAiming(void)
+{
+	if (RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_STARTWALK))
+		delete RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_STARTWALK);
+
+	CAnimBlendAssociation* curGunMoveBackwardAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_GUNMOVE_BWD);
+	CAnimBlendAssociation* curGunMoveForwardAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_GUNMOVE_FWD);
+	CAnimBlendAssociation* curGunMoveLeftAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_GUNMOVE_L);
+	CAnimBlendAssociation* curGunMoveRightAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_GUNMOVE_R);
+	CAnimBlendAssociation* curGunStandAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_GUN_STAND);
+
+	CPad* pad = GetPadFromPlayer(this);
+	int16 padUpDown = pad->GetPedWalkUpDown();
+	int16 padLeftRight = pad->GetPedWalkLeftRight();
+
+	if (padLeftRight == 0 && padUpDown == 0 && !curGunStandAssoc)
+		curGunStandAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_GUN_STAND, 4.0f);
+
+	float animSpeed;
+
+	if (pad->GetSprint() && (padLeftRight != 0 || padUpDown != 0))
+		animSpeed = 1.4f;
+	else if (IsDoomMode())
+		animSpeed = Clamp((m_fMoveSpeed * 3.5f) - 0.1f, 0.1f, 3.5f);
+	else
+		animSpeed = Clamp(m_fMoveSpeed - 0.1f, 0.1f, 1.0f);
+
+	if (curGunMoveBackwardAssoc)
+		curGunMoveBackwardAssoc->speed = animSpeed;
+
+	if (curGunMoveForwardAssoc)
+		curGunMoveForwardAssoc->speed = animSpeed;
+
+	if (curGunMoveLeftAssoc)
+		curGunMoveLeftAssoc->speed = animSpeed;
+
+	if (curGunMoveRightAssoc)
+		curGunMoveRightAssoc->speed = animSpeed;
+
+	if (padLeftRight < 0 && (Abs(padLeftRight) > 64 || Abs(padUpDown) < 64))
+		curGunMoveLeftAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_GUNMOVE_L, 16.0f);
+	else if (padLeftRight > 0 && (Abs(padLeftRight) > 64 || Abs(padUpDown) < 64))
+		curGunMoveRightAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_GUNMOVE_R, 16.0f);
+
+	if (padUpDown != 0) {
+		if (padUpDown < 0) {
+			if (!curGunMoveForwardAssoc)
+				curGunMoveForwardAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_GUNMOVE_FWD, 16.0f);
+		} else if (padUpDown > 0) {
+			if (!curGunMoveBackwardAssoc)
+				curGunMoveBackwardAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_GUNMOVE_BWD, 16.0f);
+		}
+	}
+}
+
+void CPlayerPed::StopAimingAnims(void)
+{
+	AnimationId gunAnims[] = { ANIM_STD_GUNMOVE_BWD, ANIM_STD_GUNMOVE_FWD, ANIM_STD_GUNMOVE_L, ANIM_STD_GUNMOVE_R };
+	for (int i = 0; i < ARRAY_SIZE(gunAnims); i++) {
+		CAnimBlendAssociation* curGunAnimAssoc = RpAnimBlendClumpGetAssociation(GetClump(), gunAnims[i]);
+		if (curGunAnimAssoc) {
+			curGunAnimAssoc->flags |= ASSOC_DELETEFADEDOUT;
+			curGunAnimAssoc->blendDelta = -4.0f;
+		}
+	}
+}
+
+bool CPlayerPed::CanUseDriveBy(void)
+{
+	if (!FindPlayerVehicle())
+		return false;
+
+	CVehicle* vehicle = FindPlayerVehicle();
+
+	bool bSuitableVehicle = !vehicle->IsRealHeli() && !vehicle->IsRealPlane() &&
+		vehicle->GetModelIndex() != MI_RHINO && vehicle->GetModelIndex() != MI_FIRETRUCK;
+
+	CCam currentCam = TheCamera.Cams[TheCamera.ActiveCam];
+	bool bSuitableCamera = currentCam.DirectionWasLooking == LOOKING_FORWARD &&
+		(currentCam.Mode == CCam::MODE_REAL_1ST_PERSON || currentCam.Mode == CCam::MODE_CAM_ON_A_STRING || currentCam.Mode == CCam::MODE_BEHINDBOAT);
+
+	int8 currentWeaponSlot = CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType)->m_nWeaponSlot;
+	bool bHaveWeapon = CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType)->m_nWeaponSlot > 2 &&
+		(GetWeapon()->m_eWeaponType == WEAPONTYPE_COLT45 || currentWeaponSlot == WEAPONSLOT_SUBMACHINEGUN);
+
+	return bSuitableVehicle && bHaveWeapon && GetUp().z >= 0.2f && bSuitableCamera;
+}
+
+bool CPlayerPed::IsDoomMode(void)
+{
+	return TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON && FrontEndMenuManager.m_PrefsDoomMode_FP && !InVehicle();
+}
+#endif
+
 void
 CPlayerPed::UseSprintEnergy(void)
 {
@@ -226,9 +607,18 @@ CPlayerPed::MakeChangesForNewWeapon(eWeaponType weapon)
 	SetCurrentWeapon(weapon);
 	m_nSelectedWepSlot = m_currentWeapon;
 
+#ifndef IMPROVED_MENU_AND_INPUT // Disabling automatic reloading when changing weapons (thanks to VitalRus)
 	GetWeapon()->m_nAmmoInClip = Min(GetWeapon()->m_nAmmoTotal, CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType)->m_nAmountofAmmunition);
+#endif
 
+#if defined FIRING_AND_AIMING && defined FIRST_PERSON
+	if (IsDoomMode() && GetWeapon()->GetInfo()->IsFlagSet(WEAPONFLAG_CANAIM_WITHARM))
+		StopAimingAnims();
+
+	if (CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType)->IsFlagSet(WEAPONFLAG_CANAIM) || IsDoomMode())
+#else
 	if (CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType)->IsFlagSet(WEAPONFLAG_CANAIM))
+#endif
 		ClearWeaponTarget();
 
 	// WEAPONTYPE_SNIPERRIFLE? Wut?
@@ -315,6 +705,30 @@ CPlayerPed::SetInitialState(void)
 void
 CPlayerPed::SetRealMoveAnim(void)
 {
+#ifdef CROUCH
+	if (bIsDucking) {
+		ProcessCrouch();
+
+		return;
+	}
+#endif
+
+#ifdef SWIMMING
+	if (bIsSwimming) {
+		ProcessSwimming();
+
+		return;
+	}
+#endif
+
+#ifdef FIRING_AND_AIMING
+	if ((m_nPedState == PED_ATTACK || m_nPedState == PED_AIM_GUN || bIsPlayerAiming) && GetWeapon()->GetInfo()->m_nWeaponSlot > 2 && !CanWeRunAndFireWithWeapon()) {
+		ProcessAiming();
+		
+		return;
+	}
+#endif
+
 	CAnimBlendAssociation *curWalkAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_WALK);
 	CAnimBlendAssociation *curRunAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_RUN);
 	CAnimBlendAssociation *curSprintAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_RUNFAST);
@@ -521,6 +935,13 @@ CPlayerPed::SetRealMoveAnim(void)
 				}
 				curWalkAssoc->blendDelta = 0.0f;
 				curRunAssoc->blendDelta = 0.0f;
+#ifdef IMPROVED_TECH_PART // run with heavy weapon
+				if (GetWeapon()->m_eWeaponType == WEAPONTYPE_CHAINSAW ||
+					GetWeapon()->m_eWeaponType == WEAPONTYPE_MINIGUN ||
+					GetWeapon()->m_eWeaponType == WEAPONTYPE_FLAMETHROWER) {
+					curRunAssoc->speed = 0.75f;
+				}
+#endif
 			}
 		}
 	}
@@ -550,6 +971,15 @@ CPlayerPed::SetRealMoveAnim(void)
 	} else if (curSprintAssoc) {
 		if (TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_FIXED) {
 			curSprintAssoc->speed = 0.7f;
+#ifdef IMPROVED_TECH_PART // sprint with armed weapon, rocket and m60
+		} else if (GetWeapon()->GetInfo()->m_nWeaponSlot == WEAPONSLOT_SHOTGUN || 
+				   GetWeapon()->GetInfo()->m_nWeaponSlot == WEAPONSLOT_RIFLE ||
+				   GetWeapon()->GetInfo()->m_nWeaponSlot == WEAPONSLOT_SNIPER) {
+			curSprintAssoc->speed = 0.85f;
+		} else if (GetWeapon()->m_eWeaponType == WEAPONTYPE_M60 || 
+				   GetWeapon()->m_eWeaponType == WEAPONTYPE_ROCKETLAUNCHER) {
+			curSprintAssoc->speed = 0.75f;
+#endif
 		} else
 			curSprintAssoc->speed = 1.0f;
 	}
@@ -565,6 +995,9 @@ CPlayerPed::RestoreSprintEnergy(float restoreSpeed)
 float
 CPlayerPed::DoWeaponSmoothSpray(void)
 {
+#ifdef FIRING_AND_AIMING // it's need for right movement during shooting
+	return -1.0f;
+#endif
 	if (m_nPedState == PED_ATTACK && !m_pPointGunAt) {
 		CWeaponInfo *weaponInfo = CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType);
 		switch (GetWeapon()->m_eWeaponType) {
@@ -679,6 +1112,7 @@ CPlayerPed::PlayerControlSniper(CPad *padUsed)
 	ProcessWeaponSwitch(padUsed);
 	TheCamera.PlayerExhaustion = (1.0f - (m_fCurrentStamina - -150.0f) / 300.0f) * 0.9f + 0.1f;
 
+#ifndef FIRING_AND_AIMING
 	if (padUsed->DuckJustDown() && !bIsDucking && m_nMoveState != PEDMOVE_SPRINT) {
 		bCrouchWhenShooting = true;
 		SetDuck(60000, true);
@@ -686,6 +1120,7 @@ CPlayerPed::PlayerControlSniper(CPad *padUsed)
 		ClearDuck(true);
 		bCrouchWhenShooting = false;
 	}
+#endif
 
 	if (!padUsed->GetTarget() && !m_attachedTo) {
 		RestorePreviousState();
@@ -699,6 +1134,11 @@ CPlayerPed::PlayerControlSniper(CPad *padUsed)
 		firePos = GetMatrix() * firePos;
 		GetWeapon()->Fire(this, &firePos);
 		m_nPadDownPressedInMilliseconds = CTimer::GetTimeInMilliseconds();
+
+#ifdef FIRING_AND_AIMING // sniper rifle echo
+		if (GetWeapon()->m_nAmmoTotal > 0)
+			DMAudio.PlayOneShot(m_audioEntityId, SOUND_WEAPON_AK47_BULLET_ECHO, GetWeapon()->m_eWeaponType);
+#endif
 	} else if (CTimer::GetTimeInMilliseconds() > m_nPadDownPressedInMilliseconds + firingRate &&
 		CTimer::GetTimeInMilliseconds() - CTimer::GetTimeStepInMilliseconds() < m_nPadDownPressedInMilliseconds + firingRate && padUsed->GetWeapon()) {
 		
@@ -707,6 +1147,10 @@ CPlayerPed::PlayerControlSniper(CPad *padUsed)
 		}
 	}
 	GetWeapon()->Update(m_audioEntityId, nil);
+
+#ifdef FIRING_AND_AIMING
+	PlayerControlZelda(padUsed);
+#endif
 }
 
 // I think R* also used goto in here.
@@ -716,7 +1160,11 @@ CPlayerPed::ProcessWeaponSwitch(CPad *padUsed)
 	if (CDarkel::FrenzyOnGoing() || m_attachedTo)
 		goto switchDetectDone;
 
+#ifdef IMPROVED_MENU_AND_INPUT // You cannot switch weapons during reloading, but you can with the detonator
+	if (!m_pPointGunAt && !bDontAllowWeaponChange && GetWeapon()->m_eWeaponState != WEAPONSTATE_RELOADING) { 
+#else
 	if (!m_pPointGunAt && !bDontAllowWeaponChange && GetWeapon()->m_eWeaponType != WEAPONTYPE_DETONATOR) {
+#endif
 		if (padUsed->CycleWeaponRightJustDown()) {
 
 			if (TheCamera.PlayerWeaponMode.Mode != CCam::MODE_M16_1STPERSON
@@ -804,7 +1252,11 @@ spentAmmoCheck:
 
 switchDetectDone:
 	if (m_nSelectedWepSlot != m_currentWeapon) {
+#ifdef FIRST_PERSON
+		if (m_nPedState != PED_ATTACK && (m_nPedState != PED_AIM_GUN || IsDoomMode()) && m_nPedState != PED_FIGHT) {
+#else
 		if (m_nPedState != PED_ATTACK && m_nPedState != PED_AIM_GUN && m_nPedState != PED_FIGHT) {
+#endif
 			RemoveWeaponAnims(m_currentWeapon, -1000.0f);
 			MakeChangesForNewWeapon(m_nSelectedWepSlot);
 		}
@@ -817,6 +1269,7 @@ CPlayerPed::PlayerControlM16(CPad *padUsed)
 	ProcessWeaponSwitch(padUsed);
 	TheCamera.PlayerExhaustion = (1.0f - (m_fCurrentStamina - -150.0f) / 300.0f) * 0.9f + 0.1f;
 
+#ifndef FIRING_AND_AIMING // The player will not be able to crouch while in turret mode
 	if (padUsed->DuckJustDown() && !bIsDucking && m_nMoveState != PEDMOVE_SPRINT) {
 		bCrouchWhenShooting = true;
 		SetDuck(60000, true);
@@ -824,6 +1277,7 @@ CPlayerPed::PlayerControlM16(CPad *padUsed)
 		ClearDuck(true);
 		bCrouchWhenShooting = false;
 	}
+#endif
 
 	if (!padUsed->GetTarget() && !m_attachedTo) {
 		RestorePreviousState();
@@ -1036,7 +1490,11 @@ CPlayerPed::CanIKReachThisTarget(CVector target, CWeapon* weapon, bool zRotImpor
 	float angleToFace = CGeneral::GetRadianAngleBetweenPoints(target.x, target.y, GetPosition().x, GetPosition().y);
 	float angleDiff = CGeneral::LimitRadianAngle(angleToFace - m_fRotationCur);
 
+#ifdef FIRING_AND_AIMING // decrease the auto-aim angle
+	return (!zRotImportant || CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->IsFlagSet(WEAPONFLAG_CANAIM_WITHARM) || Abs(angleDiff) <= HALFPI) && TheCamera.IsSphereVisible(target, 1.0f) &&
+#else
 	return (!zRotImportant || CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->IsFlagSet(WEAPONFLAG_CANAIM_WITHARM) || Abs(angleDiff) <= HALFPI) &&
+#endif
 		(CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->IsFlagSet(WEAPONFLAG_CANAIM_WITHARM) || Abs(target.z - GetPosition().z) <= (target - GetPosition()).Magnitude2D());
 }
 
@@ -1147,6 +1605,9 @@ CPlayerPed::FindWeaponLockOnTarget(void)
 	if (!nextTarget)
 		return false;
 
+#ifdef IMPROVED_MENU_AND_INPUT
+	bIsAutoAiming = true;
+#endif
 	SetWeaponLockOnTarget(nextTarget);
 	bDontAllowWeaponChange = true;
 	SetPointGunAt(nextTarget);
@@ -1160,7 +1621,9 @@ CPlayerPed::ProcessAnimGroups(void)
 	AssocGroupId groupToSet;
 #ifdef PC_PLAYER_CONTROLS
 	if ((m_fWalkAngle <= -DEGTORAD(50.0f) || m_fWalkAngle >= DEGTORAD(50.0f))
+#ifndef IMPROVED_MENU_AND_INPUT	
 		&& TheCamera.Cams[TheCamera.ActiveCam].Using3rdPersonMouseCam()
+#endif
 		&& CanStrafeOrMouseControl()) {
 
 		if (m_fWalkAngle >= -DEGTORAD(130.0f) && m_fWalkAngle <= DEGTORAD(130.0f)) {
@@ -1232,6 +1695,11 @@ CPlayerPed::ProcessAnimGroups(void)
 void
 CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 {
+#ifdef SWIMMING
+	if (bIsSwimming)
+		return;
+#endif
+
 	CWeaponInfo *weaponInfo = CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType);
 	if (m_bHasLockOnTarget && !m_pPointGunAt) {
 		TheCamera.ClearPlayerWeaponMode();
@@ -1239,21 +1707,39 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 		ClearPointGunAt();
 	}
 
+#ifdef IMPROVED_TECH_PART
+	if (padUsed->DuckJustDown() && !bIsDucking && m_nMoveState != PEDMOVE_SPRINT && weaponInfo->m_nWeaponSlot != WEAPONSLOT_HEAVY && GetWeapon()->m_eWeaponType != WEAPONTYPE_CHAINSAW) {
+#else
 	if (padUsed->DuckJustDown() && !bIsDucking && m_nMoveState != PEDMOVE_SPRINT) {
+#endif
+
+#ifdef FIRING_AND_AIMING
+		ClearPointGunAt();
+#else
 #ifdef FIX_BUGS
 		// fix tommy being locked into looking at the same spot if you duck just after starting to shoot
 		if(!m_pPointGunAt)
 			ClearPointGunAt();
 #endif
+#endif
 		bCrouchWhenShooting = true;
 		SetDuck(60000, true);
 	} else if (bIsDucking && (padUsed->DuckJustDown() || m_nMoveState == PEDMOVE_SPRINT ||
+#ifdef IMPROVED_TECH_PART // When aiming from a sniper or camera, the player doesn't stand up when changing the zoom while sitting
+		((padUsed->GetSprint() || padUsed->ExitVehicleJustDown() || padUsed->JumpJustDown()) && 
+		TheCamera.PlayerWeaponMode.Mode != CCam::MODE_SNIPER && TheCamera.PlayerWeaponMode.Mode != CCam::MODE_CAMERA))) {
+#else
 		padUsed->GetSprint() || padUsed->JumpJustDown() || padUsed->ExitVehicleJustDown())) {
+#endif
 
+#ifdef FIRING_AND_AIMING
+		ClearPointGunAt();
+#else
 #ifdef FIX_BUGS
 		// same fix as above except for standing up
 		if(!m_pPointGunAt)
 			ClearPointGunAt();
+#endif
 #endif
 		ClearDuck(true);
 		bCrouchWhenShooting = false;
@@ -1264,20 +1750,182 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 	else
 		m_wepAccuracy = 100;
 
+#ifdef FIRING_AND_AIMING // make it possible to switch between a pistol and a submachine gun while aiming in vehicle
+	if (InVehicle() && bIsPlayerAiming && (padUsed->CycleWeaponLeftJustDown() || padUsed->CycleWeaponRightJustDown())) {
+		if (HasWeaponSlot(5) && GetWeapon(5).m_nAmmoTotal > 0 && GetWeapon()->m_eWeaponType == WEAPONTYPE_COLT45) {
+			if (m_storedWeapon == WEAPONTYPE_UNIDENTIFIED)
+				m_storedWeapon = GetWeapon()->m_eWeaponType;
+			SetCurrentWeapon(GetWeapon(5).m_eWeaponType);
+		}
+		else if (HasWeaponSlot(3) && GetWeapon(3).m_nAmmoTotal > 0 && GetWeapon(3).m_eWeaponType == WEAPONTYPE_COLT45) {
+			if (m_storedWeapon == WEAPONTYPE_UNIDENTIFIED)
+				m_storedWeapon = GetWeapon()->m_eWeaponType;
+			SetCurrentWeapon(GetWeapon(3).m_eWeaponType);
+		}
+	}
+#endif
+
 	if (!m_pFire) {
 		eWeaponType weapon = GetWeapon()->m_eWeaponType;
+#if defined FIRING_AND_AIMING && defined FIRST_PERSON
+		bool bSniperCamera = weapon == WEAPONTYPE_ROCKETLAUNCHER || weapon == WEAPONTYPE_SNIPERRIFLE || weapon == WEAPONTYPE_LASERSCOPE || weapon == WEAPONTYPE_CAMERA;
+
+		uint32 slot = CWeaponInfo::GetWeaponInfo(weapon)->m_nWeaponSlot;
+		if ((slot == WEAPONSLOT_SHOTGUN || slot == WEAPONSLOT_HANDGUN ||
+			slot == WEAPONSLOT_RIFLE || slot == WEAPONSLOT_SUBMACHINEGUN ||
+			weapon == WEAPONTYPE_M60 || weapon == WEAPONTYPE_MINIGUN ||
+			weapon == WEAPONTYPE_FLAMETHROWER || bSniperCamera) && m_nMoveState != PEDMOVE_SPRINT) {
+
+			bool isFrontObstacle = false;
+			if (padUsed->GetTarget()) {
+				// from CPed::SetAttack
+				CVector aimPos = GetRight() * 0.1f + GetForward() * 0.2f + GetPosition();
+				aimPos += GetUp() * 0.35f;
+				CEntity* obstacle = CWorld::TestSphereAgainstWorld(aimPos, 0.2f, nil, true, false, false, true, false, false);
+				if (obstacle) {
+					if (gaTempSphereColPoints[0].surfaceB != SURFACE_TRANSPARENT_CLOTH && gaTempSphereColPoints[0].surfaceB != SURFACE_METAL_CHAIN_FENCE &&
+						gaTempSphereColPoints[0].surfaceB != SURFACE_WOOD_BENCH && gaTempSphereColPoints[0].surfaceB != SURFACE_SCAFFOLD_POLE) {
+
+						isFrontObstacle = true;
+					}
+				}
+			}
+
+			bool cantFire = isFrontObstacle || m_fMoveSpeed != 0.0f && bIsDucking;
+
+			if (cantFire) {
+				ClearAimFlag();
+				ClearWeaponTarget();
+			}
+
+			if (padUsed->GetWeapon() && bIsPlayerAiming && weapon != WEAPONTYPE_CAMERA && (weapon != WEAPONTYPE_LASERSCOPE || IsDoomMode())) {
+				if (m_nPedState == PED_ATTACK) {
+					m_fAttackButtonCounter *= Pow(0.94f, CTimer::GetTimeStep());
+				}
+				else {
+					m_fAttackButtonCounter = 0.0f;
+				}
+				SetAttack(nil);
+			}
+
+			if ((padUsed->GetTarget() || IsDoomMode()) && bIsPlayerAiming && !cantFire && GetWeapon()->m_eWeaponState != WEAPONSTATE_RELOADING && !bIsAutoAiming) {
+				if (!IsDoomMode()) {
+					if (weapon == WEAPONTYPE_ROCKETLAUNCHER)
+						TheCamera.SetNewPlayerWeaponMode(CCam::MODE_ROCKETLAUNCHER, 0, 0);
+					else if (weapon == WEAPONTYPE_SNIPERRIFLE || weapon == WEAPONTYPE_LASERSCOPE)
+						TheCamera.SetNewPlayerWeaponMode(CCam::MODE_SNIPER, 0, 0);
+					else if (weapon == WEAPONTYPE_CAMERA)
+						TheCamera.SetNewPlayerWeaponMode(CCam::MODE_CAMERA, 0, 0);
+				}
+
+				bDontAllowWeaponChange = !IsDoomMode();
+
+				SetAimFlag(m_fRotationCur);
+				m_fFPSMoveHeading = TheCamera.Find3rdPersonQuickAimPitch();
+
+				if (m_nPedState != PED_ATTACK && weapon != WEAPONTYPE_CAMERA) {
+					SetPointGunAt(nil);
+
+					// ped reaction to aiming
+					float multiplier = 1.0f;
+					for (int i = 1; i < 60; i++) {
+						// first check
+						CWorld::pIgnoreEntity = this;
+						CEntity* hitEntityRaycast;
+						if (CWorld::ProcessLineOfSight(TheCamera.GetPosition(), TheCamera.GetPosition() + TheCamera.GetForward() * 20.0f, CColPoint{}, hitEntityRaycast, true, false, true, false, false, true)) {
+							if (hitEntityRaycast->IsPed()) {
+								CPed* hitPed = (CPed*)hitEntityRaycast;
+								if ((hitPed->CanSeeEntity(this, DEGTORAD(80.0f)) && hitPed->m_nPedType != PEDTYPE_COP) ||
+									(hitPed->CanSeeEntity(this, DEGTORAD(80.0f)) && hitPed->m_nPedType == PEDTYPE_COP && !FindPlayerPed()->m_pWanted->IsPlayerHides())) {
+									m_pPointGunAt = hitPed;
+
+									Say(SOUND_PED_AIMING);
+
+									break;
+								}
+							}
+						}
+						CWorld::pIgnoreEntity = NULL;
+
+						// second check
+						CVector spherePos = GetPosition() + CVector(0.0f, 0.0f, 0.6f) + (TheCamera.GetForward() * 0.5f) * multiplier;
+						CEntity* hitEntityShapecast = CWorld::TestSphereAgainstWorld(spherePos, 0.25f, this, true, false, true, false, false, false);
+						if (!hitEntityShapecast) {
+							if (i == 59 && m_pPointGunAt)
+								m_pPointGunAt = nullptr;
+
+							multiplier++;
+							continue;
+						}
+
+						if (hitEntityShapecast->IsPed()) {
+							CPed* hitPed = (CPed*)hitEntityShapecast;
+							if ((hitPed->CanSeeEntity(this, DEGTORAD(80.0f)) && hitPed->m_nPedType != PEDTYPE_COP) ||
+								(hitPed->CanSeeEntity(this, DEGTORAD(80.0f)) && hitPed->m_nPedType == PEDTYPE_COP && !FindPlayerPed()->m_pWanted->IsPlayerHides())) {
+								m_pPointGunAt = hitPed;
+
+								Say(SOUND_PED_AIMING);
+
+								break;
+							}
+						} else if (m_pPointGunAt) {
+							m_pPointGunAt = nullptr;
+
+							break;
+						}
+					}
+				}
+			}
+
+			if ((padUsed->GetTarget() || IsDoomMode()) && m_nPedState != PED_FIGHT) {
+				bIsPlayerAiming = true;
+			} else if ((!padUsed->GetTarget() || IsDoomMode()) && bIsPlayerAiming) {
+				bIsPlayerAiming = false;
+
+				if (GetWeapon()->m_eWeaponState != WEAPONSTATE_RELOADING)
+					ClearWeaponTarget();
+
+				StopAimingAnims();
+
+				if (bIsDucking) {
+					TheCamera.Cams[TheCamera.ActiveCam].m_fTargetCameraPosZ = 0.55f;
+				} else if (weapon != WEAPONTYPE_COLT45 && weapon != WEAPONTYPE_TEC9 && weapon != WEAPONTYPE_SILENCED_INGRAM) {
+					if (m_fMoveSpeed > 0.0f)
+						CAnimManager::BlendAnimation(GetClump(), m_animGroup, ANIM_STD_RUN, 4.0f);
+					else
+						CAnimManager::BlendAnimation(GetClump(), m_animGroup, ANIM_STD_IDLE, 4.0f);
+				}
+			}
+
+			if (weapon == WEAPONTYPE_CAMERA || (weapon == WEAPONTYPE_LASERSCOPE && bIsPlayerAiming))
+				return;
+
+			float diff = DefaultFOV - TheCamera.Cams[TheCamera.ActiveCam].AimingFOV;
+
+			if (bIsPlayerAiming) {
+				if (slot == WEAPONSLOT_RIFLE || weapon == WEAPONTYPE_M60)
+					TheCamera.Cams[TheCamera.ActiveCam].AimingFOV = 40.0f;
+				else
+					TheCamera.Cams[TheCamera.ActiveCam].AimingFOV = 55.0f;
+			}
+		} else {
+			bIsPlayerAiming = false;
+
+			StopAimingAnims();
+		}
+#else
 		if (weapon == WEAPONTYPE_ROCKETLAUNCHER || weapon == WEAPONTYPE_SNIPERRIFLE ||
 			weapon == WEAPONTYPE_LASERSCOPE || weapon == WEAPONTYPE_M4 ||
 			weapon == WEAPONTYPE_RUGER || weapon == WEAPONTYPE_M60 ||
 			weapon == WEAPONTYPE_CAMERA) {
 
 			if (padUsed->TargetJustDown() || TheCamera.m_bJustJumpedOutOf1stPersonBecauseOfTarget) {
-#ifdef FREE_CAM
+		#ifdef FREE_CAM
 				if (CCamera::bFreeCam && TheCamera.Cams[0].Using3rdPersonMouseCam()) {
 					m_fRotationCur = CGeneral::LimitRadianAngle(-TheCamera.Orientation);
 					SetHeading(m_fRotationCur);
 				}
-#endif
+		#endif
 				if (weapon == WEAPONTYPE_ROCKETLAUNCHER)
 					TheCamera.SetNewPlayerWeaponMode(CCam::MODE_ROCKETLAUNCHER, 0, 0);
 				else if (weapon == WEAPONTYPE_SNIPERRIFLE || weapon == WEAPONTYPE_LASERSCOPE)
@@ -1288,6 +1936,7 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 					TheCamera.SetNewPlayerWeaponMode(CCam::MODE_M16_1STPERSON, 0, 0);
 
 				m_fMoveSpeed = 0.0f;
+
 				CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_IDLE, 1000.0f);
 				SetPedState(PED_SNIPER_MODE);
 				return;
@@ -1296,8 +1945,94 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 				if (weapon == WEAPONTYPE_ROCKETLAUNCHER || weapon == WEAPONTYPE_SNIPERRIFLE || weapon == WEAPONTYPE_LASERSCOPE || weapon == WEAPONTYPE_CAMERA)
 					return;
 		}
+#endif
 	}
 
+#ifdef IMPROVED_MENU_AND_INPUT
+	if (padUsed->GetMeleeWeapon() && weaponInfo->m_nWeaponSlot <= WEAPONSLOT_MELEE && m_nMoveState != PEDMOVE_SPRINT) {
+		if (m_nSelectedWepSlot == m_currentWeapon) {
+			if (m_nPedState == PED_ATTACK) {
+				if (padUsed->MeleeWeaponJustDown()) {
+					m_bHaveTargetSelected = true;
+				} else if (!m_bHaveTargetSelected) {
+					m_fAttackButtonCounter += CTimer::GetTimeStepNonClipped();
+				}
+			} else {
+				m_fAttackButtonCounter = 0.0f;
+				m_bHaveTargetSelected = false;
+			}
+
+			if (padUsed->MeleeWeaponJustDown()) {
+				if ((GetWeapon()->m_eWeaponType == WEAPONTYPE_UNARMED || GetWeapon()->m_eWeaponType == WEAPONTYPE_BRASSKNUCKLE || weaponInfo->IsFlagSet(WEAPONFLAG_FIGHTMODE)) &&
+					(m_fMoveSpeed < 1.0f || m_nPedState == PED_FIGHT)) {
+					
+					StartFightAttack(padUsed->GetWeapon());
+				} else {
+					SetAttack(nil);
+				}
+			}
+		}
+	} else if (padUsed->GetWeapon() && m_nMoveState != PEDMOVE_SPRINT) {
+		if (m_nSelectedWepSlot == m_currentWeapon) {
+			if (m_pPointGunAt && FrontEndMenuManager.m_PrefsAutoaim) {
+				if (m_nPedState == PED_ATTACK) {
+					m_fAttackButtonCounter *= Pow(0.94f, CTimer::GetTimeStep());
+				} else {
+					m_fAttackButtonCounter = 0.0f;
+				}
+				SetAttack(m_pPointGunAt);
+			} else {
+				if (m_nPedState == PED_ATTACK) {
+					if (padUsed->WeaponJustDown()) {
+						m_bHaveTargetSelected = true;
+					} else if (!m_bHaveTargetSelected) {
+						m_fAttackButtonCounter += CTimer::GetTimeStepNonClipped();
+					}
+				} else {
+					m_fAttackButtonCounter = 0.0f;
+					m_bHaveTargetSelected = false;
+				}
+
+				if (GetWeapon()->m_eWeaponType != WEAPONTYPE_UNARMED && GetWeapon()->m_eWeaponType != WEAPONTYPE_BRASSKNUCKLE &&
+					!weaponInfo->IsFlagSet(WEAPONFLAG_FIGHTMODE)) {
+
+					if (GetWeapon()->m_eWeaponType != WEAPONTYPE_DETONATOR && GetWeapon()->m_eWeaponType != WEAPONTYPE_DETONATOR_GRENADE ||
+						padUsed->WeaponJustDown())
+
+						SetAttack(nil);
+				}
+			}
+		}
+	} else {
+		m_pedIK.m_flags &= ~CPedIK::LOOKAROUND_HEAD_ONLY;
+		if (m_nPedState == PED_ATTACK) {
+			m_bHaveTargetSelected = true;
+			bIsAttacking = false;
+		}
+	}
+
+	if (CPad::GetPad(0)->WeaponReloadJustDown() && weaponInfo->IsFlagSet(WEAPONFLAG_RELOAD)) {
+		CWeapon* weapon = GetWeapon();
+		if (weapon->m_eWeaponState == WEAPONSTATE_READY && weapon->m_nAmmoInClip > 0 && 
+			weapon->m_nAmmoInClip < weaponInfo->m_nAmountofAmmunition && weapon->m_nAmmoTotal != weapon->m_nAmmoInClip) {
+
+			weapon->m_eWeaponState = WEAPONSTATE_RELOADING;
+			weapon->m_nTimer = CTimer::GetTimeInMilliseconds() + weapon->GetInfo()->m_nReload;
+
+			CAnimBlendAssociation* newReloadAssoc = CAnimManager::BlendAnimation(
+				GetClump(), weaponInfo->m_AnimToPlay,
+				bIsDucking && GetCrouchReloadAnim(weaponInfo) ? GetCrouchReloadAnim(weaponInfo) : GetReloadAnim(weaponInfo),
+				8.0f);
+			newReloadAssoc->SetFinishCallback(FinishedReloadCB, this);
+
+			ClearLookFlag();
+			ClearAimFlag();
+			bIsAttacking = false;
+			bIsPointingGunAt = false;
+			m_shootTimer = CTimer::GetTimeInMilliseconds();
+		}
+	}
+#else
 	if (padUsed->GetWeapon() && m_nMoveState != PEDMOVE_SPRINT) {
 		if (m_nSelectedWepSlot == m_currentWeapon) {
 			if (m_pPointGunAt) {
@@ -1318,13 +2053,13 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 					m_fAttackButtonCounter = 0.0f;
 					m_bHaveTargetSelected = false;
 				}
+
 				if (GetWeapon()->m_eWeaponType != WEAPONTYPE_UNARMED && GetWeapon()->m_eWeaponType != WEAPONTYPE_BRASSKNUCKLE &&
 					!weaponInfo->IsFlagSet(WEAPONFLAG_FIGHTMODE)) {
 
 					if (GetWeapon()->m_eWeaponType != WEAPONTYPE_DETONATOR && GetWeapon()->m_eWeaponType != WEAPONTYPE_DETONATOR_GRENADE ||
 						padUsed->WeaponJustDown())
 						SetAttack(nil);
-
 				} else if (padUsed->WeaponJustDown()) {
 					if (m_fMoveSpeed < 1.0f || m_nPedState == PED_FIGHT)
 						StartFightAttack(padUsed->GetWeapon());
@@ -1340,6 +2075,7 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 			bIsAttacking = false;
 		}
 	}
+#endif
 
 #ifdef FREE_CAM
 	static int8 changedHeadingRate = 0;
@@ -1348,13 +2084,29 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 	if (pointedGun == 2) pointedGun = 1;
 
 	// Rotate player/arm when shooting. We don't have auto-rotation anymore
+#ifdef IMPROVED_MENU_AND_INPUT
+	if (CCamera::bFreeCam &&
+#else
 	if (CCamera::m_bUseMouse3rdPerson && CCamera::bFreeCam &&
+#endif
+#ifdef FIRING_AND_AIMING // change hand position while driveby
+		(m_nSelectedWepSlot == m_currentWeapon || InVehicle()) && m_nMoveState != PEDMOVE_SPRINT) {
+#else
 		m_nSelectedWepSlot == m_currentWeapon && m_nMoveState != PEDMOVE_SPRINT) {
+#endif
 
+#ifdef FIRING_AND_AIMING // change hand position while driveby
+#define CAN_AIM_WITH_ARM ((weaponInfo->IsFlagSet(WEAPONFLAG_CANAIM_WITHARM) || InVehicle()) && !bIsDucking && !bCrouchWhenShooting)
+#else
 #define CAN_AIM_WITH_ARM (weaponInfo->IsFlagSet(WEAPONFLAG_CANAIM_WITHARM) && !bIsDucking && !bCrouchWhenShooting)
+#endif
 		// Weapons except throwable and melee ones
 		if (weaponInfo->m_nWeaponSlot > 2) {
+#ifdef FIRING_AND_AIMING
+			if ((padUsed->GetTarget() && CAN_AIM_WITH_ARM) || padUsed->GetWeapon() || (m_nPedState == PED_ATTACK && weaponInfo->m_nWeaponSlot > WEAPONSLOT_PROJECTILE)) {
+#else
 			if ((padUsed->GetTarget() && CAN_AIM_WITH_ARM) || padUsed->GetWeapon()) {
+#endif
 				float limitedCam = CGeneral::LimitRadianAngle(-TheCamera.Orientation);
 
 				m_cachedCamSource = TheCamera.Cams[TheCamera.ActiveCam].Source;
@@ -1396,6 +2148,7 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 		}
 #undef CAN_AIM_WITH_ARM
 	}
+
 	if (changedHeadingRate == 1) {
 		changedHeadingRate = 0;
 		RestoreHeadingRate();
@@ -1412,6 +2165,20 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 		} else {
 			pointedGun = 0;
 			ClearPointGunAt();
+		}
+	}
+#endif
+
+#if defined IMPROVED_MENU_AND_INPUT && defined FIRING_AND_AIMING
+	if (!FrontEndMenuManager.m_PrefsAutoaim)
+		return;
+	else {
+		if (CPad::GetPad(0)->GetTarget()) {
+			bool bCantAim = CPad::GetPad(0)->NewState.RightShoulder1 == 0 && CPad::GetPad(0)->Mode == 2 ||
+							CPad::GetPad(0)->NewState.LeftShoulder2 < 128 && CPad::GetPad(0)->Mode == 1;
+
+			if (bCantAim && !bIsAutoAiming || GetWeaponSlot(GetWeapon()->m_eWeaponType) == WEAPONSLOT_SNIPER || InVehicle())
+				return;
 		}
 	}
 #endif
@@ -1454,11 +2221,32 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 				if (padUsed->ShiftTargetRightJustDown())
 					FindNextWeaponLockOnTarget(m_pPointGunAt, false);
 			}
+
+#if defined IMPROVED_MENU_AND_INPUT && defined FIRING_AND_AIMING && defined FIRST_PERSON // we turn the camera to the target during autoaim
+			CCam& camera = TheCamera.Cams[0];
+
+			CVector distForBeta = m_pPointGunAt->GetPosition() - GetPosition();
+			if (camera.Mode == CCam::MODE_REAL_1ST_PERSON)
+				camera.Beta = distForBeta.Heading() - DEGTORAD(90.0f);
+			else
+				camera.Beta = distForBeta.Heading() + DEGTORAD(92.5f);
+
+			CVector dist = GetPosition() - m_pPointGunAt->GetPosition();
+			float groundDist = dist.Magnitude2D();
+			camera.Alpha = CGeneral::GetATanOfXY(groundDist, -dist.z);
+			while (camera.Alpha >= PI) camera.Alpha -= 2.0f * PI;
+			while (camera.Alpha < -PI) camera.Alpha += 2.0f * PI;
+#else
 			TheCamera.SetNewPlayerWeaponMode(CCam::MODE_SYPHON, 0, 0);
 			TheCamera.UpdateAimingCoors(m_pPointGunAt->GetPosition());
-
+#endif
+			
 		} else if (!CCamera::m_bUseMouse3rdPerson) {
+#ifdef IMPROVED_MENU_AND_INPUT
+			if (!bIsAutoAiming || TheCamera.m_bJustJumpedOutOf1stPersonBecauseOfTarget)
+#else
 			if (padUsed->TargetJustDown() || TheCamera.m_bJustJumpedOutOf1stPersonBecauseOfTarget)
+#endif
 				FindWeaponLockOnTarget();
 		}
 	} else if (m_pPointGunAt) {
@@ -1472,6 +2260,7 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 		} else {
 			markPos = m_pPointGunAt->GetPosition();
 		}
+
 		if (bCanPointGunAtTarget) {
 			CWeaponEffects::MarkTarget(markPos, 64, 0, 0, 255, 0.8f);
 		} else {
@@ -1496,11 +2285,12 @@ CPlayerPed::PlayerControlZelda(CPad *padUsed)
 	float upDown = padUsed->GetPedWalkUpDown();
 	float padMoveInGameUnit;
 	bool smoothSprayWithoutMove = false;
-
+#ifndef FIRING_AND_AIMING // it's need for right movement during aiming
 	if (MovementDisabledBecauseOfTargeting()) {
 		upDown = 0.0f;
 		leftRight = 0.0f;
 	}
+#endif
 
 	if (smoothSprayRate > 0.0f && upDown > 0.0f) {
 		padMoveInGameUnit = 0.0f;
@@ -1525,6 +2315,10 @@ CPlayerPed::PlayerControlZelda(CPad *padUsed)
 			m_fRotationDest = neededTurn;
 		}
 
+#ifdef IMPROVED_MENU_AND_INPUT // walking on the key
+		if (CPad::GetPad(0)->GetPedWalk() && !bIsPlayerAiming)
+			m_fMoveSpeed /= 2;
+#endif
 		float maxAcc = 0.07f * CTimer::GetTimeStep();
 		m_fMoveSpeed = Min(padMoveInGameUnit, m_fMoveSpeed + maxAcc);
 
@@ -1551,19 +2345,55 @@ CPlayerPed::PlayerControlZelda(CPad *padUsed)
 		return;
 	}
 
+#ifdef SWIMMING
+	if (!CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType)->IsFlagSet(WEAPONFLAG_HEAVY) && padUsed->GetSprint() && !bIsTiredSwimmingFast) {
+#else
 	if (!CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType)->IsFlagSet(WEAPONFLAG_HEAVY) && padUsed->GetSprint()) {
+#endif
+#if defined CROUCH && defined SWIMMING && defined FIRING_AND_AIMING
+		if ((!m_pCurrentPhysSurface || (!m_pCurrentPhysSurface->bInfiniteMass || m_pCurrentPhysSurface->m_phy_flagA08)) && !bIsPlayerAiming && !RpAnimBlendClumpGetAssociation(GetClump(), ANIM_WEAPON_FIRE) &&
+			!bIsDucking && !RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_IDLE) && !RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_FORWARD) && !bIsSwimming ||
+			bIsSwimming && !RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_SWIM_TREAD))
+			m_nMoveState = PEDMOVE_SPRINT;
+		else if (bIsDucking && !bIsPlayerAiming) {
+			ClearDuck();
+			bCrouchWhenShooting = false;
+		}
+#else
 		if (!m_pCurrentPhysSurface || (!m_pCurrentPhysSurface->bInfiniteMass || m_pCurrentPhysSurface->m_phy_flagA08))
 			m_nMoveState = PEDMOVE_SPRINT;
+#endif
 	}
 
 	if (m_nPedState != PED_FIGHT)
 		SetRealMoveAnim();
 
+#ifdef FIRING_AND_AIMING
+	if (bIsPlayerAiming)
+		return;
+#endif
+
 	if (!bIsInTheAir && !CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType)->IsFlagSet(WEAPONFLAG_HEAVY)
+#ifdef SWIMMING
+		&& padUsed->JumpJustDown() && m_nPedState != PED_JUMP && m_nPedState != PED_SWIM) {
+#else
 		&& padUsed->JumpJustDown() && m_nPedState != PED_JUMP) {
+#endif
 		ClearAttack();
 		ClearWeaponTarget();
+#ifdef CROUCH
+		if (bIsDucking) {
+			ClearDuck();
+
+			return;
+		}
+#endif
+
+#ifdef FEATURES_INI // PlayerDoesntBounceAwayFromMovingCar
+		if (!bPlayerDoesntBounceAwayFromMovingCar && m_nEvadeAmount != 0 && m_pEvadingFrom) {
+#else
 		if (m_nEvadeAmount != 0 && m_pEvadingFrom) {
+#endif
 			SetEvasiveDive((CPhysical*)m_pEvadingFrom, 1);
 			m_nEvadeAmount = 0;
 			m_pEvadingFrom = nil;
@@ -1663,6 +2493,90 @@ CPlayerPed::FindNewAttackPoints(void)
 void
 CPlayerPed::ProcessControl(void)
 {
+#if defined DEBUG && defined WANTED_PATHS
+	CPad* pad = CPad::GetPad(0);
+	if (pad->GetCharJustDown(0x31)) { // 1
+		if (bIsPathRecording) {
+			re3_debug("stop recording");
+
+			char pos[10];
+			int result = snprintf(pos, sizeof pos, "%i nodes", countRecords);
+			CFileMgr::Write(folderRecord, pos, result);
+
+			countRecords = 0;
+
+			CFileMgr::CloseFile(folderRecord);
+		} else {
+			re3_debug("start recording");
+			
+			folderRecord = CFileMgr::OpenFileForWriting("data\\maps\\wanted_paths.txt");
+		}
+
+		bIsPathRecording = !bIsPathRecording;
+	} else if (pad->GetCharJustDown(0x32)) { // 2
+		if (bIsPathRecording) {
+			char pos[100];
+			int a = 0;
+			if (InVehicle())
+				a = snprintf(pos, sizeof pos, "\t%f %f %f %s", FindPlayerVehicle()->GetPosition().x, FindPlayerVehicle()->GetPosition().y, FindPlayerVehicle()->GetPosition().z + 1.0f, "\n");
+			else
+				a = snprintf(pos, sizeof pos, "\t%f %f %f %s", GetPosition().x, GetPosition().y, GetPosition().z + 1.0f, "\n");
+			CFileMgr::Write(folderRecord, pos, a);
+
+			countRecords++;
+			
+			re3_debug("node %i saving", countRecords);
+
+			if (countRecords == 20) {
+				re3_debug("stop recording");
+
+				char pos[10];
+				int result = snprintf(pos, sizeof pos, "%i nodes", countRecords);
+				CFileMgr::Write(folderRecord, pos, result);
+
+				countRecords = 0;
+				
+				CFileMgr::CloseFile(folderRecord);
+
+				bIsPathRecording = false;
+			}
+		}
+	}
+#endif
+
+#ifdef FIRING_AND_AIMING
+	if (bIsPlayerAiming && (!IsPedInControl() && m_nPedState != PED_ROLL || m_nPedState == PED_FIGHT)) {
+		bIsPlayerAiming = false;
+		ClearWeaponTarget();
+	}
+#endif
+
+#ifdef SWIMMING
+	if (m_fCurrentStamina >= 0.0f && bIsTiredSwimmingFast)
+		bIsTiredSwimmingFast = false;
+#endif
+
+#ifdef CROUCH
+	if (!bIsDucking && TheCamera.Cams[TheCamera.ActiveCam].m_fTargetCameraPosZ != 0.0f)
+		TheCamera.Cams[TheCamera.ActiveCam].m_fTargetCameraPosZ = 0.0f;
+#endif
+
+#if defined DEBUG && defined AUTOSAVE_AND_SAVE_ANYWHERE
+	if (CPad::GetPad(0)->GetCharJustDown(0x33)) { // 3
+		DoAutoSave();
+	}
+
+	if (CPad::GetPad(0)->GetCharJustDown(0x34) && PlayerCanMakeQuickSave()) { // 4
+		*(int32*)&CTheScripts::ScriptSpace[CTheScripts::OnAMissionFlag] = 1;
+		CTheScripts::Process();
+
+		bAutoSave = false;
+		IsQuickSave = false;
+		bSaveAnywhere = true;
+		FrontEndMenuManager.m_bActivateSaveMenu = true;
+	}
+#endif
+
 	// Mobile has some debug/abandoned cheat thing in here: "gbFrankenTommy"
 
 	if (m_nEvadeAmount != 0)
@@ -1783,6 +2697,7 @@ CPlayerPed::ProcessControl(void)
 	if (bIsLanding)
 		RunningLand(padUsed);
 
+#ifndef FIRING_AND_AIMING
 	if (padUsed && padUsed->WeaponJustDown() && !TheCamera.Using1stPersonWeaponMode()) {
 		// ...Really?
 		eWeaponType playerWeapon = FindPlayerPed()->GetWeapon()->m_eWeaponType;
@@ -1792,6 +2707,42 @@ CPlayerPed::ProcessControl(void)
 			DMAudio.PlayFrontEndSound(SOUND_WEAPON_ROCKET_SHOT_NO_ZOOM, 0);
 		}
 	}
+#endif
+
+#ifdef CROUCH
+	if (m_nPedState == PED_ROLL && !bIsStanding) {
+		RestorePreviousState();
+
+		ClearDuck();
+	}
+
+	if (m_nPedState == PED_ROLL && !RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_ROLL_L) && !RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_ROLL_R)) {
+		SetRealMoveAnim();
+	}
+#endif
+
+#ifdef FIRING_AND_AIMING
+	if (InVehicle() && bIsPlayerAiming && m_pMyVehicle->GetUp().z < 0.2f)
+		ClearWeaponTarget();
+#endif
+
+#if defined FIRING_AND_AIMING && defined FIRST_PERSON
+	if (IsDoomMode() && (!IsPedInControl() || m_nPedState == PED_ANSWER_MOBILE || m_nPedState == PED_SEEK_CAR || m_nPedState == PED_SEEK_IN_BOAT)) {
+		bIsPlayerAiming = false;
+		ClearWeaponTarget();
+
+		StopAimingAnims();
+	}
+#endif
+
+#ifdef IMPROVED_TECH_PART // skip a phone call
+	if (m_nPedState == PED_ANSWER_MOBILE && m_bSkipPhoneCall) {
+		for (int slot = 0; slot < MISSION_AUDIO_SLOTS; slot++)
+			AudioManager.FinishMissionAudioPhoneDialogue(slot);
+	} else if (m_nPedState == PED_ANSWER_MOBILE && !m_bSkipPhoneCall && CPad::GetPad(0)->ExitVehicleJustDown()) {
+		m_bSkipPhoneCall = true;
+	}
+#endif
 
 	switch (m_nPedState) {
 		case PED_NONE:
@@ -1802,7 +2753,14 @@ CPlayerPed::ProcessControl(void)
 		case PED_FIGHT:
 		case PED_AIM_GUN:
 		case PED_ANSWER_MOBILE:
+#ifdef SWIMMING
+		case PED_SWIM:
+#endif
+#ifdef FIRING_AND_AIMING
+			if (!RpAnimBlendClumpGetFirstAssociation(GetClump(), ASSOC_BLOCK) && !m_attachedTo && !InVehicle()) {
+#else
 			if (!RpAnimBlendClumpGetFirstAssociation(GetClump(), ASSOC_BLOCK) && !m_attachedTo) {
+#endif
 				if (TheCamera.Using1stPersonWeaponMode()) {
 					if (padUsed)
 						PlayerControlSniper(padUsed);
@@ -1958,7 +2916,11 @@ CPlayerPed::ProcessControl(void)
 	}
 
 	if (bDontAllowWeaponChange && FindPlayerPed() == this) {
+#ifdef CROUCH
+		if (!CPad::GetPad(0)->GetTarget() && m_nPedState != PED_ROLL)
+#else
 		if (!CPad::GetPad(0)->GetTarget())
+#endif
 			bDontAllowWeaponChange = false;
 	}
 
@@ -1989,6 +2951,16 @@ void
 CPlayerPed::PlayIdleAnimations(CPad *padUsed)
 {
 	CAnimBlendAssociation* assoc;
+
+#ifdef SWIMMING
+	if (bIsSwimming)
+		return;
+#endif
+
+#ifdef CLIMBING
+	if (bIsClimbing)
+		return;
+#endif
 
 	if (TheCamera.m_WideScreenOn || bIsDucking)
 		return;

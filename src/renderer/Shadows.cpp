@@ -536,6 +536,13 @@ CShadows::StoreShadowForVehicle(CVehicle *pCar, VEH_SHD_TYPE type)
 			
 			float size = 1.0f;
 			
+#ifdef NEW_VEHICLE_LOADER
+			if (pCar->GetModelIndex() >= MI_FIRST_NEW_VEHICLE) {
+				fVehicleHeight *= pCar->pVehicleShadowSettings->fHeightMultiplier;
+				fVehicleWidth *= pCar->pVehicleShadowSettings->fWidthMultiplier;
+				size *= pCar->pVehicleShadowSettings->fSizeMultiplier;
+			} else
+#endif
 			switch ( pCar->GetModelIndex() )
 			{
 				case MI_PIZZABOY:

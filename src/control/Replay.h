@@ -213,6 +213,10 @@ class CReplay
 		uint8 door_status;
 		uint8 primary_color;
 		uint8 secondary_color;
+#ifdef IMPROVED_VEHICLES // More colors
+		uint8 tertiary_color;
+		uint8 quaternary_color;
+#endif
 		bool render_scorched;
 		int8 skimmer_speed;
 		int8 vehicle_type;

@@ -9,6 +9,10 @@
 #include "VisibilityPlugins.h"
 #include "ModelInfo.h"
 #include "custompipes.h"
+#ifdef EX_PED_VARIATIONS
+#include "TxdStore.h"
+#include <core/World.h>
+#endif
 
 void
 CPedModelInfo::DeleteRwObject(void)
@@ -35,6 +39,42 @@ RwObjectNameIdAssocation CPedModelInfo::m_pPedIds[PED_NODE_MAX] = {
 	{ nil,	0, 0, },
 };
 
+#ifdef EX_PED_VARIATIONS
+RwTexture* storeTextureVariation(RwTexture* texture, void* data)
+{
+	CPedModelInfo* modelInfo = static_cast<CPedModelInfo*>(data);
+
+	for (int i = 0; i < MAX_VARIATIONS_TEXTURES; i++) {
+		if (modelInfo->textureClothingVariations[i])
+			continue;
+
+		if (strstr(texture->name, "shade"))
+			continue;
+
+		if (!strstr(texture->name, "remap"))
+			continue;
+
+		modelInfo->textureClothingVariations[i] = texture;
+
+		return texture;
+	}
+
+	for (int i = 0; i < MAX_VARIATIONS_TEXTURES; i++) {
+		if (modelInfo->textureShadeVariations[i])
+			continue;
+
+		if (!strstr(texture->name, "shade"))
+			continue;
+
+		modelInfo->textureShadeVariations[i] = texture;
+
+		return texture;
+	}
+
+	return texture;
+}
+#endif
+
 void
 CPedModelInfo::SetClump(RpClump *clump)
 {
@@ -48,6 +88,22 @@ CPedModelInfo::SetClump(RpClump *clump)
 	RpClumpForAllAtomics(m_clump, SetAtomicRendererCB, (void*)CVisibilityPlugins::RenderPedCB);
 	if(strcmp(GetModelName(), "player") == 0)
 		RpClumpForAllAtomics(m_clump, SetAtomicRendererCB, (void*)CVisibilityPlugins::RenderPlayerCB);
+
+#ifdef EX_PED_VARIATIONS
+	RwTexDictionary* pedTxd = CTxdStore::GetSlot(GetTxdSlot())->texDict;
+	if (pedTxd) {
+		currentClothingVariation = 0;
+		currentShadeVariation = 0;
+
+		for (int i = 0; i < MAX_VARIATIONS_TEXTURES; i++)
+			textureClothingVariations[i] = nullptr;
+
+		for (int i = 0; i < MAX_VARIATIONS_TEXTURES; i++)
+			textureShadeVariations[i] = nullptr;
+
+		RwTexDictionaryForAllTextures(pedTxd, storeTextureVariation, this);
+	}
+#endif
 }
 
 struct ColNodeInfo

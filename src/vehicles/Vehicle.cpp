@@ -43,6 +43,9 @@ bool CVehicle::bCheat8;
 bool CVehicle::bCheat9;
 bool CVehicle::bCheat10;
 bool CVehicle::bHoverCheat;
+#ifdef NEW_CHEATS // init
+bool CVehicle::bAirWaysCheat;
+#endif
 bool CVehicle::bAllTaxisHaveNitro;
 bool CVehicle::m_bDisableMouseSteering = true;
 bool CVehicle::bDisableRemoteDetonation;
@@ -185,6 +188,15 @@ CVehicle::CVehicle(uint8 CreatedBy)
 	AutoPilot.m_bStayInCurrentLevel = false;
 	AutoPilot.m_bIgnorePathfinding = false;
 	AutoPilot.m_nSwitchDistance = 20;
+
+#if defined VEHICLE_MODS && defined IMPROVED_VEHICLES
+	m_nTempColor1 = 0;
+	m_nTempColor2 = 0;
+	m_nTempColor3 = 0;
+	m_nTempColor4 = 0;
+	m_nArmorLevel = 0;
+	m_fAddEngineAcceleration = 0.0f;
+#endif
 }
 
 CVehicle::~CVehicle()
@@ -1252,6 +1264,27 @@ CVehicle::InflictDamage(CEntity *damagedBy, eWeaponType weaponType, float damage
 				SetStatus(STATUS_PHYSICS);
 			}
 		}
+
+#ifdef VEHICLE_MODS // armor
+		float absorbedDamage = 1.0f;
+		switch (m_nArmorLevel)
+		{
+		case 1:
+			absorbedDamage = 1.25f;
+			break;
+		case 2:
+			absorbedDamage = 1.5f;
+			break;
+		case 3:
+			absorbedDamage = 1.75f;
+			break;
+		case 4:
+			absorbedDamage = 2.0f;
+			break;
+		}
+		damage /= absorbedDamage;
+#endif
+
 		m_nLastWeaponDamage = weaponType;
 		m_pLastDamageEntity = damagedBy;
 		float oldHealth = m_fHealth;
@@ -1269,7 +1302,11 @@ CVehicle::InflictDamage(CEntity *damagedBy, eWeaponType weaponType, float damage
 								AutoPilot.m_nCruiseSpeed *= 1.5f;
 							AutoPilot.m_nDrivingStyle = DRIVINGSTYLE_PLOUGH_THROUGH;
 						}
+#ifdef IMPROVED_TECH_PART // cops don't leave the car in this case
+					}else if (pDriver->m_nPedType != PEDTYPE_COP){
+#else
 					}else{
+#endif
 						// Leave vehicle
 						if (pDriver && pDriver->CharCreatedBy != MISSION_CHAR) {
 							SetStatus(STATUS_ABANDONED);
@@ -2341,6 +2378,27 @@ CVehicle::KillPedsInVehicle(void)
 		}
 	}
 }
+
+#ifdef IMPROVED_TECH_PART
+bool CVehicle::IsHighVehicle(void)
+{
+	return Abs(GetColModel()->boundingBox.min.z) + Abs(GetColModel()->boundingBox.max.z) > 2.2f;
+}
+#endif
+
+#ifdef FIRST_PERSON
+bool CVehicle::IsOpenTopVehicle(void)
+{
+	if (IsBike())
+		return true;
+	else if (IsBoat())
+		return !(GetModelIndex() == MI_PREDATOR || GetModelIndex() == MI_TROPIC || GetModelIndex() == MI_REEFER);
+	else if (IsCar())
+		return IsOpenTopCar();
+	else
+		return false;
+}
+#endif
 
 void
 DestroyVehicleAndDriverAndPassengers(CVehicle* pVehicle)

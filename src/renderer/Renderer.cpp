@@ -110,6 +110,14 @@ CRenderer::PreRender(void)
 #endif
 
 	for (i = 0; i < ms_nNoOfInVisibleEntities; i++) {
+#ifdef VICE_CRY
+		if (i >= NUMINVISIBLEENTITIES)
+			break;
+
+		if (!ms_aInVisibleEntityPtrs[i])
+			continue;
+#endif
+
 #ifdef SQUEEZE_PERFORMANCE
 		if (ms_aInVisibleEntityPtrs[i]->IsVehicle() && ((CVehicle*)ms_aInVisibleEntityPtrs[i])->IsHeli())
 #endif

@@ -284,6 +284,9 @@ cHandlingDataMgr::LoadHandlingData(void)
 						assert(handlingId >= 0 && handlingId < NUMHANDLINGS);
 						handling = &HandlingData[handlingId];
 						handling->nIdentifier = (tVehicleType)handlingId;
+#ifdef NEW_VEHICLE_LOADER
+						handling->bBike = 0;
+#endif
 						break;
 					case  1: handling->fMass = atof(word); break;
 					case  2: handling->Dimension.x = atof(word); break;
@@ -380,7 +383,11 @@ cHandlingDataMgr::ConvertDataToGameUnits(tHandlingData *handling)
 	if(handling->nIdentifier == HANDLING_RCBANDIT){
 		handling->Transmission.fMaxCruiseVelocity = handling->Transmission.fMaxVelocity;
 		handling->Transmission.fMaxReverseVelocity = -handling->Transmission.fMaxVelocity;
+#ifdef NEW_VEHICLE_LOADER
+	}else if(handling->nIdentifier >= HANDLING_BIKE && handling->nIdentifier <= HANDLING_FREEWAY || handling->bBike) {
+#else
 	}else if(handling->nIdentifier >= HANDLING_BIKE && handling->nIdentifier <= HANDLING_FREEWAY){
+#endif
 		handling->Transmission.fMaxCruiseVelocity = velocity;
 		handling->Transmission.fMaxVelocity = velocity * 1.2f;
 		handling->Transmission.fMaxReverseVelocity = -0.05f;

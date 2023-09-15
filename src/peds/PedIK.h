@@ -1,6 +1,9 @@
 #pragma once
 #include "common.h"
 #include "AnimBlendClumpData.h"
+#ifdef IMPROVED_VEHICLES_2 // steering wheel IK
+#include "PedModelInfo.h"
+#endif
 
 struct LimbOrientation
 {

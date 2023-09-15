@@ -39,6 +39,9 @@ enum
 	HELI_STATUS_FLY_AWAY,
 	HELI_STATUS_SHOT_DOWN,
 	HELI_STATUS_HOVER2,
+#ifdef IMPROVED_TECH_PART // wanted system
+	HELI_STATUS_WAIT,
+#endif
 };
 
 CHeli *CHeli::pHelis[NUM_HELIS];
@@ -55,7 +58,17 @@ CHeli::CHeli(int32 id, uint8 CreatedBy)
 
 	CVehicleModelInfo *mi = (CVehicleModelInfo*)CModelInfo::GetModelInfo(id);
 	m_vehType = VEHICLE_TYPE_HELI;
+#ifdef NEW_VEHICLE_LOADER
+	if (GetModelIndex() >= MI_FIRST_NEW_VEHICLE) {
+		pVehicleShadowSettings = &mi->vehicleShadowData;
+		pVehicleSample = &mi->vehicleSampleData;
+		pHandling = &mi->handlingData;
+	} else {
+		pHandling = mod_HandlingManager.GetHandlingData((tVehicleType)mi->m_handlingId);
+	}
+#else
 	pHandling = mod_HandlingManager.GetHandlingData((tVehicleType)mi->m_handlingId);
+#endif
 	SetModelIndex(id);
 	m_heliStatus = HELI_STATUS_HOVER;
 	m_pathState = 0;
@@ -92,6 +105,11 @@ CHeli::CHeli(int32 id, uint8 CreatedBy)
 
 	// BUG: not in game but gets initialized to CDCDCDCD in debug
 	m_nLastShotTime = 0;
+
+#ifdef IMPROVED_TECH_PART // wanted system
+	m_nLookingForPlayerTimer = 0;
+	m_vPotentialPlayerPosOffset = { 0.0f, 0.0f, 0.0f };
+#endif
 }
 
 void
@@ -228,8 +246,15 @@ CHeli::ProcessControl(void)
 			GetMatrix().GetPosition().y = GetMatrix().GetPosition().y*0.99f + target.y*0.01f;
 		}
 	}else{
+#ifdef IMPROVED_TECH_PART // wanted system
+		vTargetDist = FindPlayerPed()->m_pWanted->m_vecLastSeenPosPlayer + m_vPotentialPlayerPosOffset - GetPosition();
+		m_fTargetZ = FindPlayerPed()->m_pWanted->m_vecLastSeenPosPlayer.z;
+		if (m_fTargetZ = FindPlayerPed()->m_pWanted->IsPlayerHides())
+			m_fTargetZ += 25.0f;
+#else
 		vTargetDist = FindPlayerCoors() - GetPosition();
 		m_fTargetZ = FindPlayerCoors().z;
+#endif
 
 		// Heli flies away to (0, 0)
 		if(m_heliStatus == HELI_STATUS_FLY_AWAY && GetPosition().z > 20.0f){
@@ -241,7 +266,14 @@ CHeli::ProcessControl(void)
 		switch(m_heliStatus){
 		case HELI_STATUS_HOVER:
 			groundZ = CWorld::FindGroundZFor3DCoord(GetPosition().x, GetPosition().y, 1000.0f, nil);
+#ifdef IMPROVED_TECH_PART // wanted system
+			if (groundZ > 5.0f)
+				m_fTargetZ = Max(groundZ, m_fTargetZ) + 8.0f;
+			else
+				m_fTargetZ = Max(groundZ, m_fTargetZ) + 12.0f;
+#else
 			m_fTargetZ = Max(groundZ, m_fTargetZ) + 8.0f;
+#endif
 			break;
 		case HELI_STATUS_SHOT_DOWN:
 			groundZ = CWorld::FindGroundZFor3DCoord(GetPosition().x, GetPosition().y, 1000.0f, nil);
@@ -264,17 +296,47 @@ CHeli::ProcessControl(void)
 	}
 
 	float fTargetDist = vTargetDist.Magnitude();
+#ifdef IMPROVED_TECH_PART // wanted system
+	if (!FindPlayerPed()->m_pWanted->IsPlayerHides() && m_heliStatus != HELI_STATUS_SHOT_DOWN) {
+		m_vPotentialPlayerPosOffset = { 0.0f, 0.0f, 0.0f };
+
+		if ((CCullZones::PlayerNoRain() || CGame::IsInInterior()) && fTargetDist < 100.0f)
+			m_heliStatus = HELI_STATUS_WAIT;
+		else if (m_heliStatus == HELI_STATUS_WAIT)
+			m_heliStatus = HELI_STATUS_HOVER;
+	}
+#endif
 
 	switch(m_heliStatus){
+#ifdef IMPROVED_TECH_PART // wanted system
+	case HELI_STATUS_WAIT:
+#endif
 	case HELI_STATUS_HOVER:
 	case HELI_STATUS_HOVER2:{
 		float targetHeight;
 		if(m_heliType == HELI_TYPE_CATALINA)
 			targetHeight = 8.0f;
 		else
+#ifdef IMPROVED_TECH_PART // wanted system
+			targetHeight = 40.0f - m_nHeliId*13.0f;
+#else
 			targetHeight = 40.0f - m_nHeliId*10.0f;
+#endif
+		
+#ifdef IMPROVED_TECH_PART // wanted system
+		float lookingForPlayerTimeDiff = CTimer::GetTimeInMilliseconds() - m_nLookingForPlayerTimer;
+
+		if(fTargetDist > targetHeight || (FindPlayerPed()->m_pWanted->IsPlayerHides() && lookingForPlayerTimeDiff > 10000)) {
+			m_heliStatus = HELI_STATUS_CHASE_PLAYER;
+
+			float randomX = CGeneral::GetRandomNumberInRange(-50.0f, 50.0f);
+			float randomY = CGeneral::GetRandomNumberInRange(-50.0f, 50.0f);
+			m_vPotentialPlayerPosOffset = CVector(randomX, randomY, 0.0f);
+		}
+#else
 		if(fTargetDist > targetHeight)
 			m_heliStatus = HELI_STATUS_CHASE_PLAYER;
+#endif
 		}
 		if(m_numSwat)
 			SendDownSwat();
@@ -285,8 +347,16 @@ CHeli::ProcessControl(void)
 			targetHeight = 4.0f;
 		else
 			targetHeight = 30.0f - m_nHeliId*7.5f;
-		if(fTargetDist < 1.0f ||
+		
+#ifdef IMPROVED_TECH_PART // wanted system
+		m_nLookingForPlayerTimer = CTimer::GetTimeInMilliseconds();
+
+		if (fTargetDist < 1.0f ||
+		   fTargetDist < targetHeight && CWorld::GetIsLineOfSightClear(GetPosition(), FindPlayerPed()->m_pWanted->m_vecLastSeenPosPlayer, true, false, false, false, false, false) && !FindPlayerPed()->m_pWanted->IsPlayerHides())
+#else
+		if (fTargetDist < 1.0f ||
 		   fTargetDist < targetHeight && CWorld::GetIsLineOfSightClear(GetPosition(), FindPlayerCoors(), true, false, false, false, false, false))
+#endif
 			m_heliStatus = HELI_STATUS_HOVER;
 		}
 		break;
@@ -300,7 +370,11 @@ CHeli::ProcessControl(void)
 		speed = 0.7f;
 	else
 		speed = 0.4f;
+#ifdef IMPROVED_TECH_PART // wanted system
+	if(m_heliStatus == HELI_STATUS_HOVER || m_heliStatus == HELI_STATUS_HOVER2 || m_heliStatus == HELI_STATUS_SHOT_DOWN || m_heliStatus == HELI_STATUS_WAIT)
+#else
 	if(m_heliStatus == HELI_STATUS_HOVER || m_heliStatus == HELI_STATUS_HOVER2 || m_heliStatus == HELI_STATUS_SHOT_DOWN)
+#endif
 		speed = 0.0f;
 
 	if(fTargetDist != 0.0f)
@@ -381,7 +455,11 @@ CHeli::ProcessControl(void)
 		m_fTargetZ = 1000.0f;
 	if((CTimer::GetTimeInMilliseconds() + 800*m_nHeliId) & 0x800)
 		m_fTargetZ += 2.0f;
+#ifdef IMPROVED_TECH_PART // wanted system
+	m_fTargetZ += m_nHeliId*7.0f;
+#else
 	m_fTargetZ += m_nHeliId*5.0f;
+#endif
 
 	// Find z speed
 	float targetSpeedZ = (m_fTargetZ - GetPosition().z)*0.01f;
@@ -435,7 +513,11 @@ CHeli::ProcessControl(void)
 	GetUp() = up;
 
 	// Search light and shooting
+#ifdef IMPROVED_TECH_PART // wanted system
+	if(m_heliStatus == HELI_STATUS_FLY_AWAY || m_heliType == HELI_TYPE_CATALINA || CCullZones::PlayerNoRain() || FindPlayerPed()->m_pWanted->IsPlayerHides())
+#else
 	if(m_heliStatus == HELI_STATUS_FLY_AWAY || m_heliType == HELI_TYPE_CATALINA || CCullZones::PlayerNoRain())
+#endif
 		m_fSearchLightIntensity = 0.0f;
 	else {
 		// Update search light history once every 1000ms
@@ -467,7 +549,11 @@ CHeli::ProcessControl(void)
 
 		if (m_fSearchLightIntensity < 0.9f || sq(FindPlayerCoors().x - m_fSearchLightX) + sq(FindPlayerCoors().y - m_fSearchLightY) > sq(7.0f))
 			m_nShootTimer = CTimer::GetTimeInMilliseconds();
+#ifdef IMPROVED_TECH_PART // wanted system
+		else if (CTimer::GetTimeInMilliseconds() > m_nPoliceShoutTimer && !FindPlayerPed()->m_pWanted->IsPlayerHides()) {
+#else
 		else if (CTimer::GetTimeInMilliseconds() > m_nPoliceShoutTimer) {
+#endif
 			DMAudio.PlayOneShot(m_audioEntityId, SOUND_PED_HELI_PLAYER_FOUND, 0.0f);
 			m_nPoliceShoutTimer = CTimer::GetTimeInMilliseconds() + 4500 + (CGeneral::GetRandomNumber() & 0xFFF);
 		}
@@ -499,7 +585,11 @@ CHeli::ProcessControl(void)
 				// Check if line of sight is clear
 				if (CTimer::GetTimeInMilliseconds() > m_nShootTimer + shootTimeout &&
 					CTimer::GetPreviousTimeInMilliseconds() <= m_nShootTimer + shootTimeout) {
+#ifdef IMPROVED_TECH_PART // wanted system
+					if (CWorld::GetIsLineOfSightClear(GetPosition(), FindPlayerPed()->m_pWanted->m_vecLastSeenPosPlayer, true, false, false, false, false, false) && !FindPlayerPed()->m_pWanted->IsPlayerHides()) {
+#else
 					if (CWorld::GetIsLineOfSightClear(GetPosition(), FindPlayerCoors(), true, false, false, false, false, false)) {
+#endif
 						if (m_heliStatus == HELI_STATUS_HOVER2)
 							m_heliStatus = HELI_STATUS_HOVER;
 					}
@@ -512,7 +602,11 @@ CHeli::ProcessControl(void)
 
 				// Shoot!
 				if (CTimer::GetTimeInMilliseconds() > m_nShootTimer + shootTimeout &&
+#ifdef IMPROVED_TECH_PART // wanted system
+					CTimer::GetTimeInMilliseconds() > m_nLastShotTime + 200 && !FindPlayerPed()->m_pWanted->IsPlayerHides()) {
+#else
 					CTimer::GetTimeInMilliseconds() > m_nLastShotTime + 200) {
+#endif
 					CVector shotTarget = FindPlayerCoors();
 					// some inaccuracy
 					shotTarget.x += ((CGeneral::GetRandomNumber() & 0xFF) - 128) / 50.0f;
@@ -593,7 +687,11 @@ CHeli::PreRenderAlways(void)
 			80*m_fSearchLightIntensity, 80*m_fSearchLightIntensity, 80*m_fSearchLightIntensity, 80*m_fSearchLightIntensity,
 			50.0f, true, 1.0f, nil, false);
 
+#ifdef IMPROVED_TECH_PART // particles
+		CVector front = GetMatrix() * CVector(0.0f, 5.0f, -1.0f);
+#else
 		CVector front = GetMatrix() * CVector(0.0f, 7.0f, 0.0f);
+#endif
 		CVector toPlayer = FindPlayerCoors() - front;
 		toPlayer.Normalise();
 		float intensity = m_fSearchLightIntensity*sq(CTimeCycle::GetSpriteBrightness());
@@ -722,7 +820,11 @@ bool
 CHeli::SendDownSwat(void)
 {
 	if(m_numSwat == 0 || !CStreaming::HasModelLoaded(MI_SWAT) ||
+#ifdef IMPROVED_TECH_PART // wanted system
+	   CGeneral::GetRandomNumber() & 0x7F || (GetPosition() - FindPlayerCoors()).Magnitude() > 50.0f || FindPlayerPed()->m_pWanted->IsPlayerHides())
+#else
 	   CGeneral::GetRandomNumber() & 0x7F || (GetPosition() - FindPlayerCoors()).Magnitude() > 50.0f)
+#endif
 		return false;
 
 	CMatrix mat(GetMatrix());
@@ -819,8 +921,10 @@ CHeli::UpdateHelis(void)
 		CReplay::IsPlayingBack() ? 0 :
 #endif
 		FindPlayerPed()->m_pWanted->NumOfHelisRequired();
+#ifndef IMPROVED_TECH_PART // wanted system
 	if(CCullZones::PlayerNoRain() || CGame::IsInInterior())
 		numHelisRequired = 0;
+#endif
 	if(CStreaming::HasModelLoaded(MI_CHOPPER) && CTimer::GetTimeInMilliseconds() > TestForNewRandomHelisTimer){
 		// Spawn a police heli
 		TestForNewRandomHelisTimer = CTimer::GetTimeInMilliseconds() + 15000;

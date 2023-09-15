@@ -353,7 +353,11 @@ CExplosion::AddExplosion(CEntity *explodingEntity, CEntity *culprit, eExplosionT
 		TheCamera.CamShake(0.2f, pos.x, pos.y, pos.z);
 	} else {
 		TheCamera.CamShake(0.6f, pos.x, pos.y, pos.z);
+#ifdef IMPROVED_MENU_AND_INPUT
+		CPad::GetPad(0)->StartShake_Distance(500, 128, 128, pos.x, pos.y, pos.z);
+#else
 		CPad::GetPad(0)->StartShake_Distance(300, 128, pos.x, pos.y, pos.z);
+#endif
 	}
 	return true;
 }

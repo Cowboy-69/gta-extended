@@ -512,6 +512,9 @@ void CParticle::Initialise()
 			case PARTICLE_STEAM_NY_SLOWMOTION:
 			case PARTICLE_GROUND_STEAM:
 			case PARTICLE_ENGINE_STEAM:
+#ifdef IMPROVED_VEHICLES_2
+			case PARTICLE_ENGINE_STEAM_SMALL:
+#endif
 			case PARTICLE_PEDFOOT_DUST:
 			case PARTICLE_CAR_DUST:
 			case PARTICLE_EXHAUST_FUMES:
@@ -557,6 +560,9 @@ void CParticle::Initialise()
 			
 			case PARTICLE_FLAME:
 			case PARTICLE_CARFLAME:
+#ifdef IMPROVED_VEHICLES_2
+			case PARTICLE_CARFLAME_SMALL:
+#endif
 				entry->m_ppRaster = &gpFlame1Raster;
 				break;
 			
@@ -632,6 +638,11 @@ void CParticle::Initialise()
 			case PARTICLE_ENGINE_SMOKE:
 			case PARTICLE_ENGINE_SMOKE2:
 			case PARTICLE_CARFLAME_SMOKE:
+#ifdef IMPROVED_VEHICLES_2
+			case PARTICLE_ENGINE_SMOKE_SMALL:
+			case PARTICLE_ENGINE_SMOKE2_SMALL:
+			case PARTICLE_CARFLAME_SMOKE_SMALL:
+#endif
 			case PARTICLE_FIREBALL_SMOKE:
 			case PARTICLE_ROCKET_SMOKE:
 			case PARTICLE_TEST:
@@ -874,6 +885,7 @@ CParticle *CParticle::AddParticle(tParticleType type, CVector const &vecPos, CVe
 	if ( CTimer::GetIsPaused() )
 		return nil;
 
+#ifndef IMPROVED_VEHICLES_2 // vehicle damage particles
 	if ( ( type == PARTICLE_ENGINE_SMOKE
 		|| type == PARTICLE_ENGINE_SMOKE2
 		|| type == PARTICLE_ENGINE_STEAM
@@ -886,6 +898,7 @@ CParticle *CParticle::AddParticle(tParticleType type, CVector const &vecPos, CVe
 	{
 		return nil;
 	}
+#endif
 
 	if ( !CReplay::IsPlayingBack() )
 		CReplay::RecordParticle(type, vecPos, vecDir, fSize, color);
@@ -1569,7 +1582,11 @@ void CParticle::Update()
 												0.1f, 0.0f, 0.0f, -0.1f,
 												255,
 												255, 0, 0,
+#ifdef IMPROVED_TECH_PART // particles
+												4.0f, (CGeneral::GetRandomNumber() & 4095) + 20000, 1.0f);
+#else
 												4.0f, (CGeneral::GetRandomNumber() & 4095) + 2000, 1.0f);
+#endif
 									}
 									else if ( randVal == 2 )
 									{
@@ -1577,7 +1594,11 @@ void CParticle::Update()
 												0.2f, 0.0f, 0.0f, -0.2f,
 												255,
 												255, 0, 0,
+#ifdef IMPROVED_TECH_PART // particles
+												4.0f, (CGeneral::GetRandomNumber() & 4095) + 25000, 1.0f);
+#else
 												4.0f, (CGeneral::GetRandomNumber() & 4095) + 8000, 1.0f);
+#endif
 									}
 									continue;
 								}
@@ -1816,6 +1837,12 @@ void CParticle::Render()
 			|| type == PARTICLE_ENGINE_SMOKE2
 			|| type == PARTICLE_ENGINE_STEAM
 			|| type == PARTICLE_CARFLAME_SMOKE
+#ifdef IMPROVED_VEHICLES_2
+			|| type == PARTICLE_ENGINE_SMOKE_SMALL
+			|| type == PARTICLE_ENGINE_SMOKE2_SMALL
+			|| type == PARTICLE_ENGINE_STEAM_SMALL
+			|| type == PARTICLE_CARFLAME_SMOKE_SMALL
+#endif
 			|| type == PARTICLE_RUBBER_SMOKE
 			|| type == PARTICLE_BURNINGRUBBER_SMOKE
 			|| type == PARTICLE_EXHAUST_FUMES
@@ -2080,6 +2107,21 @@ void CParticle::Render()
 								break;
 						}
 					}
+#ifdef IMPROVED_VEHICLES_2 // change particle size
+					else if (i == PARTICLE_ENGINE_SMOKE2_SMALL) {
+						w /= 2.7f;
+						h /= 2.7f;
+					} else if (i == PARTICLE_ENGINE_SMOKE_SMALL) {
+						w /= 2.0f;
+						h /= 2.0f;
+					} else if (i == PARTICLE_ENGINE_STEAM_SMALL) {
+						w /= 1.4f;
+						h /= 1.4f;
+					} else if (i == PARTICLE_CARFLAME_SMALL || i == PARTICLE_CARFLAME_SMOKE_SMALL) {
+						w /= 3.2f;
+						h /= 3.2f;
+					}
+#endif
 					else if ( i == PARTICLE_WATER_HYDRANT )
 					{
 						int32 timeLeft = (particle->m_nTimeWhenWillBeDestroyed - CTimer::GetTimeInMilliseconds()) / particle->m_nTimeWhenWillBeDestroyed;

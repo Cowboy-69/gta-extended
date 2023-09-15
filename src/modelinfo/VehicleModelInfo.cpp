@@ -44,6 +44,10 @@ enum {
 	VEHICLE_FLAG_ANGLECULL	= 0x1000,
 	VEHICLE_FLAG_REARDOOR	= 0x2000,
 	VEHICLE_FLAG_FRONTDOOR	= 0x4000,
+#ifdef VEHICLE_MODS // vehicle flags
+	VEHICLE_FLAG_VEHMOD_OK = 0x8000,
+	VEHICLE_FLAG_VEHMOD_DAM = 0x16000,
+#endif
 };
 
 RwObjectNameIdAssocation carIds[] = {
@@ -66,11 +70,69 @@ RwObjectNameIdAssocation carIds[] = {
 	{ "boot_dummy",		CAR_BOOT,	VEHICLE_FLAG_REAR | VEHICLE_FLAG_COLLAPSE },
 	{ "bump_rear_dummy",	CAR_BUMP_REAR,	VEHICLE_FLAG_REAR | VEHICLE_FLAG_COLLAPSE },
 	{ "windscreen_dummy",	CAR_WINDSCREEN,	VEHICLE_FLAG_WINDSCREEN | VEHICLE_FLAG_DRAWLAST | VEHICLE_FLAG_FRONT | VEHICLE_FLAG_COLLAPSE },
+#ifdef VEHICLE_MODS
+	{ "vm_spoiler_ok",	CAR_SPOILER_OK,	VEHICLE_FLAG_REAR | VEHICLE_FLAG_VEHMOD_OK},
+	{ "vm_spoiler_dam",	CAR_SPOILER_DAM,	VEHICLE_FLAG_REAR | VEHICLE_FLAG_VEHMOD_DAM},
+	{ "vm_skirt_l",		CAR_SKIRT_L,	VEHICLE_FLAG_LEFT | VEHICLE_FLAG_VEHMOD_OK},
+	{ "vm_skirt_r",		CAR_SKIRT_R,	VEHICLE_FLAG_RIGHT | VEHICLE_FLAG_VEHMOD_OK},
+	{ "vm_rf_scoop",	CAR_RF_SCOOP,	VEHICLE_FLAG_VEHMOD_OK},
+	{ "vm_bnt_scoop_ok",	CAR_BNT_SCOOP_OK,	VEHICLE_FLAG_VEHMOD_OK},
+	{ "vm_bnt_scoop_dam",	CAR_BNT_SCOOP_DAM,	VEHICLE_FLAG_VEHMOD_DAM},
+	{ "vm_vent_l_ok",		CAR_VENT_L_OK,	VEHICLE_FLAG_VEHMOD_OK},
+	{ "vm_vent_l_dam",		CAR_VENT_L_DAM,	VEHICLE_FLAG_VEHMOD_DAM},
+	{ "vm_vent_r_ok",		CAR_VENT_R_OK,	VEHICLE_FLAG_VEHMOD_OK},
+	{ "vm_vent_r_dam",		CAR_VENT_R_DAM,	VEHICLE_FLAG_VEHMOD_DAM},
+	//{ "vm_supercharger",	CAR_SUPERCHARGER,	VEHICLE_FLAG_VEHMOD_DAM},
+#endif
+
+#ifdef IMPROVED_VEHICLES_2
+	{ "steeringwheel",	CAR_STEERINGWHEEL,	VEHICLE_FLAG_LEFT },
+	
+	{ "headlight_l",			CAR_HEADLIGHT_L,	VEHICLE_FLAG_LEFT | VEHICLE_FLAG_DRAWLAST },
+	{ "headlight_l_hi",			CAR_HEADLIGHT_L,	VEHICLE_FLAG_LEFT | VEHICLE_FLAG_DRAWLAST },
+	{ "taillight_l",			CAR_TAILLIGHT_L,	VEHICLE_FLAG_LEFT },
+	{ "reversinglight_l",		CAR_REVERSINGLIGHT_L,	VEHICLE_FLAG_LEFT },
+	{ "brakelight_l",			CAR_BRAKELIGHT_L,	VEHICLE_FLAG_LEFT },
+	{ "indicator_lf",			CAR_INDICATOR_LF,	VEHICLE_FLAG_LEFT },
+	{ "indicator2_lf",			CAR_INDICATOR_2_LF,	VEHICLE_FLAG_LEFT },
+	{ "indicator_lr",			CAR_INDICATOR_LR,	VEHICLE_FLAG_LEFT },
+	{ "indicator2_lr",			CAR_INDICATOR_2_LR,	VEHICLE_FLAG_LEFT },
+	{ "window_misc_l_hi",		CAR_WINDOW_L_MISC,	VEHICLE_FLAG_LEFT | VEHICLE_FLAG_DRAWLAST},
+
+	{ "window_rear_hi",			CAR_WINDOW_REAR,	VEHICLE_FLAG_REAR | VEHICLE_FLAG_DRAWLAST},
+
+	{ "headlight_r",			CAR_HEADLIGHT_R,	VEHICLE_FLAG_RIGHT | VEHICLE_FLAG_DRAWLAST },
+	{ "headlight_r_hi",			CAR_HEADLIGHT_R,	VEHICLE_FLAG_RIGHT | VEHICLE_FLAG_DRAWLAST },
+	{ "taillight_r",			CAR_TAILLIGHT_R,	VEHICLE_FLAG_RIGHT },
+	{ "reversinglight_r",		CAR_REVERSINGLIGHT_R,	VEHICLE_FLAG_RIGHT },
+	{ "brakelight_r",			CAR_BRAKELIGHT_R,	VEHICLE_FLAG_RIGHT },
+	{ "indicator_rf",			CAR_INDICATOR_RF,	VEHICLE_FLAG_RIGHT },
+	{ "indicator2_rf",			CAR_INDICATOR_2_RF,	VEHICLE_FLAG_RIGHT },
+	{ "indicator_rr",			CAR_INDICATOR_RR,	VEHICLE_FLAG_RIGHT },
+	{ "indicator2_rr",			CAR_INDICATOR_2_RR,	VEHICLE_FLAG_RIGHT },
+	{ "window_misc_r_hi",		CAR_WINDOW_R_MISC,	VEHICLE_FLAG_RIGHT | VEHICLE_FLAG_DRAWLAST},
+#endif
 
 	{ "ped_frontseat",	CAR_POS_FRONTSEAT,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
 	{ "ped_backseat",	CAR_POS_BACKSEAT,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
 	{ "headlights",		CAR_POS_HEADLIGHTS,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
 	{ "taillights",		CAR_POS_TAILLIGHTS,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+#ifdef IMPROVED_VEHICLES_2
+	{ "headlights2",			CAR_POS_HEADLIGHTS_2,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "taillights2",			CAR_POS_TAILLIGHTS_2,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "reversinglights",		CAR_POS_REVERSINGLIGHTS, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "reversinglights2",		CAR_POS_REVERSINGLIGHTS_2, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "brakelights",			CAR_POS_BRAKELIGHTS, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "brakelights2",			CAR_POS_BRAKELIGHTS_2, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "indicators_f",			CAR_POS_INDICATORS_F, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "indicators_r",			CAR_POS_INDICATORS_R, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "indicators2_f",			CAR_POS_INDICATORS_2_F, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "indicators2_r",			CAR_POS_INDICATORS_2_R, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "engine",					CAR_POS_ENGINE, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "overheat",				CAR_POS_OVERHEAT, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "overheat2",				CAR_POS_OVERHEAT_2, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "petrolcap",				CAR_POS_PETROLCAP, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+#endif
 	{ "exhaust",		CAR_POS_EXHAUST,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
 	{ "extra1",		0, VEHICLE_FLAG_DRAWLAST | VEHICLE_FLAG_COMP | CLUMP_FLAG_NO_HIERID },
 	{ "extra2",		0, VEHICLE_FLAG_DRAWLAST | VEHICLE_FLAG_COMP | CLUMP_FLAG_NO_HIERID },
@@ -142,11 +204,26 @@ RwObjectNameIdAssocation bikeIds[] = {
 	{ "wheel_rear",		BIKE_WHEEL_REAR,	0 },
 	{ "mudguard",		BIKE_MUDGUARD,	0 },
 	{ "handlebars",		BIKE_HANDLEBARS,	0 },
+#ifdef IMPROVED_VEHICLES_2
+	{ "headlight_l",	BIKE_HEADLIGHT_L,	VEHICLE_FLAG_FRONT },
+	{ "taillight_l",	BIKE_TAILLIGHT_L,	VEHICLE_FLAG_LEFT },
+	{ "indicator_lf",	BIKE_INDICATOR_LF,	VEHICLE_FLAG_LEFT },
+	{ "indicator_lr",	BIKE_INDICATOR_LR,	VEHICLE_FLAG_LEFT },
+	{ "indicator_rf",	BIKE_INDICATOR_RF,	VEHICLE_FLAG_RIGHT },
+	{ "indicator_rr",	BIKE_INDICATOR_RR,	VEHICLE_FLAG_RIGHT },
+#endif
 	{ "ped_frontseat",	CAR_POS_FRONTSEAT,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
 	{ "ped_backseat",	CAR_POS_BACKSEAT,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
 	{ "headlights",		CAR_POS_HEADLIGHTS,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
 	{ "taillights",		CAR_POS_TAILLIGHTS,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
 	{ "exhaust",		CAR_POS_EXHAUST,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+#ifdef IMPROVED_VEHICLES_2
+	{ "indicators_f",	CAR_POS_INDICATORS_F, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "indicators_r",	CAR_POS_INDICATORS_R, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "overheat",		CAR_POS_OVERHEAT, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "overheat2",		CAR_POS_OVERHEAT_2, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "petrolcap",		CAR_POS_PETROLCAP, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+#endif
 	{ "extra1",		0,	VEHICLE_FLAG_DRAWLAST | VEHICLE_FLAG_COMP | CLUMP_FLAG_NO_HIERID },
 	{ "extra2",		0,	VEHICLE_FLAG_DRAWLAST | VEHICLE_FLAG_COMP | CLUMP_FLAG_NO_HIERID },
 	{ "extra3",		0,	VEHICLE_FLAG_DRAWLAST | VEHICLE_FLAG_COMP | CLUMP_FLAG_NO_HIERID },
@@ -179,6 +256,9 @@ CVehicleModelInfo::CVehicleModelInfo(void)
 	}
 	m_numColours = 0;
 	m_animFileIndex = -1;
+#ifdef IMPROVED_VEHICLES_2
+	bNewLights = false;
+#endif
 }
 
 void
@@ -249,6 +329,14 @@ CVehicleModelInfo::SetClump(RpClump *clump)
 	PreprocessHierarchy();
 	FindEditableMaterialList();
 	SetEnvironmentMap();
+
+#ifdef IMPROVED_VEHICLES_2 // set light textures
+	RwTexDictionary* modelTxd = CTxdStore::GetSlot(GetTxdSlot())->texDict;
+	if (modelTxd) {
+		lightsOffTexture = RwTexDictionaryFindNamedTexture(modelTxd, "lights");
+		lightsOnTexture = RwTexDictionaryFindNamedTexture(modelTxd, "lightson");
+	}
+#endif
 }
 
 void
@@ -275,6 +363,14 @@ CVehicleModelInfo::ConvertAnimFileIndex(void)
 RwFrame*
 CVehicleModelInfo::CollapseFramesCB(RwFrame *frame, void *data)
 {
+#ifdef IMPROVED_VEHICLES_2 // don't move light frame
+	if (strstr(GetFrameNodeName(frame), "light_l") || strstr(GetFrameNodeName(frame), "light_r") || strstr(GetFrameNodeName(frame), "indicator"))
+		return frame;
+#endif
+#ifdef VEHICLE_MODS // don't move upgrade frame
+	if (strstr(GetFrameNodeName(frame), "vm_"))
+		return frame;
+#endif
 	RwFrameForAllChildren(frame, CollapseFramesCB, data);
 	RwFrameForAllObjects(frame, MoveObjectsCB, data);
 	RwFrameDestroy(frame);
@@ -302,6 +398,13 @@ CVehicleModelInfo::HideDamagedAtomicCB(RpAtomic *atomic, void *data)
 RpAtomic*
 CVehicleModelInfo::HideAllComponentsAtomicCB(RpAtomic *atomic, void *data)
 {
+#ifdef VEHICLE_MODS
+	if (strstr(GetFrameNodeName(RpAtomicGetFrame(atomic)), "supercharger") ||
+		strstr(GetFrameNodeName(RpAtomicGetFrame(atomic)), "carb") ||
+		strstr(GetFrameNodeName(RpAtomicGetFrame(atomic)), "flywheel"))
+		return atomic;
+#endif
+
 	if(CVisibilityPlugins::GetAtomicId(atomic) & (uintptr)data)
 		RpAtomicSetFlags(atomic, 0);
 	else
@@ -331,11 +434,21 @@ CVehicleModelInfo::SetAtomicRendererCB(RpAtomic *atomic, void *data)
 	name = GetFrameNodeName(RpAtomicGetFrame(atomic));
 	alpha = false;
 	RpGeometryForAllMaterials(RpAtomicGetGeometry(atomic), HasAlphaMaterialCB, &alpha);
+#ifdef IMPROVED_VEHICLES_2
+	if (strstr(name, "_hi") || !CGeneral::faststrncmp(name, "extra", 5)) {
+		if (alpha || strncmp(name, "windscreen", 10) == 0) {
+			CVisibilityPlugins::SetAtomicRenderCallback(atomic, CVisibilityPlugins::RenderVehicleHiDetailAlphaCB);
+			if (strncmp(name, "window", 6) == 0)
+				CVisibilityPlugins::SetAtomicFlag(atomic, ATOMIC_FLAG_DOORWINDOW);
+		} else
+			CVisibilityPlugins::SetAtomicRenderCallback(atomic, CVisibilityPlugins::RenderVehicleHiDetailCB);
+#else
 	if(strstr(name, "_hi") || !CGeneral::faststrncmp(name, "extra", 5)) {
 		if(alpha || strncmp(name, "windscreen", 10) == 0)
 			CVisibilityPlugins::SetAtomicRenderCallback(atomic, CVisibilityPlugins::RenderVehicleHiDetailAlphaCB);
 		else
 			CVisibilityPlugins::SetAtomicRenderCallback(atomic, CVisibilityPlugins::RenderVehicleHiDetailCB);
+#endif
 	}else if(strstr(name, "_lo")){
 		RpClumpRemoveAtomic(clump, atomic);
 		RpAtomicDestroy(atomic);
@@ -597,10 +710,80 @@ CVehicleModelInfo::PreprocessHierarchy(void)
 
 		SetVehicleComponentFlags(assoc.frame, desc[i].flags);
 
+#ifdef VEHICLE_MODS // set default window material color
+		if (strncmp(desc[i].name, "door_lf_dummy", 13) == 0) {
+			RpAtomic* doorAtomic = nil;
+			RwFrameForAllObjects(assoc.frame, GetCurrentAtomicObjectCB, &doorAtomic);
+			if (doorAtomic) {
+				for (int i = 0; i < doorAtomic->geometry->matList.numMaterials; i++) {
+					RpMaterial* material = doorAtomic->geometry->matList.materials[i];
+
+					if (material->color.alpha == 255)
+						continue;
+
+					m_nDefaultWindowMaterialColor = material->color;
+					break;
+				}
+			}
+		}
+#endif
+
+#ifdef IMPROVED_VEHICLES_2 // set default window material color
+		if (strncmp(desc[i].name, "door_lf_dummy", 13) == 0) {
+			RpAtomic* windowAtomic = nil;
+			RwFrameForAllObjects(assoc.frame, GetWindowAtomicObjectCB, &windowAtomic);
+			if (windowAtomic) {
+				RpMaterial* material = windowAtomic->geometry->matList.materials[0];
+				m_nDefaultWindowMaterialColor = material->color;
+			}
+		}
+#endif
+
+#ifdef IMPROVED_VEHICLES_2
+		if (!CGeneral::faststrncmp(desc[i].name, "headlight_l", 11) || 
+			!CGeneral::faststrncmp(desc[i].name, "headlight_l_hi", 14) ||
+			!CGeneral::faststrncmp(desc[i].name, "taillight_l", 11)) {
+
+			bNewLights = true;
+		}
+
+		char* parentName = GetFrameNodeName(assoc.frame->getParent());
+		if (!CGeneral::faststrncmp(parentName, "wing_lf_dummy", 11)) {
+			if (!CGeneral::faststrncmp(desc[i].name, "headlight_l", 11))
+				newLightsData.bWingHeadlights = true;
+			else if (!CGeneral::faststrncmp(desc[i].name, "indicator_lf", 12))
+				newLightsData.bWingIndicators1 = true;
+			else if (!CGeneral::faststrncmp(desc[i].name, "indicator2_lf", 13))
+				newLightsData.bWingIndicators2 = true;
+		} else if (!CGeneral::faststrncmp(parentName, "bump_front_dummy", 16)) {
+			if (!CGeneral::faststrncmp(desc[i].name, "headlight_l", 11))
+				newLightsData.bBumperHeadlights = true;
+			else if (!CGeneral::faststrncmp(desc[i].name, "indicator_lf", 12))
+				newLightsData.bBumperForwardIndicators1 = true;
+			else if (!CGeneral::faststrncmp(desc[i].name, "indicator2_lf", 13))
+				newLightsData.bBumperForwardIndicators2 = true;
+		} else if (!CGeneral::faststrncmp(parentName, "bump_rear_dummy", 16)) {
+			if (!CGeneral::faststrncmp(desc[i].name, "taillight_l", 11))
+				newLightsData.bBumperTaillights = true;
+			else if (!CGeneral::faststrncmp(desc[i].name, "indicator_lr", 12))
+				newLightsData.bBumperRearIndicators1 = true;
+			else if (!CGeneral::faststrncmp(desc[i].name, "indicator2_lr", 13))
+				newLightsData.bBumperRearIndicators2 = true;
+			else if (!CGeneral::faststrncmp(desc[i].name, "brakelight_l", 12))
+				newLightsData.bBumperBrakelights = true;
+			else if (!CGeneral::faststrncmp(desc[i].name, "reversinglight_l", 16))
+				newLightsData.bBumperReversinglights = true;
+		}
+#endif
+
 		if(desc[i].flags & VEHICLE_FLAG_ADD_WHEEL){
 			if(m_wheelId == -1)
 				RwFrameDestroy(assoc.frame);
+#ifdef NEW_VEHICLE_LOADER // Custom wheels
+			else if (m_wheelId != 249){
+#else
 			else{
+#endif
 				RwV3d scale;
 				atomic = (RpAtomic*)CModelInfo::GetModelInfo(m_wheelId)->CreateInstance();
 				RwFrameDestroy(RpAtomicGetFrame(atomic));
@@ -801,6 +984,10 @@ struct editableMatCBData
 	CVehicleModelInfo *vehicle;
 	int32 numMats1;
 	int32 numMats2;
+#ifdef IMPROVED_VEHICLES // More colors
+	int32 numMats3;
+	int32 numMats4;
+#endif
 };
 
 RpMaterial*
@@ -819,6 +1006,17 @@ CVehicleModelInfo::GetEditableMaterialListCB(RpMaterial *material, void *data)
 		cbdata->vehicle->m_materials2[cbdata->numMats2++] = material;
 		RpMaterialSetColor(material, &white);
 	}
+#ifdef IMPROVED_VEHICLES // More colors
+	else if (col->red == 0 && col->green == 255 && col->blue == 255 || 
+			 col->red == 185 && col->green == 255 && col->blue == 0) { // MVL and SA tertiary colours
+
+		cbdata->vehicle->m_materials3[cbdata->numMats3++] = material;
+		RpMaterialSetColor(material, &white);
+	} else if(col->red == 255 && col->green == 60 && col->blue == 0){ // SA quaternary colours
+		cbdata->vehicle->m_materials4[cbdata->numMats4++] = material;
+		RpMaterialSetColor(material, &white);
+	}
+#endif
 	return material;
 }
 
@@ -831,6 +1029,10 @@ CVehicleModelInfo::GetEditableMaterialListCB(RpAtomic *atomic, void *data)
 
 static int maxFirstMaterials;
 static int maxSecondMaterials;
+#ifdef IMPROVED_VEHICLES // More colors
+static int maxThirdMaterials;
+static int maxFourthMaterials;
+#endif
 
 void
 CVehicleModelInfo::FindEditableMaterialList(void)
@@ -841,6 +1043,10 @@ CVehicleModelInfo::FindEditableMaterialList(void)
 	cbdata.vehicle = this;
 	cbdata.numMats1 = 0;
 	cbdata.numMats2 = 0;
+#ifdef IMPROVED_VEHICLES // More colors
+	cbdata.numMats3 = 0;
+	cbdata.numMats4 = 0;
+#endif
 	RpClumpForAllAtomics(m_clump, GetEditableMaterialListCB, &cbdata);
 	for(i = 0; i < m_numComps; i++)
 		GetEditableMaterialListCB(m_comps[i], &cbdata);
@@ -850,10 +1056,22 @@ CVehicleModelInfo::FindEditableMaterialList(void)
 	maxSecondMaterials = Max(maxSecondMaterials, cbdata.numMats2);
 	m_currentColour1 = -1;
 	m_currentColour2 = -1;
+#ifdef IMPROVED_VEHICLES // More colors
+	m_materials3[cbdata.numMats3] = nil;
+	m_materials4[cbdata.numMats4] = nil;
+	maxThirdMaterials = Max(maxThirdMaterials, cbdata.numMats3);
+	maxFourthMaterials = Max(maxFourthMaterials, cbdata.numMats4);
+	m_currentColour3 = -1;
+	m_currentColour4 = -1;
+#endif
 }
 
 void
+#ifdef IMPROVED_VEHICLES // More colors
+CVehicleModelInfo::SetVehicleColour(uint8 c1, uint8 c2, uint8 c3, uint8 c4)
+#else
 CVehicleModelInfo::SetVehicleColour(uint8 c1, uint8 c2)
+#endif
 {
 	RwRGBA col, *colp;
 	RpMaterial **matp;
@@ -879,8 +1097,68 @@ CVehicleModelInfo::SetVehicleColour(uint8 c1, uint8 c2)
 		}
 		m_currentColour2 = c2;
 	}
+
+#ifdef IMPROVED_VEHICLES // More colors
+	if(c3 != m_currentColour3){
+		col = ms_vehicleColourTable[c3];
+		for(matp = m_materials3; *matp; matp++){
+			colp = (RwRGBA*)RpMaterialGetColor(*matp);
+			colp->red = col.red;
+			colp->green = col.green;
+			colp->blue = col.blue;
+		}
+		m_currentColour3 = c3;
+	}
+
+	if(c4 != m_currentColour4){
+		col = ms_vehicleColourTable[c4];
+		for(matp = m_materials4; *matp; matp++){
+			colp = (RwRGBA*)RpMaterialGetColor(*matp);
+			colp->red = col.red;
+			colp->green = col.green;
+			colp->blue = col.blue;
+		}
+		m_currentColour4 = c4;
+	}
+#endif
 }
 
+#ifdef IMPROVED_VEHICLES // More colors
+void
+CVehicleModelInfo::ChooseVehicleColour(uint8 &col1, uint8 &col2, uint8& col3, uint8& col4)
+{
+	if(m_numColours == 0 || gbBlackCars){
+		col1 = 0;
+		col2 = 0;
+		col3 = 0;
+		col4 = 0;
+	}else if(gbPinkCars){
+		col1 = 68;
+		col2 = 68;
+		col3 = 68;
+		col4 = 68;
+	}else{
+		m_lastColorVariation = (m_lastColorVariation+1) % m_numColours;
+		col1 = m_colours1[m_lastColorVariation];
+		col2 = m_colours2[m_lastColorVariation];
+		col3 = m_colours3[m_lastColorVariation];
+		col4 = m_colours4[m_lastColorVariation];
+		if(m_numColours > 1){
+			CVehicle *veh = FindPlayerVehicle();
+			if(veh && CModelInfo::GetModelInfo(veh->GetModelIndex()) == this &&
+			   veh->m_currentColour1 == col1 && veh->m_currentColour2 == col2 &&
+			   veh->m_currentColour3 == col3 && veh->m_currentColour4 == col4){
+
+				m_lastColorVariation = (m_lastColorVariation+1) % m_numColours;
+				col1 = m_colours1[m_lastColorVariation];
+				col2 = m_colours2[m_lastColorVariation];
+				col3 = m_colours3[m_lastColorVariation];
+				col4 = m_colours4[m_lastColorVariation];
+			}
+		}
+	}
+}
+#else
 void
 CVehicleModelInfo::ChooseVehicleColour(uint8 &col1, uint8 &col2)
 {
@@ -906,7 +1184,42 @@ CVehicleModelInfo::ChooseVehicleColour(uint8 &col1, uint8 &col2)
 		}
 	}
 }
+#endif
 
+#ifdef IMPROVED_VEHICLES // More colors
+void
+CVehicleModelInfo::AvoidSameVehicleColour(uint8 *col1, uint8 *col2, uint8 *col3, uint8 *col4)
+{
+	int i, n;
+
+	if(gbBlackCars){
+		*col1 = 0;
+		*col2 = 0;
+		*col3 = 0;
+		*col4 = 0;
+	}else if(gbPinkCars){
+		*col1 = 68;
+		*col2 = 68;
+		*col3 = 68;
+		*col4 = 68;
+	}else{
+		if(m_numColours > 1)
+			for(i = 0; i < NUM_VEHICLE_COLOURS; i++){
+				if(*col1 != m_lastColour1 || *col2 != m_lastColour2 || *col3 != m_lastColour3 || *col4 != m_lastColour4)
+					break;
+				n = CGeneral::GetRandomNumberInRange(0, m_numColours);
+				*col1 = m_colours1[n];
+				*col2 = m_colours2[n];
+				*col3 = m_colours3[n];
+				*col4 = m_colours4[n];
+			}
+		m_lastColour1 = *col1;
+		m_lastColour2 = *col2;
+		m_lastColour3 = *col3;
+		m_lastColour4 = *col4;
+	}
+}
+#else
 void
 CVehicleModelInfo::AvoidSameVehicleColour(uint8 *col1, uint8 *col2)
 {
@@ -931,6 +1244,7 @@ CVehicleModelInfo::AvoidSameVehicleColour(uint8 *col1, uint8 *col2)
 		m_lastColour2 = *col2;
 	}
 }
+#endif
 
 // unused
 RwTexture*
@@ -1056,6 +1370,99 @@ CVehicleModelInfo::LoadVehicleColours(void)
 	}
 
 	CFileMgr::CloseFile(fd);
+
+#ifdef NEW_VEHICLE_LOADER // loading car colors
+	char param[10];
+	int id = 0;
+	int anotherColors[64];
+
+	CFileMgr::ChangeDir("\\ViceEx\\NewVehicles\\");
+	fd = CFileMgr::OpenFile("NEWVEHICLES.IDE", "r");
+	CFileMgr::ChangeDir("\\");
+
+	while(CFileMgr::ReadLine(fd, line, sizeof(line))){
+		for(start = 0; ; start++)
+			if(line[start] > ' ' || line[start] == '\0' || line[start] == '\n')
+				break;
+
+		for(end = start; ; end++){
+			if(line[end] == '\0' || line[end] == '\n')
+				break;
+			if(line[end] == ',' || line[end] == '\r')
+				line[end] = ' ';
+		}
+		line[end] = '\0';
+
+		if(line[start] == '#' || line[start] == '\0')
+			continue;
+
+		if (line[0] == 'c') {
+			if (line[7] == '4') { // carcols4
+				n = sscanf(&line[start],
+					"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
+					param,
+					&id,
+					&anotherColors[0], &anotherColors[1], &anotherColors[2], &anotherColors[3],
+					&anotherColors[4], &anotherColors[5], &anotherColors[6], &anotherColors[7],
+					&anotherColors[8], &anotherColors[9], &anotherColors[10], &anotherColors[11],
+					&anotherColors[12], &anotherColors[13], &anotherColors[14], &anotherColors[15],
+					&anotherColors[16], &anotherColors[17], &anotherColors[18], &anotherColors[19],
+					&anotherColors[20], &anotherColors[21], &anotherColors[22], &anotherColors[23],
+					&anotherColors[24], &anotherColors[25], &anotherColors[26], &anotherColors[27],
+					&anotherColors[28], &anotherColors[29], &anotherColors[30], &anotherColors[31],
+					&anotherColors[32], &anotherColors[33], &anotherColors[34], &anotherColors[35],
+					&anotherColors[36], &anotherColors[37], &anotherColors[38], &anotherColors[39],
+					&anotherColors[40], &anotherColors[41], &anotherColors[42], &anotherColors[43],
+					&anotherColors[44], &anotherColors[45], &anotherColors[46], &anotherColors[47],
+					&anotherColors[48], &anotherColors[49], &anotherColors[50], &anotherColors[51],
+					&anotherColors[52], &anotherColors[53], &anotherColors[54], &anotherColors[55],
+					&anotherColors[56], &anotherColors[57], &anotherColors[58], &anotherColors[59],
+					&anotherColors[60], &anotherColors[61], &anotherColors[62], &anotherColors[63]);
+				CVehicleModelInfo *mi = (CVehicleModelInfo*)CModelInfo::GetModelInfo(id);
+				assert(mi);
+				mi->m_numColours = (n-1)/4;
+				for(i = 0; i < mi->m_numColours; i++){
+					mi->m_colours1[i] = anotherColors[i*4 + 0];
+					mi->m_colours2[i] = anotherColors[i*4 + 1];
+					mi->m_colours3[i] = anotherColors[i*4 + 2];
+					mi->m_colours4[i] = anotherColors[i*4 + 3];
+				}
+				mi->bHasManyColors = true;
+			} else if (line[6] == 's') { // carcols (two colors)
+				n = sscanf(&line[start],
+					"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
+					param,
+					&id,
+					&anotherColors[0], &anotherColors[1],
+					&anotherColors[2], &anotherColors[3],
+					&anotherColors[4], &anotherColors[5],
+					&anotherColors[6], &anotherColors[7],
+					&anotherColors[8], &anotherColors[9],
+					&anotherColors[10], &anotherColors[11],
+					&anotherColors[12], &anotherColors[13],
+					&anotherColors[14], &anotherColors[15],
+					&anotherColors[16], &anotherColors[17],
+					&anotherColors[18], &anotherColors[19],
+					&anotherColors[20], &anotherColors[21],
+					&anotherColors[22], &anotherColors[23],
+					&anotherColors[24], &anotherColors[25],
+					&anotherColors[26], &anotherColors[27],
+					&anotherColors[28], &anotherColors[29],
+					&anotherColors[30], &anotherColors[31]);
+				CVehicleModelInfo *mi = (CVehicleModelInfo*)CModelInfo::GetModelInfo(id);
+				assert(mi);
+				mi->m_numColours = (n-1)/2;
+				for(i = 0; i < mi->m_numColours; i++){
+					mi->m_colours1[i] = anotherColors[i*2 + 0];
+					mi->m_colours2[i] = anotherColors[i*2 + 1];
+				}
+				mi->bHasManyColors = false;
+			}
+		}
+	}
+
+	CFileMgr::CloseFile(fd);
+#endif
 }
 
 void
@@ -1128,7 +1535,11 @@ CVehicleModelInfo::SetEnvironmentMap(void)
 	}
 
 	RpClumpForAllAtomics(m_clump, SetEnvironmentMapCB, nil);
+#ifdef NEW_VEHICLE_LOADER // Custom wheels
+	if(m_wheelId != -1 && m_wheelId != 249){
+#else
 	if(m_wheelId != -1){
+#endif
 		wheelmi = (CSimpleModelInfo*)CModelInfo::GetModelInfo(m_wheelId);
 		for(i = 0; i < wheelmi->m_numAtomics; i++)
 			SetEnvironmentMapCB(wheelmi->m_atomics[i], nil);

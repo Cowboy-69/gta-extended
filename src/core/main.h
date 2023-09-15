@@ -18,7 +18,12 @@ struct GlobalScene
 };
 extern GlobalScene Scene;
 
+#ifdef VICE_CRY
+extern uint8 work_buff[100000];
+extern uint8 col_buff[100000];
+#else
 extern uint8 work_buff[55000];
+#endif
 extern char gString[256];
 extern char gString2[512];
 extern wchar gUString[256];
@@ -33,6 +38,10 @@ extern bool gbShowTimebars;
 
 #ifndef FINAL
 extern bool gbPrintMemoryUsage;
+#endif
+
+#ifdef IMPROVED_TECH_PART // New screenshot folder and numbering
+extern uint32 newScreenNumber;
 #endif
 
 class CSprite2d;
@@ -53,6 +62,9 @@ void ValidateVersion();
 void ResetLoadingScreenBar(void);
 #ifndef MASTER
 void TheModelViewer(void);
+#endif
+#ifdef IMPROVED_TECH_PART // New screenshot folder and numbering
+void TakeAndSaveScreenshot();
 #endif
 
 #ifdef LOAD_INI_SETTINGS

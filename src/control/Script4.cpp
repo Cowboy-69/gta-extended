@@ -40,6 +40,9 @@
 #include "Zones.h"
 #include "Bike.h"
 #include "Wanted.h"
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+#include "GenericGameStorage.h"
+#endif
 
 #ifdef FIX_BUGS
 static bool IsSlideObjectUsedWrongByScript(const CVector& posTarget, const CVector& slideBy)
@@ -1820,6 +1823,11 @@ int8 CRunningScript::ProcessCommands900To999(int32 command)
 			if (model == -1)
 				continue;
 			if (CModelInfo::IsCarModel(model) || CModelInfo::IsBikeModel(model)) {
+#ifdef NEW_VEHICLE_LOADER
+				if (model >= MI_FIRST_NEW_VEHICLE)
+					model = -1;
+				else
+#endif
 				switch (model) {
 				case MI_LANDSTAL:
 				case MI_LINERUN:
@@ -2101,6 +2109,11 @@ int8 CRunningScript::ProcessCommands900To999(int32 command)
 		FrontEndMenuManager.m_bActivateSaveMenu = true;
 		FindPlayerPed()->SetMoveSpeed(0.0f, 0.0f, 0.0f);
 		FindPlayerPed()->SetTurnSpeed(0.0f, 0.0f, 0.0f);
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+		IsQuickSave = false;
+		bAutoSave = false;
+		bSaveAnywhere = false;
+#endif
 		return 0;
 	}
 	case COMMAND_HAS_SAVE_GAME_FINISHED:

@@ -47,7 +47,11 @@ C_PcSave::SaveSlot(int32 slot)
 	int file = CFileMgr::OpenFile(ValidSaveName, "wb");
 	if (file != 0) {
 #ifdef MISSION_REPLAY
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+		if (!IsQuickSave && !bAutoSave && !bSaveAnywhere)
+#else
 		if (!IsQuickSave)
+#endif
 #endif
 			DoGameSpecificStuffBeforeSave();
 		if (GenericSave(file)) {

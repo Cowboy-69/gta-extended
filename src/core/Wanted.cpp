@@ -11,6 +11,9 @@
 #include "Wanted.h"
 #include "General.h"
 #include "Stats.h"
+#if defined IMPROVED_TECH_PART && defined DEBUG // wanted system
+#include "Debug.h"
+#endif
 
 int32 CWanted::MaximumWantedLevel = 6;
 int32 CWanted::nMaximumWantedLevel = 9600;
@@ -36,6 +39,15 @@ CWanted::Initialise()
 	m_nWantedLevel = 0;
 	m_nMinWantedLevel = 0;
 	m_CopsBeatingSuspect = 0;
+
+#ifdef IMPROVED_TECH_PART // wanted system
+	m_nLastTimeSeenPlayer = 0;
+	m_vecLastSeenPosPlayer = CVector(0.0f, 0.0f, 0.0f);
+	m_nTimeDelayBeforeBeingSeen = 0;
+	m_nTimeAutomaticUpdatedPosPlayer = 0;
+	m_bNextReportIsLastSeen = false;
+	m_bSearchPlayerRandomly = false;
+#endif
 
 	for (int i = 0; i < ARRAY_SIZE(m_pCops); i++)
 		m_pCops[i] = nil;
@@ -79,7 +91,11 @@ CWanted::NumOfHelisRequired()
 		return 1;
 	case 5:
 	case 6:
+#ifdef IMPROVED_TECH_PART // wanted system
+		return 2;
+#else
 		return 1;
+#endif
 	default:
 		return 0;
 	}
@@ -88,6 +104,11 @@ CWanted::NumOfHelisRequired()
 void
 CWanted::SetWantedLevel(int32 level)
 {
+#ifdef IMPROVED_TECH_PART // wanted system
+	if (level > 0)
+		m_vecLastSeenPosPlayer = FindPlayerCoors();
+#endif
+
 	if (level > MaximumWantedLevel)
 		level = MaximumWantedLevel;
 
@@ -231,6 +252,10 @@ CWanted::ReportCrimeNow(eCrimeType type, const CVector &coors, bool policeDoesnt
 	float sensitivity, chaos;
 	int wantedLevelDrop;
 
+#ifdef IMPROVED_TECH_PART // wanted system
+	m_nLastTimeSeenPlayer = CTimer::GetTimeInMilliseconds();
+#endif
+
 	if(CDarkel::FrenzyOnGoing())
 		sensitivity = m_fCrimeSensitivity*0.3f;
 	else
@@ -332,25 +357,41 @@ CWanted::UpdateWantedLevel()
 		CStats::WantedStarsAttained += 2 - m_nWantedLevel;
 		m_nWantedLevel = 2;
 		m_MaximumLawEnforcerVehicles = 2;
+#ifdef IMPROVED_TECH_PART
+		m_MaxCops = 5;
+#else
 		m_MaxCops = 3;
+#endif
 		m_RoadblockDensity = 0;
 	} else if (m_nChaos >= 550 && m_nChaos < 1200) {
 		CStats::WantedStarsAttained += 3 - m_nWantedLevel;
 		m_nWantedLevel = 3;
 		m_MaximumLawEnforcerVehicles = 2;
+#ifdef IMPROVED_TECH_PART
+		m_MaxCops = 7;
+#else
 		m_MaxCops = 4;
+#endif
 		m_RoadblockDensity = 12;
 	} else if (m_nChaos >= 1200 && m_nChaos < 2400) {
 		CStats::WantedStarsAttained += 4 - m_nWantedLevel;
 		m_nWantedLevel = 4;
 		m_MaximumLawEnforcerVehicles = 2;
+#ifdef IMPROVED_TECH_PART
+		m_MaxCops = 10;
+#else
 		m_MaxCops = 6;
+#endif
 		m_RoadblockDensity = 18;
 	} else if (m_nChaos >= 2400 && m_nChaos < 4800) {
 		CStats::WantedStarsAttained += 5 - m_nWantedLevel;
 		m_nWantedLevel = 5;
 		m_MaximumLawEnforcerVehicles = 3;
+#ifdef IMPROVED_TECH_PART
+		m_MaxCops = 10;
+#else
 		m_MaxCops = 8;
+#endif
 		m_RoadblockDensity = 24;
 	} else if (m_nChaos >= 4800) {
 		CStats::WantedStarsAttained += 6 - m_nWantedLevel;
@@ -364,6 +405,21 @@ CWanted::UpdateWantedLevel()
 		m_nLastWantedLevelChange = CTimer::GetTimeInMilliseconds();
 }
 
+#ifdef IMPROVED_TECH_PART // wanted system
+bool CWanted::IsPlayerLost() const
+{
+	int wantedLevel = FindPlayerPed()->m_pWanted->GetWantedLevel();
+	int timeCopsSeenPlayerAfterLost = 25000 + (5000 * wantedLevel);
+	return CTimer::GetTimeInMilliseconds() - FindPlayerPed()->m_pWanted->m_nLastTimeSeenPlayer > timeCopsSeenPlayerAfterLost;
+}
+
+bool CWanted::IsPlayerHides() const
+{
+	int timeInMs = FindPlayerPed()->InVehicle() ? 3000 : 500;
+	return CTimer::GetTimeInMilliseconds() - FindPlayerPed()->m_pWanted->m_nLastTimeSeenPlayer > timeInMs;
+}
+#endif
+
 int32
 CWanted::WorkOutPolicePresence(CVector posn, float radius)
 {
@@ -371,19 +427,171 @@ CWanted::WorkOutPolicePresence(CVector posn, float radius)
 	CPed *ped;
 	CVehicle *vehicle;
 	int numPolice = 0;
+#ifdef IMPROVED_TECH_PART // wanted system
+	CWanted* wanted = FindPlayerPed()->m_pWanted;
+
+	bool nobodySawPlayer = true;
+	float timeDelayDiff = CTimer::GetTimeInMilliseconds() - wanted->m_nTimeDelayBeforeBeingSeen;
+#endif
 
 	i = CPools::GetPedPool()->GetSize();
 	while(--i >= 0){
 		ped = CPools::GetPedPool()->GetSlot(i);
+#ifdef IMPROVED_TECH_PART // wanted system
+		if (ped && IsPolicePedModel(ped->GetModelIndex())) {
+			CCopPed* copPed = (CCopPed*)ped;
+
+			if (copPed->DyingOrDead())
+				continue;
+
+			if (wanted->GetWantedLevel() == 0) {
+				copPed->m_vecLastPosPlayerBeforeHiding = FindPlayerCoors();
+				wanted->m_vecLastSeenPosPlayer = FindPlayerCoors();
+			}
+
+			float searchRadius = radius;
+			if (ped->InVehicle() && wanted->GetWantedLevel() >= 2)
+				searchRadius = 90.0f;
+
+			if ((posn - ped->GetPosition()).Magnitude() < searchRadius) {
+				float angleOfSight;
+				if (ped->InVehicle()) {
+					angleOfSight = -1.0f;
+				} else {
+					CVector distance = ped->GetPosition() - posn;
+					CVector copForward = ped->GetForward();
+					angleOfSight = DotProduct(copForward, distance);
+				}
+
+				RwV3d copHeadPos;
+				copHeadPos.x = 0.0f;
+				copHeadPos.y = 0.0f;
+				copHeadPos.z = 0.0f;
+				ped->m_pedIK.GetComponentPosition(copHeadPos, PED_HEAD);
+				
+				RwV3d playerHeadPos;
+				playerHeadPos.x = 0.0f;
+				playerHeadPos.y = 0.0f;
+				playerHeadPos.z = 0.0f;
+				FindPlayerPed()->m_pedIK.GetComponentPosition(playerHeadPos, PED_HEAD);
+				
+				CEntity* hitEntity = nil;
+				if (FindPlayerPed()->bIsDucking) {
+					CWorld::ProcessLineOfSight(copHeadPos, playerHeadPos, CColPoint{}, hitEntity, true, true, false, false, false, true, true, true);
+				} else {
+					bool bCheckVehicles = false;
+					if (!FindPlayerVehicle()) {
+						CEntity* hitEntity2;
+						if (CWorld::ProcessLineOfSight(copHeadPos, playerHeadPos, CColPoint{}, hitEntity2, true, true, false, false, false, true, true, true)) {
+							CVehicle* hitVehicle = (CVehicle*)hitEntity2;
+							if (hitVehicle && hitVehicle->IsHighVehicle())
+								bCheckVehicles = true;
+						}
+					}
+
+					CWorld::ProcessLineOfSight(copHeadPos, playerHeadPos, CColPoint{}, hitEntity, true, bCheckVehicles, false, false, false, true, true, true);
+				}
+
+				bool bCopSeesPlayer = angleOfSight < -0.25f && !hitEntity;
+				
+				int event;
+				if ((wanted->GetWantedLevel() == 0 && bCopSeesPlayer) ||
+					(wanted->GetWantedLevel() > 0 && !wanted->IsPlayerLost()) ||
+					CEventList::FindClosestEvent(EVENT_GUNSHOT, posn, &event))
+					numPolice++;
+
+				if (bCopSeesPlayer)
+					nobodySawPlayer = false;
+
+				if (bCopSeesPlayer && timeDelayDiff > TIME_DELAY_BEFORE_BEING_SEEN) {
+					if (FindPlayerVehicle() && !wanted->IsPlayerHides())
+						wanted->m_vLastSeenPlayerVehicle = FindPlayerVehicle();
+
+					if (FindPlayerVehicle())
+						if (wanted->m_vLastSeenPlayerVehicle != FindPlayerVehicle() && Distance(ped->GetPosition(), posn) > 12.5f && FindPlayerVehicle()->m_vehType != VEHICLE_TYPE_BIKE)
+							break;
+					
+					wanted->m_nLastTimeSeenPlayer = CTimer::GetTimeInMilliseconds();
+					wanted->m_nTimeAutomaticUpdatedPosPlayer = CTimer::GetTimeInMilliseconds();
+
+					copPed->m_bLookingForPlayer = false;
+					copPed->m_vecLastPosPlayerBeforeHiding = FindPlayerCoors();
+					copPed->m_bMovesToLastPlayerPosition = false;
+					wanted->m_vecLastSeenPosPlayer = FindPlayerCoors();
+					wanted->m_bSearchPlayerRandomly = false;
+				} else if (wanted->GetWantedLevel() > 0 && !copPed->m_bLookingForPlayer) {
+					copPed->m_bMovesToLastPlayerPosition = true;
+				}
+			}
+		}
+#else
 		if(ped &&
 		   IsPolicePedModel(ped->GetModelIndex()) &&
 		   (posn - ped->GetPosition()).Magnitude() < radius)
 			numPolice++;
+#endif
 	}
 
 	i = CPools::GetVehiclePool()->GetSize();
 	while(--i >= 0){
 		vehicle = CPools::GetVehiclePool()->GetSlot(i);
+#ifdef IMPROVED_TECH_PART // wanted system
+		if (vehicle &&
+			vehicle->IsHeli() &&
+			IsPoliceVehicleModel(vehicle->GetModelIndex()) &&
+			vehicle != FindPlayerVehicle() &&
+			(posn - vehicle->GetPosition()).Magnitude() < radius) {
+
+			RwV3d playerHeadPos;
+			playerHeadPos.x = 0.0f;
+			playerHeadPos.y = 0.0f;
+			playerHeadPos.z = 0.0f;
+			FindPlayerPed()->m_pedIK.GetComponentPosition(playerHeadPos, PED_HEAD);
+
+			CEntity* hitEntity;
+			if (FindPlayerPed()->bIsDucking) {
+				CWorld::ProcessLineOfSight(vehicle->GetPosition() + CVector(0.0f, 0.0f, 0.75f), playerHeadPos, CColPoint{}, hitEntity, true, true, false, false, false, true, true, true);
+			} else {
+				bool bCheckVehicles = false;
+				if (!FindPlayerVehicle()) {
+					CEntity* hitEntity2;
+					if (CWorld::ProcessLineOfSight(vehicle->GetPosition() + CVector(0.0f, 0.0f, 0.75f), playerHeadPos, CColPoint{}, hitEntity2, true, true, false, false, false, true, true, true)) {
+						CVehicle* hitVehicle = (CVehicle*)hitEntity2;
+						if (hitVehicle && hitVehicle->IsHighVehicle())
+							bCheckVehicles = true;
+					}
+				}
+
+				CWorld::ProcessLineOfSight(vehicle->GetPosition() + CVector(0.0f, 0.0f, 0.75f), playerHeadPos, CColPoint{}, hitEntity, true, bCheckVehicles, false, false, false, true, true, true);
+			}
+#ifdef DEBUG
+			if (!hitEntity && !wanted->IsPlayerHides())
+				CDebug::AddLine(vehicle->GetPosition(), playerHeadPos, 0xfff000, 0xfff000);
+#endif
+
+			bool isHeliSeesPlayer = !hitEntity;
+
+			if (isHeliSeesPlayer)
+				nobodySawPlayer = false;
+
+			if (isHeliSeesPlayer && timeDelayDiff > TIME_DELAY_BEFORE_BEING_SEEN) {
+				if (FindPlayerVehicle() && !wanted->IsPlayerHides())
+					wanted->m_vLastSeenPlayerVehicle = FindPlayerVehicle();
+
+				if (FindPlayerVehicle())
+					if (wanted->m_vLastSeenPlayerVehicle != FindPlayerVehicle() && Distance(vehicle->GetPosition(), posn) > 15.0f && FindPlayerVehicle()->m_vehType != VEHICLE_TYPE_BIKE)
+						break;
+
+				wanted->m_nLastTimeSeenPlayer = CTimer::GetTimeInMilliseconds();
+				wanted->m_nTimeAutomaticUpdatedPosPlayer = CTimer::GetTimeInMilliseconds();
+				wanted->m_vecLastSeenPosPlayer = FindPlayerCoors();
+
+				nobodySawPlayer = false;
+
+				numPolice++;
+			}
+		}
+#else
 		if(vehicle &&
 		   vehicle->bIsLawEnforcer &&
 		   IsPoliceVehicleModel(vehicle->GetModelIndex()) &&
@@ -391,7 +599,16 @@ CWanted::WorkOutPolicePresence(CVector posn, float radius)
 		   vehicle->GetStatus() != STATUS_ABANDONED && vehicle->GetStatus() != STATUS_WRECKED &&
 		   (posn - vehicle->GetPosition()).Magnitude() < radius)
 			numPolice++;
+#endif
 	}
+
+#ifdef IMPROVED_TECH_PART // wanted system
+	if (nobodySawPlayer)
+		wanted->m_nTimeDelayBeforeBeingSeen = CTimer::GetTimeInMilliseconds();
+
+	if (wanted->IsPlayerLost())
+		return 0;
+#endif
 
 	return numPolice;
 }
@@ -399,6 +616,29 @@ CWanted::WorkOutPolicePresence(CVector posn, float radius)
 void
 CWanted::Update(void)
 {
+#ifdef IMPROVED_TECH_PART // wanted system
+	if (m_nWantedLevel > 0 && IsPlayerLost())
+		SetWantedLevel(0);
+
+	if (!IsPlayerHides())
+		m_vecLastSeenPosPlayer = FindPlayerCoors();
+
+	if (m_nWantedLevel == 0) {
+		m_nLastTimeSeenPlayer = CTimer::GetTimeInMilliseconds();
+	} else if (m_nWantedLevel > 0) {
+		float timeAutomaticUpdatedDiff = CTimer::GetTimeInMilliseconds() - m_nTimeAutomaticUpdatedPosPlayer;
+		if (timeAutomaticUpdatedDiff > TIME_AUTOMATIC_UPDATED_LAST_SEEN_POS_PLAYER) {
+			float randomX = CGeneral::GetRandomNumberInRange(-50.0f, 50.0f);
+			float randomY = CGeneral::GetRandomNumberInRange(-50.0f, 50.0f);
+			m_vecLastSeenPosPlayer = FindPlayerCoors() + CVector(randomX, randomY, 0.0f);
+			m_nTimeAutomaticUpdatedPosPlayer = CTimer::GetTimeInMilliseconds();
+			m_bSearchPlayerRandomly = true;
+		}
+
+		CWanted::WorkOutPolicePresence(FindPlayerCoors(), 150.0f);
+	}
+#endif
+
 	if (CTimer::GetTimeInMilliseconds() > m_nLastTimeSuspended + 20000) {
 		m_nMinChaos = 0;
 		m_nMinWantedLevel = 0;
@@ -407,7 +647,11 @@ CWanted::Update(void)
 		if (m_nWantedLevel > 1) {
 			m_nLastUpdateTime = CTimer::GetTimeInMilliseconds();
 		} else {
+#ifdef IMPROVED_TECH_PART // wanted system
+			float radius = 70.0f;
+#else
 			float radius = 18.0f;
+#endif
 			CVector playerPos = FindPlayerCoors();
 			if (WorkOutPolicePresence(playerPos, radius) == 0) {
 				m_nLastUpdateTime = CTimer::GetTimeInMilliseconds();
@@ -451,6 +695,11 @@ CWanted::Update(void)
 			}
 		}
 	}
+
+#ifdef NEW_CHEATS // AEZAKMI
+	if (m_nWantedLevel > 0 && FindPlayerPed()->bNoWantedCheat)
+		SetWantedLevel(0);
+#endif
 }
 
 void

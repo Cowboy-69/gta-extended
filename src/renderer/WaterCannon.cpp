@@ -12,6 +12,10 @@
 #include "WaterLevel.h"
 #include "Camera.h"
 #include "Particle.h"
+#ifdef IMPROVED_TECH_PART
+#include "PlayerInfo.h"
+#include "Wanted.h"
+#endif
 
 #define WATERCANNONVERTS 4
 #define WATERCANNONINDEXES 12
@@ -105,7 +109,11 @@ void CWaterCannon::Update_OncePerFrame(int16 index)
 	}
 }
 
+#ifdef IMPROVED_TECH_PART
+void CWaterCannon::Update_NewInput(CVector *pos, CVector *dir, bool playerUsesCannon)
+#else
 void CWaterCannon::Update_NewInput(CVector *pos, CVector *dir)
+#endif
 {
 	ASSERT(pos != NULL);
 	ASSERT(dir != NULL);
@@ -113,6 +121,9 @@ void CWaterCannon::Update_NewInput(CVector *pos, CVector *dir)
 	m_avecPos[m_nCur]      = *pos;
 	m_avecVelocity[m_nCur] = *dir;
 	m_abUsed[m_nCur]       = true;
+#ifdef IMPROVED_TECH_PART
+	m_bPlayerUsesCannon = playerUsesCannon;
+#endif
 }
 
 void CWaterCannon::Render(void)
@@ -247,6 +258,27 @@ void CWaterCannon::PushPeds(void)
 							CParticle::AddParticle(PARTICLE_CAR_SPLASH, ped->GetPosition(), ped->m_vecMoveSpeed * -0.3f + CVector(0.f, 0.f, 0.5f), 0, 0.5f,
 								CGeneral::GetRandomNumberInRange(0.f, 10.f), CGeneral::GetRandomNumberInRange(0.f, 90.f), 1);
 							
+#ifdef IMPROVED_TECH_PART
+							if (m_bPlayerUsesCannon && ped->CharCreatedBy != MISSION_CHAR) {
+								CWanted* wanted = FindPlayerPed()->m_pWanted;
+								if (wanted->GetWantedLevel() < 2) {
+									if (ped->m_nPedType == PEDTYPE_COP) {
+										if (wanted->GetWantedLevel() == 0)
+											wanted->m_nChaos = 60;
+										else
+											wanted->m_nChaos += 5;
+									} else {
+										wanted->m_nChaos += 1;
+									}
+
+									if (FindPlayerVehicle())
+										wanted->m_vLastSeenPlayerVehicle = FindPlayerVehicle();
+
+									wanted->UpdateWantedLevel();
+								}
+							}
+#endif
+
 							j = NUM_SEGMENTPOINTS;
 						}
 					}
@@ -262,7 +294,11 @@ void CWaterCannons::Init(void)
 		aCannons[i].Init();
 }
 
-void CWaterCannons::UpdateOne(uint32 id, CVector *pos, CVector *dir)
+#ifdef IMPROVED_TECH_PART
+void CWaterCannons::UpdateOne(uint32 id, CVector* pos, CVector* dir, bool playerUsesCannon)
+#else
+void CWaterCannons::UpdateOne(uint32 id, CVector* pos, CVector* dir)
+#endif
 {
 	ASSERT(pos != NULL);
 	ASSERT(dir != NULL);
@@ -275,7 +311,11 @@ void CWaterCannons::UpdateOne(uint32 id, CVector *pos, CVector *dir)
 		
 		if ( n < NUM_WATERCANNONS )
 		{
+#ifdef IMPROVED_TECH_PART
+			aCannons[n].Update_NewInput(pos, dir, playerUsesCannon);
+#else
 			aCannons[n].Update_NewInput(pos, dir);
+#endif
 			return;
 		}
 	}
@@ -290,7 +330,11 @@ void CWaterCannons::UpdateOne(uint32 id, CVector *pos, CVector *dir)
 		{
 			aCannons[n].Init();
 			aCannons[n].m_nId = id;
+#ifdef IMPROVED_TECH_PART
+			aCannons[n].Update_NewInput(pos, dir, playerUsesCannon);
+#else
 			aCannons[n].Update_NewInput(pos, dir);
+#endif
 			return;
 		}
 	}

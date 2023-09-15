@@ -2337,6 +2337,9 @@ int8 CRunningScript::ProcessCommands700To799(int32 command)
 		CStats::CheckPointReachedSuccessfully();
 		CTheScripts::LastMissionPassedTime = CTimer::GetTimeInMilliseconds();
 		CGameLogic::RemoveShortCutDropOffPointForMission();
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+		CTheScripts::bMissionWasPassed = true;
+#endif
 		return 0;
 	}
 	case COMMAND_SET_CHAR_RUNNING:

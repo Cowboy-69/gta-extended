@@ -88,6 +88,9 @@ public:
 	char m_aSkinName[32];
 	RwTexture *m_pSkinTexture;
 #endif
+#ifdef IMPROVED_TECH_PART // Vehicles are muted when the exit button is held down
+	uint32 m_nTimeVehicleEngineOff;
+#endif
 
 	void MakePlayerSafe(bool);
 	const CVector &GetPos();
@@ -122,3 +125,6 @@ const CVector &FindPlayerSpeed(void);
 const CVector &FindPlayerCentreOfWorld(int32 player);
 const CVector &FindPlayerCentreOfWorld_NoSniperShift(void);
 float FindPlayerHeading(void);
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+bool PlayerCanMakeQuickSave();
+#endif

@@ -48,8 +48,18 @@
 #include "Population.h"
 #include "IniFile.h"
 #include "Zones.h"
+#ifdef VEHICLE_MODS // mod garage
+#include "DMAudio.h"
+#include "Garages.h"
+#include "Wanted.h"
+#include "Messages.h"
+#endif
 
 #include "crossplatform.h"
+
+/*#ifdef CLIMBING
+#include "Ped.h"
+#endif*/
 
 #ifndef _WIN32
 #include "assert.h"
@@ -196,6 +206,80 @@ CustomFrontendOptionsPopulate(void)
 
 mINI::INIFile ini("reVC.ini");
 mINI::INIStructure cfg;
+#ifdef VICE_EXTENDED // Game limits
+mINI::INIFile limitsIni("limits.ini");
+mINI::INIStructure limitsCfg;
+
+uint8 bInitLimitsIni = limitsIni.read(limitsCfg);
+
+uint16 ReadAndGetGameLimit(const char* key)
+{
+	mINI::INIMap<std::string> section = limitsCfg.get("Limits");
+	if (section.has(key)) {
+		char* endPtr;
+		return strtol(section.get(key).c_str(), &endPtr, 0);
+	}
+	return 0;
+}
+
+extern uint16 NUMPTRNODES = ReadAndGetGameLimit("NUMPTRNODES");
+extern uint16 NUMENTRYINFOS = ReadAndGetGameLimit("NUMENTRYINFOS");
+extern uint16 NUMPEDS = ReadAndGetGameLimit("NUMPEDS");
+extern uint16 NUMVEHICLES = ReadAndGetGameLimit("NUMVEHICLES");
+extern uint16 NUMBUILDINGS = ReadAndGetGameLimit("NUMBUILDINGS");
+extern uint16 NUMTREADABLES = ReadAndGetGameLimit("NUMTREADABLES");
+extern uint16 NUMOBJECTS = ReadAndGetGameLimit("NUMOBJECTS");
+extern uint16 NUMDUMMIES = ReadAndGetGameLimit("NUMDUMMIES");
+extern uint16 NUMAUDIOSCRIPTOBJECTS = ReadAndGetGameLimit("NUMAUDIOSCRIPTOBJECTS");
+extern uint16 NUMCOLMODELS = ReadAndGetGameLimit("NUMCOLMODELS");
+extern uint16 MAXWHEELMODELS = ReadAndGetGameLimit("MAXWHEELMODELS");
+#endif
+
+#ifdef FEATURES_INI
+mINI::INIFile featuresIni("features.ini");
+mINI::INIStructure featuresCfg;
+
+uint8 bInitFeaturesIni = featuresIni.read(featuresCfg);
+
+uint16 ReadAndGetFeature(const char* key)
+{
+	mINI::INIMap<std::string> section = featuresCfg.get("Features");
+	if (section.has(key)) {
+		char* endPtr;
+		return strtol(section.get(key).c_str(), &endPtr, 0);
+	}
+	return 0;
+}
+
+CRGBA ReadAndGetWaypointColor(const char* key)
+{
+	CRGBA color = CRGBA(180, 24, 24, 255);
+
+	mINI::INIMap<std::string> section = featuresCfg.get("Features");
+	if (section.has(key)) {
+		uint32 red, green, blue;
+		sscanf(section.get(key).c_str(), "%i, %i, %i", &red, &green, &blue);
+		color = CRGBA(red, green, blue, 255);
+		return color;
+	}
+	return color;
+}
+
+extern bool bVehiclesDontCatchFireWhenTurningOver = ReadAndGetFeature("VehiclesDontCatchFireWhenTurningOver");
+extern bool bHealthRegenerationUpToHalf = ReadAndGetFeature("HealthRegenerationUpToHalf");
+extern bool bWantedStarsHideOnScreenWhenThereIsNoSearch = ReadAndGetFeature("WantedStarsHideOnScreenWhenThereIsNoSearch");
+extern bool bRemoveMoneyZerosInTheHud = ReadAndGetFeature("RemoveMoneyZerosInTheHud");
+extern bool bPlayerDoesntBounceAwayFromMovingCar = ReadAndGetFeature("PlayerDoesntBounceAwayFromMovingCar");
+extern bool bStandardCarsUseTurnSignals = ReadAndGetFeature("StandardCarsUseTurnSignals");
+extern bool bCameraShakeInVehicleAtHighSpeed = ReadAndGetFeature("CameraShakeInVehicleAtHighSpeed");
+extern bool bMilitaryFiringFromTankAtPlayer = ReadAndGetFeature("MilitaryFiringFromTankAtPlayer");
+extern bool bDisableBulletTraces = ReadAndGetFeature("DisableBulletTraces");
+CRGBA WaypointColor = ReadAndGetWaypointColor("WaypointColorRGB");
+#ifdef EX_DISTANT_LIGHTS
+extern bool bEnableDistantLights = ReadAndGetFeature("EnableDistantLights");
+#endif
+extern bool bRecoilWhenFiring = ReadAndGetFeature("RecoilWhenFiring");
+#endif
 
 bool ReadIniIfExists(const char *cat, const char *key, uint32 *out)
 {
@@ -322,7 +406,18 @@ const char *iniControllerActions[] = { "PED_FIREWEAPON", "PED_CYCLE_WEAPON_RIGHT
 	"VEHICLE_ACCELERATE", "VEHICLE_BRAKE", "VEHICLE_CHANGE_RADIO_STATION", "VEHICLE_HORN", "TOGGLE_SUBMISSIONS", "VEHICLE_HANDBRAKE", "PED_1RST_PERSON_LOOK_LEFT",
 	"PED_1RST_PERSON_LOOK_RIGHT", "VEHICLE_LOOKLEFT", "VEHICLE_LOOKRIGHT", "VEHICLE_LOOKBEHIND", "VEHICLE_TURRETLEFT", "VEHICLE_TURRETRIGHT", "VEHICLE_TURRETUP", "VEHICLE_TURRETDOWN",
 	"PED_CYCLE_TARGET_LEFT", "PED_CYCLE_TARGET_RIGHT", "PED_CENTER_CAMERA_BEHIND_PLAYER", "PED_LOCK_TARGET", "NETWORK_TALK", "PED_1RST_PERSON_LOOK_UP", "PED_1RST_PERSON_LOOK_DOWN",
-	"_CONTROLLERACTION_36", "TOGGLE_DPAD", "SWITCH_DEBUG_CAM_ON", "TAKE_SCREEN_SHOT", "SHOW_MOUSE_POINTER_TOGGLE", "UNKNOWN_ACTION" };
+	"_CONTROLLERACTION_36", "TOGGLE_DPAD", "SWITCH_DEBUG_CAM_ON", "TAKE_SCREEN_SHOT", "SHOW_MOUSE_POINTER_TOGGLE", "UNKNOWN_ACTION"
+#ifdef IMPROVED_MENU_AND_INPUT // iniControllerActions
+	"PED_WALK",
+	"RADAR_ZOOM_OUT",
+	"PED_RELOAD",
+#endif
+#if defined IMPROVED_MENU_AND_INPUT && defined IMPROVED_VEHICLES_2 // iniControllerActions: Turn and emergency signals for player
+	"VEHICLE_LEFT_TURNSIGNALS",
+	"VEHICLE_RIGHT_TURNSIGNALS",
+	"VEHICLE_EMERGENCYLIGHTS",
+#endif
+};
 
 const char *iniControllerTypes[] = { "kbd:", "2ndKbd:", "mouse:", "joy:" };
 
@@ -497,7 +592,30 @@ bool LoadINISettings()
 	ReadIniIfExists("Controller", "HorizantalMouseSens", &TheCamera.m_fMouseAccelHorzntl);
 	ReadIniIfExists("Controller", "InvertMouseVertically", &MousePointerStateHelper.bInvertVertically);
 	ReadIniIfExists("Controller", "DisableMouseSteering", &CVehicle::m_bDisableMouseSteering);
+#ifdef IMPROVED_MENU_AND_INPUT
+	ReadIniIfExists("Controller", "InvertVertically", &FrontEndMenuManager.m_PrefsInvertVertically);
+	ReadIniIfExists("Controller", "Autoaim", &FrontEndMenuManager.m_PrefsAutoaim);
+	ReadIniIfExists("Controller", "LeftStickDeadzone", &FrontEndMenuManager.m_PrefsLeftStickDeadzone);
+	ReadIniIfExists("Controller", "RightStickDeadzone", &FrontEndMenuManager.m_PrefsRightStickDeadzone);
+	ReadIniIfExists("Controller", "VibrationForce", &FrontEndMenuManager.m_PrefsVibrationForce);
+	ReadIniIfExists("Controller", "PadLookSensX", &FrontEndMenuManager.m_PrefsPadLookSensX);
+	ReadIniIfExists("Controller", "PadAimSensX", &FrontEndMenuManager.m_PrefsPadAimSensX);
+	ReadIniIfExists("Controller", "PadLookSensY", &FrontEndMenuManager.m_PrefsPadLookSensY);
+	ReadIniIfExists("Controller", "PadAimSensY", &FrontEndMenuManager.m_PrefsPadAimSensY);
+	ReadIniIfExists("Controller", "MouseLookSensX", &FrontEndMenuManager.m_PrefsMouseLookSensX);
+	ReadIniIfExists("Controller", "MouseAimSensX", &FrontEndMenuManager.m_PrefsMouseAimSensX);
+	ReadIniIfExists("Controller", "MouseLookSensY", &FrontEndMenuManager.m_PrefsMouseLookSensY);
+	ReadIniIfExists("Controller", "MouseAimSensY", &FrontEndMenuManager.m_PrefsMouseAimSensY);
+	ReadIniIfExists("Display", "GPS", &FrontEndMenuManager.m_PrefsGPS);
+#else
 	ReadIniIfExists("Controller", "Vibration", &FrontEndMenuManager.m_PrefsUseVibration);
+#endif
+#if defined FIRST_PERSON && defined FIRING_AND_AIMING
+	ReadIniIfExists("Controller", "FOV_FirstPerson", &FrontEndMenuManager.m_PrefsFOV_FP);
+	ReadIniIfExists("Controller", "AutocenterCamInVeh_FirstPerson", &FrontEndMenuManager.m_PrefsAutocenterCamInVeh_FP);
+	ReadIniIfExists("Controller", "RelativeCamInVeh_DriveBy_FirstPerson", &FrontEndMenuManager.m_PrefsRelativeCamInVeh_DB_FP);
+	ReadIniIfExists("Controller", "DoomMode_FirstPerson", &FrontEndMenuManager.m_PrefsDoomMode_FP);
+#endif
 	ReadIniIfExists("Audio", "SfxVolume", &FrontEndMenuManager.m_PrefsSfxVolume);
 	ReadIniIfExists("Audio", "MusicVolume", &FrontEndMenuManager.m_PrefsMusicVolume);
 	ReadIniIfExists("Audio", "MP3BoostVolume", &FrontEndMenuManager.m_PrefsMP3BoostVolume);
@@ -517,7 +635,9 @@ bool LoadINISettings()
 	ReadIniIfExists("Graphics", "Trails", &CMBlur::BlurOn);
 #endif
 	ReadIniIfExists("General", "SkinFile", FrontEndMenuManager.m_PrefsSkinFile, 256);
+#ifndef IMPROVED_MENU_AND_INPUT
 	ReadIniIfExists("Controller", "Method", &FrontEndMenuManager.m_ControlMethod);
+#endif
 	ReadIniIfExists("General", "Language", &FrontEndMenuManager.m_PrefsLanguage);
 	ReadIniIfExists("Display", "ShowHud", &FrontEndMenuManager.m_PrefsShowHud);
 	ReadIniIfExists("Display", "RadarMode", &FrontEndMenuManager.m_PrefsRadarMode);
@@ -537,6 +657,9 @@ bool LoadINISettings()
 #ifdef NEW_RENDERER
 	ReadIniIfExists("Rendering", "NewRenderer", &gbNewRenderer);
 #endif
+#ifdef IMPROVED_TECH_PART
+	ReadIniIfExists("Rendering", "MaxFPS", &RsGlobal.maxFPS);
+#endif
 
 #ifdef PROPER_SCALING
 	ReadIniIfExists("Draw", "ProperScaling", &CDraw::ms_bProperScaling);	
@@ -552,6 +675,20 @@ bool LoadINISettings()
 #endif
 #ifdef NO_MOVIES
 	ReadIniIfExists("General", "NoMovies", &gbNoMovies);
+#endif
+/*#ifdef CLIMBING
+	ReadIniIfExists("Climbing", "ClimbingInInteriors", &CPed::bClimbingInInteriors);
+	ReadIniIfExists("Climbing", "ClimbingOnVehicles", &CPed::bClimbingOnVehicles);
+	ReadIniIfExists("Climbing", "ClimbingPeds", &CPed::bClimbingPeds);
+	ReadIniIfExists("Climbing", "MaxPossibleClimbingHeight", &CPed::maxPossibleClimbingHeight);
+	ReadIniIfExists("Climbing", "MaxPossibleCheckHeightForPeds", &CPed::maxPossibleCheckHeightForPeds);
+	ReadIniIfExists("Climbing", "MaxClimbingWithRaisedHandsHeight", &CPed::maxHighClimbingHeight);
+	ReadIniIfExists("Climbing", "ClimbingWithRaisedHandsOffsetSpeed", &CPed::highClimbingOffsetSpeed);
+	ReadIniIfExists("Climbing", "PlayerVerticalVelocityAtWhichStartsToFall", &CPed::playerVerticalVelocityAtWhichStartsToFall);
+#endif*/
+#if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined IMPROVED_TECH_PART // Other settings
+	ReadIniIfExists("Other", "Autosave", &FrontEndMenuManager.m_PrefsAutosave);
+	ReadIniIfExists("Other", "StoreGalleryPhotos", &FrontEndMenuManager.m_PrefsStoreGalleryPhotos);
 #endif
 
 #ifdef CUSTOM_FRONTEND_OPTIONS
@@ -606,7 +743,30 @@ void SaveINISettings()
 	StoreIni("Controller", "HorizantalMouseSens", TheCamera.m_fMouseAccelHorzntl);
 	StoreIni("Controller", "InvertMouseVertically", MousePointerStateHelper.bInvertVertically);
 	StoreIni("Controller", "DisableMouseSteering", CVehicle::m_bDisableMouseSteering);
+#ifdef IMPROVED_MENU_AND_INPUT
+	StoreIni("Controller", "InvertVertically", FrontEndMenuManager.m_PrefsInvertVertically);
+	StoreIni("Controller", "Autoaim", FrontEndMenuManager.m_PrefsAutoaim);
+	StoreIni("Controller", "LeftStickDeadzone", FrontEndMenuManager.m_PrefsLeftStickDeadzone);
+	StoreIni("Controller", "RightStickDeadzone", FrontEndMenuManager.m_PrefsRightStickDeadzone);
+	StoreIni("Controller", "VibrationForce", FrontEndMenuManager.m_PrefsVibrationForce);
+	StoreIni("Controller", "PadLookSensX", FrontEndMenuManager.m_PrefsPadLookSensX);
+	StoreIni("Controller", "PadAimSensX", FrontEndMenuManager.m_PrefsPadAimSensX);
+	StoreIni("Controller", "PadLookSensY", FrontEndMenuManager.m_PrefsPadLookSensY);
+	StoreIni("Controller", "PadAimSensY", FrontEndMenuManager.m_PrefsPadAimSensY);
+	StoreIni("Controller", "MouseLookSensX", FrontEndMenuManager.m_PrefsMouseLookSensX);
+	StoreIni("Controller", "MouseAimSensX", FrontEndMenuManager.m_PrefsMouseAimSensX);
+	StoreIni("Controller", "MouseLookSensY", FrontEndMenuManager.m_PrefsMouseLookSensY);
+	StoreIni("Controller", "MouseAimSensY", FrontEndMenuManager.m_PrefsMouseAimSensY);
+	StoreIni("Display", "GPS", FrontEndMenuManager.m_PrefsGPS);
+#else
 	StoreIni("Controller", "Vibration", FrontEndMenuManager.m_PrefsUseVibration);
+#endif
+#if defined FIRST_PERSON && defined FIRING_AND_AIMING
+	StoreIni("Controller", "FOV_FirstPerson", FrontEndMenuManager.m_PrefsFOV_FP);
+	StoreIni("Controller", "AutocenterCamInVeh_FirstPerson", FrontEndMenuManager.m_PrefsAutocenterCamInVeh_FP);
+	StoreIni("Controller", "RelativeCamInVeh_DriveBy_FirstPerson", FrontEndMenuManager.m_PrefsRelativeCamInVeh_DB_FP);
+	StoreIni("Controller", "DoomMode_FirstPerson", FrontEndMenuManager.m_PrefsDoomMode_FP);
+#endif
 	StoreIni("Audio", "SfxVolume", FrontEndMenuManager.m_PrefsSfxVolume);
 	StoreIni("Audio", "MusicVolume", FrontEndMenuManager.m_PrefsMusicVolume);
 	StoreIni("Audio", "MP3BoostVolume", FrontEndMenuManager.m_PrefsMP3BoostVolume);
@@ -626,7 +786,9 @@ void SaveINISettings()
 #endif
 	StoreIni("Graphics", "FrameLimiter", FrontEndMenuManager.m_PrefsFrameLimiter);
 	StoreIni("General", "SkinFile", FrontEndMenuManager.m_PrefsSkinFile, 256);
+#ifndef IMPROVED_MENU_AND_INPUT
 	StoreIni("Controller", "Method", FrontEndMenuManager.m_ControlMethod);
+#endif
 	StoreIni("General", "Language", FrontEndMenuManager.m_PrefsLanguage);
 	StoreIni("Display", "ShowHud", FrontEndMenuManager.m_PrefsShowHud);
 	StoreIni("Display", "RadarMode", FrontEndMenuManager.m_PrefsRadarMode);
@@ -646,6 +808,9 @@ void SaveINISettings()
 #ifdef NEW_RENDERER
 	StoreIni("Rendering", "NewRenderer", gbNewRenderer);
 #endif
+#ifdef IMPROVED_TECH_PART
+	StoreIni("Rendering", "MaxFPS", RsGlobal.maxFPS);
+#endif
 
 #ifdef PROPER_SCALING	
 	StoreIni("Draw", "ProperScaling", CDraw::ms_bProperScaling);	
@@ -662,6 +827,21 @@ void SaveINISettings()
 #ifdef NO_MOVIES
 	StoreIni("General", "NoMovies", gbNoMovies);
 #endif
+/*#ifdef CLIMBING
+	StoreIni("Climbing", "ClimbingInInteriors", CPed::bClimbingInInteriors);
+	StoreIni("Climbing", "ClimbingOnVehicles", CPed::bClimbingOnVehicles);
+	StoreIni("Climbing", "ClimbingPeds", CPed::bClimbingPeds);
+	StoreIni("Climbing", "MaxPossibleClimbingHeight", CPed::maxPossibleClimbingHeight);
+	StoreIni("Climbing", "MaxPossibleCheckHeightForPeds", CPed::maxPossibleCheckHeightForPeds);
+	StoreIni("Climbing", "MaxClimbingWithRaisedHandsHeight", CPed::maxHighClimbingHeight);
+	StoreIni("Climbing", "ClimbingWithRaisedHandsOffsetSpeed", CPed::highClimbingOffsetSpeed);
+	StoreIni("Climbing", "PlayerVerticalVelocityAtWhichStartsToFall", CPed::playerVerticalVelocityAtWhichStartsToFall);
+#endif*/
+#if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined IMPROVED_TECH_PART // Other settings
+	StoreIni("Other", "Autosave", FrontEndMenuManager.m_PrefsAutosave);
+	StoreIni("Other", "StoreGalleryPhotos", FrontEndMenuManager.m_PrefsStoreGalleryPhotos);
+#endif
+
 #ifdef CUSTOM_FRONTEND_OPTIONS
 	for (int i = 0; i < MENUPAGES; i++) {
 		for (int j = 0; j < NUM_MENUROWS; j++) {
@@ -711,6 +891,15 @@ void ChittyChittyBangBangCheat();
 void StrongGripCheat();
 void SpecialCarCheats();
 void PickUpChicksCheat();
+#ifdef NEW_CHEATS
+void InvincibleCheat();
+void AirWaysCheat();
+void TeargasCheat();
+void NoWantedCheat();
+void PhotographerCheat();
+void RCRocketCheat();
+void BigHeadsCheat();
+#endif
 
 DebugMenuEntry *carCol1;
 DebugMenuEntry *carCol2;
@@ -723,12 +912,14 @@ SpawnCar(int id)
 	CStreaming::LoadAllRequestedModels(false);
 	if(CStreaming::HasModelLoaded(id)){
 		playerpos = FindPlayerCoors();
+#ifndef IMPROVED_TECH_PART // spawn vehicle via cheat codes
 		int node;
 		if(!CModelInfo::IsBoatModel(id)){
 			node = ThePaths.FindNodeClosestToCoors(playerpos, 0, 100.0f, false, false);
 			if(node < 0)
 				return;
 		}
+#endif
 
 		CVehicle *v;
 		if(CModelInfo::IsBoatModel(id))
@@ -744,6 +935,11 @@ SpawnCar(int id)
 		if(carCol2)
 			DebugMenuEntrySetAddress(carCol2, &v->m_currentColour2);
 
+#ifdef IMPROVED_TECH_PART // spawn vehicle via cheat codes
+		v->SetPosition(FindPlayerPed()->GetPosition() + CVector(0.0f, 0.0f, 2.5f) + FindPlayerPed()->GetForward() * 5.0f);
+		CVector leftVector = -FindPlayerPed()->GetRight();
+		v->SetOrientation(0.0f, 0.0f, leftVector.Heading());
+#else
 		if(CModelInfo::IsBoatModel(id))
 			v->SetPosition(TheCamera.GetPosition() + TheCamera.GetForward()*15.0f);
 		else
@@ -751,6 +947,7 @@ SpawnCar(int id)
 
 		v->GetMatrix().GetPosition().z += 4.0f;
 		v->SetOrientation(0.0f, 0.0f, 3.49f);
+#endif
 		v->SetStatus(STATUS_ABANDONED);
 		v->m_nDoorLock = CARLOCK_UNLOCKED;
 		CWorld::Add(v);
@@ -972,7 +1169,39 @@ DebugMenuPopulate(void)
 		DebugMenuAddCmd("Cheats", "Strong grip", StrongGripCheat);
 		DebugMenuAddCmd("Cheats", "Special car", SpecialCarCheats);
 		DebugMenuAddCmd("Cheats", "Pickup chicks", PickUpChicksCheat);
+#ifdef NEW_CHEATS
+		DebugMenuAddCmd("Cheats", "Invincible", InvincibleCheat);
+		DebugMenuAddCmd("Cheats", "AirWays", AirWaysCheat);
+		DebugMenuAddCmd("Cheats", "Give teargas", TeargasCheat);
+		DebugMenuAddCmd("Cheats", "No wanted", NoWantedCheat);
+		DebugMenuAddCmd("Cheats", "Give camera", PhotographerCheat);
+		DebugMenuAddCmd("Cheats", "RC Rocket", RCRocketCheat);
+		DebugMenuAddCmd("Cheats", "Big heads", BigHeadsCheat);
+#endif
 
+#ifdef NEW_VEHICLE_LOADER
+		static int spawnCarName = MI_LANDSTAL;
+		e = DebugMenuAddVar("Spawn", "Select default car name", &spawnCarName, nil, 1, MI_LANDSTAL, MI_VICECHEE, carnames);
+		DebugMenuEntrySetWrap(e, true);
+		DebugMenuAddCmd("Spawn", "Spawn default car", [](){
+			if(spawnCarName == MI_CHOPPER ||
+				spawnCarName == MI_AIRTRAIN ||
+				spawnCarName == MI_DEADDODO)
+				return;
+			SpawnCar(spawnCarName);
+		});
+
+		static uint8 dummy;
+		static int spawnCarID = MI_FIRST_NEW_VEHICLE;
+		e = DebugMenuAddVar("Spawn", "Select new car ID", &spawnCarID, nil, 1, MI_FIRST_NEW_VEHICLE, MI_LAST_NEW_VEHICLE, nil);
+		DebugMenuEntrySetWrap(e, true);
+		DebugMenuAddCmd("Spawn", "Spawn new car", []() { 
+			if (!CModelInfo::GetModelInfo(spawnCarID))
+				return;
+
+			SpawnCar(spawnCarID); 
+		});
+#else
 		static int spawnCarId = MI_LANDSTAL;
 		e = DebugMenuAddVar("Spawn", "Spawn Car ID", &spawnCarId, nil, 1, MI_LANDSTAL, MI_VICECHEE, carnames);
 		DebugMenuEntrySetWrap(e, true);
@@ -983,7 +1212,7 @@ DebugMenuPopulate(void)
 				return;
 			SpawnCar(spawnCarId);
 		});
-		static uint8 dummy;
+#endif
 		carCol1 = DebugMenuAddVar("Spawn", "First colour", &dummy, nil, 1, 0, 255, nil);
 		carCol2 = DebugMenuAddVar("Spawn", "Second colour", &dummy, nil, 1, 0, 255, nil);
 		DebugMenuAddCmd("Spawn", "Spawn Stinger", [](){ SpawnCar(MI_STINGER); });
@@ -1117,12 +1346,12 @@ extern bool gbRenderWorld2;
 #ifdef GTA_SCENE_EDIT
 		DebugMenuAddVarBool8("Debug", "Edit on", &CSceneEdit::m_bEditOn, nil);
 #endif
-		//DebugMenuAddCmd("Debug", "Start Credits", CCredits::Start);
-		//DebugMenuAddCmd("Debug", "Stop Credits", CCredits::Stop);
+		DebugMenuAddCmd("Debug", "Start Credits", CCredits::Start);
+		DebugMenuAddCmd("Debug", "Stop Credits", CCredits::Stop);
 
 #ifdef RELOADABLES
 // maybe put it back if we have more to reload 
-//		DebugMenuAddCmd("Reload", "HUD.TXD", CHud::ReloadTXD);
+		DebugMenuAddCmd("Reload", "HUD.TXD", CHud::ReloadTXD);
 #endif
 
 #ifdef MAP_ENHANCEMENTS
@@ -1163,9 +1392,11 @@ extern bool gbRenderWorld2;
 #endif
 		extern bool PrintDebugCode;
 		extern int16 DebugCamMode;
+#ifndef IMPROVED_MENU_AND_INPUT
 		DebugMenuAddVarBool8("Cam", "Use mouse Cam", &CCamera::m_bUseMouse3rdPerson, nil);
 #ifdef FREE_CAM
 		DebugMenuAddVarBool8("Cam", "Free Cam", &CCamera::bFreeCam, nil);
+#endif
 #endif
 		DebugMenuAddVarBool8("Cam", "Print Debug Code", &PrintDebugCode, nil);
 		DebugMenuAddVar("Cam", "Cam Mode", &DebugCamMode, nil, 1, 0, CCam::MODE_EDITOR, nil);
@@ -1175,6 +1406,892 @@ extern bool gbRenderWorld2;
 		CTweakVars::AddDBG("Debug");
 	}
 }
+
+#if defined VEHICLE_MODS && defined IMPROVED_VEHICLES // mod garage
+DebugMenuEntry* carTintLevel;
+DebugMenuEntry* carAddSuspensionForceLevel;
+DebugMenuEntry* carWheelNumber;
+DebugMenuEntry* carRimsColor;
+DebugMenuEntry* carSpoilerColor;
+DebugMenuEntry* carSpoilerNumber;
+DebugMenuEntry* carSkirtsNumber;
+DebugMenuEntry* carRoofScoopNumber;
+DebugMenuEntry* carBonnetScoopNumber;
+DebugMenuEntry* carVentsNumber;
+DebugMenuEntry* carHasSupercharger;
+DebugMenuEntry* carCol3;
+DebugMenuEntry* carCol4;
+
+void SetTempWindowTintLevel()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh)
+		return;
+
+	if (carTintLevel)
+		DebugMenuEntrySetAddress(carTintLevel, &playerVeh->m_nTempWindowTintLevel);
+}
+void PurchaseTint()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carTintLevel)
+		return;
+	
+	if (playerVeh->m_nWindowTintLevel == playerVeh->m_nTempWindowTintLevel) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	int price = 500;
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		return;
+	}
+	DebugMenuEntrySetAddress(carTintLevel, &playerVeh->m_nTempWindowTintLevel);
+	playerVeh->m_nWindowTintLevel = playerVeh->m_nTempWindowTintLevel;
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+
+void SetTempSuspensionForceLevel()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carAddSuspensionForceLevel)
+		return;
+
+	DebugMenuEntrySetAddress(carAddSuspensionForceLevel, &playerVeh->m_nTempAddSuspensionForceLevel);
+}
+void PurchaseSuspension()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carAddSuspensionForceLevel)
+		return;
+	
+	if (playerVeh->m_nAddSuspensionForceLevel == playerVeh->m_nTempAddSuspensionForceLevel) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	int price = 500;
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		return;
+	}
+
+	DebugMenuEntrySetAddress(carAddSuspensionForceLevel, &playerVeh->m_nTempAddSuspensionForceLevel);
+	playerVeh->m_nAddSuspensionForceLevel = playerVeh->m_nTempAddSuspensionForceLevel;
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+
+void SetTempWheelModelIndex()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carWheelNumber)
+		return;
+
+	DebugMenuEntrySetAddress(carWheelNumber, &playerVeh->m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber);
+	playerVeh->m_aUpgrades[UPGRADE_WHEELS].m_nTempUpgradeModelIndex = playerVeh->GetWheelModelIndexFromWheelNumber();
+	playerVeh->SetWheels(playerVeh->m_aUpgrades[UPGRADE_WHEELS].m_nTempUpgradeModelIndex);
+}
+void PurchaseWheels()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carWheelNumber)
+		return;
+
+	if (playerVeh->m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeModelIndex == playerVeh->m_aUpgrades[UPGRADE_WHEELS].m_nTempUpgradeModelIndex) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	int price = 1000;
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		return;
+	}
+
+	DebugMenuEntrySetAddress(carWheelNumber, &playerVeh->m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber);
+	playerVeh->m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeModelIndex = playerVeh->m_aUpgrades[UPGRADE_WHEELS].m_nTempUpgradeModelIndex;
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+
+void SetTempColor1()
+{
+	CVehicle* playerVeh = FindPlayerVehicle();
+
+	if (!playerVeh || !carCol1)
+		return;
+
+	DebugMenuEntrySetAddress(carCol1, &playerVeh->m_nTempColor1);
+}
+void SetTempColor2()
+{
+	CVehicle* playerVeh = FindPlayerVehicle();
+
+	if (!playerVeh || !carCol2)
+		return;
+
+	DebugMenuEntrySetAddress(carCol2, &playerVeh->m_nTempColor2);
+}
+void PaintVehicle2()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh)
+		return;
+
+	if (playerVeh->m_nTempColor1 == playerVeh->m_currentColour1 &&
+		playerVeh->m_nTempColor2 == playerVeh->m_currentColour2) {
+
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	int price = 50;
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		return;
+	}
+
+	if (carCol1) {
+		DebugMenuEntrySetAddress(carCol1, &playerVeh->m_nTempColor1);
+		playerVeh->m_currentColour1 = playerVeh->m_nTempColor1;
+	}
+
+	if (carCol2) {
+		DebugMenuEntrySetAddress(carCol2, &playerVeh->m_nTempColor2);
+		playerVeh->m_currentColour2 = playerVeh->m_nTempColor2;
+	}
+
+	if (FindPlayerPed()->m_pWanted->GetWantedLevel() != 0)
+		FindPlayerPed()->m_pWanted->Suspend();
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+void SetTempColor3()
+{
+	CVehicle* playerVeh = FindPlayerVehicle();
+
+	if (!playerVeh || !carCol3)
+		return;
+
+	DebugMenuEntrySetAddress(carCol3, &playerVeh->m_nTempColor3);
+}
+void SetTempColor4()
+{
+	CVehicle* playerVeh = FindPlayerVehicle();
+
+	if (!playerVeh || !carCol4)
+		return;
+
+	DebugMenuEntrySetAddress(carCol4, &playerVeh->m_nTempColor4);
+}
+void PaintVehicle4()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh)
+		return;
+
+	if (playerVeh->m_nTempColor1 == playerVeh->m_currentColour1 &&
+		playerVeh->m_nTempColor2 == playerVeh->m_currentColour2 &&
+		playerVeh->m_nTempColor3 == playerVeh->m_currentColour3 &&
+		playerVeh->m_nTempColor4 == playerVeh->m_currentColour4) {
+
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	int price = 100;
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		return;
+	}
+
+	if (carCol1) {
+		DebugMenuEntrySetAddress(carCol1, &playerVeh->m_nTempColor1);
+		playerVeh->m_currentColour1 = playerVeh->m_nTempColor1;
+	}
+
+	if (carCol2) {
+		DebugMenuEntrySetAddress(carCol2, &playerVeh->m_nTempColor2);
+		playerVeh->m_currentColour2 = playerVeh->m_nTempColor2;
+	}
+
+	if (carCol3) {
+		DebugMenuEntrySetAddress(carCol3, &playerVeh->m_nTempColor3);
+		playerVeh->m_currentColour3 = playerVeh->m_nTempColor3;
+	}
+
+	if (carCol4) {
+		DebugMenuEntrySetAddress(carCol4, &playerVeh->m_nTempColor4);
+		playerVeh->m_currentColour4 = playerVeh->m_nTempColor4;
+	}
+
+	if (FindPlayerPed()->m_pWanted->GetWantedLevel() != 0)
+		FindPlayerPed()->m_pWanted->Suspend();
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+
+void SetTempRimsColor()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carRimsColor)
+		return;
+
+	DebugMenuEntrySetAddress(carRimsColor, &playerVeh->m_nTempRimsColor);
+}
+void PaintRims()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh)
+		return;
+
+	if (playerVeh->m_nTempRimsColor == playerVeh->m_nRimsColor) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	int price = 50;
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		return;
+	}
+
+	if (carRimsColor) {
+		DebugMenuEntrySetAddress(carRimsColor, &playerVeh->m_nTempRimsColor);
+		playerVeh->m_nRimsColor = playerVeh->m_nTempRimsColor;
+	}
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+
+void
+SetTempSpoilerColor()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carSpoilerColor)
+		return;
+
+	DebugMenuEntrySetAddress(carSpoilerColor, &playerVeh->m_nTempSpoilerColor);
+}
+void PaintSpoiler()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh)
+		return;
+
+	if (playerVeh->m_nTempSpoilerColor == playerVeh->m_nSpoilerColor) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	int price = 25;
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		return;
+	}
+
+	if (carSpoilerColor) {
+		DebugMenuEntrySetAddress(carSpoilerColor, &playerVeh->m_nTempSpoilerColor);
+		playerVeh->m_nSpoilerColor = playerVeh->m_nTempSpoilerColor;
+	}
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+
+void SetTempSpoilerModelIndex()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carSpoilerNumber)
+		return;
+
+	DebugMenuEntrySetAddress(carSpoilerNumber, &playerVeh->m_aUpgrades[UPGRADE_SPOILER].m_nUpgradeNumber);
+	if (playerVeh->m_aUpgrades[UPGRADE_SPOILER].m_nUpgradeNumber == 0) {
+		playerVeh->m_aUpgrades[UPGRADE_SPOILER].m_nTempUpgradeModelIndex = 0;
+		playerVeh->RemoveUpgrade(UPGRADE_SPOILER, true);
+	} else {
+		playerVeh->m_aUpgrades[UPGRADE_SPOILER].m_nTempUpgradeModelIndex = (MI_SPOILER_1 - 1) + playerVeh->m_aUpgrades[UPGRADE_SPOILER].m_nUpgradeNumber;
+		playerVeh->SetUpgrade(playerVeh->m_aUpgrades[UPGRADE_SPOILER].m_nTempUpgradeModelIndex, true);
+	}
+}
+void PurchaseSpoiler()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carSpoilerNumber)
+		return;
+
+	if (playerVeh->m_aUpgrades[UPGRADE_SPOILER].m_nUpgradeModelIndex == playerVeh->m_aUpgrades[UPGRADE_SPOILER].m_nTempUpgradeModelIndex) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	int price = 500;
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		return;
+	}
+
+	DebugMenuEntrySetAddress(carSpoilerNumber, &playerVeh->m_aUpgrades[UPGRADE_SPOILER].m_nUpgradeNumber);
+	playerVeh->m_aUpgrades[UPGRADE_SPOILER].m_nUpgradeModelIndex = playerVeh->m_aUpgrades[UPGRADE_SPOILER].m_nTempUpgradeModelIndex;
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+
+void SetTempSkirtsModelIndex()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carSkirtsNumber)
+		return;
+
+	DebugMenuEntrySetAddress(carSkirtsNumber, &playerVeh->m_aUpgrades[UPGRADE_SKIRTS].m_nUpgradeNumber);
+	if (playerVeh->m_aUpgrades[UPGRADE_SKIRTS].m_nUpgradeNumber == 0) {
+		playerVeh->m_aUpgrades[UPGRADE_SKIRTS].m_nTempUpgradeModelIndex = 0;
+		playerVeh->RemoveUpgrade(UPGRADE_SKIRTS, true);
+	} else {
+		int number = playerVeh->m_aUpgrades[UPGRADE_SKIRTS].m_nUpgradeNumber;
+		if (number == 0)
+			playerVeh->m_aUpgrades[UPGRADE_SKIRTS].m_nTempUpgradeModelIndex = 0;
+		else if (number == 1)
+			playerVeh->m_aUpgrades[UPGRADE_SKIRTS].m_nTempUpgradeModelIndex = MI_SIDE_SKIRT_L_1;
+
+		playerVeh->SetUpgrade(playerVeh->m_aUpgrades[UPGRADE_SKIRTS].m_nTempUpgradeModelIndex, true);
+	}
+} 
+void PurchaseSkirts()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carSkirtsNumber)
+		return;
+
+	if (playerVeh->m_aUpgrades[UPGRADE_SKIRTS].m_nUpgradeModelIndex == playerVeh->m_aUpgrades[UPGRADE_SKIRTS].m_nTempUpgradeModelIndex) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	int price = 200;
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		return;
+	}
+
+	DebugMenuEntrySetAddress(carSkirtsNumber, &playerVeh->m_aUpgrades[UPGRADE_SKIRTS].m_nUpgradeNumber);
+	playerVeh->m_aUpgrades[UPGRADE_SKIRTS].m_nUpgradeModelIndex = playerVeh->m_aUpgrades[UPGRADE_SKIRTS].m_nTempUpgradeModelIndex;
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+
+void SetTempRoofScoopModelIndex()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carRoofScoopNumber)
+		return;
+
+	DebugMenuEntrySetAddress(carRoofScoopNumber, &playerVeh->m_aUpgrades[UPGRADE_ROOF_SCOOP].m_nUpgradeNumber);
+	if (playerVeh->m_aUpgrades[UPGRADE_ROOF_SCOOP].m_nUpgradeNumber == 0) {
+		playerVeh->m_aUpgrades[UPGRADE_ROOF_SCOOP].m_nTempUpgradeModelIndex = 0;
+		playerVeh->RemoveUpgrade(UPGRADE_ROOF_SCOOP, true);
+	} else {
+		playerVeh->m_aUpgrades[UPGRADE_ROOF_SCOOP].m_nTempUpgradeModelIndex = (MI_RF_SCOOP_1 - 1) + playerVeh->m_aUpgrades[UPGRADE_ROOF_SCOOP].m_nUpgradeNumber;
+		playerVeh->SetUpgrade(playerVeh->m_aUpgrades[UPGRADE_ROOF_SCOOP].m_nTempUpgradeModelIndex, true);
+	}
+}
+void PurchaseRoofScoop()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carRoofScoopNumber)
+		return;
+
+	if (playerVeh->m_aUpgrades[UPGRADE_ROOF_SCOOP].m_nUpgradeModelIndex == playerVeh->m_aUpgrades[UPGRADE_ROOF_SCOOP].m_nTempUpgradeModelIndex) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	int price = 300;
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		return;
+	}
+
+	DebugMenuEntrySetAddress(carRoofScoopNumber, &playerVeh->m_aUpgrades[UPGRADE_ROOF_SCOOP].m_nUpgradeNumber);
+	playerVeh->m_aUpgrades[UPGRADE_ROOF_SCOOP].m_nUpgradeModelIndex = playerVeh->m_aUpgrades[UPGRADE_ROOF_SCOOP].m_nTempUpgradeModelIndex;
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+
+void SetTempBonnetScoopModelIndex()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carBonnetScoopNumber)
+		return;
+
+	DebugMenuEntrySetAddress(carBonnetScoopNumber, &playerVeh->m_aUpgrades[UPGRADE_BONNET_SCOOP].m_nUpgradeNumber);
+	if (playerVeh->m_aUpgrades[UPGRADE_BONNET_SCOOP].m_nUpgradeNumber == 0) {
+		playerVeh->m_aUpgrades[UPGRADE_BONNET_SCOOP].m_nTempUpgradeModelIndex = 0;
+		playerVeh->RemoveUpgrade(UPGRADE_BONNET_SCOOP, true);
+	} else {
+		playerVeh->m_aUpgrades[UPGRADE_BONNET_SCOOP].m_nTempUpgradeModelIndex = (MI_BNT_SCOOP_1 - 1) + playerVeh->m_aUpgrades[UPGRADE_BONNET_SCOOP].m_nUpgradeNumber;
+		playerVeh->SetUpgrade(playerVeh->m_aUpgrades[UPGRADE_BONNET_SCOOP].m_nTempUpgradeModelIndex, true);
+	}
+}
+void PurchaseBonnetScoop()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carBonnetScoopNumber)
+		return;
+
+	if (playerVeh->m_aUpgrades[UPGRADE_BONNET_SCOOP].m_nUpgradeModelIndex == playerVeh->m_aUpgrades[UPGRADE_BONNET_SCOOP].m_nTempUpgradeModelIndex) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	int price = 300;
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		return;
+	}
+
+	DebugMenuEntrySetAddress(carBonnetScoopNumber, &playerVeh->m_aUpgrades[UPGRADE_BONNET_SCOOP].m_nUpgradeNumber);
+	playerVeh->m_aUpgrades[UPGRADE_BONNET_SCOOP].m_nUpgradeModelIndex = playerVeh->m_aUpgrades[UPGRADE_BONNET_SCOOP].m_nTempUpgradeModelIndex;
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+
+void SetTempVentsModelIndex()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carVentsNumber)
+		return;
+
+	DebugMenuEntrySetAddress(carVentsNumber, &playerVeh->m_aUpgrades[UPGRADE_VENTS].m_nUpgradeNumber);
+	if (playerVeh->m_aUpgrades[UPGRADE_VENTS].m_nUpgradeNumber == 0) {
+		playerVeh->m_aUpgrades[UPGRADE_VENTS].m_nTempUpgradeModelIndex = 0;
+		playerVeh->RemoveUpgrade(UPGRADE_VENTS, true);
+	} else {
+		int number = playerVeh->m_aUpgrades[UPGRADE_VENTS].m_nUpgradeNumber;
+		if (number == 0)
+			playerVeh->m_aUpgrades[UPGRADE_VENTS].m_nTempUpgradeModelIndex = 0;
+		else if (number == 1)
+			playerVeh->m_aUpgrades[UPGRADE_VENTS].m_nTempUpgradeModelIndex = MI_BNT_VENT_L_1;
+		else if (number == 2)
+			playerVeh->m_aUpgrades[UPGRADE_VENTS].m_nTempUpgradeModelIndex = MI_BNT_VENT_L_2;
+
+		playerVeh->SetUpgrade(playerVeh->m_aUpgrades[UPGRADE_VENTS].m_nTempUpgradeModelIndex, true);
+	}
+}
+void PurchaseVents()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carVentsNumber)
+		return;
+
+	if (playerVeh->m_aUpgrades[UPGRADE_VENTS].m_nUpgradeModelIndex == playerVeh->m_aUpgrades[UPGRADE_VENTS].m_nTempUpgradeModelIndex) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	int price = 400;
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		return;
+	}
+
+	DebugMenuEntrySetAddress(carVentsNumber, &playerVeh->m_aUpgrades[UPGRADE_VENTS].m_nUpgradeNumber);
+	playerVeh->m_aUpgrades[UPGRADE_VENTS].m_nUpgradeModelIndex = playerVeh->m_aUpgrades[UPGRADE_VENTS].m_nTempUpgradeModelIndex;
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+
+void SetTempSupercharger()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carHasSupercharger)
+		return;
+
+	DebugMenuEntrySetAddress(carHasSupercharger, &playerVeh->m_aUpgrades[UPGRADE_SUPERCHARGER].m_nUpgradeNumber);
+	if (playerVeh->m_aUpgrades[UPGRADE_SUPERCHARGER].m_nUpgradeNumber == 0) {
+		playerVeh->m_aUpgrades[UPGRADE_SUPERCHARGER].m_nTempUpgradeModelIndex = 0;
+		playerVeh->RemoveUpgrade(UPGRADE_SUPERCHARGER, true);
+	} else {
+		if (playerVeh->GetModelIndex() == MI_SABRE)
+			playerVeh->m_aUpgrades[UPGRADE_SUPERCHARGER].m_nTempUpgradeModelIndex = MI_SC_SABRE_BONNET_OK;
+		playerVeh->SetUpgrade(playerVeh->m_aUpgrades[UPGRADE_SUPERCHARGER].m_nTempUpgradeModelIndex, true);
+	}
+}
+void PurchaseSupercharger()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh || !carHasSupercharger)
+		return;
+
+	if (playerVeh->m_aUpgrades[UPGRADE_SUPERCHARGER].m_nUpgradeModelIndex == playerVeh->m_aUpgrades[UPGRADE_SUPERCHARGER].m_nTempUpgradeModelIndex) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	int price = 1000;
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		return;
+	}
+
+	DebugMenuEntrySetAddress(carHasSupercharger, &playerVeh->m_aUpgrades[UPGRADE_SUPERCHARGER].m_nUpgradeNumber);
+	playerVeh->m_aUpgrades[UPGRADE_SUPERCHARGER].m_nUpgradeModelIndex = playerVeh->m_aUpgrades[UPGRADE_SUPERCHARGER].m_nTempUpgradeModelIndex;
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+
+void PurchaseTyres()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh)
+		return;
+
+	if (playerVeh->bTyresDontBurst) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	int price = 500;
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		return;
+	}
+
+	playerVeh->bTyresDontBurst = true;
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+
+void PurchaseHydraulics()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh)
+		return;
+
+	if (playerVeh->bHasHydraulics) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	int price = 1500;
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		return;
+	}
+
+	playerVeh->bHasHydraulics = true;
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+
+void PurchaseEngineTuning(float additionalAccel, int price)
+{
+	CVehicle* playerVeh = FindPlayerVehicle();
+
+	if (!playerVeh)
+		return;
+
+	additionalAccel *= 1.0f / (50.0f * 50.0f); // convert to game units
+
+	if (playerVeh->m_fAddEngineAcceleration >= additionalAccel) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		return;
+	}
+
+	playerVeh->m_fAddEngineAcceleration = additionalAccel;
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+
+void PurchaseBrakes(float additionalDecel, int price)
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh)
+		return;
+
+	additionalDecel *= 1.0f / (50.0f * 50.0f); // convert to game units
+
+	if (playerVeh->m_fAddBrakeDeceleration >= additionalDecel) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		return;
+	}
+
+	playerVeh->m_fAddBrakeDeceleration = additionalDecel;
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+
+void PurchaseArmor(int level, int price)
+{
+	CVehicle* playerVeh = FindPlayerVehicle();
+
+	if (!playerVeh)
+		return;
+
+	if (playerVeh->m_nArmorLevel >= level) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		return;
+	}
+
+	playerVeh->m_nArmorLevel = level;
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+
+void LeaveModGarage()
+{
+	CGarages::bPlayerShouldBeLeaveModGarage = true;
+
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh)
+		return;
+
+	if (playerVeh->m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeModelIndex != playerVeh->m_aUpgrades[UPGRADE_WHEELS].m_nTempUpgradeModelIndex) {
+		playerVeh->SetWheels(playerVeh->m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeModelIndex);
+		playerVeh->m_aUpgrades[UPGRADE_WHEELS].m_nTempUpgradeModelIndex = playerVeh->m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeModelIndex;
+	}
+
+	if (playerVeh->m_nTempColor1 != playerVeh->m_currentColour1)
+		playerVeh->m_nTempColor1 = playerVeh->m_currentColour1;
+
+	if (playerVeh->m_nTempColor2 != playerVeh->m_currentColour2)
+		playerVeh->m_nTempColor2 = playerVeh->m_currentColour2;
+
+	if (playerVeh->m_nTempColor3 != playerVeh->m_currentColour3)
+		playerVeh->m_nTempColor3 = playerVeh->m_currentColour3;
+
+	if (playerVeh->m_nTempColor4 != playerVeh->m_currentColour4)
+		playerVeh->m_nTempColor4 = playerVeh->m_currentColour4;
+
+	if (playerVeh->m_nTempRimsColor != playerVeh->m_nRimsColor)
+		playerVeh->m_nTempRimsColor = playerVeh->m_nRimsColor;
+
+	if (playerVeh->m_nTempSpoilerColor != playerVeh->m_nSpoilerColor)
+		playerVeh->m_nTempSpoilerColor = playerVeh->m_nSpoilerColor;
+
+	for (int upgradeID = 0; upgradeID < NUM_UPGRADES; upgradeID++) {
+		if (playerVeh->m_aUpgrades[upgradeID].m_nUpgradeModelIndex == playerVeh->m_aUpgrades[upgradeID].m_nTempUpgradeModelIndex)
+			continue;
+
+		playerVeh->m_aUpgrades[upgradeID].m_nTempUpgradeModelIndex = playerVeh->m_aUpgrades[upgradeID].m_nUpgradeModelIndex;
+		if (playerVeh->m_aUpgrades[upgradeID].m_nUpgradeModelIndex == 0)
+			playerVeh->RemoveUpgrade((eUpgradeTypes)upgradeID, false);
+		else
+			playerVeh->SetUpgrade(playerVeh->m_aUpgrades[upgradeID].m_nUpgradeModelIndex, false);
+	}
+}
+
+void
+VehicleModMenuPopulate(void)
+{
+	static uint8 dummy;
+	CVehicle* playerVeh = FindPlayerVehicle();
+
+	if (!playerVeh)
+		return;
+
+	if (playerVeh->GetModelInfo()->bHasManyColors) {
+		carCol1 = DebugMenuAddVar("Paint", "Primary colour", &dummy, SetTempColor1, 1, 0, 94, nil);
+		DebugMenuEntrySetAddress(carCol1, &playerVeh->m_nTempColor1);
+		carCol2 = DebugMenuAddVar("Paint", "Secondary colour", &dummy, SetTempColor2, 1, 0, 94, nil);
+		DebugMenuEntrySetAddress(carCol2, &playerVeh->m_nTempColor2);
+		carCol3 = DebugMenuAddVar("Paint", "Tertiary colour", &dummy, SetTempColor3, 1, 0, 94, nil);
+		DebugMenuEntrySetAddress(carCol3, &playerVeh->m_nTempColor3);
+		carCol4 = DebugMenuAddVar("Paint", "Quaternary colour", &dummy, SetTempColor4, 1, 0, 94, nil);
+		DebugMenuEntrySetAddress(carCol4, &playerVeh->m_nTempColor4);
+		DebugMenuAddCmd("Paint", "Paint vehicle, $100", PaintVehicle4);
+	} else {
+		carCol1 = DebugMenuAddVar("Paint", "Primary colour", &dummy, SetTempColor1, 1, 0, 94, nil);
+		DebugMenuEntrySetAddress(carCol1, &playerVeh->m_nTempColor1);
+		carCol2 = DebugMenuAddVar("Paint", "Secondary colour", &dummy, SetTempColor2, 1, 0, 94, nil);
+		DebugMenuEntrySetAddress(carCol2, &playerVeh->m_nTempColor2);
+		DebugMenuAddCmd("Paint", "Paint vehicle, $50", PaintVehicle2);
+	}
+
+	DebugMenuAddCmd("Armor", "Purchase level 1 armor, $1000", []() {PurchaseArmor(1, 1000); });
+	DebugMenuAddCmd("Armor", "Purchase level 2 armor, $2000", []() {PurchaseArmor(2, 2000); });
+	DebugMenuAddCmd("Armor", "Purchase level 3 armor, $3000", []() {PurchaseArmor(3, 3000); });
+	DebugMenuAddCmd("Armor", "Purchase level 4 armor, $4000", []() {PurchaseArmor(4, 4000); });
+
+	DebugMenuAddCmd("Engine", "Purchase engine tuning 1, $500", []() {PurchaseEngineTuning(0.5f, 500); });
+	DebugMenuAddCmd("Engine", "Purchase engine tuning 2, $1000", []() {PurchaseEngineTuning(1.0f, 1000); });
+	DebugMenuAddCmd("Engine", "Purchase engine tuning 3, $1500", []() {PurchaseEngineTuning(1.5f, 1500); });
+	DebugMenuAddCmd("Engine", "Purchase engine tuning 4, $2000", []() {PurchaseEngineTuning(2.0f, 2000); });
+
+	if (playerVeh->IsCar()) {
+		CAutomobile* playerCar = (CAutomobile*)FindPlayerVehicle();
+
+		DebugMenuAddCmd("Brakes", "Purchase improved brakes 1, $250", []() {PurchaseBrakes(0.5f, 250); });
+		DebugMenuAddCmd("Brakes", "Purchase improved brakes 2, $500", []() {PurchaseBrakes(1.0f, 500); });
+		DebugMenuAddCmd("Brakes", "Purchase improved brakes 3, $750", []() {PurchaseBrakes(1.5f, 750); });
+		DebugMenuAddCmd("Brakes", "Purchase improved brakes 4, $1000", []() {PurchaseBrakes(2.0f, 1000); });
+
+		if (CGarages::IsCarTintable(playerCar)) {
+			carTintLevel = DebugMenuAddVar("Window tint", "Tint level", &dummy, SetTempWindowTintLevel, 1, 1, 4, nil);
+			DebugMenuEntrySetAddress(carTintLevel, &playerCar->m_nTempWindowTintLevel);
+			DebugMenuAddCmd("Window tint", "Purchase tint, $500", PurchaseTint);
+		}
+
+		carAddSuspensionForceLevel = DebugMenuAddVar("Suspension", "Suspension force level", &dummy, SetTempSuspensionForceLevel, 1, 1, 4, nil);
+		DebugMenuEntrySetAddress(carAddSuspensionForceLevel, &playerCar->m_nTempAddSuspensionForceLevel);
+		DebugMenuAddCmd("Suspension", "Purchase suspension, $500", PurchaseSuspension);
+
+		if (playerVeh->GetModelInfo()->m_wheelId != 249) {
+			carWheelNumber = DebugMenuAddVar("Wheels", "Wheel model", &dummy, SetTempWheelModelIndex, 1, 1, MAXWHEELMODELS, nil);
+			DebugMenuEntrySetAddress(carWheelNumber, &playerCar->m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber);
+			DebugMenuAddCmd("Wheels", "Purchase wheels, $1000", PurchaseWheels);
+			carRimsColor = DebugMenuAddVar("Wheels", "Rims color", &dummy, SetTempRimsColor, 1, 0, 94, nil);
+			DebugMenuEntrySetAddress(carRimsColor, &playerCar->m_nTempRimsColor);
+			DebugMenuAddCmd("Wheels", "Paint rims, $50", PaintRims);
+		}
+		DebugMenuAddCmd("Wheels", "Purchase bulletproof tyres, $500", PurchaseTyres);
+
+		DebugMenuAddCmd("Hydraulics", "Purchase hydraulics, $1500", PurchaseHydraulics);
+
+		if (playerCar->m_aCarNodes[CAR_SPOILER_OK]) {
+			carSpoilerNumber = DebugMenuAddVar("Spoiler", "Spoiler model", &dummy, SetTempSpoilerModelIndex, 1, 0, 9, nil);
+			DebugMenuEntrySetAddress(carSpoilerNumber, &playerCar->m_aUpgrades[UPGRADE_SPOILER].m_nUpgradeNumber);
+			DebugMenuAddCmd("Spoiler", "Purchase spoiler, $500", PurchaseSpoiler);
+			carSpoilerColor = DebugMenuAddVar("Spoiler", "Spoiler color", &dummy, SetTempSpoilerColor, 1, 0, 94, nil);
+			DebugMenuEntrySetAddress(carSpoilerColor, &playerCar->m_nTempSpoilerColor);
+			DebugMenuAddCmd("Spoiler", "Paint spoiler, $25", PaintSpoiler);
+		}
+
+		if (playerCar->m_aCarNodes[CAR_SKIRT_L] && playerCar->m_aCarNodes[CAR_SKIRT_R]) {
+			carSkirtsNumber = DebugMenuAddVar("Side skirts", "Side skirts model", &dummy, SetTempSkirtsModelIndex, 1, 0, 1, nil);
+			DebugMenuEntrySetAddress(carSkirtsNumber, &playerCar->m_aUpgrades[UPGRADE_SKIRTS].m_nUpgradeNumber);
+			DebugMenuAddCmd("Side skirts", "Purchase side skirts, $200", PurchaseSkirts);
+		}
+
+		if (playerCar->m_aCarNodes[CAR_RF_SCOOP]) {
+			carRoofScoopNumber = DebugMenuAddVar("Scoop", "Roof scoop model", &dummy, SetTempRoofScoopModelIndex, 1, 0, 1, nil);
+			DebugMenuEntrySetAddress(carRoofScoopNumber, &playerCar->m_aUpgrades[UPGRADE_ROOF_SCOOP].m_nUpgradeNumber);
+			DebugMenuAddCmd("Scoop", "Purchase roof scoop, $300", PurchaseRoofScoop);
+		}
+
+		if (playerCar->m_aCarNodes[CAR_BNT_SCOOP_OK] && playerCar->m_aCarNodes[CAR_BNT_SCOOP_DAM]) {
+			carBonnetScoopNumber = DebugMenuAddVar("Scoop", "Bonnet scoop model", &dummy, SetTempBonnetScoopModelIndex, 1, 0, 4, nil);
+			DebugMenuEntrySetAddress(carBonnetScoopNumber, &playerCar->m_aUpgrades[UPGRADE_BONNET_SCOOP].m_nUpgradeNumber);
+			DebugMenuAddCmd("Scoop", "Purchase bonnet scoop, $300", PurchaseBonnetScoop);
+		}
+
+		if (playerCar->m_aCarNodes[CAR_VENT_L_OK] && playerCar->m_aCarNodes[CAR_VENT_L_DAM] &&
+			playerCar->m_aCarNodes[CAR_VENT_R_OK] && playerCar->m_aCarNodes[CAR_VENT_R_DAM]) {
+
+			carVentsNumber = DebugMenuAddVar("Vents", "Vents model", &dummy, SetTempVentsModelIndex, 1, 0, 2, nil);
+			DebugMenuEntrySetAddress(carVentsNumber, &playerCar->m_aUpgrades[UPGRADE_VENTS].m_nUpgradeNumber);
+			DebugMenuAddCmd("Vents", "Purchase vents, $400", PurchaseVents);
+		}
+
+		if (playerCar->m_aCarNodes[CAR_SUPERCHARGER]) {
+			static const char* hasSupercharger[] = { "No", "Yes" };
+			carHasSupercharger = DebugMenuAddVar("Supercharger", "Has a supercharger", &dummy, SetTempSupercharger, 1, 0, 1, hasSupercharger);
+			DebugMenuEntrySetAddress(carHasSupercharger, &playerCar->m_aUpgrades[UPGRADE_SUPERCHARGER].m_nUpgradeNumber);
+			DebugMenuAddCmd("Supercharger", "Purchase supercharger, $1000", PurchaseSupercharger);
+		}
+	} else if (playerVeh->IsBike()) {
+		DebugMenuAddCmd("Wheels", "Purchase bulletproof tyres, $500", PurchaseTyres);
+	}
+
+	DebugMenuAddCmd("Exit", "Leave Vice City Customs", LeaveModGarage);
+}
+#endif
 #endif
 
 #ifndef __MWERKS__
@@ -1299,6 +2416,37 @@ void re3_usererror(const char *format, ...)
 #endif
 }
 #endif
+#endif
+
+#ifdef UTILS
+float InterpFloat(float currentValue, float newValue, float interpSpeed)
+{
+	if (currentValue == newValue)
+		return currentValue;
+
+	float distance = newValue - currentValue;
+
+	float deltaSeconds = CTimer::GetTimeStepInSeconds();
+	float deltaSpeed = deltaSeconds * interpSpeed;
+
+	return currentValue + distance * deltaSpeed;
+}
+
+CVector InterpVector(CVector currentValue, CVector newValue, float interpSpeed)
+{
+	if (currentValue == newValue)
+		return currentValue;
+
+	CVector distance = newValue - currentValue;
+
+	float distanceMagnitude = distance.Magnitude();
+
+	float deltaSeconds = CTimer::GetTimeStepInSeconds();
+	float deltaSpeed = deltaSeconds * interpSpeed;
+
+	CVector deltaNormal = distance / distanceMagnitude;
+	return currentValue + deltaNormal * deltaSpeed;
+}
 #endif
 
 #ifdef VALIDATE_SAVE_SIZE

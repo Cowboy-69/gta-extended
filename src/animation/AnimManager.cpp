@@ -193,6 +193,46 @@ AnimAssocDesc aStdAnimDescs[] = {
 	{ ANIM_STD_SEAT_RVRS, ASSOC_DELETEFADEDOUT | ASSOC_FADEOUTWHENDONE | ASSOC_PARTIAL },
 	{ ANIM_STD_ATM, ASSOC_DELETEFADEDOUT | ASSOC_FADEOUTWHENDONE | ASSOC_PARTIAL },
 	{ ANIM_STD_ABSEIL, ASSOC_DELETEFADEDOUT | ASSOC_PARTIAL },
+#ifdef CLIMBING // add anims
+	{ ANIM_STD_CLIMBING_IDLE, ASSOC_REPEAT | ASSOC_FADEOUTWHENDONE | ASSOC_PARTIAL },
+	{ ANIM_STD_CLIMBING_JUMP, ASSOC_DELETEFADEDOUT | ASSOC_PARTIAL },
+	{ ANIM_STD_CLIMBING_JUMP_B, ASSOC_FADEOUTWHENDONE | ASSOC_PARTIAL | ASSOC_HAS_TRANSLATION },
+	{ ANIM_STD_CLIMBING_PULL, ASSOC_DELETEFADEDOUT | ASSOC_PARTIAL },
+	{ ANIM_STD_CLIMBING_STAND, ASSOC_DELETEFADEDOUT | ASSOC_PARTIAL },
+	{ ANIM_STD_CLIMBING_STAND_FINISH, ASSOC_DELETEFADEDOUT | ASSOC_PARTIAL },
+#endif
+#ifdef CROUCH // add anims
+	{ ANIM_STD_CROUCH_IDLE, ASSOC_REPEAT | ASSOC_DELETEFADEDOUT },
+	{ ANIM_STD_CROUCH_FORWARD, ASSOC_REPEAT | ASSOC_MOVEMENT | ASSOC_HAS_TRANSLATION | ASSOC_WALK },
+	{ ANIM_STD_CROUCH_BACKWARD, ASSOC_REPEAT | ASSOC_MOVEMENT | ASSOC_HAS_TRANSLATION | ASSOC_WALK },
+	{ ANIM_STD_CROUCH_ROLL_L, ASSOC_MOVEMENT | ASSOC_HAS_TRANSLATION | ASSOC_FRONTAL },
+	{ ANIM_STD_CROUCH_ROLL_R, ASSOC_MOVEMENT | ASSOC_HAS_TRANSLATION | ASSOC_FRONTAL },
+#endif
+#ifdef SWIMMING // add anims
+	{ ANIM_STD_SWIM_BREAST, ASSOC_REPEAT | ASSOC_MOVEMENT | ASSOC_HAS_TRANSLATION },
+	{ ANIM_STD_SWIM_CRAWL, ASSOC_REPEAT | ASSOC_MOVEMENT | ASSOC_HAS_TRANSLATION },
+	{ ANIM_STD_SWIM_JUMPOUT, ASSOC_FADEOUTWHENDONE | ASSOC_PARTIAL },
+	{ ANIM_STD_SWIM_TREAD, ASSOC_REPEAT },
+#endif
+#ifdef FIRING_AND_AIMING // add anims
+	{ ANIM_STD_GUNMOVE_BWD, ASSOC_REPEAT | ASSOC_MOVEMENT | ASSOC_HAS_TRANSLATION | ASSOC_HAS_X_TRANSLATION | ASSOC_WALK },
+	{ ANIM_STD_GUNMOVE_FWD, ASSOC_REPEAT | ASSOC_MOVEMENT | ASSOC_HAS_TRANSLATION | ASSOC_HAS_X_TRANSLATION | ASSOC_WALK },
+	{ ANIM_STD_GUNMOVE_L, ASSOC_REPEAT | ASSOC_MOVEMENT | ASSOC_HAS_TRANSLATION | ASSOC_HAS_X_TRANSLATION | ASSOC_WALK },
+	{ ANIM_STD_GUNMOVE_R, ASSOC_REPEAT | ASSOC_MOVEMENT | ASSOC_HAS_TRANSLATION | ASSOC_HAS_X_TRANSLATION | ASSOC_WALK },
+	{ ANIM_STD_GUN_STAND, ASSOC_REPEAT | ASSOC_MOVEMENT | ASSOC_HAS_TRANSLATION | ASSOC_HAS_X_TRANSLATION | ASSOC_WALK },
+
+	{ ANIM_STD_CAR_SIT_DB, ASSOC_DELETEFADEDOUT },
+	{ ANIM_STD_CAR_SIT_LO_DB, ASSOC_DELETEFADEDOUT },
+	{ ANIM_STD_CAR_SIT_P_DB, ASSOC_DELETEFADEDOUT },
+	{ ANIM_STD_CAR_SIT_P_LO_DB, ASSOC_DELETEFADEDOUT },
+	{ ANIM_STD_CAR_DRIVE_LEFT_DB, ASSOC_DELETEFADEDOUT | ASSOC_PARTIAL | ASSOC_DRIVING },
+	{ ANIM_STD_CAR_DRIVE_RIGHT_DB, ASSOC_DELETEFADEDOUT | ASSOC_PARTIAL | ASSOC_DRIVING },
+	{ ANIM_STD_CAR_DRIVE_LEFT_LO_DB, ASSOC_DELETEFADEDOUT | ASSOC_PARTIAL | ASSOC_DRIVING },
+	{ ANIM_STD_CAR_DRIVE_RIGHT_LO_DB, ASSOC_DELETEFADEDOUT | ASSOC_PARTIAL | ASSOC_DRIVING },
+	{ ANIM_STD_BOAT_DRIVE_DB, ASSOC_DELETEFADEDOUT | ASSOC_DRIVING },
+	{ ANIM_STD_BOAT_DRIVE_LEFT_DB, ASSOC_DELETEFADEDOUT | ASSOC_PARTIAL | ASSOC_DRIVING },
+	{ ANIM_STD_BOAT_DRIVE_RIGHT_DB, ASSOC_DELETEFADEDOUT | ASSOC_PARTIAL | ASSOC_DRIVING },
+#endif
 };
 AnimAssocDesc aVanAnimDescs[] = {
 	{ ANIM_STD_VAN_OPEN_DOOR_REAR_LHS, ASSOC_FADEOUTWHENDONE | ASSOC_PARTIAL },
@@ -230,6 +270,14 @@ AnimAssocDesc aBikeAnimDescs[] = {
 	{ ANIM_BIKE_DRIVEBY_RHS, ASSOC_DELETEFADEDOUT | ASSOC_PARTIAL | ASSOC_DRIVING },
 	{ ANIM_BIKE_DRIVEBY_FORWARD, ASSOC_DELETEFADEDOUT | ASSOC_PARTIAL | ASSOC_DRIVING },
 	{ ANIM_BIKE_RIDE_P, ASSOC_DELETEFADEDOUT | ASSOC_DRIVING },
+#ifdef FIRING_AND_AIMING // add anims
+	{ ANIM_BIKE_RIDE_DB, ASSOC_DELETEFADEDOUT },
+	{ ANIM_BIKE_READY_DB, ASSOC_DELETEFADEDOUT },
+	{ ANIM_BIKE_LEFT_DB, ASSOC_PARTIAL | ASSOC_DRIVING },
+	{ ANIM_BIKE_RIGHT_DB, ASSOC_PARTIAL | ASSOC_DRIVING },
+	{ ANIM_BIKE_WALKBACK_DB, ASSOC_REPEAT | ASSOC_DELETEFADEDOUT | ASSOC_PARTIAL | ASSOC_DRIVING },
+	{ ANIM_BIKE_RIDE_P_DB, ASSOC_DELETEFADEDOUT | ASSOC_DRIVING },
+#endif
 };
 AnimAssocDesc aMeleeAnimDescs[] = {
 	{ ANIM_MELEE_ATTACK, ASSOC_FADEOUTWHENDONE | ASSOC_PARTIAL },
@@ -294,6 +342,7 @@ AnimAssocDesc aStdAnimDescsSide[] = {
 	{ ANIM_STD_STARTWALK, ASSOC_HAS_TRANSLATION | ASSOC_HAS_X_TRANSLATION },
 };
 #endif
+
 char const* aStdAnimations[] = {
 	"walk_civi",
 	"run_civi",
@@ -468,6 +517,46 @@ char const* aStdAnimations[] = {
 	"SEAT_down",
 	"ATM",
 	"abseil",
+#ifdef CLIMBING // add anims
+	"CLIMB_idle",
+	"CLIMB_jump",
+	"CLIMB_jump_B",
+	"CLIMB_Pull",
+	"CLIMB_Stand",
+	"CLIMB_Stand_finish",
+#endif
+#ifdef CROUCH // add anims
+	"Crouch_Idle",
+	"Crouch_Forward",
+	"Crouch_Backward",
+	"Crouch_Roll_L",
+	"Crouch_Roll_R",
+#endif
+#ifdef SWIMMING // add anims
+	"Swim_Breast",
+	"Swim_Crawl",
+	"Swim_jumpout",
+	"Swim_Tread",
+#endif
+#ifdef FIRING_AND_AIMING // add anims
+	"GunMove_BWD",
+	"GunMove_FWD",
+	"GunMove_L",
+	"GunMove_R",
+	"Gun_stand",
+
+	"CAR_sit_DB",
+	"CAR_Lsit_DB",
+	"CAR_sitp_DB",
+	"CAR_sitpLO_DB",
+	"Drive_L_DB",
+	"Drive_R_DB",
+	"Drive_LO_L_DB",
+	"Drive_LO_R_DB",
+	"DRIVE_BOAT_DB",
+	"DRIVE_BOAT_L_DB",
+	"DRIVE_BOAT_R_DB",
+#endif
 };
 char const* aVanAnimations[] = {
 	"VAN_openL",
@@ -505,6 +594,14 @@ char const* aBikesAnimations[] = {
 	"BIKEs_drivebyRHS",
 	"BIKEs_drivebyFT",
 	"BIKEs_passenger",
+#ifdef FIRING_AND_AIMING // add anims
+	"BIKEs_Ride_DB",
+	"BIKEs_Still_DB",
+	"BIKEs_Left_DB",
+	"BIKEs_Right_DB",
+	"BIKEs_pushes_DB",
+	"BIKEs_passenger_DB",
+#endif
 };
 char const* aBikevAnimations[] = {
 	"BIKEv_Ride",
@@ -525,6 +622,14 @@ char const* aBikevAnimations[] = {
 	"BIKEv_drivebyRHS",
 	"BIKEv_drivebyFT",
 	"BIKEv_passenger",
+#ifdef FIRING_AND_AIMING // add anims
+	"BIKEv_Ride_DB",
+	"BIKEv_Still_DB",
+	"BIKEv_Left_DB",
+	"BIKEv_Right_DB",
+	"BIKEv_pushes_DB",
+	"BIKEv_passenger_DB",
+#endif
 };
 char const* aBikehAnimations[] = {
 	"BIKEh_Ride",
@@ -545,6 +650,14 @@ char const* aBikehAnimations[] = {
 	"BIKEh_drivebyRHS",
 	"BIKEh_drivebyFT",
 	"BIKEh_passenger",
+#ifdef FIRING_AND_AIMING // add anims
+	"BIKEh_Ride_DB",
+	"BIKEh_Still_DB",
+	"BIKEh_Left_DB",
+	"BIKEh_Right_DB",
+	"BIKEh_pushes_DB",
+	"BIKEh_passenger_DB",
+#endif
 };
 char const* aBikedAnimations[] = {
 	"BIKEd_Ride",
@@ -565,6 +678,14 @@ char const* aBikedAnimations[] = {
 	"BIKEd_drivebyRHS",
 	"BIKEd_drivebyFT",
 	"BIKEd_passenger",
+#ifdef FIRING_AND_AIMING // add anims
+	"BIKEd_Ride_DB",
+	"BIKEd_Still_DB",
+	"BIKEd_Left_DB",
+	"BIKEd_Right_DB",
+	"BIKEd_pushes_DB",
+	"BIKEd_passenger_DB",
+#endif
 };
 char const* aUnarmedAnimations[] = {
 	"punchR",
@@ -624,6 +745,10 @@ char const* aShotgunAnimations[] = {
 char const* aBuddyAnimations[] = {
 	"buddy_fire",
 	"buddy_crouchfire",
+#ifdef IMPROVED_TECH_PART // buddy reloading anim
+	"buddy_reload",
+	"buddy_crouchreload",
+#endif
 };
 char const* aTecAnimations[] = {
 	"TEC_fire",
@@ -705,7 +830,11 @@ char const* aPlayerAnimations[] = {
 char const* aPlayerWithRocketAnimations[] = {
 	"walk_rocket",
 	"run_rocket",
+#ifdef IMPROVED_TECH_PART // sprint with rocket
+	"sprint_rocket",
+#else
 	"run_rocket",
+#endif
 	"idle_rocket",
 	"walk_start_rocket",
 };
@@ -719,21 +848,33 @@ char const* aPlayer1ArmedAnimations[] = {
 char const* aPlayer2ArmedAnimations[] = {
 	"walk_armed",
 	"run_armed",
+#ifdef IMPROVED_TECH_PART // sprint with armed weapon
+	"sprint_armed",
+#else
 	"run_armed",
+#endif
 	"idle_armed",
 	"walk_start_armed",
 };
 char const* aPlayerBBBatAnimations[] = {
 	"walk_player",
 	"run_player",
+#ifdef IMPROVED_TECH_PART // sprint with bat
+	"SPRINT_civi",
+#else
 	"run_player",
+#endif
 	"IDLE_STANCE",
 	"walk_start",
 };
 char const* aPlayerChainsawAnimations[] = {
 	"walk_csaw",
 	"run_csaw",
+#ifdef IMPROVED_TECH_PART // sprint with chainsaw
+	"sprint_csaw",
+#else
 	"run_csaw",
+#endif
 	"IDLE_csaw",
 	"walk_start_csaw",
 };

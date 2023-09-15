@@ -16,6 +16,9 @@
 #include "World.h"
 #include "MemoryHeap.h"
 #include "SaveBuf.h"
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+#include "Frontend.h"
+#endif
 
 CCPtrNodePool *CPools::ms_pPtrNodePool;
 CEntryInfoNodePool *CPools::ms_pEntryInfoNodePool;
@@ -185,6 +188,30 @@ INITSAVEBUF
 			CCarCtrl::NumRandomCars--; // why?
 			pAutomobile->Damage = ((CAutomobile*)vbuf)->Damage;
 			pAutomobile->SetupDamageAfterLoad();
+#if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined VEHICLE_MODS
+			if (bSaveAnywhere) {
+				CAutomobile* abuf = (CAutomobile*)vbuf;
+				pAutomobile->m_nWindowTintLevel = abuf->m_nWindowTintLevel;
+				pAutomobile->m_nTempWindowTintLevel = abuf->m_nWindowTintLevel;
+				pAutomobile->m_nAddSuspensionForceLevel = abuf->m_nAddSuspensionForceLevel;
+				pAutomobile->m_nTempAddSuspensionForceLevel = abuf->m_nAddSuspensionForceLevel;
+				pAutomobile->m_nRimsColor = abuf->m_nRimsColor;
+				pAutomobile->m_nTempRimsColor = abuf->m_nRimsColor;
+				pAutomobile->m_nSpoilerColor = abuf->m_nSpoilerColor;
+				pAutomobile->m_nTempSpoilerColor = abuf->m_nSpoilerColor;
+				pAutomobile->m_fAddBrakeDeceleration = abuf->m_fAddBrakeDeceleration;
+				pAutomobile->bHasHydraulics = abuf->bHasHydraulics;
+				pAutomobile->m_aWheelSpeed[1] = abuf->m_aWheelSpeed[1]; // helicopter rotor
+				for (int upgradeID = 0; upgradeID < NUM_UPGRADES; upgradeID++) {
+					pAutomobile->m_aUpgrades[upgradeID].m_nUpgradeModelIndex = abuf->m_aUpgrades[upgradeID].m_nUpgradeModelIndex;
+					pAutomobile->m_aUpgrades[upgradeID].m_nTempUpgradeModelIndex = abuf->m_aUpgrades[upgradeID].m_nUpgradeModelIndex;
+					if (upgradeID == UPGRADE_WHEELS)
+						pAutomobile->SetWheels(abuf->m_aUpgrades[upgradeID].m_nUpgradeModelIndex);
+					else
+						pAutomobile->SetUpgrade(abuf->m_aUpgrades[upgradeID].m_nUpgradeModelIndex, false);
+				}
+			}
+#endif
 		}
 		else if (type == VEHICLE_TYPE_BIKE) {
 #ifdef FIX_BUGS
@@ -196,6 +223,12 @@ INITSAVEBUF
 			CBike* pBike = new(slot) CBike(model, RANDOM_VEHICLE);
 			pVehicle = pBike;
 			--CCarCtrl::NumRandomCars;
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+			if (bSaveAnywhere) {
+				pBike->m_wheelStatus[0] = ((CBike*)vbuf)->m_wheelStatus[0];
+				pBike->m_wheelStatus[1] = ((CBike*)vbuf)->m_wheelStatus[1];
+			}
+#endif
 		}
 		else
 			assert(0);
@@ -204,6 +237,10 @@ INITSAVEBUF
 		pVehicle->VehicleCreatedBy = pBufferVehicle->VehicleCreatedBy;
 		pVehicle->m_currentColour1 = pBufferVehicle->m_currentColour1;
 		pVehicle->m_currentColour2 = pBufferVehicle->m_currentColour2;
+#ifdef IMPROVED_VEHICLES // More colors
+		pVehicle->m_currentColour3 = pBufferVehicle->m_currentColour3;
+		pVehicle->m_currentColour4 = pBufferVehicle->m_currentColour4;
+#endif
 		pVehicle->m_nAlarmState = pBufferVehicle->m_nAlarmState;
 		pVehicle->m_nNumMaxPassengers = pBufferVehicle->m_nNumMaxPassengers;
 		pVehicle->field_1D0[0] = pBufferVehicle->field_1D0[0];
@@ -229,6 +266,17 @@ INITSAVEBUF
 		pVehicle->m_nTimeOfDeath = pBufferVehicle->m_nTimeOfDeath;
 #endif
 		pVehicle->m_nDoorLock = pBufferVehicle->m_nDoorLock;
+#if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined VEHICLE_MODS
+		if (bSaveAnywhere) {
+			pVehicle->m_nTempColor1 = pBufferVehicle->m_nTempColor1;
+			pVehicle->m_nTempColor2 = pBufferVehicle->m_nTempColor2;
+			pVehicle->m_nTempColor3 = pBufferVehicle->m_nTempColor3;
+			pVehicle->m_nTempColor4 = pBufferVehicle->m_nTempColor4;
+			pVehicle->m_nArmorLevel = pBufferVehicle->m_nArmorLevel;
+			pVehicle->m_fAddEngineAcceleration = pBufferVehicle->m_fAddEngineAcceleration;
+			pVehicle->bTyresDontBurst = pBufferVehicle->bTyresDontBurst;
+		}
+#endif
 		pVehicle->SetStatus(pBufferVehicle->GetStatus());
 		pVehicle->SetType(pBufferVehicle->GetType());
 		(pVehicle->GetAddressOfEntityProperties())[0] = (pBufferVehicle->GetAddressOfEntityProperties())[0];
@@ -236,6 +284,15 @@ INITSAVEBUF
 		pVehicle->AutoPilot = pBufferVehicle->AutoPilot;
 		CCarCtrl::UpdateCarCount(pVehicle, false);
 		CWorld::Add(pVehicle);
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+		if (bSaveAnywhere) {
+			FindPlayerPed()->m_pMyVehicle = pVehicle;
+			if (FindPlayerPed()->InVehicle()) {
+				FindPlayerPed()->SetObjective(OBJECTIVE_ENTER_CAR_AS_DRIVER, pVehicle);
+				FindPlayerPed()->WarpPedIntoCar(pVehicle);
+			}
+		}
+#endif
 		delete[] vbuf;
 #endif
 	}
@@ -260,6 +317,31 @@ INITSAVEBUF
 		}
 #ifdef MISSION_REPLAY
 		bool bForceSaving = CWorld::Players[CWorld::PlayerInFocus].m_pPed->m_pMyVehicle == pVehicle && IsQuickSave;
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+		bool bForceSavingAnywhere = CWorld::Players[CWorld::PlayerInFocus].m_pPed->m_pMyVehicle == pVehicle && bSaveAnywhere;
+
+		if ((!pVehicle->pDriver && !bHasPassenger) || bForceSaving || bForceSavingAnywhere) {
+			if (pVehicle->IsCar() && (pVehicle->VehicleCreatedBy == MISSION_VEHICLE && (!bSaveAnywhere || bForceSavingAnywhere) || 
+									  pVehicle->VehicleCreatedBy != MISSION_VEHICLE && bForceSavingAnywhere || 
+									  bForceSaving)) {
+
+				++nNumCars;
+			}
+
+			if (pVehicle->IsBoat() && (pVehicle->VehicleCreatedBy == MISSION_VEHICLE && (!bSaveAnywhere || bForceSavingAnywhere) || 
+									   pVehicle->VehicleCreatedBy != MISSION_VEHICLE && bForceSavingAnywhere || 
+									   bForceSaving)) {
+
+				++nNumBoats;
+			}
+
+			if (pVehicle->IsBike() && (pVehicle->VehicleCreatedBy == MISSION_VEHICLE && (!bSaveAnywhere || bForceSavingAnywhere) || 
+									   pVehicle->VehicleCreatedBy != MISSION_VEHICLE && bForceSavingAnywhere || 
+									   bForceSaving)) {
+
+				++nNumBikes;
+			}
+#else
 #ifdef FIX_BUGS
 		if ((!pVehicle->pDriver && !bHasPassenger) || bForceSaving) {
 #else
@@ -271,6 +353,7 @@ INITSAVEBUF
 				++nNumBoats;
 			if (pVehicle->IsBike() && (pVehicle->VehicleCreatedBy == MISSION_VEHICLE || bForceSaving))
 				++nNumBikes;
+#endif
 #else
 		if (!pVehicle->pDriver && !bHasPassenger) {
 			if (pVehicle->IsCar() && pVehicle->VehicleCreatedBy == MISSION_VEHICLE)
@@ -299,9 +382,16 @@ INITSAVEBUF
 		}
 #ifdef MISSION_REPLAY
 		bool bForceSaving = CWorld::Players[CWorld::PlayerInFocus].m_pPed->m_pMyVehicle == pVehicle && IsQuickSave;
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+		bool bForceSavingAnywhere = CWorld::Players[CWorld::PlayerInFocus].m_pPed->m_pMyVehicle == pVehicle && bSaveAnywhere;
+#endif
 #endif
 #if defined FIX_BUGS && defined MISSION_REPLAY
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+		if ((!pVehicle->pDriver && !bHasPassenger) || bForceSaving || bForceSavingAnywhere) {
+#else
 		if ((!pVehicle->pDriver && !bHasPassenger) || bForceSaving) {
+#endif
 #else
 		if (!pVehicle->pDriver && !bHasPassenger) {
 #endif
@@ -318,7 +408,13 @@ INITSAVEBUF
 			}
 #else
 #ifdef MISSION_REPLAY
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+			if (pVehicle->IsCar() && (pVehicle->VehicleCreatedBy == MISSION_VEHICLE && (!bSaveAnywhere || bForceSavingAnywhere) || 
+									  pVehicle->VehicleCreatedBy != MISSION_VEHICLE && bForceSavingAnywhere || 
+									  bForceSaving)) {
+#else
 			if (pVehicle->IsCar() && (pVehicle->VehicleCreatedBy == MISSION_VEHICLE || bForceSaving)) {
+#endif
 #else
 			if (pVehicle->IsCar() && pVehicle->VehicleCreatedBy == MISSION_VEHICLE) {
 #endif
@@ -329,7 +425,13 @@ INITSAVEBUF
 				SkipSaveBuf(buf, sizeof(CAutomobile));
 			}
 #ifdef MISSION_REPLAY
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+			if (pVehicle->IsBoat() && (pVehicle->VehicleCreatedBy == MISSION_VEHICLE && (!bSaveAnywhere || bForceSavingAnywhere) || 
+									   pVehicle->VehicleCreatedBy != MISSION_VEHICLE && bForceSavingAnywhere || 
+									   bForceSaving)) {
+#else
 			if (pVehicle->IsBoat() && (pVehicle->VehicleCreatedBy == MISSION_VEHICLE || bForceSaving)) {
+#endif
 #else
 			if (pVehicle->IsBoat() && pVehicle->VehicleCreatedBy == MISSION_VEHICLE) {
 #endif
@@ -340,7 +442,13 @@ INITSAVEBUF
 				SkipSaveBuf(buf, sizeof(CBoat));
 			}
 #ifdef MISSION_REPLAY
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+			if (pVehicle->IsBike() && (pVehicle->VehicleCreatedBy == MISSION_VEHICLE && (!bSaveAnywhere || bForceSavingAnywhere) || 
+									   pVehicle->VehicleCreatedBy != MISSION_VEHICLE && bForceSavingAnywhere || 
+									   bForceSaving)) {
+#else
 			if (pVehicle->IsBike() && (pVehicle->VehicleCreatedBy == MISSION_VEHICLE || bForceSaving)) {
+#endif
 #else
 			if (pVehicle->IsBike() && pVehicle->VehicleCreatedBy == MISSION_VEHICLE) {
 #endif
@@ -511,7 +619,11 @@ INITSAVEBUF
 		if (!pPed)
 			continue;
 #ifdef MISSION_REPLAY
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+		if ((!pPed->bInVehicle || (pPed == CWorld::Players[CWorld::PlayerInFocus].m_pPed && (IsQuickSave || bAutoSave || bSaveAnywhere))) && pPed->m_nPedType == PEDTYPE_PLAYER1)
+#else
 		if ((!pPed->bInVehicle || (pPed == CWorld::Players[CWorld::PlayerInFocus].m_pPed && IsQuickSave)) && pPed->m_nPedType == PEDTYPE_PLAYER1)
+#endif
 #else
 		if (!pPed->bInVehicle && pPed->m_nPedType == PEDTYPE_PLAYER1)
 #endif
@@ -525,7 +637,11 @@ INITSAVEBUF
 		if (!pPed)
 			continue;
 #ifdef MISSION_REPLAY
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+		if ((!pPed->bInVehicle || (pPed == CWorld::Players[CWorld::PlayerInFocus].m_pPed && (IsQuickSave || bAutoSave || bSaveAnywhere))) && pPed->m_nPedType == PEDTYPE_PLAYER1) {
+#else
 		if ((!pPed->bInVehicle || (pPed == CWorld::Players[CWorld::PlayerInFocus].m_pPed && IsQuickSave)) && pPed->m_nPedType == PEDTYPE_PLAYER1) {
+#endif
 #else
 		if (!pPed->bInVehicle && pPed->m_nPedType == PEDTYPE_PLAYER1) {
 #endif
@@ -617,6 +733,14 @@ INITSAVEBUF
 		pPed->CharCreatedBy = pBufferPlayer->CharCreatedBy;
 		pPed->m_currentWeapon = 0;
 		pPed->m_maxWeaponTypeAllowed = pBufferPlayer->m_maxWeaponTypeAllowed;
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+		pPed->m_fRotationCur = pBufferPlayer->m_fRotationCur;
+		pPed->m_fRotationDest = pBufferPlayer->m_fRotationDest;
+		if (bSaveAnywhere) {
+			pPed->bInVehicle = pBufferPlayer->bInVehicle;
+			pPed->m_pMyVehicle = pBufferPlayer->m_pMyVehicle;
+		}
+#endif
 		for (int i = 0; i < TOTAL_WEAPON_SLOTS; i++) {
 			if (pBufferPlayer->HasWeaponSlot(i)) {
 				int modelId = CWeaponInfo::GetWeaponInfo(pBufferPlayer->GetWeapon(i).m_eWeaponType)->m_nModelId;
