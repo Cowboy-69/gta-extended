@@ -361,3 +361,5 @@ codewarrior/Release/
 codewarrior/Debug/
 
 src/extras/GitSHA1.cpp
+gta3script/gta3script.code-workspace
+gta3script/main.scm
