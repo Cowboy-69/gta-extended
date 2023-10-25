@@ -238,6 +238,9 @@ enum eMenuScreen
 #ifdef IMPROVED_MENU_AND_INPUT
 	MENUPAGE_GAMEPAD_SETTINGS,
 #endif
+#ifdef FIRST_PERSON
+	MENUPAGE_FIRST_PERSON,
+#endif
 	MENUPAGES
 };
 
@@ -326,6 +329,12 @@ enum eMenuAction
 	MENUACTION_PADAIMSENSX,
 	MENUACTION_PADAIMSENSY,
 #endif
+#if defined FIRST_PERSON && defined FIRING_AND_AIMING
+	MENUACTION_FOV_FP,
+	MENUACTION_AUTOCENTER_IN_VEHICLE_FP,
+	MENUACTION_RELATIVE_CAM_IN_VEHICLE_DB_FP,
+	MENUACTION_DOOM_MODE_FP,
+#endif
 };
 
 enum eCheckHover
@@ -393,6 +402,10 @@ enum eCheckHover
 	HOVEROPTION_DECREASE_PADLOOKSENSY,
 	HOVEROPTION_INCREASE_PADAIMSENSY,
 	HOVEROPTION_DECREASE_PADAIMSENSY,
+#endif
+#ifdef FIRST_PERSON
+	HOVEROPTION_INCREASE_FOV_FP,
+	HOVEROPTION_DECREASE_FOV_FP,
 #endif
 };
 
@@ -780,6 +793,12 @@ public:
 	float m_PrefsMouseAimSensX;
 	float m_PrefsMouseLookSensY;
 	float m_PrefsMouseAimSensY;
+#endif
+#if defined FIRST_PERSON && defined FIRING_AND_AIMING
+	int8 m_PrefsFOV_FP;
+	bool m_PrefsAutocenterCamInVeh_FP;
+	bool m_PrefsRelativeCamInVeh_DB_FP;
+	bool m_PrefsDoomMode_FP;
 #endif
 
 #ifdef GAMEPAD_MENU

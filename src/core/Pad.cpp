@@ -600,7 +600,7 @@ void DoChicksWithGunsCheat(void) {
 	CPad::bHasPlayerCheated = true;
 }
 
-#ifdef NEW_CHEATS
+#ifdef NEW_CHEATS // init
 void Cowboy69Cheat(void) {
 	CStreaming::RequestModel(MI_PYTHON, STREAMFLAGS_DONT_REMOVE);
 	CStreaming::LoadAllRequestedModels(false);
@@ -656,6 +656,20 @@ void TeargasCheat(void) {
 	wchar* string;
 	string = TheText.Get("CHEAT1");
 	CHud::SetHelpMessage(string, true);
+
+	CPad::bHasPlayerCheated = true;
+}
+
+void NoWantedCheat(void) {
+	wchar* string;
+	if (FindPlayerPed()->bNoWantedCheat)
+		string = TheText.Get("CHEATOF");
+	else
+		string = TheText.Get("CHEAT1");
+
+	CHud::SetHelpMessage(string, true);
+
+	FindPlayerPed()->bNoWantedCheat = !FindPlayerPed()->bNoWantedCheat;
 
 	CPad::bHasPlayerCheated = true;
 }
@@ -1738,7 +1752,7 @@ void CPad::AddToPCCheatString(char c)
 		RenderWaterLayersCheat();
 #endif
 
-#ifdef NEW_CHEATS
+#ifdef NEW_CHEATS // init
 	// COWBOY69
 	if (!_CHEATCMP("96YOBWOC"))
 		Cowboy69Cheat();
@@ -1754,6 +1768,10 @@ void CPad::AddToPCCheatString(char c)
 	// BIGSMOKE
 	if (!_CHEATCMP("EKOMSGIB"))
 		TeargasCheat();
+
+	// AEZAKMI
+	if (!_CHEATCMP("IMKAZEA"))
+		NoWantedCheat();
 #endif
 
 #undef _CHEATCMP
@@ -1786,7 +1804,7 @@ void CPad::AffectFromXinput(uint32 pad)
 		PCTempJoyState.RightShock = (xstate.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) ? 255 : 0;
 		PCTempJoyState.RightShoulder1 = (xstate.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) ? 255 : 0;
 		PCTempJoyState.RightShoulder2 = xstate.Gamepad.bRightTrigger;
-
+		
 		PCTempJoyState.Select = (xstate.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) ? 255 : 0;
 #ifdef REGISTER_START_BUTTON
 		PCTempJoyState.Start = (xstate.Gamepad.wButtons & XINPUT_GAMEPAD_START) ? 255 : 0;
@@ -3015,10 +3033,13 @@ int32 CPad::GetWeapon(void)
 
 	switch (CURMODE)
 	{
-#ifdef IMPROVED_MENU_AND_INPUT
+#if defined IMPROVED_MENU_AND_INPUT && defined FIRING_AND_AIMING
 		case 0:
 		case 2:
 		{
+			if (IsAffectedByController && FindPlayerVehicle())
+				return NewState.RightShoulder2 || NewState.Circle;
+
 			return NewState.Circle || (NewState.RightShoulder1 && NewState.LeftShoulder1);
 
 			break;
@@ -3027,6 +3048,9 @@ int32 CPad::GetWeapon(void)
 		case 1:
 		case 3:
 		{
+			if (IsAffectedByController && FindPlayerVehicle())
+				return NewState.RightShoulder1 || NewState.Circle;
+
 			return NewState.RightShoulder2 || NewState.Circle;
 
 			break;
@@ -3258,7 +3282,7 @@ bool CPad::CycleCameraModeDownJustDown(void)
 		case 1:
 		case 3:
 		{
-			return !!(NewState.DPadDown && !OldState.DPadDown);
+			return false;
 
 			break;
 		}
@@ -3427,10 +3451,17 @@ bool CPad::GetTarget(void)
 
 	switch (CURMODE)
 	{
-#ifdef IMPROVED_MENU_AND_INPUT
+#if defined IMPROVED_MENU_AND_INPUT && defined FIRING_AND_AIMING
 		case 0:
 		case 2:
 		{
+			if (FindPlayerVehicle()) {
+				if (IsAffectedByController)
+					return !!NewState.LeftShoulder2;
+				else
+					return !!NewState.DPadDown;
+			}
+
 			return !!NewState.RightShoulder1;
 
 			break;
@@ -3439,6 +3470,9 @@ bool CPad::GetTarget(void)
 		case 1:
 		case 3:
 		{
+			if (IsAffectedByController && FindPlayerVehicle())
+				return !!NewState.LeftShoulder1;
+
 			return !!NewState.LeftShoulder2;
 
 			break;
@@ -3819,7 +3853,7 @@ bool CPad::SniperZoomIn(void)
 		case 1:
 		case 3:
 		{
-			return (NewState.LeftStickY < -30);
+			return NewState.DPadUp;
 
 			break;
 		}
@@ -3864,7 +3898,7 @@ bool CPad::SniperZoomOut(void)
 		case 1:
 		case 3:
 		{
-			return (NewState.LeftStickY > 30);
+			return NewState.DPadDown;
 
 			break;
 		}
@@ -4100,9 +4134,10 @@ void CPad::ResetCheats(void)
 	CPed::bNastyLimbsCheat = false;
 	CPed::bFannyMagnetCheat = false;
 	CPed::bPedCheat3 = false;
-#ifdef NEW_CHEATS
+#ifdef NEW_CHEATS // init
 	CVehicle::bAirWaysCheat = false;
 	CPlayerPed::bInvincibleCheat = false;
+	CPlayerPed::bNoWantedCheat = false;
 #endif
 }
 

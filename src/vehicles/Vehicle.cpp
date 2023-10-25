@@ -43,7 +43,7 @@ bool CVehicle::bCheat8;
 bool CVehicle::bCheat9;
 bool CVehicle::bCheat10;
 bool CVehicle::bHoverCheat;
-#ifdef NEW_CHEATS
+#ifdef NEW_CHEATS // init
 bool CVehicle::bAirWaysCheat;
 #endif
 bool CVehicle::bAllTaxisHaveNitro;
@@ -1272,7 +1272,11 @@ CVehicle::InflictDamage(CEntity *damagedBy, eWeaponType weaponType, float damage
 								AutoPilot.m_nCruiseSpeed *= 1.5f;
 							AutoPilot.m_nDrivingStyle = DRIVINGSTYLE_PLOUGH_THROUGH;
 						}
+#ifdef IMPROVED_TECH_PART // cops don't leave the car in this case
+					}else if (pDriver->m_nPedType != PEDTYPE_COP){
+#else
 					}else{
+#endif
 						// Leave vehicle
 						if (pDriver && pDriver->CharCreatedBy != MISSION_CHAR) {
 							SetStatus(STATUS_ABANDONED);
@@ -2349,6 +2353,20 @@ CVehicle::KillPedsInVehicle(void)
 bool CVehicle::IsHighVehicle(void)
 {
 	return Abs(GetColModel()->boundingBox.min.z) + Abs(GetColModel()->boundingBox.max.z) > 2.2f;
+}
+#endif
+
+#ifdef FIRST_PERSON
+bool CVehicle::IsOpenTopVehicle(void)
+{
+	if (IsBike())
+		return true;
+	else if (IsBoat())
+		return !(GetModelIndex() == MI_PREDATOR || GetModelIndex() == MI_TROPIC || GetModelIndex() == MI_REEFER);
+	else if (IsCar())
+		return IsOpenTopCar();
+	else
+		return false;
 }
 #endif
 

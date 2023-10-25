@@ -1825,7 +1825,11 @@ CBike::ProcessControlInputs(uint8 pad)
 	if(CPad::GetPad(pad)->GetExitVehicle())
 		bIsHandbrakeOn = true;
 	else
+#ifdef FIRING_AND_AIMING // we can't use handbrake during driveby
+		bIsHandbrakeOn = FindPlayerPed()->bIsPlayerAiming ? false : !!CPad::GetPad(pad)->GetHandBrake();
+#else
 		bIsHandbrakeOn = !!CPad::GetPad(pad)->GetHandBrake();
+#endif
 
 	// Steer left/right
 #ifdef FIX_BUGS
@@ -2021,8 +2025,20 @@ CBike::DoDriveByShootings(void)
 		return;
 
 	CWeapon *weapon = pDriver->GetWeapon();
-	if(CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->m_nWeaponSlot != 5)
+#ifdef FIRING_AND_AIMING
+	if (CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->m_nWeaponSlot != WEAPONSLOT_SUBMACHINEGUN &&
+		CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->m_nWeaponSlot != WEAPONSLOT_HANDGUN)
+#else
+	if (CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->m_nWeaponSlot != 5)
+#endif
 		return;
+
+#ifdef FIRING_AND_AIMING // turn on/off driveby
+	if (CPad::GetPad(0)->GetTarget() && !FindPlayerPed()->bIsPlayerAiming && FindPlayerPed()->CanUseDriveBy())
+		FindPlayerPed()->SetPointGunAt(nil);
+	else if (!CPad::GetPad(0)->GetTarget() && FindPlayerPed()->bIsPlayerAiming || !FindPlayerPed()->CanUseDriveBy())
+		FindPlayerPed()->ClearWeaponTarget();
+#endif
 
 	weapon->Update(pDriver->m_audioEntityId, nil);
 
@@ -2041,7 +2057,27 @@ CBike::DoDriveByShootings(void)
 			lookingRight = true;
 	}
 
+#ifdef FIRING_AND_AIMING // hide/show weapon in vehicle
+	if ((lookingLeft || lookingRight || CPad::GetPad(0)->GetCarGunFired()) || FindPlayerPed()->bIsPlayerAiming)
+		pDriver->AddWeaponModel(weapon->GetInfo()->m_nModelId);
+	else if (!FindPlayerPed()->bIsPlayerAiming)
+		pDriver->RemoveWeaponModel(weapon->GetInfo()->m_nModelId);
+#endif
+
+#if defined FIRING_AND_AIMING && defined FIRST_PERSON // reloading weapon during driveby/first person/use pistol
+	if (FindPlayerPed()->bIsPlayerAiming || TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON || 
+		(CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->m_nWeaponSlot == WEAPONSLOT_HANDGUN && !FindPlayerPed()->bIsPlayerAiming)) {
+
+		weapon->Reload();
+		return;
+	}
+#endif
+
+#ifdef FIRING_AND_AIMING
+	if(lookingLeft || lookingRight || (CPad::GetPad(0)->GetCarGunFired() && !FindPlayerPed()->bIsPlayerAiming)){
+#else
 	if(lookingLeft || lookingRight || CPad::GetPad(0)->GetCarGunFired()){
+#endif
 		if(lookingLeft){
 			anim = RpAnimBlendClumpGetAssociation(pDriver->GetClump(), ANIM_BIKE_DRIVEBY_RHS);
 			if(anim)
@@ -2114,7 +2150,14 @@ CBike::VehicleDamage(void)
 		bIsStanding = false;
 
 	// Inflict damage on the driver and passenger
+#ifdef FIRING_AND_AIMING // make it possible to fall off the bike during driveby
+	bool bDriverUsesDriveBy = pDriver && (pDriver->GetPedState() == PED_AIM_GUN || pDriver->GetPedState() == PED_ATTACK);
+	bool bPassengerUsesDriveBy = pPassengers[0] && (pPassengers[0]->GetPedState() == PED_AIM_GUN || pPassengers[0]->GetPedState() == PED_ATTACK);
+
+	if(pDriver && (pDriver->GetPedState() == PED_DRIVING || bDriverUsesDriveBy) && colSpeed > 10.0f){
+#else
 	if(pDriver && pDriver->GetPedState() == PED_DRIVING && colSpeed > 10.0f){
+#endif
 		float fwd = 0.6f;
 		if(Abs(DotProduct(m_vecDamageNormal, GetForward())) > 0.85f){
 			float u = Max(DotProduct(m_vecDamageNormal, CVector(0.0f, 0.0f, 1.0f)), 0.0f);
@@ -2143,14 +2186,22 @@ CBike::VehicleDamage(void)
 				dir = pDriver->GetLocalDirection(-m_vecDamageNormal);
 				if(pDriver->m_fHealth > 0.0f)
 					pDriver->InflictDamage(m_pDamageEntity, WEAPONTYPE_RAMMEDBYCAR, 0.05f*damage, PEDPIECE_TORSO, dir);
+#ifdef FIRING_AND_AIMING // make it possible to fall off the bike during driveby
+				if(pDriver && (pDriver->GetPedState() == PED_DRIVING || bDriverUsesDriveBy))
+#else
 				if(pDriver && pDriver->GetPedState() == PED_DRIVING)
+#endif
 					KnockOffRider(WEAPONTYPE_RAMMEDBYCAR, dir, pDriver, false);
 			}
 			if(pPassengers[0]){
 				dir = pPassengers[0]->GetLocalDirection(-m_vecDamageNormal);
 				if(pPassengers[0]->m_fHealth > 0.0f)
 					pPassengers[0]->InflictDamage(m_pDamageEntity, WEAPONTYPE_RAMMEDBYCAR, 0.05f*damage, PEDPIECE_TORSO, dir);
+#ifdef FIRING_AND_AIMING // make it possible to fall off the bike during driveby
+				if(pPassengers[0] && (pPassengers[0]->GetPedState() == PED_DRIVING || bPassengerUsesDriveBy))
+#else
 				if(pPassengers[0] && pPassengers[0]->GetPedState() == PED_DRIVING)
+#endif
 					KnockOffRider(WEAPONTYPE_RAMMEDBYCAR, dir, pPassengers[0], false);
 			}
 		}

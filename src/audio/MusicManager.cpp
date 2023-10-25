@@ -533,7 +533,11 @@ cMusicManager::ServiceGameMode()
 		gRetuneCounter = 0;
 		m_bSetNextStation = FALSE;
 	} else if (ped) {
+#ifdef FIRING_AND_AIMING // can't change radio during driveby
+		if(!ped->DyingOrDead() && vehicle && !FindPlayerPed()->bIsPlayerAiming) {
+#else
 		if(!ped->DyingOrDead() && vehicle) {
+#endif
 #ifdef GTA_PC
 			if (SampleManager.IsMP3RadioChannelAvailable()
 				&& vehicle->m_nRadioStation < USERTRACK

@@ -243,13 +243,13 @@ void CHud::Draw()
 			&& playerPed && !playerPed->GetWeapon()->IsTypeMelee())
 			DrawCrossHair = true;
 
-#ifdef AIMING
+#ifdef FIRING_AND_AIMING
 		if (playerPed->bIsPlayerAiming && (Mode == CCam::MODE_M16_1STPERSON_RUNABOUT || Mode == CCam::MODE_ROCKETLAUNCHER_RUNABOUT || Mode == CCam::MODE_SNIPER_RUNABOUT))
 #else
 		if (Mode == CCam::MODE_M16_1STPERSON_RUNABOUT || Mode == CCam::MODE_ROCKETLAUNCHER_RUNABOUT || Mode == CCam::MODE_SNIPER_RUNABOUT)
 #endif
 			DrawCrossHairPC = true;
-#if defined AIMING && defined IMPROVED_MENU_AND_INPUT
+#if defined FIRING_AND_AIMING && defined IMPROVED_MENU_AND_INPUT
 		if (playerPed->bIsPlayerAiming && !playerPed->bIsAutoAiming
 #else
 		if (TheCamera.Cams[TheCamera.ActiveCam].Using3rdPersonMouseCam() && (!CPad::GetPad(0)->GetLookBehindForPed() || TheCamera.m_bPlayerIsInGarage)

@@ -7,21 +7,25 @@
 
 #define NDEBUG
 
-/*these macros are used to navigation*/
-#define CLIMBING // also in clump.cpp, Clump::destroy
-#define CROUCH
-#define AIMING
-#define SWIMMING
+#define VICE_EXTENDED
+#ifdef VICE_EXTENDED
+	// These macros are used to navigation; Disabling them individually is not recommended
 
-#define IMPROVED_MENU_AND_INPUT
+	#define CLIMBING // also in clump.cpp, Clump::destroy
+	#define CROUCH
+	#define FIRING_AND_AIMING
+	#define SWIMMING
+	#define FIRST_PERSON
 
-#define IMPROVED_TECH_PART
-#define WANTED_PATHS
+	#define IMPROVED_MENU_AND_INPUT
 
-#define NEW_CHEATS
+	#define IMPROVED_TECH_PART
+	#define WANTED_PATHS
 
-#define UTILS
-/*these macros are used to navigation*/
+	#define NEW_CHEATS
+
+	#define UTILS
+#endif
 
 enum Config {
 	NUMPLAYERS = 1,
@@ -62,7 +66,11 @@ enum Config {
 	NUMCUTSCENEOBJECTS = 50,	// not a pool in VC
 
 	NUMANIMBLOCKS = 35,
+#ifdef VICE_EXTENDED
+	NUMANIMATIONS = 470,
+#else
 	NUMANIMATIONS = 450,
+#endif
 
 	NUMTEMPOBJECTS = 40,
 
@@ -399,7 +407,7 @@ enum Config {
 #		define CUTSCENE_BORDERS_SWITCH
 #		define MULTISAMPLING		// adds MSAA option
 //#		define INVERT_LOOK_FOR_PAD // enable the hidden option
-//#		define PED_CAR_DENSITY_SLIDERS
+#		define PED_CAR_DENSITY_SLIDERS
 #	endif
 #endif
 

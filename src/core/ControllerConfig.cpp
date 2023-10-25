@@ -656,6 +656,9 @@ void CControllerConfigManager::AffectControllerStateOn_ButtonDown(int32 button, 
 
 		bool firstPerson = false;
 		bool playerDriving = false;
+#ifdef FIRING_AND_AIMING
+		bool playerDriveby = false;
+#endif
 
 		if (FindPlayerVehicle() != NULL)
 		{
@@ -664,6 +667,11 @@ void CControllerConfigManager::AffectControllerStateOn_ButtonDown(int32 button, 
 			{
 				if (plr->m_nPedState == PED_DRIVING)
 					playerDriving = true;
+
+#ifdef FIRING_AND_AIMING
+				if (plr->m_nPedState == PED_AIM_GUN || plr->m_nPedState == PED_ATTACK)
+					playerDriveby = true;
+#endif
 			}
 		}
 
@@ -696,7 +704,11 @@ void CControllerConfigManager::AffectControllerStateOn_ButtonDown(int32 button, 
 
 		if (pad != NULL)
 		{
+#ifdef FIRING_AND_AIMING
+			if (playerDriving || playerDriveby)
+#else
 			if (playerDriving)
+#endif
 			{
 				AffectControllerStateOn_ButtonDown_Driving(button, type, *state);
 				AffectControllerStateOn_ButtonDown_VehicleAndThirdPersonOnly(button, type, *state);
@@ -751,6 +763,11 @@ void CControllerConfigManager::AffectControllerStateOn_ButtonDown_Driving(int32 
 		state.Square = 255;
 	if (button == GetControllerKeyAssociatedWithAction(TOGGLE_SUBMISSIONS, type))
 		state.RightShock = 255;
+
+#ifdef FIRING_AND_AIMING // vehicle lock target button
+	if (button == GetControllerKeyAssociatedWithAction(PED_LOCK_TARGET, type))
+		state.DPadDown = 255;
+#endif
 	
 	if (button == GetControllerKeyAssociatedWithAction(VEHICLE_TURRETLEFT, type))
 	{

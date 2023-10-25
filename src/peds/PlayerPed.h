@@ -59,7 +59,7 @@ public:
 	static bool bDebugPlayerInfo;
 #endif
 
-#ifdef AIMING
+#ifdef FIRING_AND_AIMING
 	bool bIsPlayerAiming;
 #endif
 
@@ -133,6 +133,12 @@ public:
 #ifdef SWIMMING
 	void ProcessSwimming(void);
 #endif
+#if defined FIRING_AND_AIMING && defined FIRST_PERSON
+	void ProcessAiming(void);
+	void StopAimingAnims(void);
+	bool CanUseDriveBy(void);
+	bool IsDoomMode(void);
+#endif
 
 	static void SetupPlayerPed(int32);
 	static void DeactivatePlayerPed(int32);
@@ -143,8 +149,9 @@ public:
 	virtual void Load(uint8*& buf);
 #endif
 
-#ifdef NEW_CHEATS
+#ifdef NEW_CHEATS // init
 	static bool bInvincibleCheat;
+	static bool bNoWantedCheat;
 #endif
 
 	static const uint32 nSaveStructSize;

@@ -517,6 +517,12 @@ bool LoadINISettings()
 #else
 	ReadIniIfExists("Controller", "Vibration", &FrontEndMenuManager.m_PrefsUseVibration);
 #endif
+#if defined FIRST_PERSON && defined FIRING_AND_AIMING
+	ReadIniIfExists("Controller", "FOV_FirstPerson", &FrontEndMenuManager.m_PrefsFOV_FP);
+	ReadIniIfExists("Controller", "AutocenterCamInVeh_FirstPerson", &FrontEndMenuManager.m_PrefsAutocenterCamInVeh_FP);
+	ReadIniIfExists("Controller", "RelativeCamInVeh_DriveBy_FirstPerson", &FrontEndMenuManager.m_PrefsRelativeCamInVeh_DB_FP);
+	ReadIniIfExists("Controller", "DoomMode_FirstPerson", &FrontEndMenuManager.m_PrefsDoomMode_FP);
+#endif
 	ReadIniIfExists("Audio", "SfxVolume", &FrontEndMenuManager.m_PrefsSfxVolume);
 	ReadIniIfExists("Audio", "MusicVolume", &FrontEndMenuManager.m_PrefsMusicVolume);
 	ReadIniIfExists("Audio", "MP3BoostVolume", &FrontEndMenuManager.m_PrefsMP3BoostVolume);
@@ -653,6 +659,12 @@ void SaveINISettings()
 #else
 	StoreIni("Controller", "Vibration", FrontEndMenuManager.m_PrefsUseVibration);
 #endif
+#if defined FIRST_PERSON && defined FIRING_AND_AIMING
+	StoreIni("Controller", "FOV_FirstPerson", FrontEndMenuManager.m_PrefsFOV_FP);
+	StoreIni("Controller", "AutocenterCamInVeh_FirstPerson", FrontEndMenuManager.m_PrefsAutocenterCamInVeh_FP);
+	StoreIni("Controller", "RelativeCamInVeh_DriveBy_FirstPerson", FrontEndMenuManager.m_PrefsRelativeCamInVeh_DB_FP);
+	StoreIni("Controller", "DoomMode_FirstPerson", FrontEndMenuManager.m_PrefsDoomMode_FP);
+#endif
 	StoreIni("Audio", "SfxVolume", FrontEndMenuManager.m_PrefsSfxVolume);
 	StoreIni("Audio", "MusicVolume", FrontEndMenuManager.m_PrefsMusicVolume);
 	StoreIni("Audio", "MP3BoostVolume", FrontEndMenuManager.m_PrefsMP3BoostVolume);
@@ -770,10 +782,11 @@ void ChittyChittyBangBangCheat();
 void StrongGripCheat();
 void SpecialCarCheats();
 void PickUpChicksCheat();
-#ifdef NEW_CHEATS
+#ifdef NEW_CHEATS // init
 void InvincibleCheat();
 void AirWaysCheat();
 void TeargasCheat();
+void NoWantedCheat();
 #endif
 
 DebugMenuEntry *carCol1;
@@ -1044,10 +1057,11 @@ DebugMenuPopulate(void)
 		DebugMenuAddCmd("Cheats", "Strong grip", StrongGripCheat);
 		DebugMenuAddCmd("Cheats", "Special car", SpecialCarCheats);
 		DebugMenuAddCmd("Cheats", "Pickup chicks", PickUpChicksCheat);
-#ifdef NEW_CHEATS
+#ifdef NEW_CHEATS // init
 		DebugMenuAddCmd("Cheats", "Invincible", InvincibleCheat);
 		DebugMenuAddCmd("Cheats", "AirWays", AirWaysCheat);
 		DebugMenuAddCmd("Cheats", "Give teargas", TeargasCheat);
+		DebugMenuAddCmd("Cheats", "No wanted", NoWantedCheat);
 #endif
 
 		static int spawnCarId = MI_LANDSTAL;
@@ -1383,14 +1397,31 @@ void re3_usererror(const char *format, ...)
 #ifdef UTILS
 float InterpFloat(float currentValue, float newValue, float interpSpeed)
 {
+	if (currentValue == newValue)
+		return currentValue;
+
 	float distance = newValue - currentValue;
 
 	float deltaSeconds = CTimer::GetTimeStepInSeconds();
 	float deltaSpeed = deltaSeconds * interpSpeed;
 
-	//if (distance > 0.1f) {
 	return currentValue + distance * deltaSpeed;
-	//}
+}
+
+CVector InterpVector(CVector currentValue, CVector newValue, float interpSpeed)
+{
+	if (currentValue == newValue)
+		return currentValue;
+
+	CVector distance = newValue - currentValue;
+
+	float distanceMagnitude = distance.Magnitude();
+
+	float deltaSeconds = CTimer::GetTimeStepInSeconds();
+	float deltaSpeed = deltaSeconds * interpSpeed;
+
+	CVector deltaNormal = distance / distanceMagnitude;
+	return currentValue + deltaNormal * deltaSpeed;
 }
 #endif
 

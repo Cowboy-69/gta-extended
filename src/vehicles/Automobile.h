@@ -121,7 +121,7 @@ public:
 	void ProcessBuoyancy(void);
 	void DoDriveByShootings(void);
 	void DoHoverSuspensionRatios(void);
-#ifdef NEW_CHEATS
+#ifdef NEW_CHEATS // AIRWAYS
 	void DoHoverAboveSurface(void);
 #endif
 	int32 RcbanditCheckHitWheels(void);

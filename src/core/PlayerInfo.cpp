@@ -315,7 +315,7 @@ CPlayerInfo::Process(void)
 				if (!surfaceBelowVeh || !CBridge::ThisIsABridgeObjectMovingUp(surfaceBelowVeh->GetModelIndex())) {
 					CVehicle *veh = m_pPed->m_pMyVehicle;
 					if (!veh->IsBoat() || veh->m_nDoorLock == CARLOCK_LOCKED_PLAYER_INSIDE) {
-#ifdef NEW_CHEATS
+#ifdef NEW_CHEATS // INVINCIBLE
 						if ((veh->GetStatus() != STATUS_WRECKED || m_pPed->bInvincibleCheat) && veh->GetStatus() != STATUS_TRAIN_MOVING && veh->m_nDoorLock != CARLOCK_LOCKED_PLAYER_INSIDE) {
 #else
 						if (veh->GetStatus() != STATUS_WRECKED && veh->GetStatus() != STATUS_TRAIN_MOVING && veh->m_nDoorLock != CARLOCK_LOCKED_PLAYER_INSIDE) {

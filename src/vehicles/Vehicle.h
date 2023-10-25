@@ -378,6 +378,9 @@ public:
 #ifdef IMPROVED_TECH_PART
 	bool IsHighVehicle(void);
 #endif
+#ifdef FIRST_PERSON
+	bool IsOpenTopVehicle(void);
+#endif
 
 	void SetComponentAtomicAlpha(RpAtomic *atomic, int32 alpha);
 	void UpdateClumpAlpha(void);
@@ -401,7 +404,7 @@ public:
 	static bool bCheat9;
 	static bool bCheat10;
 	static bool bHoverCheat;
-#ifdef NEW_CHEATS
+#ifdef NEW_CHEATS // init
 	static bool bAirWaysCheat;
 #endif
 	static bool bAllTaxisHaveNitro;

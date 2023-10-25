@@ -338,6 +338,7 @@ void re3_assert(const char *expr, const char *filename, unsigned int lineno, con
 void re3_usererror(const char *format, ...);
 #ifdef UTILS
 float InterpFloat(float currentValue, float newValue, float interpSpeed);
+CVector InterpVector(CVector currentValue, CVector newValue, float interpSpeed);
 #endif
 
 #define DEBUGBREAK() __debugbreak();

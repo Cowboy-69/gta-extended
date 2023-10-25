@@ -43,6 +43,12 @@
 #ifdef IMPROVED_MENU_AND_INPUT
 #include "Frontend.h"
 #endif
+#ifdef IMPROVED_TECH_PART // moving Moon
+#include "Timecycle.h"
+#endif
+#ifdef IMPROVED_TECH_PART // blood screen droplets
+#include "screendroplets.h"
+#endif
 
 float fReloadAnimSampleFraction[5] = {  0.5f,  0.7f,  0.75f,  0.75f,  0.7f };
 float fSeaSparrowAimingAngle = 10.0f;
@@ -692,6 +698,9 @@ CWeapon::FireMelee(CEntity *shooter, CVector &fireSource)
 									CParticle::AddParticle(PARTICLE_BLOODDROP, dropPos, dropDir, nil, CGeneral::GetRandomNumberInRange(0.1f, 0.15f),
 										CRGBA(0, 0, 0, 0), 0, 0, CGeneral::GetRandomNumber() & 1, 0);
 
+#ifdef IMPROVED_TECH_PART // blood screen droplets
+									ScreenDroplets::FillScreenMoving(1.0f, true);
+#endif
 								}
 								if (info->m_AnimToPlay == ASSOCGRP_KNIFE)
 								{
@@ -997,6 +1006,11 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 			CPlayerPed* shooterPed = (CPlayerPed*)shooter;
 			Find3rdPersonCamTargetVectorFromCachedVectors(info->m_fRange, *fireSource, source, target, shooterPed->m_cachedCamSource, shooterPed->m_cachedCamFront, shooterPed->m_cachedCamUp);
 
+#ifdef IMPROVED_TECH_PART // recoil
+			TheCamera.Cams[TheCamera.ActiveCam].Alpha += CGeneral::GetRandomNumberInRange(0.001f, 0.005f);
+			TheCamera.Cams[TheCamera.ActiveCam].Beta += CGeneral::GetRandomNumberInRange(-0.005f, 0.005f);
+#endif
+
 			if ((shooterPed->m_pedIK.m_flags & CPedIK::GUN_POINTED_SUCCESSFULLY) == 0) {
 				target.x = info->m_fRange;
 				target.y = 0.0f;
@@ -1021,10 +1035,32 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 		CWorld::bIncludeBikers = true;
 		CWorld::bIncludeDeadPeds = true;
 		CWorld::bIncludeCarTyres = true;
+#ifdef FIRING_AND_AIMING // we can't hit our vehicle while driveby
+		CWorld::pIgnoreEntity = FindPlayerVehicle();
 		ProcessLineOfSight(source, target, point, victim, m_eWeaponType, shooter, true, true, true, true, true, false, false);
+		CWorld::pIgnoreEntity = NULL;
+#else
+		ProcessLineOfSight(source, target, point, victim, m_eWeaponType, shooter, true, true, true, true, true, false, false);
+#endif
 		CWorld::bIncludeBikers = false;
 		CWorld::bIncludeDeadPeds = false;
 		CWorld::bIncludeCarTyres = false;
+
+#ifdef FIRING_AND_AIMING // make it possible to break the windshield during driveby
+		if (FindPlayerVehicle() && FindPlayerPed()->bIsPlayerAiming && FindPlayerVehicle()->IsCar()) {
+			if (DotProduct(FindPlayerVehicle()->GetForward(), TheCamera.Cams[TheCamera.ActiveCam].Front) > 0.9f) {
+				// from CheckForShootingVehicleOccupant
+				CAutomobile* car = (CAutomobile*)FindPlayerVehicle();
+				if (car->Damage.ProgressPanelDamage(VEHPANEL_WINDSCREEN)) {
+					if (car->Damage.GetPanelStatus(VEHPANEL_WINDSCREEN) == PANEL_STATUS_SMASHED2)
+						car->Damage.ProgressPanelDamage(VEHPANEL_WINDSCREEN);
+
+					car->SetPanelDamage(CAR_WINDSCREEN, VEHPANEL_WINDSCREEN, true);
+					DMAudio.PlayOneShot(FindPlayerVehicle()->m_audioEntityId, SOUND_CAR_WINDSHIELD_CRACK, 0.f);
+				}
+			}
+		}
+#endif
 
 		if (victim)
 			CheckForShootingVehicleOccupant(&victim, &point, m_eWeaponType, source, target);
@@ -1458,7 +1494,12 @@ CWeapon::DoBulletImpact(CEntity *shooter, CEntity *victim,
 						if ( victimPed->IsPlayer() )
 						{
 							CPlayerPed *victimPlayer = (CPlayerPed *)victimPed;
+#ifdef FIRST_PERSON
+							if ( victimPlayer->m_nHitAnimDelayTimer < CTimer::GetTimeInMilliseconds() && victimPed->m_nPedState != PED_DRIVING &&
+								 TheCamera.Cams[TheCamera.ActiveCam].Mode != CCam::MODE_REAL_1ST_PERSON)
+#else
 							if ( victimPlayer->m_nHitAnimDelayTimer < CTimer::GetTimeInMilliseconds() && victimPed->m_nPedState != PED_DRIVING )
+#endif
 							{
 								victimPed->ClearAttackByRemovingAnim();
 
@@ -1777,7 +1818,7 @@ CWeapon::FireShotgun(CEntity *shooter, CVector *fireSource)
 		CColPoint point;
 		CEntity *victim;
 
-#if defined IMPROVED_MENU_AND_INPUT && defined AIMING
+#if defined IMPROVED_MENU_AND_INPUT && defined FIRING_AND_AIMING
 		if ( shooter == FindPlayerPed() && !FindPlayerPed()->bIsAutoAiming)
 #else
 		if ( shooter == FindPlayerPed() && TheCamera.Cams[0].Using3rdPersonMouseCam() )
@@ -2113,12 +2154,18 @@ CWeapon::FireShotgun(CEntity *shooter, CVector *fireSource)
 		}
 	}
 
-	if ( shooter == FindPlayerPed() )
+	if ( shooter == FindPlayerPed() ) {
+#ifdef IMPROVED_TECH_PART // recoil
+		TheCamera.Cams[TheCamera.ActiveCam].Alpha += CGeneral::GetRandomNumberInRange(0.005f, 0.01f);
+		TheCamera.Cams[TheCamera.ActiveCam].Beta += CGeneral::GetRandomNumberInRange(-0.01f, 0.01f);
+#endif
+
 #ifdef IMPROVED_MENU_AND_INPUT
 		CPad::GetPad(0)->StartShake_Distance(240, 0, 128, FindPlayerPed()->GetPosition().x, FindPlayerPed()->GetPosition().y, FindPlayerPed()->GetPosition().z);
 #else
 		CPad::GetPad(0)->StartShake_Distance(240, 128, FindPlayerPed()->GetPosition().x, FindPlayerPed()->GetPosition().y, FindPlayerPed()->GetPosition().z);
 #endif
+	}
 
 	return true;
 }
@@ -2139,6 +2186,7 @@ CWeapon::FireProjectile(CEntity *shooter, CVector *fireSource, float power)
 
 		if ( shooter->IsPed() && ((CPed*)shooter)->IsPlayer() )
 		{
+#ifndef FIRING_AND_AIMING
 			int16 mode = TheCamera.Cams[TheCamera.ActiveCam].Mode;
 			if (!( mode == CCam::MODE_M16_1STPERSON
 				|| mode == CCam::MODE_SNIPER
@@ -2149,6 +2197,7 @@ CWeapon::FireProjectile(CEntity *shooter, CVector *fireSource, float power)
 			{
 				return false;
 			}
+#endif
 
 			*fireSource += TheCamera.Cams[TheCamera.ActiveCam].Front;
 		}
@@ -2320,6 +2369,7 @@ CWeapon::FireSniper(CEntity *shooter)
 {
 	ASSERT(shooter!=nil);
 	
+#ifndef FIRING_AND_AIMING
 	if ( (CEntity *)FindPlayerPed() == shooter )
 	{
 		int16 mode = TheCamera.Cams[TheCamera.ActiveCam].Mode;
@@ -2334,6 +2384,7 @@ CWeapon::FireSniper(CEntity *shooter)
 			return false;
 		}
 	}
+#endif
 
 #ifdef SECUROM
 	if (sniperPirateCheck){
@@ -2352,7 +2403,12 @@ CWeapon::FireSniper(CEntity *shooter)
 	CVector source = cam->Source;
 	CVector dir    = cam->Front;
 
+#ifdef IMPROVED_TECH_PART // moving Moon
+	CVector moonDirection = -CTimeCycle::GetSunDirection();
+	if ( DotProduct(dir, CVector(moonDirection.x, moonDirection.y, moonDirection.z)) > 0.997f )
+#else
 	if ( DotProduct(dir, CVector(0.0f, -0.9894f, 0.145f)) > 0.997f )
+#endif
 		CCoronas::MoonSize = (CCoronas::MoonSize+1) & 7;
 
 	dir.Normalise();
@@ -2366,6 +2422,11 @@ CWeapon::FireSniper(CEntity *shooter)
 
 	if ( shooter == FindPlayerPed() )
 	{
+#ifdef IMPROVED_TECH_PART // recoil
+		TheCamera.Cams[TheCamera.ActiveCam].Alpha += CGeneral::GetRandomNumberInRange(0.001f, 0.005f);
+		TheCamera.Cams[TheCamera.ActiveCam].Beta += CGeneral::GetRandomNumberInRange(-0.005f, 0.005f);
+#endif
+
 #ifdef IMPROVED_MENU_AND_INPUT
 		CPad::GetPad(0)->StartShake_Distance(240, 0, 128,
 			FindPlayerPed()->GetPosition().x,
@@ -2380,6 +2441,9 @@ CWeapon::FireSniper(CEntity *shooter)
 			
 		CParticle::HandleShootableBirdsStuff(shooter, source);
 
+#ifdef FIRING_AND_AIMING
+		if (TheCamera.Using1stPersonWeaponMode())
+#endif
 		CamShakeNoPos(&TheCamera, 0.2f);
 	}
 
@@ -3062,11 +3126,14 @@ CWeapon::Update(int32 audioEntity, CPed *pedToAdjustSound)
 					if (CTimer::GetTimeInMilliseconds() > m_nTimer && reloadAssoc->GetProgress() < 0.9f) {
 						m_nTimer = CTimer::GetTimeInMilliseconds();
 					}
-				} else {
+				}
+#ifndef IMPROVED_TECH_PART // double reload sound fix
+				else {
 					uint32 timePassed = m_nTimer - CWeaponInfo::ms_aReloadSampleTime[m_eWeaponType];
 					if (CTimer::GetPreviousTimeInMilliseconds() < timePassed && CTimer::GetTimeInMilliseconds() >= timePassed)
 						DMAudio.PlayOneShot(audioEntity, SOUND_WEAPON_RELOAD, m_eWeaponType);
 				}
+#endif
 			}
 
 			if ( CTimer::GetTimeInMilliseconds() > m_nTimer )

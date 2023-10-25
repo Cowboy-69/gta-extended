@@ -419,8 +419,18 @@ ScreenDroplets::ProcessCameraMovement(void)
 	bool isTopDown = mode == CCam::MODE_TOPDOWN || mode == CCam::MODE_GTACLASSIC || mode == CCam::MODE_TOP_DOWN_PED;
 	bool isLookingInDirection = FindPlayerVehicle() && mode == CCam::MODE_1STPERSON &&
 		(CPad::GetPad(0)->GetLookBehindForCar() || CPad::GetPad(0)->GetLookLeft() || CPad::GetPad(0)->GetLookRight());
+#ifdef FIRST_PERSON // show/hide screen droplets in vehicle
+	if (FindPlayerVehicle() && TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON) {
+		ms_enabled = FindPlayerVehicle()->IsOpenTopVehicle();
+		ms_movingEnabled = FindPlayerVehicle()->IsOpenTopVehicle();
+	} else {
+		ms_enabled = !isTopDown && !isLookingInDirection;
+		ms_movingEnabled = !isTopDown && !isLookingInDirection;
+	}
+#else
 	ms_enabled = !isTopDown && !isLookingInDirection;
 	ms_movingEnabled = !isTopDown && !isLookingInDirection;
+#endif
 
 	// 0 when looking stright up, 180 when looking up or down
 	ms_camUpAngle = RADTODEG(Acos(Clamp(camUp.z, -1.0f, 1.0f)));

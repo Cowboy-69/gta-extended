@@ -424,7 +424,7 @@ CAutomobile::ProcessControl(void)
 			if(bHoverCheat)
 				DoHoverSuspensionRatios();
 
-#ifdef NEW_CHEATS
+#ifdef NEW_CHEATS // AIRWAYS
 			if (bAirWaysCheat)
 				DoHoverAboveSurface();
 #endif
@@ -563,7 +563,7 @@ CAutomobile::ProcessControl(void)
 	default: break;
 	}
 
-#ifdef NEW_CHEATS
+#ifdef NEW_CHEATS // AIRWAYS
 	if (bAirWaysCheat && GetStatus() != STATUS_PLAYER && !bAffectedByGravity)
 		bAffectedByGravity = true;
 #endif
@@ -2816,7 +2816,7 @@ CAutomobile::PreRender(void)
 		} else if (bAllDodosCheat && m_nDriveWheelsOnGround == 0 && m_nDriveWheelsOnGroundPrev == 0) {
 			mat.RotateY(-HALFPI);
 #endif
-#ifdef NEW_CHEATS
+#ifdef NEW_CHEATS // AIRWAYS
 		} else if (bAirWaysCheat) {
 			mat.RotateY(-HALFPI);
 #endif
@@ -2861,9 +2861,8 @@ CAutomobile::PreRender(void)
 		} else if (bAllDodosCheat && m_nDriveWheelsOnGround == 0 && m_nDriveWheelsOnGroundPrev == 0) {
 			mat.RotateY(HALFPI);
 #endif
-#ifdef NEW_CHEATS
-		}
-		else if (bAirWaysCheat) {
+#ifdef NEW_CHEATS // AIRWAYS
+		} else if (bAirWaysCheat) {
 			mat.RotateY(HALFPI);
 #endif
 		}else{
@@ -2899,9 +2898,8 @@ CAutomobile::PreRender(void)
 			} else if (bAllDodosCheat && m_nDriveWheelsOnGround == 0 && m_nDriveWheelsOnGroundPrev == 0) {
 				mat.RotateY(-HALFPI);
 #endif
-#ifdef NEW_CHEATS
-			}
-			else if (bAirWaysCheat) {
+#ifdef NEW_CHEATS // AIRWAYS
+			} else if (bAirWaysCheat) {
 				mat.RotateY(-HALFPI);
 #endif
 			}else{
@@ -2938,9 +2936,8 @@ CAutomobile::PreRender(void)
 			} else if (bAllDodosCheat && m_nDriveWheelsOnGround == 0 && m_nDriveWheelsOnGroundPrev == 0) {
 				mat.RotateY(HALFPI);
 #endif
-#ifdef NEW_CHEATS
-			}
-			else if (bAirWaysCheat) {
+#ifdef NEW_CHEATS // AIRWAYS
+			} else if (bAirWaysCheat) {
 				mat.RotateY(HALFPI);
 #endif
 			}else{
@@ -3077,9 +3074,8 @@ CAutomobile::PreRender(void)
 			} else if (bAllDodosCheat && m_nDriveWheelsOnGround == 0 && m_nDriveWheelsOnGroundPrev == 0) {
 				mat.RotateY(-HALFPI);
 #endif
-#ifdef NEW_CHEATS
-			}
-			else if (bAirWaysCheat) {
+#ifdef NEW_CHEATS // AIRWAYS
+			} else if (bAirWaysCheat) {
 				mat.RotateY(-HALFPI);
 #endif
 			}else{
@@ -3123,9 +3119,8 @@ CAutomobile::PreRender(void)
 			} else if (bAllDodosCheat && m_nDriveWheelsOnGround == 0 && m_nDriveWheelsOnGroundPrev == 0) {
 				mat.RotateY(HALFPI);
 #endif
-#ifdef NEW_CHEATS
-			}
-			else if (bAirWaysCheat) {
+#ifdef NEW_CHEATS // AIRWAYS
+			} else if (bAirWaysCheat) {
 				mat.RotateY(HALFPI);
 #endif
 			}else{
@@ -3328,10 +3323,16 @@ CAutomobile::ProcessControlInputs(uint8 pad)
 
 	if(!CPad::GetPad(pad)->GetExitVehicle() ||
 	   pDriver && pDriver->m_pVehicleAnim && (pDriver->m_pVehicleAnim->animId == ANIM_STD_ROLLOUT_LHS ||
-	                                          pDriver->m_pVehicleAnim->animId == ANIM_STD_ROLLOUT_RHS))
+	                                          pDriver->m_pVehicleAnim->animId == ANIM_STD_ROLLOUT_RHS)) {
+
+#ifdef FIRING_AND_AIMING // we can't use handbrake during driveby
+		bIsHandbrakeOn = FindPlayerPed()->bIsPlayerAiming ? false : !!CPad::GetPad(pad)->GetHandBrake();
+#else
 		bIsHandbrakeOn = !!CPad::GetPad(pad)->GetHandBrake();
-	else
+#endif
+	} else {
 		bIsHandbrakeOn = true;
+	}
 
 	// Steer left/right
 	if(CCamera::m_bUseMouse3rdPerson && !CVehicle::m_bDisableMouseSteering){
@@ -4144,8 +4145,20 @@ CAutomobile::DoDriveByShootings(void)
 		return;
 
 	CWeapon *weapon = pDriver->GetWeapon();
+#ifdef FIRING_AND_AIMING
+	if(CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->m_nWeaponSlot != WEAPONSLOT_SUBMACHINEGUN &&
+		CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->m_nWeaponSlot != WEAPONSLOT_HANDGUN)
+#else
 	if(CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->m_nWeaponSlot != WEAPONSLOT_SUBMACHINEGUN)
+#endif
 		return;
+
+#ifdef FIRING_AND_AIMING // turn on/off driveby
+	if (CPad::GetPad(0)->GetTarget() && !FindPlayerPed()->bIsPlayerAiming && FindPlayerPed()->CanUseDriveBy())
+		FindPlayerPed()->SetPointGunAt(nil);
+	else if (!CPad::GetPad(0)->GetTarget() && FindPlayerPed()->bIsPlayerAiming || !FindPlayerPed()->CanUseDriveBy())
+		FindPlayerPed()->ClearWeaponTarget();
+#endif
 
 	weapon->Update(pDriver->m_audioEntityId, nil);
 
@@ -4170,6 +4183,22 @@ CAutomobile::DoDriveByShootings(void)
 		rightAnim = ANIM_STD_CAR_DRIVEBY_RIGHT_LO;
 		leftAnim = ANIM_STD_CAR_DRIVEBY_LEFT_LO;
 	}
+
+#ifdef FIRING_AND_AIMING // hide/show weapon in vehicle
+	if ((lookingLeft || lookingRight) || FindPlayerPed()->bIsPlayerAiming)
+		pDriver->AddWeaponModel(weapon->GetInfo()->m_nModelId);
+	else if (!FindPlayerPed()->bIsPlayerAiming)
+		pDriver->RemoveWeaponModel(weapon->GetInfo()->m_nModelId);
+#endif
+
+#if defined FIRING_AND_AIMING && defined FIRST_PERSON // reloading weapon during driveby/first person/use pistol
+	if (FindPlayerPed()->bIsPlayerAiming || TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON ||
+		(CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->m_nWeaponSlot == WEAPONSLOT_HANDGUN && !FindPlayerPed()->bIsPlayerAiming)) {
+
+		weapon->Reload();
+		return;
+	}
+#endif
 
 	if(lookingLeft || lookingRight){
 		if(lookingLeft){
@@ -4253,7 +4282,7 @@ CAutomobile::DoHoverSuspensionRatios(void)
 	}
 }
 
-#ifdef NEW_CHEATS
+#ifdef NEW_CHEATS // AIRWAYS
 void CAutomobile::DoHoverAboveSurface(void)
 {
 	bAffectedByGravity = false;

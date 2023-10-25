@@ -241,7 +241,7 @@ CCamera::Init(void)
 	m_uiTransitionState = 0;
 	m_uiTimeTransitionStart = 0;
 	m_bLookingAtPlayer = true;
-#ifdef AIMING
+#ifdef FIRING_AND_AIMING
 	m_f3rdPersonCHairMultX = 0.51f;
 	m_f3rdPersonCHairMultY = 0.49f;
 #else
@@ -749,18 +749,47 @@ CCamera::CamControl(void)
 				if(CPad::GetPad(0)->CycleCameraModeUpJustDown() && !CReplay::IsPlayingBack() &&
 				   (m_bLookingAtPlayer || WhoIsInControlOfTheCamera == CAMCONTROL_OBBE) &&
 				   !m_WideScreenOn){
+#ifdef FIRST_PERSON
+					if (CarZoomIndicator == CAM_ZOOM_REAL_1ST_PERSON)
+						PedZoomIndicator = CAM_ZOOM_2;
+#endif
+
 					CarZoomIndicator--;
 					// disable topdown here
 					if(CarZoomIndicator == CAM_ZOOM_TOPDOWN)
 						CarZoomIndicator--;
+
+#ifdef FIRST_PERSON
+					if (CarZoomIndicator == CAM_ZOOM_REAL_1ST_PERSON)
+						PedZoomIndicator = CAM_ZOOM_REAL_1ST_PERSON;
+#endif
 				}
 				if(CPad::GetPad(0)->CycleCameraModeDownJustDown() && !CReplay::IsPlayingBack() &&
 				   (m_bLookingAtPlayer || WhoIsInControlOfTheCamera == CAMCONTROL_OBBE) &&
 				   !m_WideScreenOn){
+#ifdef FIRST_PERSON
+					if (CarZoomIndicator == CAM_ZOOM_REAL_1ST_PERSON)
+						PedZoomIndicator = CAM_ZOOM_2;
+#endif
+
 					CarZoomIndicator++;
 					if(CarZoomIndicator == CAM_ZOOM_TOPDOWN)
 						CarZoomIndicator++;
+
+#ifdef FIRST_PERSON
+					if (CarZoomIndicator == CAM_ZOOM_REAL_1ST_PERSON)
+						PedZoomIndicator = CAM_ZOOM_REAL_1ST_PERSON;
+#endif
 				}
+
+#ifdef FIRST_PERSON
+				if (Cams[ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON && CarZoomIndicator != CAM_ZOOM_3)
+					CarZoomIndicator = CAM_ZOOM_REAL_1ST_PERSON;
+
+				if (CarZoomIndicator == CAM_ZOOM_3 || PedZoomIndicator == CAM_ZOOM_REAL_1ST_PERSON)
+					switchByJumpCut = true;
+#endif
+
 				if(!m_bFailedCullZoneTestPreviously){
 					if(CarZoomIndicator < CAM_ZOOM_1STPRS) CarZoomIndicator = CAM_ZOOM_CINEMATIC;
 					else if(CarZoomIndicator > CAM_ZOOM_CINEMATIC) CarZoomIndicator = CAM_ZOOM_1STPRS;
@@ -783,7 +812,11 @@ CCamera::CamControl(void)
 						if(stairsZone)
 							stairs = true;
 					}
+#ifdef FIRST_PERSON
+					if((CGarages::IsPointInAGarageCameraZone(pTargetEntity->GetPosition()) || stairs) && Cams[ActiveCam].Mode != CCam::MODE_REAL_1ST_PERSON){
+#else
 					if(CGarages::IsPointInAGarageCameraZone(pTargetEntity->GetPosition()) || stairs){
+#endif
 						if(!m_bGarageFixedCamPositionSet && m_bLookingAtPlayer ||
 						   WhoIsInControlOfTheCamera == CAMCONTROL_OBBE){
 							if(pToGarageWeAreIn || stairsZone){
@@ -891,6 +924,18 @@ CCamera::CamControl(void)
 							}
 							ReqMode = CCam::MODE_CAM_ON_A_STRING;
 						}
+#ifdef FIRST_PERSON
+					}else if (CarZoomIndicator != CAM_ZOOM_REAL_1ST_PERSON){
+						if(m_bPlayerIsInGarage){
+							m_bJustCameOutOfGarage = true;
+							m_bPlayerIsInGarage = false;
+						}
+						m_bGarageFixedCamPositionSet = false;
+						ReqMode = CCam::MODE_CAM_ON_A_STRING;
+					}else{
+						ReqMode = CCam::MODE_REAL_1ST_PERSON;
+					}
+#else
 					}else{
 						if(m_bPlayerIsInGarage){
 							m_bJustCameOutOfGarage = true;
@@ -899,10 +944,18 @@ CCamera::CamControl(void)
 						m_bGarageFixedCamPositionSet = false;
 						ReqMode = CCam::MODE_CAM_ON_A_STRING;
 					}
+#endif
 					break;
 				}
 				case VEHICLE_TYPE_BOAT:
+#ifdef FIRST_PERSON
+					if (CarZoomIndicator == CAM_ZOOM_REAL_1ST_PERSON)
+						ReqMode = CCam::MODE_REAL_1ST_PERSON;
+					else
+						ReqMode = CCam::MODE_BEHINDBOAT;
+#else
 					ReqMode = CCam::MODE_BEHINDBOAT;
+#endif
 					break;
 				default: break;
 				}
@@ -939,7 +992,11 @@ CCamera::CamControl(void)
 				}
 
 				// Check if we have to go into first person
+#ifdef FIRST_PERSON
+				if(vehType == VEHICLE_TYPE_CAR && !m_bPlayerIsInGarage && Cams[ActiveCam].Mode != CCam::MODE_REAL_1ST_PERSON){
+#else
 				if(vehType == VEHICLE_TYPE_CAR && !m_bPlayerIsInGarage){
+#endif
 					if(CCullZones::Cam1stPersonForPlayer() && 
 					   pTargetEntity->GetColModel()->boundingBox.GetSize().z >= 3.026f &&
 					   pToGarageWeAreInForHackAvoidFirstPerson == nil){
@@ -982,7 +1039,11 @@ CCamera::CamControl(void)
 				WellBufferMe(CloseInCarHeightTarget, &Cams[ActiveCam].m_fCloseInCarHeightOffset, &Cams[ActiveCam].m_fCloseInCarHeightOffsetSpeed, 0.1f, 0.25f, false);
 
 				// Fallen into water
+#ifdef FIRST_PERSON
+				if(Cams[ActiveCam].Mode != CCam::MODE_REAL_1ST_PERSON && Cams[ActiveCam].IsTargetInWater(Cams[ActiveCam].Source) && !boatTarget &&
+#else
 				if(Cams[ActiveCam].IsTargetInWater(Cams[ActiveCam].Source) && !boatTarget &&
+#endif
 				   !Cams[ActiveCam].CamTargetEntity->IsPed() &&
 				   pTargetEntity->GetModelIndex() != MI_SKIMMER && pTargetEntity->GetModelIndex() != MI_SEASPAR)
 					ReqMode = CCam::MODE_PLAYER_FALLEN_WATER;
@@ -995,38 +1056,86 @@ CCamera::CamControl(void)
 			if(CPad::GetPad(0)->CycleCameraModeUpJustDown() && !CReplay::IsPlayingBack() &&
 			   (m_bLookingAtPlayer || WhoIsInControlOfTheCamera == CAMCONTROL_OBBE) &&
 			   !m_WideScreenOn && !m_bFailedCullZoneTestPreviously && !m_bFirstPersonBeingUsed){
-				if(FrontEndMenuManager.m_ControlMethod == CONTROL_STANDARD){
-					if(PedZoomIndicator == CAM_ZOOM_3)
+#if defined FIRST_PERSON && defined IMPROVED_MENU_AND_INPUT
+				if (PedZoomIndicator == CAM_ZOOM_3) {
+					PedZoomIndicator = CAM_ZOOM_REAL_1ST_PERSON;
+					CarZoomIndicator = CAM_ZOOM_REAL_1ST_PERSON;
+				} else if (PedZoomIndicator == CAM_ZOOM_1) {
+					PedZoomIndicator = CAM_ZOOM_2;
+					CarZoomIndicator = CAM_ZOOM_2;
+				} else if (PedZoomIndicator == CAM_ZOOM_2) {
+					PedZoomIndicator = CAM_ZOOM_3;
+					CarZoomIndicator = CAM_ZOOM_2;
+				} else {
+					PedZoomIndicator = CAM_ZOOM_1;
+					CarZoomIndicator = CAM_ZOOM_2;
+				}
+#else
+				if (FrontEndMenuManager.m_ControlMethod == CONTROL_STANDARD) {
+					if (PedZoomIndicator == CAM_ZOOM_3)
 						PedZoomIndicator = CAM_ZOOM_1;
-#ifdef IMPROVED_MENU_AND_INPUT
-					else if (PedZoomIndicator == CAM_ZOOM_1)
-						PedZoomIndicator = CAM_ZOOM_2;
-#endif
 					else
 						PedZoomIndicator = CAM_ZOOM_3;
 				}else
 					PedZoomIndicator--;
+#endif
+#ifdef FIRST_PERSON
+				if (PedZoomIndicator == CAM_ZOOM_REAL_1ST_PERSON) {
+					ReqMode = CCam::MODE_REAL_1ST_PERSON;
+					switchByJumpCut = true;
+				}
+#endif
 			}
 			if(CPad::GetPad(0)->CycleCameraModeDownJustDown() && !CReplay::IsPlayingBack() &&
 			   (m_bLookingAtPlayer || WhoIsInControlOfTheCamera == CAMCONTROL_OBBE) &&
 			   !m_WideScreenOn && !m_bFailedCullZoneTestPreviously && !m_bFirstPersonBeingUsed){
-				if(FrontEndMenuManager.m_ControlMethod == CONTROL_STANDARD){
-					if(PedZoomIndicator == CAM_ZOOM_3)
+#if defined FIRST_PERSON && defined IMPROVED_MENU_AND_INPUT
+				if (PedZoomIndicator == CAM_ZOOM_3) {
+					PedZoomIndicator = CAM_ZOOM_REAL_1ST_PERSON;
+					CarZoomIndicator = CAM_ZOOM_REAL_1ST_PERSON;
+				} else if (PedZoomIndicator == CAM_ZOOM_1) {
+					PedZoomIndicator = CAM_ZOOM_2;
+					CarZoomIndicator = CAM_ZOOM_2;
+				} else if (PedZoomIndicator == CAM_ZOOM_2) {
+					PedZoomIndicator = CAM_ZOOM_3;
+					CarZoomIndicator = CAM_ZOOM_2;
+				} else {
+					PedZoomIndicator = CAM_ZOOM_1;
+					CarZoomIndicator = CAM_ZOOM_2;
+				}
+#else
+				if (FrontEndMenuManager.m_ControlMethod == CONTROL_STANDARD) {
+					if (PedZoomIndicator == CAM_ZOOM_3)
 						PedZoomIndicator = CAM_ZOOM_1;
-#ifdef IMPROVED_MENU_AND_INPUT
-					else if (PedZoomIndicator == CAM_ZOOM_1)
-						PedZoomIndicator = CAM_ZOOM_2;
-#endif
 					else
 						PedZoomIndicator = CAM_ZOOM_3;
 				}else
 					PedZoomIndicator++;
+#endif
+
+#ifdef FIRST_PERSON
+				if (PedZoomIndicator == CAM_ZOOM_REAL_1ST_PERSON) {
+					ReqMode = CCam::MODE_REAL_1ST_PERSON;
+				}
+#endif
 			}
+
 			// disabled top down and obbe's cam here
 			if(PedZoomIndicator < CAM_ZOOM_1) PedZoomIndicator = CAM_ZOOM_3;
+#ifdef FIRST_PERSON
+			else if(PedZoomIndicator > CAM_ZOOM_REAL_1ST_PERSON) PedZoomIndicator = CAM_ZOOM_1;
+#else
 			else if(PedZoomIndicator > CAM_ZOOM_3) PedZoomIndicator = CAM_ZOOM_1;
+#endif
 
+#ifdef FIRST_PERSON
+			if (PedZoomIndicator == CAM_ZOOM_REAL_1ST_PERSON)
+				ReqMode = CCam::MODE_REAL_1ST_PERSON;
+			else
+				ReqMode = CCam::MODE_FOLLOWPED;
+#else
 			ReqMode = CCam::MODE_FOLLOWPED;
+#endif
 
 			// Check 1st person mode
 			if((m_bLookingAtPlayer || m_bEnable1rstPersonCamCntrlsScript) && pTargetEntity->IsPed() &&
@@ -1112,6 +1221,7 @@ CCamera::CamControl(void)
 
 			WellBufferMe(CloseInPedHeightTarget, &Cams[ActiveCam].m_fCloseInPedHeightOffset, &Cams[ActiveCam].m_fCloseInPedHeightOffsetSpeed, 0.1f, 0.025f, false);
 
+#ifndef IMPROVED_MENU_AND_INPUT
 			// Check if entering fight cam
 			if(!m_bFirstPersonBeingUsed){
 				if(FindPlayerPed()->GetPedState() == PED_FIGHT && !m_bUseMouse3rdPerson)
@@ -1120,6 +1230,7 @@ CCamera::CamControl(void)
 				   FindPlayerPed()->GetPedState() == PED_ATTACK && !m_bUseMouse3rdPerson)
 					ReqMode = CCam::MODE_FIGHT_CAM;
 			}
+#endif
 
 			// Garage cam
 			CAttributeZone *stairsZone = nil;
@@ -1128,7 +1239,11 @@ CCamera::CamControl(void)
 				if(stairsZone)
 					stairs = true;
 			}
-			if(CGarages::IsPointInAGarageCameraZone(pTargetEntity->GetPosition()) && !m_bUseMouse3rdPerson || stairs){
+#ifdef FIRST_PERSON
+			if ((CGarages::IsPointInAGarageCameraZone(pTargetEntity->GetPosition()) && !m_bUseMouse3rdPerson || stairs) && Cams[ActiveCam].Mode != CCam::MODE_REAL_1ST_PERSON) {
+#else
+			if (CGarages::IsPointInAGarageCameraZone(pTargetEntity->GetPosition()) && !m_bUseMouse3rdPerson || stairs) {
+#endif
 				if(!m_bGarageFixedCamPositionSet && m_bLookingAtPlayer){
 					if(pToGarageWeAreIn || stairs){
 						float ground;
@@ -1237,7 +1352,11 @@ CCamera::CamControl(void)
 				}
 
 				if((CGarages::CameraShouldBeOutside() || stairs) && m_bLookingAtPlayer && m_bGarageFixedCamPositionSet){
+#ifdef FIRST_PERSON
+					if((pToGarageWeAreIn || stairs) && ReqMode != CCam::MODE_REAL_1ST_PERSON){
+#else
 					if(pToGarageWeAreIn || stairs){
+#endif
 						ReqMode = CCam::MODE_FIXED;
 						m_bPlayerIsInGarage = true;
 					}
@@ -1280,8 +1399,15 @@ CCamera::CamControl(void)
 				ReqMode = CCam::MODE_TOP_DOWN_PED;
 
 			// Weapon mode
-			if(!CPad::GetPad(0)->GetTarget() && PlayerWeaponMode.Mode != CCam::MODE_HELICANNON_1STPERSON)
+			if(!CPad::GetPad(0)->GetTarget() && PlayerWeaponMode.Mode != CCam::MODE_HELICANNON_1STPERSON) {
+#ifdef FIRST_PERSON
+				if ((Cams[ActiveCam].Mode == CCam::MODE_SNIPER || 
+					Cams[ActiveCam].Mode == CCam::MODE_ROCKETLAUNCHER) &&
+					PedZoomIndicator == CAM_ZOOM_REAL_1ST_PERSON)
+					ReqMode = CCam::MODE_REAL_1ST_PERSON;
+#endif
 				ClearPlayerWeaponMode();
+			}
 			if(m_PlayerMode.Mode != CCam::MODE_NONE)
 				ReqMode = m_PlayerMode.Mode;
 			if(PlayerWeaponMode.Mode != CCam::MODE_NONE && !stairs){
@@ -1503,7 +1629,11 @@ CCamera::CamControl(void)
 	// Start the transition or do a jump cut
 	if(m_bLookingAtPlayer){
 		// Going into top down modes normally needs a jump cut (but see below)
+#ifdef FIRST_PERSON
+		if(ReqMode == CCam::MODE_TOPDOWN || ReqMode == CCam::MODE_1STPERSON || ReqMode == CCam::MODE_TOP_DOWN_PED || ReqMode == CCam::MODE_REAL_1ST_PERSON || PedZoomIndicator == CAM_ZOOM_1){
+#else
 		if(ReqMode == CCam::MODE_TOPDOWN || ReqMode == CCam::MODE_1STPERSON || ReqMode == CCam::MODE_TOP_DOWN_PED){
+#endif
 			switchByJumpCut = true;
 		}
 		// Going from top down to vehicle
@@ -1558,7 +1688,11 @@ CCamera::CamControl(void)
 				if(pTargetEntity && pTargetEntity->IsVehicle())
 					switchByJumpCut = true;
 			}
+#ifdef FIRST_PERSON
+		}else if(ReqMode == CCam::MODE_FOLLOWPED || ReqMode == CCam::MODE_REAL_1ST_PERSON){
+#else
 		}else if(ReqMode == CCam::MODE_FOLLOWPED){
+#endif
 			bool syphonJumpCut = false;
 			if(Cams[ActiveCam].Mode == CCam::MODE_SYPHON || Cams[ActiveCam].Mode == CCam::MODE_SYPHON_CRIM_IN_FRONT)
 				if(!((CPed*)pTargetEntity)->CanWeRunAndFireWithWeapon())
@@ -1643,7 +1777,11 @@ CCamera::CamControl(void)
 			ReqMode = CCam::MODE_EDITOR;
 #endif
 
-		if((m_uiTransitionState == 0 || switchByJumpCut) && ReqMode != Cams[ActiveCam].Mode){
+#ifdef FIRST_PERSON
+		if((m_uiTransitionState == 0 || switchByJumpCut) && ReqMode != Cams[ActiveCam].Mode || ReqMode == CCam::MODE_REAL_1ST_PERSON) {
+#else
+		if((m_uiTransitionState == 0 || switchByJumpCut) && ReqMode != Cams[ActiveCam].Mode) {
+#endif
 			if(switchByJumpCut){
 				if(!m_bPlayerIsInGarage || m_bJustCameOutOfGarage){
 					if(ReqMode != CCam::MODE_FOLLOWPED &&
@@ -1931,6 +2069,11 @@ CCamera::InitialiseCameraForDebugMode(void)
 void
 CCamera::CamShake(float strength, float x, float y, float z)
 {
+#ifdef FIRST_PERSON
+	if (strength > 0.15f && TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON)
+		strength = 0.15f;
+#endif
+
 	CVector Dist = Cams[ActiveCam].Source - CVector(x, y, z);
 	// a bit complicated...
 	float dist2d = Sqrt(SQR(Dist.x) + SQR(Dist.y));
@@ -2218,7 +2361,14 @@ CCamera::RestoreWithJumpCut(void)
 	m_bAllow1rstPersonWeaponsCamera = false;
 
 	if(FindPlayerVehicle()){
+#ifdef FIRST_PERSON
+		if (m_iModeToGoTo == CCam::MODE_WHEELCAM)
+			m_iModeToGoTo = CCam::MODE_REAL_1ST_PERSON;
+		else
+			m_iModeToGoTo = CCam::MODE_CAM_ON_A_STRING;
+#else
 		m_iModeToGoTo = CCam::MODE_CAM_ON_A_STRING;
+#endif
 		pTargetEntity = FindPlayerVehicle();
 	}else{
 		m_iModeToGoTo = CCam::MODE_FOLLOWPED;

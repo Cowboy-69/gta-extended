@@ -392,7 +392,14 @@ CCarCtrl::GenerateOneRandomCar()
 		pVehicle->AutoPilot.m_nTempAction = TEMPACT_NONE;
 		pVehicle->AutoPilot.m_nCruiseSpeed = CGeneral::GetRandomNumberInRange(4, 16);
 		pVehicle->AutoPilot.m_fMaxTrafficSpeed = pVehicle->AutoPilot.m_nCruiseSpeed;
+#ifdef IMPROVED_TECH_PART // wanted system
+		if (FindPlayerPed() && FindPlayerPed()->m_pWanted->IsPlayerHides())
+			pVehicle->AutoPilot.m_nCarMission == MISSION_BLOCKPLAYER_FARAWAY;
+		else
+			pVehicle->AutoPilot.m_nCarMission = CCarAI::FindPoliceBoatMissionForWantedLevel();
+#else
 		pVehicle->AutoPilot.m_nCarMission = CCarAI::FindPoliceBoatMissionForWantedLevel();
+#endif
 		pVehicle->bCreatedAsPoliceVehicle = true;
 		break;
 	default:

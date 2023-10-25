@@ -192,6 +192,10 @@ void CCarAI::UpdateCarAI(CVehicle* pVehicle)
 #endif
 			break;
 		case MISSION_BLOCKPLAYER_FARAWAY:
+#ifdef IMPROVED_TECH_PART // wanted system
+			if (pVehicle->GetVehicleAppearance() == VEHICLE_APPEARANCE_BOAT && !FindPlayerPed()->m_pWanted->IsPlayerHides())
+				pVehicle->AutoPilot.m_nCarMission = MISSION_ATTACKPLAYER;
+#endif
 #ifdef WANTED_PATHS
 			if (!FindPlayerPed()->m_pWanted->IsPlayerHides() && (FindSwitchDistanceClose(pVehicle) > (FindPlayerCoors() - pVehicle->GetPosition()).Magnitude2D() ||
 				pVehicle->AutoPilot.m_bIgnorePathfinding)) {
@@ -443,8 +447,17 @@ void CCarAI::UpdateCarAI(CVehicle* pVehicle)
 				  ABS(FindPlayerCoors().y - pVehicle->GetPosition().y) > 10.0f){
 					pVehicle->AutoPilot.m_nCruiseSpeed = FindPoliceCarSpeedForWantedLevel(pVehicle);
 					pVehicle->SetStatus(STATUS_PHYSICS);
+#ifdef IMPROVED_TECH_PART // wanted system
+					if (pVehicle->GetVehicleAppearance() == VEHICLE_APPEARANCE_BOAT && FindPlayerPed()->m_pWanted->IsPlayerHides())
+						pVehicle->AutoPilot.m_nCarMission = MISSION_BLOCKPLAYER_FARAWAY;
+					else {
+						pVehicle->AutoPilot.m_nCarMission =
+							pVehicle->GetVehicleAppearance() == VEHICLE_APPEARANCE_BOAT ? FindPoliceBoatMissionForWantedLevel() : FindPoliceCarMissionForWantedLevel();
+					}
+#else
 					pVehicle->AutoPilot.m_nCarMission = 
 						pVehicle->GetVehicleAppearance() == VEHICLE_APPEARANCE_BOAT ? FindPoliceBoatMissionForWantedLevel() : FindPoliceCarMissionForWantedLevel();
+#endif
 					pVehicle->AutoPilot.m_nTempAction = TEMPACT_NONE;
 					pVehicle->AutoPilot.m_nDrivingStyle = DRIVINGSTYLE_AVOID_CARS;
 #ifdef IMPROVED_TECH_PART // wanted system

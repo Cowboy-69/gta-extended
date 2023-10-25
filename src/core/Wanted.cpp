@@ -11,7 +11,7 @@
 #include "Wanted.h"
 #include "General.h"
 #include "Stats.h"
-#ifdef IMPROVED_TECH_PART && DEBUG // wanted system
+#if defined IMPROVED_TECH_PART && defined DEBUG // wanted system
 #include "Debug.h"
 #endif
 
@@ -457,21 +457,33 @@ CWanted::WorkOutPolicePresence(CVector posn, float radius)
 					angleOfSight = DotProduct(copForward, distance);
 				}
 
+				RwV3d copHeadPos;
+				copHeadPos.x = 0.0f;
+				copHeadPos.y = 0.0f;
+				copHeadPos.z = 0.0f;
+				ped->m_pedIK.GetComponentPosition(copHeadPos, PED_HEAD);
+				
+				RwV3d playerHeadPos;
+				playerHeadPos.x = 0.0f;
+				playerHeadPos.y = 0.0f;
+				playerHeadPos.z = 0.0f;
+				FindPlayerPed()->m_pedIK.GetComponentPosition(playerHeadPos, PED_HEAD);
+				
 				CEntity* hitEntity;
 				if (FindPlayerPed()->bIsDucking) {
-					CWorld::ProcessLineOfSight(ped->GetPosition() + CVector(0.0f, 0.0f, 0.75f), posn - CVector(0.0f, 0.0f, 0.15f), CColPoint{}, hitEntity, true, true, false, false, false, true, true, true);
+					CWorld::ProcessLineOfSight(copHeadPos, playerHeadPos, CColPoint{}, hitEntity, true, true, false, false, false, true, true, true);
 				} else {
 					bool bCheckVehicles = false;
 					if (!FindPlayerVehicle()) {
 						CEntity* hitEntity2;
-						if (CWorld::ProcessLineOfSight(ped->GetPosition() + CVector(0.0f, 0.0f, 0.75f), posn + CVector(0.0f, 0.0f, 0.4f), CColPoint{}, hitEntity2, true, true, false, false, false, true, true, true)) {
+						if (CWorld::ProcessLineOfSight(copHeadPos, playerHeadPos, CColPoint{}, hitEntity2, true, true, false, false, false, true, true, true)) {
 							CVehicle* hitVehicle = (CVehicle*)hitEntity2;
 							if (hitVehicle && hitVehicle->IsHighVehicle())
 								bCheckVehicles = true;
 						}
 					}
 
-					CWorld::ProcessLineOfSight(ped->GetPosition() + CVector(0.0f, 0.0f, 0.75f), posn + CVector(0.0f, 0.0f, 0.4f), CColPoint{}, hitEntity, true, bCheckVehicles, false, false, false, true, true, true);
+					CWorld::ProcessLineOfSight(copHeadPos, playerHeadPos, CColPoint{}, hitEntity, true, bCheckVehicles, false, false, false, true, true, true);
 				}
 
 				bool isCopSeesPlayer = angleOfSight < -0.25f && !hitEntity;
@@ -524,26 +536,31 @@ CWanted::WorkOutPolicePresence(CVector posn, float radius)
 			vehicle != FindPlayerVehicle() &&
 			(posn - vehicle->GetPosition()).Magnitude() < radius) {
 
+			RwV3d playerHeadPos;
+			playerHeadPos.x = 0.0f;
+			playerHeadPos.y = 0.0f;
+			playerHeadPos.z = 0.0f;
+			FindPlayerPed()->m_pedIK.GetComponentPosition(playerHeadPos, PED_HEAD);
+
 			CEntity* hitEntity;
 			if (FindPlayerPed()->bIsDucking) {
-				CWorld::ProcessLineOfSight(vehicle->GetPosition() + CVector(0.0f, 0.0f, 0.75f), posn - CVector(0.0f, 0.0f, 0.15f), CColPoint{}, hitEntity, true, true, false, false, false, true, true, true);
+				CWorld::ProcessLineOfSight(vehicle->GetPosition() + CVector(0.0f, 0.0f, 0.75f), playerHeadPos, CColPoint{}, hitEntity, true, true, false, false, false, true, true, true);
 			} else {
 				bool bCheckVehicles = false;
 				if (!FindPlayerVehicle()) {
 					CEntity* hitEntity2;
-					if (CWorld::ProcessLineOfSight(vehicle->GetPosition() + CVector(0.0f, 0.0f, 0.75f), posn + CVector(0.0f, 0.0f, 0.4f), CColPoint{}, hitEntity2, true, true, false, false, false, true, true, true)) {
+					if (CWorld::ProcessLineOfSight(vehicle->GetPosition() + CVector(0.0f, 0.0f, 0.75f), playerHeadPos, CColPoint{}, hitEntity2, true, true, false, false, false, true, true, true)) {
 						CVehicle* hitVehicle = (CVehicle*)hitEntity2;
 						if (hitVehicle && hitVehicle->IsHighVehicle())
 							bCheckVehicles = true;
 					}
 				}
 
-				CWorld::ProcessLineOfSight(vehicle->GetPosition() + CVector(0.0f, 0.0f, 0.75f), posn + CVector(0.0f, 0.0f, 0.4f), CColPoint{}, hitEntity, true, bCheckVehicles, false, false, false, true, true, true);
+				CWorld::ProcessLineOfSight(vehicle->GetPosition() + CVector(0.0f, 0.0f, 0.75f), playerHeadPos, CColPoint{}, hitEntity, true, bCheckVehicles, false, false, false, true, true, true);
 			}
-
 #ifdef DEBUG
 			if (!hitEntity && !wanted->IsPlayerHides())
-				CDebug::AddLine(vehicle->GetPosition(), posn, 0xfff000, 0xfff000);
+				CDebug::AddLine(vehicle->GetPosition(), playerHeadPos, 0xfff000, 0xfff000);
 #endif
 
 			bool isHeliSeesPlayer = !hitEntity;
@@ -667,6 +684,11 @@ CWanted::Update(void)
 			}
 		}
 	}
+
+#ifdef NEW_CHEATS // AEZAKMI
+	if (m_nWantedLevel > 0 && FindPlayerPed()->bNoWantedCheat)
+		SetWantedLevel(0);
+#endif
 }
 
 void

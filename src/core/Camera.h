@@ -22,6 +22,9 @@ enum
 	CAM_ZOOM_1,
 	CAM_ZOOM_2,
 	CAM_ZOOM_3,
+#ifdef FIRST_PERSON
+	CAM_ZOOM_REAL_1ST_PERSON,
+#endif
 	CAM_ZOOM_TOPDOWN,
 	CAM_ZOOM_CINEMATIC,
 };
@@ -80,6 +83,9 @@ public:
 		MODE_EDITOR,
 		MODE_HELICANNON_1STPERSON,
 		MODE_CAMERA,
+#ifdef FIRST_PERSON
+		MODE_REAL_1ST_PERSON,
+#endif
 	};
 
 	bool    bBelowMinDist; //used for follow ped mode
@@ -94,6 +100,9 @@ public:
 	bool    LookingRight;
 	bool    ResetStatics; //for interpolation type stuff to work
 	bool    Rotating;
+#ifdef FIRST_PERSON
+	bool	m_bFixed1stPersonCamInVeh;
+#endif
 
 	int16   Mode;                   // CameraMode
 	uint32  m_uiFinishTime;
@@ -150,11 +159,11 @@ public:
 	float   CA_MAX_DISTANCE;
 	float   SpeedVar;
 
-#ifdef AIMING
+#ifdef FIRING_AND_AIMING
 	float AimingFOV;
 #endif
 
-#ifdef AIMING
+#ifdef FIRING_AND_AIMING
 	bool m_bAimingWhileLookBehind;
 #endif
 
@@ -250,6 +259,10 @@ public:
 	void ProcessPedsDeadBaby(void);
 	bool ProcessArrestCamOne(void);
 	bool ProcessArrestCamTwo(void);
+#ifdef FIRST_PERSON
+	void Process_Real_1st_Person(const CVector& CameraTarget, float, float, float);
+	void LimitAngleBetaRelativelyTwoAngles(CVector normalizedRelativeVector, float leftLimitingAngle, float rightLimitingAngle);
+#endif
 	bool GetLookAlongGroundPos(CEntity *Target, CPed *Cop, CVector &TargetCoors, CVector &SourceOut);
 	bool GetLookFromLampPostPos(CEntity *Target, CPed *Cop, CVector &TargetCoors, CVector &SourceOut);
 	bool GetLookOverShoulderPos(CEntity *Target, CPed *Cop, CVector &TargetCoors, CVector &SourceOut);
@@ -452,7 +465,7 @@ public:
 	float m_fOldBetaDiff;
 	float m_fPedZoomValue;
 
-#ifdef AIMING
+#ifdef FIRING_AND_AIMING
 	float AimingFOV;
 #endif
 

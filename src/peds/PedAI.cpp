@@ -2227,8 +2227,15 @@ CPed::ReactToAttack(CEntity *attacker)
 {
 	if (IsPlayer() && attacker->IsPed()) {
 		InformMyGangOfAttack(attacker);
+#ifdef FIRST_PERSON
+		if (TheCamera.Cams[TheCamera.ActiveCam].Mode != CCam::MODE_REAL_1ST_PERSON) {
+			SetLookFlag(attacker, true);
+			SetLookTimer(700);
+		}
+#else
 		SetLookFlag(attacker, true);
 		SetLookTimer(700);
+#endif
 		return;
 	}
 	
@@ -5998,7 +6005,6 @@ CPed::ClearDuck(bool clearTimer)
 	if (!animAssoc) {
 #ifdef CROUCH
 		animAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_IDLE);
-		
 #else
 		animAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_DUCK_WEAPON);
 #endif
@@ -6505,13 +6511,12 @@ CPed::KillCharOnFootArmed(CVector &ourPos, CVector &targetPos, CVector &distWith
 		SetMoveState(PEDMOVE_STILL);
 		return CANT_ATTACK;
 	}
-#ifndef IMPROVED_TECH_PART // wanted system
 	if (m_pedInObjective->IsPlayer()) {
 		CPlayerPed *player = FindPlayerPed();
 		if (m_nPedType == PEDTYPE_COP && player->m_pWanted->m_bIgnoredByCops
 			|| player->m_pWanted->m_bIgnoredByEveryone
-#ifdef IMPROVED_TECH_PART
-			|| (m_pedInObjective->bIsInWater && !player->m_pWanted->IsPlayerHides())
+#ifdef IMPROVED_TECH_PART // wanted system
+			|| (m_pedInObjective->bIsInWater && m_nPedType != PEDTYPE_COP)
 #else
 			|| m_pedInObjective->bIsInWater
 #endif
@@ -6523,7 +6528,6 @@ CPed::KillCharOnFootArmed(CVector &ourPos, CVector &targetPos, CVector &distWith
 			return CANT_ATTACK;
 		}
 	}
-#endif
 	if (m_pedInObjective->IsPlayer() && m_nPedType != PEDTYPE_COP
 		&& CharCreatedBy != MISSION_CHAR && FindPlayerPed()->m_pWanted->m_CurrentCops != 0) {
 		SetObjective(OBJECTIVE_FLEE_ON_FOOT_TILL_SAFE);

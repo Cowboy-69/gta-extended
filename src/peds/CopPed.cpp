@@ -842,12 +842,30 @@ CCopPed::ProcessControl(void)
 						else
 							m_vecSeekPos = m_pSeekTarget->GetPosition();
 #ifdef DEBUG
-						CDebug::AddLine(GetPosition() + CVector(0.0f, 0.0f, 0.75f), m_vecSeekPos, 0xFFFFFFFF, 0xFFFFFFFF);
+						RwV3d copHeadPos;
+						copHeadPos.x = 0.0f;
+						copHeadPos.y = 0.0f;
+						copHeadPos.z = 0.0f;
+						m_pedIK.GetComponentPosition(copHeadPos, PED_HEAD);
+
+						RwV3d playerHeadPos;
+						playerHeadPos.x = 0.0f;
+						playerHeadPos.y = 0.0f;
+						playerHeadPos.z = 0.0f;
+						FindPlayerPed()->m_pedIK.GetComponentPosition(playerHeadPos, PED_HEAD);
+
+						CDebug::AddLine(copHeadPos, playerHeadPos, 0xFFFFFFFF, 0xFFFFFFFF);
 #endif
 					} else {
 						ProcessSearchPlayer(playerPed);
 #ifdef DEBUG
-						CDebug::AddLine(GetPosition() + CVector(0.0f, 0.0f, 0.75f), m_vecSeekPos, 0xff0000, 0xff0000);
+						RwV3d copHeadPos;
+						copHeadPos.x = 0.0f;
+						copHeadPos.y = 0.0f;
+						copHeadPos.z = 0.0f;
+						m_pedIK.GetComponentPosition(copHeadPos, PED_HEAD);
+
+						CDebug::AddLine(copHeadPos, m_vecSeekPos, 0xff0000, 0xff0000);
 #endif
 					}
 				} else {
