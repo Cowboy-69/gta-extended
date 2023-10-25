@@ -19,6 +19,12 @@
 #include "PedPlacement.h"
 #include "Ropes.h"
 #include "Stinger.h"
+#ifdef IMPROVED_TECH_PART && DEBUG // wanted system
+#include "Debug.h"
+#endif
+#ifdef IMPROVED_TECH_PART // AI
+#include "WaterLevel.h"
+#endif
 
 CCopPed::CCopPed(eCopType copType, int32 modifier) : CPed(PEDTYPE_COP)
 {
@@ -31,7 +37,11 @@ CCopPed::CCopPed(eCopType copType, int32 modifier) : CPed(PEDTYPE_COP)
 		m_currentWeapon = WEAPONTYPE_UNARMED;
 		m_fArmour = 0.0f;
 		m_wepSkills = 208; /* TODO: what is this? seems unused */
+#ifdef IMPROVED_TECH_PART // AI
+		m_wepAccuracy = 84;
+#else
 		m_wepAccuracy = 60;
+#endif
 		break;
 	case COP_FBI:
 		SetModelIndex(MI_FBI);
@@ -39,24 +49,44 @@ CCopPed::CCopPed(eCopType copType, int32 modifier) : CPed(PEDTYPE_COP)
 		SetCurrentWeapon(WEAPONTYPE_MP5);
 		m_fArmour = 100.0f;
 		m_wepSkills = 176; /* TODO: what is this? seems unused */
+#ifdef IMPROVED_TECH_PART // AI
+		m_wepAccuracy = 80;
+#else
 		m_wepAccuracy = 76;
+#endif
 		break;
 	case COP_SWAT:
 	case COP_HELI_SWAT:
 		SetModelIndex(MI_SWAT);
+#ifdef IMPROVED_TECH_PART // wanted system
+		GiveDelayedWeapon(WEAPONTYPE_TEARGAS, 1);
+#endif
 		GiveDelayedWeapon(WEAPONTYPE_UZI, 1000);
 		SetCurrentWeapon(WEAPONTYPE_UZI);
 		m_fArmour = 50.0f;
 		m_wepSkills = 32; /* TODO: what is this? seems unused */
+#ifdef IMPROVED_TECH_PART // AI
+		m_wepAccuracy = 78;
+#else
 		m_wepAccuracy = 68;
+#endif
 		break;
 	case COP_ARMY:
 		SetModelIndex(MI_ARMY);
+#ifdef IMPROVED_TECH_PART // AI
+		GiveDelayedWeapon(WEAPONTYPE_M4, 1000);
+		SetCurrentWeapon(WEAPONTYPE_M4);
+#else
 		GiveDelayedWeapon(WEAPONTYPE_MP5, 1000);
 		SetCurrentWeapon(WEAPONTYPE_MP5);
+#endif
 		m_fArmour = 100.0f;
 		m_wepSkills = 32; /* TODO: what is this? seems unused */
+#ifdef IMPROVED_TECH_PART // AI
 		m_wepAccuracy = 84;
+#else
+		m_wepAccuracy = 84;
+#endif
 		break;
 	case COP_MIAMIVICE:
 		switch (modifier) {
@@ -74,7 +104,11 @@ CCopPed::CCopPed(eCopType copType, int32 modifier) : CPed(PEDTYPE_COP)
 		SetCurrentWeapon(WEAPONTYPE_UZI);
 		m_fArmour = 100.0f;
 		m_wepSkills = 176;
+#ifdef IMPROVED_TECH_PART // AI
+		m_wepAccuracy = 86;
+#else
 		m_wepAccuracy = 76;
+#endif
 		break;
 	}
 	m_bIsInPursuit = false;
@@ -95,6 +129,14 @@ CCopPed::CCopPed(eCopType copType, int32 modifier) : CPed(PEDTYPE_COP)
 	field_624 = 0;
 	m_pStinger = new CStinger();
 	SetWeaponLockOnTarget(nil);
+#ifdef IMPROVED_TECH_PART // wanted system
+	m_vecLastPosPlayerBeforeHiding = FindPlayerCoors();
+	m_vecPotentialPlayerSearchCoordinates = CVector(0.0f, 0.0f, 0.0f);
+	m_bLookingForPlayer = false;
+	m_bMovesToLastPlayerPosition = false;
+	m_bThrowingTeargas = false;
+	m_bUsedTeargas = false;
+#endif
 }
 
 CCopPed::~CCopPed()
@@ -346,8 +388,30 @@ CCopPed::CopAI(void)
 		bDuckAndCover = false;
 		ClearPursuit();
 	}
+#ifdef IMPROVED_TECH_PART // wanted system
+	if (wantedLevel > 0 && CWanted::WorkOutPolicePresence(FindPlayerCoors(), 150.0f) > 0) {
+#else
 	if (wantedLevel > 0) {
+#endif
 		if (!m_bIsDisabledCop) {
+#ifdef IMPROVED_TECH_PART // wanted system
+			if (!m_bUsedTeargas && m_nCopType == COP_SWAT) {
+				if (!FindPlayerVehicle() && FindPlayerSpeed().IsZero() && (CGeneral::GetRandomNumber() & 31) == 0 && bIsStanding) {
+					float dist = Distance2D(GetPosition(), FindPlayerCoors());
+					if (!wanted->IsPlayerHides() && dist > 30.0f && dist < 50.0f && CWorld::GetIsLineOfSightClear(GetPosition(), FindPlayerCoors(), true, false, false, false, false, false)) {
+						SetCurrentWeapon(WEAPONTYPE_TEARGAS);
+						m_bThrowingTeargas = true;
+						m_bUsedTeargas = true;
+					}
+				}
+			}
+
+			if (m_bThrowingTeargas) {
+				eWeaponType weapon = GetWeapon()->m_eWeaponType;
+				CWeaponInfo::GetWeaponInfo(weapon)->m_nWeaponSlot == WEAPONSLOT_PROJECTILE ? SetAttack(nil) : m_bThrowingTeargas = false;
+			}
+#endif
+
 			// Turn and shoot the player's vehicle, if possible
 			if (!m_bIsInPursuit && !GetWeapon()->IsTypeMelee() && FindPlayerVehicle() && m_fDistanceToTarget < CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType)->m_fRange) {
 				if (FindPlayerVehicle()->m_vecMoveSpeed.Magnitude2D() > 0.1f) {
@@ -409,7 +473,11 @@ CCopPed::CopAI(void)
 			if (!m_bIsInPursuit)
 				return;
 
+#ifdef IMPROVED_TECH_PART // wanted system
+			if (wantedLevel > 1 && (GetWeapon()->m_eWeaponType == WEAPONTYPE_UNARMED || GetWeapon()->m_eWeaponType == WEAPONTYPE_NIGHTSTICK))
+#else
 			if (wantedLevel > 1 && GetWeapon()->m_eWeaponType == WEAPONTYPE_UNARMED)
+#endif
 				SetCurrentWeapon(WEAPONTYPE_COLT45);
 			else if (wantedLevel == 1 && GetWeapon()->m_eWeaponType == WEAPONTYPE_UNARMED && !FindPlayerPed()->m_pCurrentPhysSurface) {
 				// i.e. if player is on top of car, cop will still use colt45.
@@ -424,12 +492,21 @@ CCopPed::CopAI(void)
 					--wanted->m_CopsBeatingSuspect;
 					m_bBeatingSuspect = false;
 				}
+#ifdef IMPROVED_TECH_PART // wanted system
+				if (m_fDistanceToTarget * FindPlayerSpeed().Magnitude() > 40.0f && !FindPlayerPed()->m_pWanted->IsPlayerHides())
+#else
 				if (m_fDistanceToTarget * FindPlayerSpeed().Magnitude() > 4.0f)
+#endif
 					ClearPursuit();
 			}
 			return;
 		}
+#ifdef IMPROVED_TECH_PART // AI
+		if (m_nCopType == COP_STREET)
+			SetCurrentWeapon(WEAPONTYPE_COLT45);
+#else
 		SetCurrentWeapon(WEAPONTYPE_COLT45);
+#endif
 		CWeaponInfo *weaponInfo = CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType);
 		float weaponRange = weaponInfo->m_fRange;
 		SetLookFlag(playerOrHisVeh, true);
@@ -504,7 +581,11 @@ CCopPed::CopAI(void)
 				if (m_bIsInPursuit)
 					ClearPursuit();
 
+#ifdef WANTED_PATHS
+				if (IsPedInControl() && !m_bLookingForPlayer) {
+#else
 				if (IsPedInControl()) {
+#endif
 					// Entering the vehicle
 					if (m_pMyVehicle && !bInVehicle) {
 						if (m_pMyVehicle->IsLawEnforcementVehicle()) {
@@ -652,11 +733,21 @@ CCopPed::ProcessControl(void)
 					if (!player->bInVehicle) {
 						CVector distToPlayer = player->GetPosition() - GetPosition();
 						if (distToPlayer.MagnitudeSqr() < sq(20.0f)) {
+#ifdef IMPROVED_TECH_PART // wanted system
+							if (!player->m_pWanted->IsPlayerHides()) {
+								player->Say(SOUND_PED_PLAYER_FARFROMCOPS);
+								if (player->m_nPedState != PED_ATTACK && player->m_nPedState != PED_AIM_GUN) {
+									player->SetLookFlag(this, false);
+									player->SetLookTimer(1000);
+								}
+							}
+#else
 							player->Say(SOUND_PED_PLAYER_FARFROMCOPS);
 							if (player->m_nPedState != PED_ATTACK && player->m_nPedState != PED_AIM_GUN) {
 								player->SetLookFlag(this, false);
 								player->SetLookTimer(1000);
 							}
+#endif
 						}
 					}
 				} else if ((CGeneral::GetRandomNumber() % 16) == 1) {
@@ -666,7 +757,11 @@ CCopPed::ProcessControl(void)
 		}
 	}
 
+#ifdef IMPROVED_TECH_PART // wanted system
+	if (IsPedInControl() || FindPlayerPed()->m_pWanted->IsPlayerLost()) {
+#else
 	if (IsPedInControl()) {
+#endif
 		CopAI();
 		/* switch (m_nCopType)
 		{
@@ -684,6 +779,9 @@ CCopPed::ProcessControl(void)
 				break;
 		} */
 	} else if (InVehicle()) {
+#ifdef IMPROVED_TECH_PART // wanted system
+		FindPlayerPed()->m_pWanted->WorkOutPolicePresence(FindPlayerCoors(), 90.0f);
+#endif
 		if (m_pMyVehicle->pDriver == this && m_pMyVehicle->AutoPilot.m_nCarMission == MISSION_NONE &&
 			CanPedDriveOff() && m_pMyVehicle->VehicleCreatedBy != MISSION_VEHICLE) {
 
@@ -729,7 +827,35 @@ CCopPed::ProcessControl(void)
 			if (!m_pSeekTarget) {
 				RestorePreviousState();
 			} else {
+#ifdef IMPROVED_TECH_PART // wanted system
+				if (m_pSeekTarget == FindPlayerPed()) {
+					CPlayerPed* playerPed = FindPlayerPed();
+					if (!playerPed->m_pWanted->IsPlayerHides() && !playerPed->m_pWanted->IsPlayerLost() && !m_bMovesToLastPlayerPosition) {
+						bool isWaterAroundCop = CheckIfPositionIsUnderWater(GetPosition() + GetForward() * 3.5f, false) ||
+							CheckIfPositionIsUnderWater(GetPosition() + GetRight(), false) ||
+							CheckIfPositionIsUnderWater(GetPosition() - GetRight(), false);
+
+						if ((playerPed->bIsSwimming && isWaterAroundCop) ||
+							(!playerPed->bIsSwimming && CheckIfPositionIsUnderWater(m_pSeekTarget->GetPosition(), true)))
+
+							m_vecSeekPos = GetPosition();
+						else
+							m_vecSeekPos = m_pSeekTarget->GetPosition();
+#ifdef DEBUG
+						CDebug::AddLine(GetPosition() + CVector(0.0f, 0.0f, 0.75f), m_vecSeekPos, 0xFFFFFFFF, 0xFFFFFFFF);
+#endif
+					} else {
+						ProcessSearchPlayer(playerPed);
+#ifdef DEBUG
+						CDebug::AddLine(GetPosition() + CVector(0.0f, 0.0f, 0.75f), m_vecSeekPos, 0xff0000, 0xff0000);
+#endif
+					}
+				} else {
+					m_vecSeekPos = m_pSeekTarget->GetPosition();
+				}
+#else
 				m_vecSeekPos = m_pSeekTarget->GetPosition();
+#endif
 				if (Seek()) {
 					if (m_objective == OBJECTIVE_KILL_CHAR_ON_FOOT && m_fDistanceToTarget < 2.5f && player) {
 						if (player->m_nPedState == PED_ARRESTED || player->m_nPedState == PED_ENTER_CAR ||
@@ -849,6 +975,10 @@ CCopPed::ProcessStingerCop(void)
 		if (m_pStinger->bIsDeployed) {
 			m_pStinger->Process();
 		} else {
+#ifdef IMPROVED_TECH_PART // wanted system
+			if (FindPlayerPed()->m_pWanted->IsPlayerHides())
+				return;
+#endif
 			CVector2D vehDist = GetPosition() - FindPlayerVehicle()->GetPosition();
 			CVector2D dirVehGoing = FindPlayerVehicle()->m_vecMoveSpeed;
 			if (vehDist.MagnitudeSqr() < sq(30.0f)) {
@@ -872,3 +1002,133 @@ CCopPed::ProcessStingerCop(void)
 		ClearPursuit();
 	}
 }
+
+#ifdef IMPROVED_TECH_PART // wanted system
+void CCopPed::ProcessSearchPlayer(CPlayerPed* playerPed)
+{
+	if (playerPed->m_pWanted->IsPlayerHides() && !m_bLookingForPlayer) {
+		if (CheckIfPositionIsUnderWater(m_vecLastPosPlayerBeforeHiding, true)) {
+			m_bLookingForPlayer = true;
+			m_bMovesToLastPlayerPosition = false;
+			playerPed->m_pWanted->m_bSearchPlayerRandomly = true;
+
+			FindPotentialPlayerPos();
+		} else {
+			m_vecSeekPos = m_vecLastPosPlayerBeforeHiding;
+			m_bLookingForPlayer = false;
+			m_bMovesToLastPlayerPosition = true;
+		}
+	}
+
+	if (m_bMovesToLastPlayerPosition && !m_bLookingForPlayer && Distance2D(GetPosition(), m_vecLastPosPlayerBeforeHiding) < 2.0f) {
+		if (playerPed->m_pWanted->IsPlayerHides()) {
+			m_bLookingForPlayer = true;
+			FindPotentialPlayerPos();
+		} else {
+			m_bLookingForPlayer = false;
+		}
+		m_bMovesToLastPlayerPosition = false;
+	}
+
+	if (playerPed->m_pWanted->IsPlayerHides() && m_bLookingForPlayer) {
+		m_vecSeekPos = m_vecPotentialPlayerSearchCoordinates;
+		
+		if (Distance2D(GetPosition(), m_vecPotentialPlayerSearchCoordinates) < 3.0f) {
+			FindPotentialPlayerPos();
+		}
+	}
+}
+
+void CCopPed::FindPotentialPlayerPos(void)
+{
+	CVector randomVector = CVector(CGeneral::GetRandomNumberInRange(-10.0f, 10.0f), CGeneral::GetRandomNumberInRange(-10.0f, 10.0f), 0.0f);
+	CVector randomDirection = GetPosition() - (GetPosition() + randomVector);
+	randomDirection.Normalise();
+	float randomMultiple = CGeneral::GetRandomNumberInRange(10.0f, 40.0f);
+
+	CEntity* hitEntity;
+	CColPoint hitPoint;
+
+	if (FindPlayerPed()->m_pWanted->m_bSearchPlayerRandomly) {
+		// Find random position for player search
+		if (CWorld::ProcessLineOfSight(GetPosition(), GetPosition() + randomDirection * randomMultiple, hitPoint, hitEntity, true, false, false, true, false, true))
+			m_vecPotentialPlayerSearchCoordinates = hitPoint.point;
+		else
+			m_vecPotentialPlayerSearchCoordinates = GetPosition() + randomDirection * randomMultiple;
+
+		m_vecPotentialPlayerSearchCoordinates.z = GetPosition().z;
+	} else {
+		// More accurate player search
+		for (int i = 1; i < 150; i++) {
+			if (!CWorld::ProcessLineOfSight(FindPlayerCoors(), FindPlayerCoors() + randomDirection * randomMultiple, hitPoint, hitEntity, true, false, false, true, false, true)) {
+				CVector rayDirection = FindPlayerCoors() + randomDirection * randomMultiple;
+				rayDirection.z = GetPosition().z;
+				if (CWorld::ProcessLineOfSight(GetPosition(), rayDirection, hitPoint, hitEntity, true, false, false, true, false, true)) {
+					if (Distance2D(GetPosition(), hitPoint.point) < 1.5f) {
+						CVector wallDirection = CrossProduct(hitPoint.normal, CVector(0.0f, 0.0f, 1.0f));
+						if (CWorld::ProcessLineOfSight(GetPosition(), GetPosition() + wallDirection * randomMultiple, hitPoint, hitEntity, true, true, false, true, false, true))
+							m_vecPotentialPlayerSearchCoordinates = hitPoint.point;
+						else
+							m_vecPotentialPlayerSearchCoordinates = rayDirection;
+					} else {
+						m_vecPotentialPlayerSearchCoordinates = hitPoint.point;
+					}
+				} else {
+					m_vecPotentialPlayerSearchCoordinates = rayDirection;
+				}
+
+				return;
+			} else {
+				randomVector = CVector(CGeneral::GetRandomNumberInRange(-10.0f, 10.0f), CGeneral::GetRandomNumberInRange(-10.0f, 10.0f), 0.0f);
+				randomDirection = GetPosition() - (GetPosition() + randomVector);
+				randomDirection.Normalise();
+				randomMultiple = CGeneral::GetRandomNumberInRange(10.0f, 40.0f);
+			}
+		}
+
+		// If raycasts can't find approximate position then use less accurate player search
+		if (CWorld::ProcessLineOfSight(FindPlayerCoors(), FindPlayerCoors() + randomDirection * randomMultiple, hitPoint, hitEntity, true, false, false, true, false, true)) {
+			CWorld::ProcessLineOfSight(GetPosition(), hitPoint.point, hitPoint, hitEntity, true, false, false, true, false, true);
+			m_vecPotentialPlayerSearchCoordinates = hitPoint.point;
+		} else {
+			// ...else we search randomly
+			if (CWorld::ProcessLineOfSight(GetPosition(), FindPlayerCoors() + randomDirection * randomMultiple, hitPoint, hitEntity, true, false, false, true, false, true))
+				m_vecPotentialPlayerSearchCoordinates = hitPoint.point;
+			else
+				m_vecPotentialPlayerSearchCoordinates = FindPlayerCoors() + randomDirection * randomMultiple;
+		}
+	}
+
+	if (CheckIfPositionIsUnderWater(m_vecPotentialPlayerSearchCoordinates, true))
+		m_vecPotentialPlayerSearchCoordinates = GetPosition();
+}
+
+bool CCopPed::CheckIfPositionIsUnderWater(CVector checkPos, bool bCheckMiddlePos)
+{
+	if (bCheckMiddlePos) {
+		CVector middlePos = (checkPos - GetPosition()) * 0.5f;
+		middlePos = GetPosition() + middlePos;
+
+		float waterLevel1;
+		bool isWaterUnderMiddlePos = CWaterLevel::GetWaterLevel(middlePos, &waterLevel1, false) &&
+			CWorld::GetIsLineOfSightClear(middlePos, middlePos - CVector(0.0f, 0.0f, waterLevel1), true, false, false, false, false, false);
+
+		float waterLevel2;
+		bool isWaterUnderSearchPos = CWaterLevel::GetWaterLevel(checkPos, &waterLevel2, false) &&
+			CWorld::GetIsLineOfSightClear(checkPos, checkPos - CVector(0.0f, 0.0f, waterLevel2), true, false, false, false, false, false);
+
+		if (isWaterUnderMiddlePos || isWaterUnderSearchPos) {
+			return true;
+		}
+	} else {
+		float waterLevel;
+		bool isWaterUnderSearchPos = CWaterLevel::GetWaterLevel(checkPos, &waterLevel, false) &&
+			CWorld::GetIsLineOfSightClear(checkPos, checkPos - CVector(0.0f, 0.0f, waterLevel), true, false, false, false, false, false);
+
+		if (isWaterUnderSearchPos)
+			return true;
+	}
+
+	return false;
+}
+#endif

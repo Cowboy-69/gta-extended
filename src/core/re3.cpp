@@ -51,6 +51,10 @@
 
 #include "crossplatform.h"
 
+/*#ifdef CLIMBING
+#include "Ped.h"
+#endif*/
+
 #ifndef _WIN32
 #include "assert.h"
 #include <stdarg.h>
@@ -497,7 +501,22 @@ bool LoadINISettings()
 	ReadIniIfExists("Controller", "HorizantalMouseSens", &TheCamera.m_fMouseAccelHorzntl);
 	ReadIniIfExists("Controller", "InvertMouseVertically", &MousePointerStateHelper.bInvertVertically);
 	ReadIniIfExists("Controller", "DisableMouseSteering", &CVehicle::m_bDisableMouseSteering);
+#ifdef IMPROVED_MENU_AND_INPUT
+	ReadIniIfExists("Controller", "InvertVertically", &FrontEndMenuManager.m_PrefsInvertVertically);
+	ReadIniIfExists("Controller", "Autoaim", &FrontEndMenuManager.m_PrefsAutoaim);
+	ReadIniIfExists("Controller", "Deadzone", &FrontEndMenuManager.m_PrefsDeadzone);
+	ReadIniIfExists("Controller", "VibrationForce", &FrontEndMenuManager.m_PrefsVibrationForce);
+	ReadIniIfExists("Controller", "PadLookSensX", &FrontEndMenuManager.m_PrefsPadLookSensX);
+	ReadIniIfExists("Controller", "PadAimSensX", &FrontEndMenuManager.m_PrefsPadAimSensX);
+	ReadIniIfExists("Controller", "PadLookSensY", &FrontEndMenuManager.m_PrefsPadLookSensY);
+	ReadIniIfExists("Controller", "PadAimSensY", &FrontEndMenuManager.m_PrefsPadAimSensY);
+	ReadIniIfExists("Controller", "MouseLookSensX", &FrontEndMenuManager.m_PrefsMouseLookSensX);
+	ReadIniIfExists("Controller", "MouseAimSensX", &FrontEndMenuManager.m_PrefsMouseAimSensX);
+	ReadIniIfExists("Controller", "MouseLookSensY", &FrontEndMenuManager.m_PrefsMouseLookSensY);
+	ReadIniIfExists("Controller", "MouseAimSensY", &FrontEndMenuManager.m_PrefsMouseAimSensY);
+#else
 	ReadIniIfExists("Controller", "Vibration", &FrontEndMenuManager.m_PrefsUseVibration);
+#endif
 	ReadIniIfExists("Audio", "SfxVolume", &FrontEndMenuManager.m_PrefsSfxVolume);
 	ReadIniIfExists("Audio", "MusicVolume", &FrontEndMenuManager.m_PrefsMusicVolume);
 	ReadIniIfExists("Audio", "MP3BoostVolume", &FrontEndMenuManager.m_PrefsMP3BoostVolume);
@@ -517,7 +536,9 @@ bool LoadINISettings()
 	ReadIniIfExists("Graphics", "Trails", &CMBlur::BlurOn);
 #endif
 	ReadIniIfExists("General", "SkinFile", FrontEndMenuManager.m_PrefsSkinFile, 256);
+#ifndef IMPROVED_MENU_AND_INPUT
 	ReadIniIfExists("Controller", "Method", &FrontEndMenuManager.m_ControlMethod);
+#endif
 	ReadIniIfExists("General", "Language", &FrontEndMenuManager.m_PrefsLanguage);
 	ReadIniIfExists("Display", "ShowHud", &FrontEndMenuManager.m_PrefsShowHud);
 	ReadIniIfExists("Display", "RadarMode", &FrontEndMenuManager.m_PrefsRadarMode);
@@ -553,6 +574,16 @@ bool LoadINISettings()
 #ifdef NO_MOVIES
 	ReadIniIfExists("General", "NoMovies", &gbNoMovies);
 #endif
+/*#ifdef CLIMBING
+	ReadIniIfExists("Climbing", "ClimbingInInteriors", &CPed::bClimbingInInteriors);
+	ReadIniIfExists("Climbing", "ClimbingOnVehicles", &CPed::bClimbingOnVehicles);
+	ReadIniIfExists("Climbing", "ClimbingPeds", &CPed::bClimbingPeds);
+	ReadIniIfExists("Climbing", "MaxPossibleClimbingHeight", &CPed::maxPossibleClimbingHeight);
+	ReadIniIfExists("Climbing", "MaxPossibleCheckHeightForPeds", &CPed::maxPossibleCheckHeightForPeds);
+	ReadIniIfExists("Climbing", "MaxClimbingWithRaisedHandsHeight", &CPed::maxHighClimbingHeight);
+	ReadIniIfExists("Climbing", "ClimbingWithRaisedHandsOffsetSpeed", &CPed::highClimbingOffsetSpeed);
+	ReadIniIfExists("Climbing", "PlayerVerticalVelocityAtWhichStartsToFall", &CPed::playerVerticalVelocityAtWhichStartsToFall);
+#endif*/
 
 #ifdef CUSTOM_FRONTEND_OPTIONS
 	bool migrate = cfg.get("FrontendOptions").size() != 0;
@@ -606,7 +637,22 @@ void SaveINISettings()
 	StoreIni("Controller", "HorizantalMouseSens", TheCamera.m_fMouseAccelHorzntl);
 	StoreIni("Controller", "InvertMouseVertically", MousePointerStateHelper.bInvertVertically);
 	StoreIni("Controller", "DisableMouseSteering", CVehicle::m_bDisableMouseSteering);
+#ifdef IMPROVED_MENU_AND_INPUT
+	StoreIni("Controller", "InvertVertically", FrontEndMenuManager.m_PrefsInvertVertically);
+	StoreIni("Controller", "Autoaim", FrontEndMenuManager.m_PrefsAutoaim);
+	StoreIni("Controller", "Deadzone", FrontEndMenuManager.m_PrefsDeadzone);
+	StoreIni("Controller", "VibrationForce", FrontEndMenuManager.m_PrefsVibrationForce);
+	StoreIni("Controller", "PadLookSensX", FrontEndMenuManager.m_PrefsPadLookSensX);
+	StoreIni("Controller", "PadAimSensX", FrontEndMenuManager.m_PrefsPadAimSensX);
+	StoreIni("Controller", "PadLookSensY", FrontEndMenuManager.m_PrefsPadLookSensY);
+	StoreIni("Controller", "PadAimSensY", FrontEndMenuManager.m_PrefsPadAimSensY);
+	StoreIni("Controller", "MouseLookSensX", FrontEndMenuManager.m_PrefsMouseLookSensX);
+	StoreIni("Controller", "MouseAimSensX", FrontEndMenuManager.m_PrefsMouseAimSensX);
+	StoreIni("Controller", "MouseLookSensY", FrontEndMenuManager.m_PrefsMouseLookSensY);
+	StoreIni("Controller", "MouseAimSensY", FrontEndMenuManager.m_PrefsMouseAimSensY);
+#else
 	StoreIni("Controller", "Vibration", FrontEndMenuManager.m_PrefsUseVibration);
+#endif
 	StoreIni("Audio", "SfxVolume", FrontEndMenuManager.m_PrefsSfxVolume);
 	StoreIni("Audio", "MusicVolume", FrontEndMenuManager.m_PrefsMusicVolume);
 	StoreIni("Audio", "MP3BoostVolume", FrontEndMenuManager.m_PrefsMP3BoostVolume);
@@ -626,7 +672,9 @@ void SaveINISettings()
 #endif
 	StoreIni("Graphics", "FrameLimiter", FrontEndMenuManager.m_PrefsFrameLimiter);
 	StoreIni("General", "SkinFile", FrontEndMenuManager.m_PrefsSkinFile, 256);
+#ifndef IMPROVED_MENU_AND_INPUT
 	StoreIni("Controller", "Method", FrontEndMenuManager.m_ControlMethod);
+#endif
 	StoreIni("General", "Language", FrontEndMenuManager.m_PrefsLanguage);
 	StoreIni("Display", "ShowHud", FrontEndMenuManager.m_PrefsShowHud);
 	StoreIni("Display", "RadarMode", FrontEndMenuManager.m_PrefsRadarMode);
@@ -662,6 +710,17 @@ void SaveINISettings()
 #ifdef NO_MOVIES
 	StoreIni("General", "NoMovies", gbNoMovies);
 #endif
+/*#ifdef CLIMBING
+	StoreIni("Climbing", "ClimbingInInteriors", CPed::bClimbingInInteriors);
+	StoreIni("Climbing", "ClimbingOnVehicles", CPed::bClimbingOnVehicles);
+	StoreIni("Climbing", "ClimbingPeds", CPed::bClimbingPeds);
+	StoreIni("Climbing", "MaxPossibleClimbingHeight", CPed::maxPossibleClimbingHeight);
+	StoreIni("Climbing", "MaxPossibleCheckHeightForPeds", CPed::maxPossibleCheckHeightForPeds);
+	StoreIni("Climbing", "MaxClimbingWithRaisedHandsHeight", CPed::maxHighClimbingHeight);
+	StoreIni("Climbing", "ClimbingWithRaisedHandsOffsetSpeed", CPed::highClimbingOffsetSpeed);
+	StoreIni("Climbing", "PlayerVerticalVelocityAtWhichStartsToFall", CPed::playerVerticalVelocityAtWhichStartsToFall);
+#endif*/
+
 #ifdef CUSTOM_FRONTEND_OPTIONS
 	for (int i = 0; i < MENUPAGES; i++) {
 		for (int j = 0; j < NUM_MENUROWS; j++) {
@@ -711,6 +770,11 @@ void ChittyChittyBangBangCheat();
 void StrongGripCheat();
 void SpecialCarCheats();
 void PickUpChicksCheat();
+#ifdef NEW_CHEATS
+void InvincibleCheat();
+void AirWaysCheat();
+void TeargasCheat();
+#endif
 
 DebugMenuEntry *carCol1;
 DebugMenuEntry *carCol2;
@@ -723,12 +787,14 @@ SpawnCar(int id)
 	CStreaming::LoadAllRequestedModels(false);
 	if(CStreaming::HasModelLoaded(id)){
 		playerpos = FindPlayerCoors();
+#ifndef IMPROVED_TECH_PART // spawn vehicle via cheat codes
 		int node;
 		if(!CModelInfo::IsBoatModel(id)){
 			node = ThePaths.FindNodeClosestToCoors(playerpos, 0, 100.0f, false, false);
 			if(node < 0)
 				return;
 		}
+#endif
 
 		CVehicle *v;
 		if(CModelInfo::IsBoatModel(id))
@@ -744,6 +810,11 @@ SpawnCar(int id)
 		if(carCol2)
 			DebugMenuEntrySetAddress(carCol2, &v->m_currentColour2);
 
+#ifdef IMPROVED_TECH_PART // spawn vehicle via cheat codes
+		v->SetPosition(FindPlayerPed()->GetPosition() + CVector(0.0f, 0.0f, 2.5f) + FindPlayerPed()->GetForward() * 5.0f);
+		CVector leftVector = -FindPlayerPed()->GetRight();
+		v->SetOrientation(0.0f, 0.0f, leftVector.Heading());
+#else
 		if(CModelInfo::IsBoatModel(id))
 			v->SetPosition(TheCamera.GetPosition() + TheCamera.GetForward()*15.0f);
 		else
@@ -751,6 +822,7 @@ SpawnCar(int id)
 
 		v->GetMatrix().GetPosition().z += 4.0f;
 		v->SetOrientation(0.0f, 0.0f, 3.49f);
+#endif
 		v->SetStatus(STATUS_ABANDONED);
 		v->m_nDoorLock = CARLOCK_UNLOCKED;
 		CWorld::Add(v);
@@ -972,6 +1044,11 @@ DebugMenuPopulate(void)
 		DebugMenuAddCmd("Cheats", "Strong grip", StrongGripCheat);
 		DebugMenuAddCmd("Cheats", "Special car", SpecialCarCheats);
 		DebugMenuAddCmd("Cheats", "Pickup chicks", PickUpChicksCheat);
+#ifdef NEW_CHEATS
+		DebugMenuAddCmd("Cheats", "Invincible", InvincibleCheat);
+		DebugMenuAddCmd("Cheats", "AirWays", AirWaysCheat);
+		DebugMenuAddCmd("Cheats", "Give teargas", TeargasCheat);
+#endif
 
 		static int spawnCarId = MI_LANDSTAL;
 		e = DebugMenuAddVar("Spawn", "Spawn Car ID", &spawnCarId, nil, 1, MI_LANDSTAL, MI_VICECHEE, carnames);
@@ -1163,9 +1240,11 @@ extern bool gbRenderWorld2;
 #endif
 		extern bool PrintDebugCode;
 		extern int16 DebugCamMode;
+#ifndef IMPROVED_MENU_AND_INPUT
 		DebugMenuAddVarBool8("Cam", "Use mouse Cam", &CCamera::m_bUseMouse3rdPerson, nil);
 #ifdef FREE_CAM
 		DebugMenuAddVarBool8("Cam", "Free Cam", &CCamera::bFreeCam, nil);
+#endif
 #endif
 		DebugMenuAddVarBool8("Cam", "Print Debug Code", &PrintDebugCode, nil);
 		DebugMenuAddVar("Cam", "Cam Mode", &DebugCamMode, nil, 1, 0, CCam::MODE_EDITOR, nil);
@@ -1299,6 +1378,20 @@ void re3_usererror(const char *format, ...)
 #endif
 }
 #endif
+#endif
+
+#ifdef UTILS
+float InterpFloat(float currentValue, float newValue, float interpSpeed)
+{
+	float distance = newValue - currentValue;
+
+	float deltaSeconds = CTimer::GetTimeStepInSeconds();
+	float deltaSpeed = deltaSeconds * interpSpeed;
+
+	//if (distance > 0.1f) {
+	return currentValue + distance * deltaSpeed;
+	//}
+}
 #endif
 
 #ifdef VALIDATE_SAVE_SIZE

@@ -69,6 +69,9 @@ CRoadBlocks::GenerateRoadBlockCopsForCar(CVehicle* pVehicle, int32 roadBlockType
 		eCopType copType = COP_STREET;
 		switch (pVehicle->GetModelIndex())
 		{
+#ifdef IMPROVED_TECH_PART // wanted system
+		case MI_FBICAR:
+#endif
 		case MI_FBIRANCH:
 			modelInfoId = MI_FBI;
 			copType = COP_FBI;
@@ -87,6 +90,14 @@ CRoadBlocks::GenerateRoadBlockCopsForCar(CVehicle* pVehicle, int32 roadBlockType
 		CCopPed* pCopPed = new CCopPed(copType);
 		if (copType == COP_STREET)
 			pCopPed->SetCurrentWeapon(WEAPONTYPE_COLT45);
+#ifdef IMPROVED_TECH_PART // AI
+		else if (copType == COP_SWAT)
+			pCopPed->SetCurrentWeapon(WEAPONTYPE_UZI);
+		else if (copType == COP_FBI)
+			pCopPed->SetCurrentWeapon(WEAPONTYPE_MP5);
+		else if (copType == COP_ARMY)
+			pCopPed->SetCurrentWeapon(WEAPONTYPE_M4);
+#endif
 		CPedPlacement::FindZCoorForPed(&posForZ);
 		pCopPed->SetPosition(posForZ);
 		pCopPed->SetOrientation(0.0f, 0.0f, -HALFPI);
@@ -113,6 +124,10 @@ CRoadBlocks::GenerateRoadBlockCopsForCar(CVehicle* pVehicle, int32 roadBlockType
 void 
 CRoadBlocks::GenerateRoadBlocks(void) 
 { 
+#ifdef IMPROVED_TECH_PART // wanted system
+	if (FindPlayerPed()->m_pWanted->IsPlayerHides())
+		return;
+#endif
 	CMatrix tmp1, tmp2;
 	static int16 unk;
 #ifdef SQUEEZE_PERFORMANCE

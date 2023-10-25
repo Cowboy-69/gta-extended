@@ -218,7 +218,11 @@ bool CCarGenerator::CheckIfWithinRangeOfAnyPlayers()
 {
 	CVector2D direction = FindPlayerCentreOfWorld(CWorld::PlayerInFocus) - m_vecPos;
 	float distance = direction.Magnitude();
+#ifdef IMPROVED_TECH_PART // increased spawn range
+	float farclip = 250.0f * TheCamera.GenerationDistMultiplier;
+#else
 	float farclip = 110.0f * TheCamera.GenerationDistMultiplier;
+#endif
 	float nearclip = farclip - 20.0f;
 	bool canBeRemoved = (m_nModelIndex > 0 && CModelInfo::IsBoatModel(m_nModelIndex) && 165.0f * TheCamera.GenerationDistMultiplier > distance &&
 		TheCamera.IsSphereVisible(m_vecPos, 0.0f) && !COcclusion::IsPositionOccluded(m_vecPos, 0.0f)); 

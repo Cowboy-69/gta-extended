@@ -203,7 +203,11 @@ void CWeather::Update(void)
 	}
 	if (WhenToPlayLightningSound && CTimer::GetTimeInMilliseconds() > WhenToPlayLightningSound) {
 		DMAudio.PlayOneShot(SoundHandle, SOUND_LIGHTNING, LightningDuration);
+#ifdef IMPROVED_MENU_AND_INPUT
+		CPad::GetPad(0)->StartShake(40 * LightningDuration + 100, 2 * LightningDuration + 80, 2 * LightningDuration + 80);
+#else
 		CPad::GetPad(0)->StartShake(40 * LightningDuration + 100, 2 * LightningDuration + 80);
+#endif
 		WhenToPlayLightningSound = 0;
 	}
 

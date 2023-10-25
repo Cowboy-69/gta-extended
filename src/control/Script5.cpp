@@ -18,6 +18,9 @@
 #include "World.h"
 #include "main.h"
 #include "SaveBuf.h"
+#ifdef IMPROVED_MENU_AND_INPUT
+#include "Pad.h"
+#endif
 
 void CRunningScript::UpdateCompareFlag(bool flag)
 {
@@ -1400,6 +1403,63 @@ void CRunningScript::DoDeatharrestCheck()
 int16 CRunningScript::GetPadState(uint16 pad, uint16 button)
 {
 	CPad* pPad = CPad::GetPad(pad);
+#ifdef IMPROVED_MENU_AND_INPUT
+	switch (pPad->IsAffectedByController ? pPad->Mode : 0)
+	{
+		case 1:
+		case 3:
+		{
+			if (FindPlayerPed()->InVehicle())
+				switch (button) {
+					case 0: return pPad->NewState.LeftStickX;
+					case 1: return pPad->NewState.LeftStickY;
+					case 2: return pPad->NewState.RightStickX;
+					case 3: return pPad->NewState.RightStickY;
+					case 4: return pPad->NewState.LeftShoulder2;
+					case 5: return pPad->NewState.LeftShoulder1;
+					case 6: return pPad->NewState.RightShoulder2;
+					case 7: return pPad->NewState.RightShoulder1;
+					case 8: return pPad->NewState.RightShock;
+					case 9: return pPad->NewState.DPadDown;
+					case 10: return pPad->NewState.DPadLeft;
+					case 11: return pPad->NewState.DPadRight;
+					case 12: return pPad->NewState.Start;
+					case 13: return pPad->NewState.Select;
+					case 14: return pPad->NewState.Square;
+					case 15: return pPad->NewState.Triangle;
+					case 16: return pPad->NewState.Cross;
+					case 17: return pPad->NewState.Circle;
+					case 18: return pPad->NewState.LeftShock;
+					case 19: return pPad->NewState.DPadUp;
+					default: break;
+				}
+			else
+				switch (button) {
+					case 0: return pPad->NewState.LeftStickX;
+					case 1: return pPad->NewState.LeftStickY;
+					case 2: return pPad->NewState.RightStickX;
+					case 3: return pPad->NewState.RightStickY;
+					case 4: return pPad->NewState.LeftShoulder1;
+					case 5: return pPad->NewState.LeftShoulder2;
+					case 6: return pPad->NewState.RightShoulder1;
+					case 7: return pPad->NewState.RightShoulder2;
+					case 8: return pPad->NewState.DPadUp;
+					case 9: return pPad->NewState.DPadDown;
+					case 10: return pPad->NewState.DPadLeft;
+					case 11: return pPad->NewState.DPadRight;
+					case 12: return pPad->NewState.Start;
+					case 13: return pPad->NewState.Select;
+					case 14: return pPad->NewState.Square;
+					case 15: return pPad->NewState.Triangle;
+					case 16: return pPad->NewState.Cross;
+					case 17: return pPad->NewState.Circle;
+					case 18: return pPad->NewState.LeftShock;
+					case 19: return pPad->NewState.RightShock;
+					default: break;
+				}
+		}
+	}
+#endif
 	switch (button) {
 	case 0: return pPad->NewState.LeftStickX;
 	case 1: return pPad->NewState.LeftStickY;

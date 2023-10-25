@@ -25,6 +25,10 @@
 #include "Bike.h"
 #include "Glass.h"
 #include "SpecialFX.h"
+#ifdef IMPROVED_TECH_PART // wanted system
+#include "Wanted.h"
+#include "CopPed.h"
+#endif
 
 uint16 nPlayerInComboMove;
 RpClump* flyingClumpTemp;
@@ -262,6 +266,11 @@ CPed::SetAttack(CEntity *victim)
 	if (victim && victim->IsPed())
 		victimPed = (CPed*)victim;
 
+#ifdef CROUCH
+	if (bIsDucking && (GetWeapon()->GetInfo()->m_nWeaponSlot == WEAPONSLOT_PROJECTILE || GetWeapon()->m_eWeaponType == WEAPONTYPE_DETONATOR))
+		ClearDuck();
+#endif
+
 	if (m_attackTimer > CTimer::GetTimeInMilliseconds() || m_nWaitState == WAITSTATE_SURPRISE || (bIsDucking && !bCrouchWhenShooting))
 		return;
 
@@ -350,7 +359,11 @@ CPed::SetAttack(CEntity *victim)
 #else
 		} else {
 #endif
+#if defined IMPROVED_MENU_AND_INPUT && defined AIMING
+			if (this == FindPlayerPed()) {
+#else
 			if (this == FindPlayerPed() && TheCamera.Cams[0].Using3rdPersonMouseCam()) {
+#endif
 				SetAimFlag(m_fRotationCur);
 				((CPlayerPed*)this)->m_fFPSMoveHeading = TheCamera.Find3rdPersonQuickAimPitch();
 			} else if (curWeapon->IsFlagSet(WEAPONFLAG_CANAIM_WITHARM)) {
@@ -371,7 +384,11 @@ CPed::SetAttack(CEntity *victim)
 		return;
 	}
 
+#ifdef CLIMBING
+	if (IsPlayer() || (!victimPed || (victimPed->IsPedInControl() || victimPed->bIsClimbing))) {
+#else
 	if (IsPlayer() || (!victimPed || victimPed->IsPedInControl())) {
+#endif
 		if (IsPlayer())
 			CPad::GetPad(0)->ResetAverageWeapon();
 
@@ -517,7 +534,11 @@ CPed::FinishedAttackCB(CAnimBlendAssociation *attackAssoc, void *arg)
 			}
 			if (GetCrouchFireAnim(currentWeapon) && attackAssoc) {
 				if (attackAssoc->animId == GetCrouchFireAnim(currentWeapon) && !reloadAnimAssoc) {
+#ifdef CROUCH
+					newAnim = CAnimManager::BlendAnimation(ped->GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_IDLE, 4.0f);
+#else
 					newAnim = CAnimManager::BlendAnimation(ped->GetClump(), ASSOCGRP_STD, ANIM_STD_DUCK_WEAPON, 8.0f);
+#endif
 					newAnim->SetCurrentTime(newAnim->hierarchy->totalLength);
 					newAnim->flags &= ~ASSOC_RUNNING;
 				}
@@ -539,7 +560,11 @@ CPed::FinishedAttackCB(CAnimBlendAssociation *attackAssoc, void *arg)
 		}
 		if (GetCrouchFireAnim(currentWeapon) && attackAssoc) {
 			if (attackAssoc->animId == GetCrouchFireAnim(currentWeapon) && !reloadAnimAssoc) {
+#ifdef CROUCH
+				newAnim = CAnimManager::BlendAnimation(ped->GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_IDLE, 4.0f);
+#else
 				newAnim = CAnimManager::BlendAnimation(ped->GetClump(), ASSOCGRP_STD, ANIM_STD_DUCK_WEAPON, 8.0f);
+#endif
 				newAnim->SetCurrentTime(newAnim->hierarchy->totalLength);
 				newAnim->flags &= ~ASSOC_RUNNING;
 			}
@@ -598,7 +623,11 @@ CPed::FinishedReloadCB(CAnimBlendAssociation *reloadAssoc, void *arg)
 		}
 		if (weapon->IsFlagSet(WEAPONFLAG_RELOAD) && reloadAssoc) {
 			if (reloadAssoc->animId == GetCrouchReloadAnim(weapon) && !crouchFireAssoc) {
+#ifdef CROUCH
+				CAnimBlendAssociation* crouchAssoc = CAnimManager::BlendAnimation(ped->GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_IDLE, 4.0f);
+#else
 				CAnimBlendAssociation *crouchAssoc = CAnimManager::BlendAnimation(ped->GetClump(), ASSOCGRP_STD, ANIM_STD_DUCK_WEAPON, 8.0f);
+#endif
 				crouchAssoc->SetCurrentTime(crouchAssoc->hierarchy->totalLength);
 				crouchAssoc->flags &= ~ASSOC_RUNNING;
 			}
@@ -842,7 +871,7 @@ CPed::Attack(void)
 		} else if (weaponAnimTime <= delayBetweenAnimAndFire || weaponAnimTime - weaponAnimAssoc->timeStep > delayBetweenAnimAndFire || !weaponAnimAssoc->IsRunning()) {
 			if (weaponAnimAssoc->speed < 1.0f)
 				weaponAnimAssoc->speed = 1.0f;
-
+		
 		} else {
 			firePos = ourWeapon->m_vecFireOffset;
 
@@ -911,12 +940,20 @@ CPed::Attack(void)
 
 			DMAudio.PlayOneShot(m_audioEntityId, SOUND_WEAPON_CHAINSAW_MADECONTACT, (float)damagerType);
 			if (IsPlayer()) {
+#ifdef IMPROVED_MENU_AND_INPUT
+				CPad::GetPad(0)->StartShake(240, 180, 0);
+#else
 				CPad::GetPad(0)->StartShake(240, 180);
+#endif
 			}
 		} else {
 			DMAudio.PlayOneShot(m_audioEntityId, SOUND_WEAPON_CHAINSAW_ATTACK, 0.0f);
 			if (IsPlayer()) {
+#ifdef IMPROVED_MENU_AND_INPUT
+				CPad::GetPad(0)->StartShake(240, 90, 0);
+#else
 				CPad::GetPad(0)->StartShake(240, 90);
+#endif
 			}
 		}
 		attackShouldContinue = false;
@@ -1022,7 +1059,11 @@ CPed::Attack(void)
 				weaponAnimAssoc->SetCurrentTime(animLoopStart);
 				weaponAnimAssoc->SetRun();
 			}
+#ifdef AIMING
+		} else if (IsPlayer() && (m_pPointGunAt || FindPlayerPed()->bIsPlayerAiming) && bIsAimingGun && GetWeapon()->m_eWeaponState != WEAPONSTATE_RELOADING) {
+#else
 		} else if (IsPlayer() && m_pPointGunAt && bIsAimingGun && GetWeapon()->m_eWeaponState != WEAPONSTATE_RELOADING) {
+#endif
 			weaponAnimAssoc->SetCurrentTime(animLoopEnd);
 			weaponAnimAssoc->flags &= ~ASSOC_RUNNING;
 			SetPointGunAt(m_pPointGunAt);
@@ -1067,6 +1108,11 @@ CPed::StartFightAttack(uint8 buttonPressure)
 		m_fightButtonPressure = buttonPressure;
 		return;
 	}
+
+#ifdef CROUCH
+	if (IsPlayer() && bIsDucking)
+		ClearDuck();
+#endif
 
 	if (m_nPedState != PED_AIM_GUN)
 		SetStoredState();
@@ -2664,6 +2710,11 @@ CPed::InflictDamage(CEntity *damagedBy, eWeaponType method, float damage, ePedPi
 		++CWorld::Players[CWorld::PlayerInFocus].m_nHavocLevel;
 
 	if (player == this) {
+#ifdef NEW_CHEATS
+		if (player->bInvincibleCheat)
+			return false;
+#endif
+
 		if (!player->m_bCanBeDamaged)
 			return false;
 
@@ -2672,6 +2723,10 @@ CPed::InflictDamage(CEntity *damagedBy, eWeaponType method, float damage, ePedPi
 
 		if ((method == WEAPONTYPE_FLAMETHROWER || method == WEAPONTYPE_MOLOTOV) && CWorld::Players[CWorld::PlayerInFocus].m_bFireproof)
 			return false;
+
+#ifdef IMPROVED_MENU_AND_INPUT
+		CPad::GetPad(0)->StartShake(100, 55, 55);
+#endif
 
 		player->AnnoyPlayerPed(false);
 	}
@@ -3059,6 +3114,11 @@ CPed::InflictDamage(CEntity *damagedBy, eWeaponType method, float damage, ePedPi
 				break;
 		}
 	}
+
+#ifdef SWIMMING
+	if (bIsSwimming)
+		dieAnim = ANIM_STD_DROWN;
+#endif
 
 	if (m_fArmour != 0.0f && method != WEAPONTYPE_DROWNING) {
 		if (player == this)
@@ -3615,6 +3675,10 @@ CPed::CollideWithPed(CPed *collideWith)
 		if (IsPlayer()) {
 			SetLookFlag(collideWith, true);
 			SetLookTimer(800);
+#ifdef IMPROVED_TECH_PART // wanted system
+			if (collideWith->m_nPedType == PEDTYPE_COP)
+				FindPlayerPed()->m_pWanted->m_nLastTimeSeenPlayer = CTimer::GetTimeInMilliseconds();
+#endif
 		}
 	} else {
 		bool isRunning = m_nMoveState == PEDMOVE_RUN || m_nMoveState == PEDMOVE_SPRINT;
@@ -3660,7 +3724,12 @@ CPed::KillPedWithCar(CVehicle *car, float impulse)
 			} else {
 				shakeFreq = 250.0f;
 			}
+
+#ifdef IMPROVED_MENU_AND_INPUT
+			CPad::GetPad(0)->StartShake(40000 / shakeFreq, shakeFreq, shakeFreq);
+#else
 			CPad::GetPad(0)->StartShake(40000 / shakeFreq, shakeFreq);
+#endif
 		}
 		bIsStanding = false;
 		damageDir = GetLocalDirection(-m_vecMoveSpeed);

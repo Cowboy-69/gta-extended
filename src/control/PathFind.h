@@ -199,6 +199,19 @@ class CRoute
 	T m_node[8];
 };
 
+#ifdef WANTED_PATHS
+struct CWantedPathNode
+{
+	CVector pos = { 0.0f, 0.0f, 0.0f };
+
+	CVector GetPosition(void) { return CVector(pos); }
+};
+
+struct CWantedPaths
+{
+	CWantedPathNode wantedPathNode[NUM_WANTEDPATHNODES];
+};
+#endif
 
 class CPathFind
 {
@@ -209,6 +222,10 @@ public:
 	uint16 m_connections[NUM_PATHCONNECTIONS];	// and flags
 	uint8 m_distances[NUM_PATHCONNECTIONS];
 	int16 m_carPathConnections[NUM_PATHCONNECTIONS];
+
+#ifdef WANTED_PATHS
+	CWantedPaths m_wantedPaths[NUM_WANTEDPATHS];
+#endif
 
 	int32 m_numPathNodes;
 	int32 m_numCarPathNodes;
@@ -230,6 +247,10 @@ public:
 		bool disabled, bool betweenLevels, uint8 spawnRate);
 	void StoreDetachedNodeInfoCar(int32 node, int8 type, int32 next, float x, float y, float z, float width, int8 numLeft, int8 numRight,
 		bool disabled, bool betweenLevels, uint8 speedLimit, bool roadBlock, bool waterPath, uint8 spawnRate, bool unk);
+#ifdef WANTED_PATHS
+	void StoreWantedNode(int pathID, int pathNode, float x, float y, float z);
+	CWantedPaths FindClosestWantedPathsToCoors(CVector coors);
+#endif
 	void CalcNodeCoors(float x, float y, float z, int32 id, CVector *out);
 	bool LoadPathFindData(void);
 	void PreparePathData(void);

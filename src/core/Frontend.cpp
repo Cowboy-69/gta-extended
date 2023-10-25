@@ -536,7 +536,7 @@ CMenuManager::CMenuManager()
 	DMAudio.SetEffectsMasterVolume(m_PrefsSfxVolume);
 
 #ifdef NO_ISLAND_LOADING
-	m_PrefsIslandLoading = ISLAND_LOADING_LOW;
+	m_PrefsIslandLoading = ISLAND_LOADING_HIGH;
 #endif
 
 #ifdef GAMEPAD_MENU
@@ -549,6 +549,23 @@ CMenuManager::CMenuManager()
 
 #ifdef MISSION_REPLAY
 	m_bAttemptingMissionRetry = false;
+#endif
+
+#ifdef IMPROVED_MENU_AND_INPUT
+	m_PrefsAutoaim = false;
+	m_PrefsPadLookSensX = 1.0f / 800.0f;
+	m_PrefsPadAimSensX = 1.0f / 1600.0f;
+	m_PrefsPadLookSensY = 1.0f / 800.0f;
+	m_PrefsPadAimSensY = 1.0f / 1600.0f;
+	m_PrefsDeadzone = 15;
+	m_PrefsVibrationForce = 0.1f;
+
+	m_PrefsMouseLookSensX = 1.0f / 400.0f;
+	m_PrefsMouseAimSensX = 1.0f / 600.0f;
+	m_PrefsMouseLookSensY = 1.0f / 400.0f;
+	m_PrefsMouseAimSensY = 1.0f / 600.0f;
+
+	m_PrefsInvertVertically = false;
 #endif
 }
 
@@ -766,6 +783,80 @@ CMenuManager::CheckSliderMovement(int value)
 		TheCamera.m_fMouseAccelVertical = TheCamera.m_fMouseAccelHorzntl + 0.0005f;
 #endif
 		break;
+#ifdef IMPROVED_MENU_AND_INPUT
+	case MENUACTION_DEADZONE:
+		m_PrefsDeadzone += value * (80 / MENUSLIDER_LOGICAL_BARS);
+
+		m_PrefsDeadzone = Clamp(m_PrefsDeadzone, 0, 80);
+
+		break;
+	case MENUACTION_VIBRATIONFORCE:
+		m_PrefsVibrationForce += value * (1.0f / MENUSLIDER_LOGICAL_BARS);
+
+		m_PrefsVibrationForce = Clamp(m_PrefsVibrationForce, 0.0f, 1.0f);
+
+		CPad::GetPad(0)->StopShaking(0);
+		CPad::GetPad(0)->StartShake(300, 150, 150);
+		TimeToStopPadShaking = CTimer::GetTimeInMillisecondsPauseMode() + 300;
+
+		break;
+	case MENUACTION_PADLOOKSENSX:
+		m_PrefsPadLookSensX += value * 1.0f / 600.0f / MENUSLIDER_LOGICAL_BARS;
+		m_PrefsPadLookSensX = Clamp(m_PrefsPadLookSensX, 1.0f / 6400.0f, 1.0f / 600.0f);
+
+		TheCamera.m_fMouseAccelHorzntl = m_PrefsPadLookSensX;
+
+		break;
+	case MENUACTION_PADAIMSENSX:
+		m_PrefsPadAimSensX += value * 1.0f / 600.0f / MENUSLIDER_LOGICAL_BARS;
+		m_PrefsPadAimSensX = Clamp(m_PrefsPadAimSensX, 1.0f / 6400.0f, 1.0f / 600.0f);
+
+		TheCamera.m_fMouseAccelHorzntl = m_PrefsPadAimSensX;
+
+		break;
+	case MENUACTION_PADLOOKSENSY:
+		m_PrefsPadLookSensY += value * 1.0f / 600.0f / MENUSLIDER_LOGICAL_BARS;
+		m_PrefsPadLookSensY = Clamp(m_PrefsPadLookSensY, 1.0f / 6400.0f, 1.0f / 600.0f);
+
+		TheCamera.m_fMouseAccelVertical = m_PrefsPadLookSensY;
+
+		break;
+	case MENUACTION_PADAIMSENSY:
+		m_PrefsPadAimSensY += value * 1.0f / 600.0f / MENUSLIDER_LOGICAL_BARS;
+		m_PrefsPadAimSensY = Clamp(m_PrefsPadAimSensY, 1.0f / 6400.0f, 1.0f / 600.0f);
+
+		TheCamera.m_fMouseAccelVertical = m_PrefsPadAimSensY;
+
+		break;
+	case MENUACTION_MOUSELOOKSENSX:
+		m_PrefsMouseLookSensX += value * 1.0f / 200.0f / MENUSLIDER_LOGICAL_BARS;
+		m_PrefsMouseLookSensX = Clamp(m_PrefsMouseLookSensX, 1.0f / 3200.0f, 1.0f / 200.0f);
+
+		TheCamera.m_fMouseAccelHorzntl = m_PrefsMouseLookSensX;
+
+		break;
+	case MENUACTION_MOUSEAIMSENSX:
+		m_PrefsMouseAimSensX += value * 1.0f / 200.0f / MENUSLIDER_LOGICAL_BARS;
+		m_PrefsMouseAimSensX = Clamp(m_PrefsMouseAimSensX, 1.0f / 3200.0f, 1.0f / 200.0f);
+
+		TheCamera.m_fMouseAccelHorzntl = m_PrefsMouseAimSensX;
+
+		break;
+	case MENUACTION_MOUSELOOKSENSY:
+		m_PrefsMouseLookSensY += value * 1.0f / 200.0f / MENUSLIDER_LOGICAL_BARS;
+		m_PrefsMouseLookSensY = Clamp(m_PrefsMouseLookSensY, 1.0f / 3200.0f, 1.0f / 200.0f);
+
+		TheCamera.m_fMouseAccelVertical = m_PrefsMouseLookSensY;
+
+		break;
+	case MENUACTION_MOUSEAIMSENSY:
+		m_PrefsMouseAimSensY += value * 1.0f / 200.0f / MENUSLIDER_LOGICAL_BARS;
+		m_PrefsMouseAimSensY = Clamp(m_PrefsMouseAimSensY, 1.0f / 3200.0f, 1.0f / 200.0f);
+
+		TheCamera.m_fMouseAccelVertical = m_PrefsMouseAimSensY;
+
+		break;
+#endif
 #ifdef CUSTOM_FRONTEND_OPTIONS
 	case MENUACTION_CFO_SLIDER:
 	{
@@ -1133,6 +1224,20 @@ CMenuManager::DrawStandardMenus(bool activeScreen)
 
 				switch (aScreens[m_nCurrScreen].m_aEntries[i].m_Action) {
 #ifdef GAMEPAD_MENU
+#ifdef IMPROVED_MENU_AND_INPUT
+				case MENUACTION_AUTOAIM:
+					if (m_PrefsAutoaim)
+						rightText = TheText.Get("FEM_ON");
+					else
+						rightText = TheText.Get("FEM_OFF");
+					break;
+				case MENUACTION_INVERTVERTICALLY:
+					if (m_PrefsInvertVertically)
+						rightText = TheText.Get("FEM_ON");
+					else
+						rightText = TheText.Get("FEM_OFF");
+					break;
+#endif
 				case MENUACTION_CTRLVIBRATION:
 					if (m_PrefsUseVibration)
 						rightText = TheText.Get("FEM_ON");
@@ -1418,6 +1523,14 @@ CMenuManager::DrawStandardMenus(bool activeScreen)
 					int saveSlot = aScreens[m_nCurrScreen].m_aEntries[i].m_SaveSlot;
 					if (rightText || action == MENUACTION_DRAWDIST || action == MENUACTION_BRIGHTNESS || action == MENUACTION_MUSICVOLUME ||
 						action == MENUACTION_SFXVOLUME || action == MENUACTION_MP3VOLUMEBOOST || action == MENUACTION_MOUSESENS ||
+#ifdef IMPROVED_MENU_AND_INPUT
+						action == MENUACTION_DEADZONE ||
+						action == MENUACTION_VIBRATIONFORCE ||
+						action == MENUACTION_MOUSELOOKSENSX || action == MENUACTION_MOUSEAIMSENSX ||
+						action == MENUACTION_PADLOOKSENSX || action == MENUACTION_PADAIMSENSX ||
+						action == MENUACTION_MOUSELOOKSENSY || action == MENUACTION_MOUSEAIMSENSY ||
+						action == MENUACTION_PADLOOKSENSY || action == MENUACTION_PADAIMSENSY ||
+#endif
 						saveSlot >= SAVESLOT_1 && saveSlot <= SAVESLOT_8
 #ifdef CUSTOM_FRONTEND_OPTIONS
 						|| action == MENUACTION_CFO_SLIDER
@@ -1578,6 +1691,38 @@ CMenuManager::DrawStandardMenus(bool activeScreen)
 							if(m_nPrefsAudio3DProviderIndex != NO_AUDIO_PROVIDER && DMAudio.IsMP3RadioChannelAvailable())
 								ProcessSlider(m_PrefsMP3BoostVolume / 64.f, SLIDER_Y(128.0f), HOVEROPTION_INCREASE_MP3BOOST, HOVEROPTION_DECREASE_MP3BOOST, SCREEN_WIDTH, true);
 							break;
+#ifdef IMPROVED_MENU_AND_INPUT
+						case MENUACTION_DEADZONE:
+							ProcessSlider(m_PrefsDeadzone / 80.0f, SLIDER_Y(70.0f), HOVEROPTION_INCREASE_DEADZONE, HOVEROPTION_DECREASE_DEADZONE, SCREEN_WIDTH, false);
+							break;
+						case MENUACTION_VIBRATIONFORCE:
+							ProcessSlider(m_PrefsVibrationForce / 1.0f, SLIDER_Y(70.0f), HOVEROPTION_INCREASE_VIBRATIONFORCE, HOVEROPTION_DECREASE_VIBRATIONFORCE, SCREEN_WIDTH, false);
+							break;
+						case MENUACTION_PADLOOKSENSX:
+							ProcessSlider(m_PrefsPadLookSensX * 600.0f, SLIDER_Y(170.0f), HOVEROPTION_INCREASE_PADLOOKSENSX, HOVEROPTION_DECREASE_PADLOOKSENSX, SCREEN_WIDTH, false);
+							break;
+						case MENUACTION_PADAIMSENSX:
+							ProcessSlider(m_PrefsPadAimSensX * 600.0f, SLIDER_Y(170.0f), HOVEROPTION_INCREASE_PADAIMSENSX, HOVEROPTION_DECREASE_PADAIMSENSX, SCREEN_WIDTH, false);
+							break;
+						case MENUACTION_PADLOOKSENSY:
+							ProcessSlider(m_PrefsPadLookSensY * 600.0f, SLIDER_Y(170.0f), HOVEROPTION_INCREASE_PADLOOKSENSY, HOVEROPTION_DECREASE_PADLOOKSENSY, SCREEN_WIDTH, false);
+							break;
+						case MENUACTION_PADAIMSENSY:
+							ProcessSlider(m_PrefsPadAimSensY * 600.0f, SLIDER_Y(170.0f), HOVEROPTION_INCREASE_PADAIMSENSY, HOVEROPTION_DECREASE_PADAIMSENSY, SCREEN_WIDTH, false);
+							break;
+						case MENUACTION_MOUSELOOKSENSX:
+							ProcessSlider(m_PrefsMouseLookSensX * 200.0f, SLIDER_Y(170.0f), HOVEROPTION_INCREASE_MOUSELOOKSENSX, HOVEROPTION_DECREASE_MOUSELOOKSENSX, SCREEN_WIDTH, false);
+							break;
+						case MENUACTION_MOUSEAIMSENSX:
+							ProcessSlider(m_PrefsMouseAimSensX * 200.0f, SLIDER_Y(170.0f), HOVEROPTION_INCREASE_MOUSEAIMSENSX, HOVEROPTION_DECREASE_MOUSEAIMSENSX, SCREEN_WIDTH, false);
+							break;
+						case MENUACTION_MOUSELOOKSENSY:
+							ProcessSlider(m_PrefsMouseLookSensY * 200.0f, SLIDER_Y(170.0f), HOVEROPTION_INCREASE_MOUSELOOKSENSY, HOVEROPTION_DECREASE_MOUSELOOKSENSY, SCREEN_WIDTH, false);
+							break;
+						case MENUACTION_MOUSEAIMSENSY:
+							ProcessSlider(m_PrefsMouseAimSensY * 200.0f, SLIDER_Y(170.0f), HOVEROPTION_INCREASE_MOUSEAIMSENSY, HOVEROPTION_DECREASE_MOUSEAIMSENSY, SCREEN_WIDTH, false);
+							break;
+#endif
 #ifdef CUSTOM_FRONTEND_OPTIONS
 						case MENUACTION_CFO_SLIDER:
 							CMenuScreenCustom::CMenuEntry &option = aScreens[m_nCurrScreen].m_aEntries[i];
@@ -4322,6 +4467,14 @@ CMenuManager::UserInput(void)
 #ifdef CUSTOM_FRONTEND_OPTIONS
 				&& action != MENUACTION_CFO_SLIDER
 #endif
+#ifdef IMPROVED_MENU_AND_INPUT
+				&& action != MENUACTION_DEADZONE
+				&& action != MENUACTION_VIBRATIONFORCE
+				&& action != MENUACTION_MOUSELOOKSENSX && action != MENUACTION_MOUSEAIMSENSX
+				&& action != MENUACTION_PADLOOKSENSX && action != MENUACTION_PADAIMSENSX
+				&& action != MENUACTION_MOUSELOOKSENSY && action != MENUACTION_MOUSEAIMSENSY
+				&& action != MENUACTION_PADLOOKSENSY && action != MENUACTION_PADAIMSENSY
+#endif
 				)
 				m_nHoverOption = HOVEROPTION_RANDOM_ITEM;
 
@@ -4405,6 +4558,19 @@ CMenuManager::UserInput(void)
 #ifdef CUSTOM_FRONTEND_OPTIONS
 			case HOVEROPTION_INCREASE_CFO_SLIDER:
 #endif
+#ifdef IMPROVED_MENU_AND_INPUT
+			case HOVEROPTION_INCREASE_MOUSELOOKSENSX:
+			case HOVEROPTION_INCREASE_MOUSEAIMSENSX:
+			case HOVEROPTION_INCREASE_MOUSELOOKSENSY:
+			case HOVEROPTION_INCREASE_MOUSEAIMSENSY:
+
+			case HOVEROPTION_INCREASE_DEADZONE:
+			case HOVEROPTION_INCREASE_VIBRATIONFORCE:
+			case HOVEROPTION_INCREASE_PADLOOKSENSX:
+			case HOVEROPTION_INCREASE_PADAIMSENSX:
+			case HOVEROPTION_INCREASE_PADLOOKSENSY:
+			case HOVEROPTION_INCREASE_PADAIMSENSY:
+#endif
 				CheckSliderMovement(1);
 				break;
 			case HOVEROPTION_DECREASE_BRIGHTNESS:
@@ -4415,6 +4581,19 @@ CMenuManager::UserInput(void)
 			case HOVEROPTION_DECREASE_MOUSESENS:
 #ifdef CUSTOM_FRONTEND_OPTIONS
 			case HOVEROPTION_DECREASE_CFO_SLIDER:
+#endif
+#ifdef IMPROVED_MENU_AND_INPUT
+			case HOVEROPTION_DECREASE_MOUSELOOKSENSX:
+			case HOVEROPTION_DECREASE_MOUSEAIMSENSX:
+			case HOVEROPTION_DECREASE_MOUSELOOKSENSY:
+			case HOVEROPTION_DECREASE_MOUSEAIMSENSY:
+
+			case HOVEROPTION_DECREASE_DEADZONE:
+			case HOVEROPTION_DECREASE_VIBRATIONFORCE:
+			case HOVEROPTION_DECREASE_PADLOOKSENSX:
+			case HOVEROPTION_DECREASE_PADAIMSENSX:
+			case HOVEROPTION_DECREASE_PADLOOKSENSY:
+			case HOVEROPTION_DECREASE_PADAIMSENSY:
 #endif
 				CheckSliderMovement(-1);
 				break;
@@ -4459,7 +4638,11 @@ CMenuManager::UserInput(void)
 				DMAudio.PlayFrontEndSound(SOUND_FRONTEND_ENTER_OR_ADJUST, 0);
 
 		}
+#ifdef IMPROVED_TECH_PART
+		if (CPad::GetPad(0)->GetBackJustUp() || CPad::GetPad(0)->GetEscapeJustDown()) {
+#else
 		if (CPad::GetPad(0)->GetBackJustDown() || CPad::GetPad(0)->GetEscapeJustDown()) {
+#endif
 			if (m_nCurrScreen != MENUPAGE_START_MENU && m_nCurrScreen != MENUPAGE_PAUSE_MENU && m_nCurrScreen != MENUPAGE_CHOOSE_SAVE_SLOT
 				&& m_nCurrScreen != MENUPAGE_SAVE_CHEAT_WARNING && m_nCurrScreen != MENUPAGE_SAVING_IN_PROGRESS
 				&& m_nCurrScreen != MENUPAGE_DELETING_IN_PROGRESS && m_nCurrScreen != MENUPAGE_OUTRO
@@ -4490,6 +4673,14 @@ CMenuManager::UserInput(void)
 #ifdef CUSTOM_FRONTEND_OPTIONS
 				|| curAction == MENUACTION_CFO_SLIDER
 #endif
+#ifdef IMPROVED_MENU_AND_INPUT
+				|| curAction == MENUACTION_DEADZONE
+				|| curAction == MENUACTION_VIBRATIONFORCE
+				|| curAction == MENUACTION_MOUSELOOKSENSX || curAction == MENUACTION_MOUSEAIMSENSX
+				|| curAction == MENUACTION_PADLOOKSENSX || curAction == MENUACTION_PADAIMSENSX
+				|| curAction == MENUACTION_MOUSELOOKSENSY || curAction == MENUACTION_MOUSEAIMSENSY
+				|| curAction == MENUACTION_PADLOOKSENSY || curAction == MENUACTION_PADAIMSENSY
+#endif
 				)
 				changeValueBy = -1;
 
@@ -4504,6 +4695,14 @@ CMenuManager::UserInput(void)
 				curAction == MENUACTION_MP3VOLUMEBOOST
 #ifdef CUSTOM_FRONTEND_OPTIONS
 				|| curAction == MENUACTION_CFO_SLIDER
+#endif
+#ifdef IMPROVED_MENU_AND_INPUT
+				|| curAction == MENUACTION_DEADZONE
+				|| curAction == MENUACTION_VIBRATIONFORCE
+				|| curAction == MENUACTION_MOUSELOOKSENSX || curAction == MENUACTION_MOUSEAIMSENSX
+				|| curAction == MENUACTION_PADLOOKSENSX || curAction == MENUACTION_PADAIMSENSX
+				|| curAction == MENUACTION_MOUSELOOKSENSY || curAction == MENUACTION_MOUSEAIMSENSY
+				|| curAction == MENUACTION_PADLOOKSENSY || curAction == MENUACTION_PADAIMSENSY
 #endif
 				)
 				changeValueBy = 1;
@@ -4547,7 +4746,21 @@ CMenuManager::UserInput(void)
 			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_RESTOREDEF
 			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_DRAWDIST
 			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_MOUSESENS
-			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_MP3VOLUMEBOOST) {
+			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_MP3VOLUMEBOOST
+#ifdef IMPROVED_MENU_AND_INPUT
+			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_DEADZONE 
+			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_VIBRATIONFORCE
+			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_MOUSELOOKSENSX
+			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_MOUSEAIMSENSX
+			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_PADLOOKSENSX
+			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_PADAIMSENSX
+			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_MOUSELOOKSENSY
+			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_MOUSEAIMSENSY
+			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_PADLOOKSENSY
+			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_PADAIMSENSY
+#endif
+			) 
+		{
 			DMAudio.PlayFrontEndSound(SOUND_FRONTEND_ENTER_OR_ADJUST, 0);
 		}
 	}
@@ -4934,6 +5147,20 @@ CMenuManager::ProcessUserInput(uint8 goDown, uint8 goUp, uint8 optionSelected, u
 					RestoreDefGraphics(FEOPTION_ACTION_SELECT);
 					RestoreDefDisplay(FEOPTION_ACTION_SELECT);
 #endif
+#ifdef IMPROVED_MENU_AND_INPUT
+					m_PrefsAutoaim = false;
+					m_PrefsPadLookSensX = 1.0f / 800.0f;
+					m_PrefsPadAimSensX = 1.0f / 1600.0f;
+					m_PrefsPadLookSensY = 1.0f / 800.0f;
+					m_PrefsPadAimSensY = 1.0f / 1600.0f;
+					m_PrefsDeadzone = 15;
+					m_PrefsVibrationForce = 0.1f;
+					m_PrefsMouseLookSensX = 1.0f / 400.0f;
+					m_PrefsMouseAimSensX = 1.0f / 600.0f;
+					m_PrefsMouseLookSensY = 1.0f / 400.0f;
+					m_PrefsMouseAimSensY = 1.0f / 600.0f;
+					m_PrefsInvertVertically = false;
+#endif
 					SaveSettings();
 				} else if (m_nCurrScreen == MENUPAGE_CONTROLLER_PC) {
 					ControlsManager.MakeControllerActionsBlank();
@@ -5048,10 +5275,17 @@ CMenuManager::ProcessUserInput(uint8 goDown, uint8 goUp, uint8 optionSelected, u
 #ifdef GAMEPAD_MENU
 			case MENUACTION_CTRLCONFIG:
 				CPad::GetPad(0)->Mode += changeAmount;
+#ifdef IMPROVED_MENU_AND_INPUT
+				if (CPad::GetPad(0)->Mode > 2)
+					CPad::GetPad(0)->Mode = 1;
+				else if (CPad::GetPad(0)->Mode < 1)
+					CPad::GetPad(0)->Mode = 2;
+#else
 				if (CPad::GetPad(0)->Mode > 3)
 					CPad::GetPad(0)->Mode = 0;
 				else if (CPad::GetPad(0)->Mode < 0)
 					CPad::GetPad(0)->Mode = 3;
+#endif
 				SaveSettings();
 				break;
 #endif
@@ -5197,10 +5431,24 @@ CMenuManager::ProcessOnOffMenuOptions()
 {
 	switch (aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action) {
 #ifdef GAMEPAD_MENU
+#ifdef IMPROVED_MENU_AND_INPUT
+	case MENUACTION_AUTOAIM:
+		m_PrefsAutoaim = !m_PrefsAutoaim;
+		SaveSettings();
+		break;
+	case MENUACTION_INVERTVERTICALLY:
+		m_PrefsInvertVertically = !m_PrefsInvertVertically;
+		SaveSettings();
+		break;
+#endif
 	case MENUACTION_CTRLVIBRATION:
 		m_PrefsUseVibration = !m_PrefsUseVibration;
 		if (m_PrefsUseVibration) {
+#ifdef IMPROVED_MENU_AND_INPUT
+			CPad::GetPad(0)->StartShake(350, 50, 50);
+#else
 			CPad::GetPad(0)->StartShake(350, 150);
+#endif
 			TimeToStopPadShaking = CTimer::GetTimeInMillisecondsPauseMode() + 500;
 		}
 		SaveSettings();
@@ -5572,6 +5820,9 @@ CMenuManager::SwitchMenuOnAndOff()
 			|| m_bShutDownFrontEndRequested || m_bStartUpFrontEndRequested
 #ifdef REGISTER_START_BUTTON
 			|| CPad::GetPad(0)->GetStartJustDown() && !m_bGameNotLoaded
+#endif
+#ifdef IMPROVED_MENU_AND_INPUT
+			|| CPad::GetPad(0)->GetBackJustUp() && !m_bGameNotLoaded && m_nCurrScreen == MENUPAGE_PAUSE_MENU && m_bMenuActive
 #endif
 			) {
 
@@ -6000,6 +6251,9 @@ CMenuManager::PrintController(void)
 #define Y(f) ((f)*scale + centerY)
 
 	m_aFrontEndSprites[MENUSPRITE_CONTROLLER].Draw(MENU_X_LEFT_ALIGNED(X(-CONTROLLER_SIZE_X / 2)), MENU_Y(Y(-CONTROLLER_SIZE_Y / 2)), MENU_X(CONTROLLER_SIZE_X * scale), MENU_Y(CONTROLLER_SIZE_Y * scale), CRGBA(255, 255, 255, FadeIn(255)));
+#ifdef IMPROVED_MENU_AND_INPUT
+	m_aFrontEndSprites[MENUSPRITE_ARROWS1].Draw(MENU_X_LEFT_ALIGNED(X(-CONTROLLER_SIZE_X / 2)), MENU_Y(Y(-CONTROLLER_SIZE_Y / 2)), MENU_X(CONTROLLER_SIZE_X * scale), MENU_Y(CONTROLLER_SIZE_Y * scale), CRGBA(255, 255, 255, FadeIn(255)));
+#else
 	if (m_DisplayControllerOnFoot) {
 		if ((int)CTimer::GetTimeInMillisecondsPauseMode() & 0x400)
 			m_aFrontEndSprites[MENUSPRITE_ARROWS1].Draw(MENU_X_LEFT_ALIGNED(X(-CONTROLLER_SIZE_X / 2)), MENU_Y(Y(-CONTROLLER_SIZE_Y / 2)), MENU_X(CONTROLLER_SIZE_X * scale), MENU_Y(CONTROLLER_SIZE_Y * scale), CRGBA(255, 255, 255, FadeIn(255)));
@@ -6012,6 +6266,7 @@ CMenuManager::PrintController(void)
 		else
 			m_aFrontEndSprites[MENUSPRITE_ARROWS4].Draw(MENU_X_LEFT_ALIGNED(X(-CONTROLLER_SIZE_X / 2)), MENU_Y(Y(-CONTROLLER_SIZE_Y / 2)), MENU_X(CONTROLLER_SIZE_X * scale), MENU_Y(CONTROLLER_SIZE_Y * scale), CRGBA(255, 255, 255, FadeIn(255)));
 	}
+#endif
 
 	CFont::SetFontStyle(FONT_LOCALE(FONT_STANDARD));
 
@@ -6022,6 +6277,135 @@ CMenuManager::PrintController(void)
 	CFont::SetColor(CRGBA(0, 0, 0, FadeIn(255)));
 	CFont::SetWrapx(SCREEN_WIDTH);
 
+#ifdef IMPROVED_MENU_AND_INPUT
+	float TEXT_L2_X = -4.0f + CONTROLLER_POS_X - centerX, TEXT_L2_Y = 22.0f + CONTROLLER_POS_Y - centerY;
+	float TEXT_L1_X = -4.0f + CONTROLLER_POS_X - centerX, TEXT_L1_Y = 36.0f + CONTROLLER_POS_Y - centerY;
+	float TEXT_SELECT_X = -4.0f + CONTROLLER_POS_X - centerX, TEXT_SELECT_Y = 49.0f + CONTROLLER_POS_Y - centerY;
+	float TEXT_L3_X = -4.0f + CONTROLLER_POS_X - centerX, TEXT_L3_Y = 63.0f + CONTROLLER_POS_Y - centerY;
+	float TEXT_LSTICK_X = -4.0f + CONTROLLER_POS_X - centerX, TEXT_LSTICK_Y = 77.0f + CONTROLLER_POS_Y - centerY;
+	float TEXT_DPADU_X = -4.0f + CONTROLLER_POS_X - centerX, TEXT_DPADU_Y = 90.0f + CONTROLLER_POS_Y - centerY;
+	float TEXT_DPADL_X = -4.0f + CONTROLLER_POS_X - centerX, TEXT_DPADL_Y = 104.0f + CONTROLLER_POS_Y - centerY;
+	float TEXT_DPADD_X = -4.0f + CONTROLLER_POS_X - centerX, TEXT_DPADD_Y = 118.0f + CONTROLLER_POS_Y - centerY;
+	float TEXT_DPADR_X = -4.0f + CONTROLLER_POS_X - centerX, TEXT_DPADR_Y = 131.0f + CONTROLLER_POS_Y - centerY;
+
+	float TEXT_R2_X = 242.0f + CONTROLLER_POS_X - centerX, TEXT_R2_Y = 22.0f + CONTROLLER_POS_Y - centerY;
+	float TEXT_R1_X = 242.0f + CONTROLLER_POS_X - centerX, TEXT_R1_Y = 36.0f + CONTROLLER_POS_Y - centerY;
+	float TEXT_START_X = 242.0f + CONTROLLER_POS_X - centerX, TEXT_START_Y = 49.0f + CONTROLLER_POS_Y - centerY;
+	float TEXT_TRIANGLE_X = 242.0f + CONTROLLER_POS_X - centerX, TEXT_TRIANGLE_Y = 63.0f + CONTROLLER_POS_Y - centerY;
+	float TEXT_CIRCLE_X = 242.0f + CONTROLLER_POS_X - centerX, TEXT_CIRCLE_Y = 77.0f + CONTROLLER_POS_Y - centerY;
+	float TEXT_CROSS_X = 242.0f + CONTROLLER_POS_X - centerX, TEXT_CROSS_Y = 90.0f + CONTROLLER_POS_Y - centerY;
+	float TEXT_SQUARE_X = 242.0f + CONTROLLER_POS_X - centerX, TEXT_SQUARE_Y = 104.0f + CONTROLLER_POS_Y - centerY;
+	float TEXT_RSTICK_X = 242.0f + CONTROLLER_POS_X - centerX, TEXT_RSTICK_Y = 118.0f + CONTROLLER_POS_Y - centerY;
+	float TEXT_R3_X = 242.0f + CONTROLLER_POS_X - centerX, TEXT_R3_Y = 131.0f + CONTROLLER_POS_Y - centerY;
+
+	if (m_DisplayControllerOnFoot) {
+		switch (CPad::GetPad(0)->Mode) {
+		case 0:
+		case 2:
+			CFont::SetRightJustifyOn();
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_L2_X)), MENU_Y(Y(TEXT_L2_Y)), TheText.Get("FEC_CWL"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_L1_X)), MENU_Y(Y(TEXT_L1_Y)), TheText.Get("FEC_ANS"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_SELECT_X)), MENU_Y(Y(TEXT_SELECT_Y)), TheText.Get("FEC_CAM"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_L3_X)), MENU_Y(Y(TEXT_L3_Y)), TheText.Get("FEC_CRO"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_LSTICK_X)), MENU_Y(Y(TEXT_LSTICK_Y)), TheText.Get("FEC_MOV"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_DPADU_X)), MENU_Y(Y(TEXT_DPADU_Y)), TheText.Get("FEC_MOV"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_DPADL_X)), MENU_Y(Y(TEXT_DPADL_Y)), TheText.Get("FEC_MOV"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_DPADD_X)), MENU_Y(Y(TEXT_DPADD_Y)), TheText.Get("FEC_MOV"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_DPADR_X)), MENU_Y(Y(TEXT_DPADR_Y)), TheText.Get("FEC_MOV"));
+
+			CFont::SetJustifyOn();
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_R2_X)), MENU_Y(Y(TEXT_R2_Y)), TheText.Get("FEC_CWR"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_R1_X)), MENU_Y(Y(TEXT_R1_Y)), TheText.Get("FEC_TAR"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_START_X)), MENU_Y(Y(TEXT_START_Y)), TheText.Get("FEC_PAU"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_TRIANGLE_X)), MENU_Y(Y(TEXT_TRIANGLE_Y)), TheText.Get("FEC_EXV"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_CIRCLE_X)), MENU_Y(Y(TEXT_CIRCLE_Y)), TheText.Get("FEC_CAW"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_CROSS_X)), MENU_Y(Y(TEXT_CROSS_Y)), TheText.Get("FEC_ACC"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_SQUARE_X)), MENU_Y(Y(TEXT_SQUARE_Y)), TheText.Get("FEC_BRA"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_R3_X)), MENU_Y(Y(TEXT_R3_Y)), TheText.Get("FEC_LB"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_RSTICK_X)), MENU_Y(Y(TEXT_RSTICK_Y)), TheText.Get("FEC_RTC"));
+			break;
+		case 1:
+		case 3:
+			CFont::SetRightJustifyOn();
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_L2_X)), MENU_Y(Y(TEXT_L2_Y)), TheText.Get("FEC_TAR"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_L1_X)), MENU_Y(Y(TEXT_L1_Y)), TheText.Get("FEC_ANS"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_SELECT_X)), MENU_Y(Y(TEXT_SELECT_Y)), TheText.Get("FEC_CAM"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_L3_X)), MENU_Y(Y(TEXT_L3_Y)), TheText.Get("FEC_CRO"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_LSTICK_X)), MENU_Y(Y(TEXT_LSTICK_Y)), TheText.Get("FEC_MOV"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_DPADU_X)), MENU_Y(Y(TEXT_DPADU_Y)), TheText.Get("FEC_NA"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_DPADL_X)), MENU_Y(Y(TEXT_DPADL_Y)), TheText.Get("FEC_CWL"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_DPADD_X)), MENU_Y(Y(TEXT_DPADD_Y)), TheText.Get("FEC_NA"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_DPADR_X)), MENU_Y(Y(TEXT_DPADR_Y)), TheText.Get("FEC_CWR"));
+
+			CFont::SetJustifyOn();
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_R2_X)), MENU_Y(Y(TEXT_R2_Y)), TheText.Get("FEC_ATT"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_R1_X)), MENU_Y(Y(TEXT_R1_Y)), TheText.Get("FEC_NA"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_START_X)), MENU_Y(Y(TEXT_START_Y)), TheText.Get("FEC_PAU"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_TRIANGLE_X)), MENU_Y(Y(TEXT_TRIANGLE_Y)), TheText.Get("FEC_EXV"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_CIRCLE_X)), MENU_Y(Y(TEXT_CIRCLE_Y)), TheText.Get("FEC_CAW"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_CROSS_X)), MENU_Y(Y(TEXT_CROSS_Y)), TheText.Get("FEC_ACC"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_SQUARE_X)), MENU_Y(Y(TEXT_SQUARE_Y)), TheText.Get("FEC_BRA"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_R3_X)), MENU_Y(Y(TEXT_R3_Y)), TheText.Get("FEC_LB"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_RSTICK_X)), MENU_Y(Y(TEXT_RSTICK_Y)), TheText.Get("FEC_RTC"));
+			break;
+		default:
+			return;
+		}
+	} else {
+		switch (CPad::GetPad(0)->Mode) {
+		case 0:
+		case 2:
+			CFont::SetRightJustifyOn();
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_L2_X)), MENU_Y(Y(TEXT_L2_Y)), TheText.Get("FEC_LL"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_L1_X)), MENU_Y(Y(TEXT_L1_Y)), TheText.Get("FEC_NRS"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_SELECT_X)), MENU_Y(Y(TEXT_SELECT_Y)), TheText.Get("FEC_CAM"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_L3_X)), MENU_Y(Y(TEXT_L3_Y)), TheText.Get("FEC_HOR"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_LSTICK_X)), MENU_Y(Y(TEXT_LSTICK_Y)), TheText.Get("FEC_VES"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_DPADU_X)), MENU_Y(Y(TEXT_DPADU_Y)), TheText.Get("FEC_RTC"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_DPADL_X)), MENU_Y(Y(TEXT_DPADL_Y)), TheText.Get("FEC_VES"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_DPADD_X)), MENU_Y(Y(TEXT_DPADD_Y)), TheText.Get("FEC_RTC"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_DPADR_X)), MENU_Y(Y(TEXT_DPADR_Y)), TheText.Get("FEC_VES"));
+
+			CFont::SetJustifyOn();
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_R2_X)), MENU_Y(Y(TEXT_R2_Y)), TheText.Get("FEC_LR"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_R1_X)), MENU_Y(Y(TEXT_R1_Y)), TheText.Get("FEC_HAB"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_START_X)), MENU_Y(Y(TEXT_START_Y)), TheText.Get("FEC_PAU"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_TRIANGLE_X)), MENU_Y(Y(TEXT_TRIANGLE_Y)), TheText.Get("FEC_EXV"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_CIRCLE_X)), MENU_Y(Y(TEXT_CIRCLE_Y)), TheText.Get("FEC_CAW"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_CROSS_X)), MENU_Y(Y(TEXT_CROSS_Y)), TheText.Get("FEC_ACC"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_SQUARE_X)), MENU_Y(Y(TEXT_SQUARE_Y)), TheText.Get("FEC_BRA"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_R3_X)), MENU_Y(Y(TEXT_R3_Y)), TheText.Get("FEC_SUB"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_RSTICK_X)), MENU_Y(Y(TEXT_RSTICK_Y)), TheText.Get("FEC_RTC"));
+			break;
+		case 1:
+		case 3:
+			CFont::SetRightJustifyOn();
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_L2_X)), MENU_Y(Y(TEXT_L2_Y)), TheText.Get("FEC_BRA"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_L1_X)), MENU_Y(Y(TEXT_L1_Y)), TheText.Get("FEC_LL"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_SELECT_X)), MENU_Y(Y(TEXT_SELECT_Y)), TheText.Get("FEC_CAM"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_L3_X)), MENU_Y(Y(TEXT_L3_Y)), TheText.Get("FEC_HOR"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_LSTICK_X)), MENU_Y(Y(TEXT_LSTICK_Y)), TheText.Get("FEC_VES"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_DPADU_X)), MENU_Y(Y(TEXT_DPADU_Y)), TheText.Get("FEC_SUB"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_DPADL_X)), MENU_Y(Y(TEXT_DPADL_Y)), TheText.Get("FEC_PRS"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_DPADD_X)), MENU_Y(Y(TEXT_DPADD_Y)), TheText.Get("FEC_CAM"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_DPADR_X)), MENU_Y(Y(TEXT_DPADR_Y)), TheText.Get("FEC_NRS"));
+
+			CFont::SetJustifyOn();
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_R2_X)), MENU_Y(Y(TEXT_R2_Y)), TheText.Get("FEC_ACC"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_R1_X)), MENU_Y(Y(TEXT_R1_Y)), TheText.Get("FEC_LR"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_START_X)), MENU_Y(Y(TEXT_START_Y)), TheText.Get("FEC_PAU"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_TRIANGLE_X)), MENU_Y(Y(TEXT_TRIANGLE_Y)), TheText.Get("FEC_EXV"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_CIRCLE_X)), MENU_Y(Y(TEXT_CIRCLE_Y)), TheText.Get("FEC_CAW"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_CROSS_X)), MENU_Y(Y(TEXT_CROSS_Y)), TheText.Get("FEC_HAB"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_SQUARE_X)), MENU_Y(Y(TEXT_SQUARE_Y)), TheText.Get("FEC_BRA"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_R3_X)), MENU_Y(Y(TEXT_R3_Y)), TheText.Get("FEC_LB"));
+			CFont::PrintString(MENU_X_LEFT_ALIGNED(X(TEXT_RSTICK_X)), MENU_Y(Y(TEXT_RSTICK_Y)), TheText.Get("FEC_RTC"));
+			break;
+		default:
+			return;
+		}
+	}
+#else
 	float TEXT_L2_X = 85.0f + CONTROLLER_POS_X - centerX, TEXT_L2_Y = -14.0f + CONTROLLER_POS_Y - centerY;
 	float TEXT_L1_X = -4.0f + CONTROLLER_POS_X - centerX, TEXT_L1_Y = 27.0f + CONTROLLER_POS_Y - centerY, TEXT_L1_Y_VEH = 3.0f + TEXT_L1_Y;
 	float TEXT_DPAD_X = -4.0f + CONTROLLER_POS_X - centerX, TEXT_DPAD_Y = 67.0f + CONTROLLER_POS_Y - centerY;
@@ -6672,6 +7056,7 @@ CMenuManager::PrintController(void)
 			return;
 		}
 	}
+#endif
 
 	CFont::SetDropShadowPosition(0); // X
 

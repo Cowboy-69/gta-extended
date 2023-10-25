@@ -150,6 +150,19 @@ public:
 	float   CA_MAX_DISTANCE;
 	float   SpeedVar;
 
+#ifdef AIMING
+	float AimingFOV;
+#endif
+
+#ifdef AIMING
+	bool m_bAimingWhileLookBehind;
+#endif
+
+#ifdef CROUCH
+	float m_fCurrentCameraOffsetZ;
+	float m_fTargetCameraPosZ;
+#endif
+
 	float m_fTargetZoomGroundOne;
 	float m_fTargetZoomGroundTwo;
 	float m_fTargetZoomGroundThree;
@@ -438,6 +451,10 @@ public:
 	float m_fNearClipScript;
 	float m_fOldBetaDiff;
 	float m_fPedZoomValue;
+
+#ifdef AIMING
+	float AimingFOV;
+#endif
 
 	float m_fPedZoomValueScript;
 	float m_fPedZoomValueSmooth;

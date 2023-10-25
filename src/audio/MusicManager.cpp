@@ -552,7 +552,11 @@ cMusicManager::ServiceGameMode()
 				}
 			}
 #endif
+#ifdef IMPROVED_MENU_AND_INPUT
+			if (CPad::GetPad(0)->NextStationJustDown())
+#else
 			if (CPad::GetPad(0)->ChangeStationJustDown())
+#endif
 			{
 				if (!UsesPoliceRadio(vehicle) && !UsesTaxiRadio(vehicle)) {
 					gNumRetunePresses++;
@@ -561,13 +565,21 @@ cMusicManager::ServiceGameMode()
 				}
 			}
 #ifdef RADIO_SCROLL_TO_PREV_STATION
+#ifdef IMPROVED_MENU_AND_INPUT
+			else if(!CPad::GetPad(0)->ArePlayerControlsDisabled() && (CPad::GetPad(0)->GetMouseWheelDownJustDown() || CPad::GetPad(0)->GetMouseWheelUpJustDown() || CPad::GetPad(0)->PrevStationJustDown())) {
+#else
 			else if(!CPad::GetPad(0)->ArePlayerControlsDisabled() && (CPad::GetPad(0)->GetMouseWheelDownJustDown() || CPad::GetPad(0)->GetMouseWheelUpJustDown())) {
+#endif
 				if(!UsesPoliceRadio(vehicle) && !UsesTaxiRadio(vehicle)) {
 					int scrollNext = ControlsManager.GetControllerKeyAssociatedWithAction(VEHICLE_CHANGE_RADIO_STATION, MOUSE);
 					int scrollPrev = scrollNext == rsMOUSEWHEELUPBUTTON ? rsMOUSEWHEELDOWNBUTTON
 																		: scrollNext == rsMOUSEWHEELDOWNBUTTON ? rsMOUSEWHEELUPBUTTON : -1;
 
+#ifdef IMPROVED_MENU_AND_INPUT
+					if(scrollPrev != -1 && !ControlsManager.IsAnyVehicleActionAssignedToMouseKey(scrollPrev) || (CPad::GetPad(0)->IsAffectedByController && CPad::GetPad(0)->PrevStationJustDown())) {
+#else
 					if(scrollPrev != -1 && !ControlsManager.IsAnyVehicleActionAssignedToMouseKey(scrollPrev)) {
+#endif
 						gNumRetunePresses--;
 						gRetuneCounter = 20;
 						RadioStaticCounter = 0;

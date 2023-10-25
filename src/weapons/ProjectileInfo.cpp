@@ -294,9 +294,14 @@ CProjectileInfo::Update()
         	continue;
 		}
 		if ( gaProjectileInfo[i].m_eWeaponType == WEAPONTYPE_TEARGAS && CTimer::GetTimeInMilliseconds() > gaProjectileInfo[i].m_nExplosionTime - 19500 ) {
+#ifdef IMPROVED_TECH_PART // particles
+			CParticle::AddParticle(PARTICLE_TEARGAS, projectilePos, CVector(0.1f, tearGasOffset, 0.0f), 0, 0.0f, 0, 0, 0, 0);
+			CParticle::AddParticle(PARTICLE_TEARGAS, projectilePos, CVector(-0.1f, tearGasOffset, 0.0f), 0, 0.0f, 0, 0, 0, 0);
+#else
 			CParticle::AddParticle(PARTICLE_TEARGAS, projectilePos, CVector(0.2f, tearGasOffset, 0.0f), 0, 0.0f, 0, 0, 0, 0);
 			CParticle::AddParticle(PARTICLE_TEARGAS, projectilePos, CVector(-0.2f, tearGasOffset, 0.0f), 0, 0.0f, 0, 0, 0, 0);
 			CParticle::AddParticle(PARTICLE_TEARGAS, projectilePos, CVector(tearGasOffset, tearGasOffset, 0.0f), 0, 0.0f, 0, 0, 0, 0);
+#endif
 
 			if ( CTimer::GetTimeInMilliseconds() & 0x200 )
 				CWorld::SetPedsChoking(projectilePos.x, projectilePos.y, projectilePos.z, 6.0f, gaProjectileInfo[i].m_pSource);

@@ -36,8 +36,15 @@
 #include "World.h"
 #include "Zones.h"
 #include "Pickups.h"
+#ifdef WANTED_PATHS
+#include "CopPed.h"
+#endif
 
+#ifdef IMPROVED_TECH_PART // increased spawn range
+#define DISTANCE_TO_SPAWN_ROADBLOCK_PEDS (100.0f)
+#else
 #define DISTANCE_TO_SPAWN_ROADBLOCK_PEDS (51.0f)
+#endif
 #define DISTANCE_TO_SCAN_FOR_DANGER (14.0f)
 #define DISTANCE_TO_SCAN_FOR_PED_DANGER (11.0f)
 #define SAFE_DISTANCE_TO_PED (3.0f)
@@ -77,11 +84,19 @@
 #define DISTANCE_BETWEEN_CAR_AND_DEAD_PED (6.0f)
 #define PROBABILITY_OF_PASSENGER_IN_VEHICLE (0.125f)
 
+#ifdef IMPROVED_TECH_PART // increased spawn range
+#define ONSCREEN_DESPAWN_RANGE (CGame::IsInInterior() || CCutsceneMgr::IsRunning() ? 120.0f : 350.0f)
+#define MINIMAL_DISTANCE_TO_SPAWN_ONSCREEN (CGame::IsInInterior() || CCutsceneMgr::IsRunning() ? 100.0f : 150.0f)
+#define REQUEST_ONSCREEN_DISTANCE ((ONSCREEN_DESPAWN_RANGE + MINIMAL_DISTANCE_TO_SPAWN_ONSCREEN) / 2)
+#define OFFSCREEN_DESPAWN_RANGE (CGame::IsInInterior() || CCutsceneMgr::IsRunning() ? 40.0f : 100.0f)
+#define EXTENDED_RANGE_DESPAWN_MULTIPLIER (1.5f)
+#else
 #define ONSCREEN_DESPAWN_RANGE (120.0f)
 #define MINIMAL_DISTANCE_TO_SPAWN_ONSCREEN (100.0f)
 #define REQUEST_ONSCREEN_DISTANCE ((ONSCREEN_DESPAWN_RANGE + MINIMAL_DISTANCE_TO_SPAWN_ONSCREEN) / 2)
 #define OFFSCREEN_DESPAWN_RANGE (40.0f)
 #define EXTENDED_RANGE_DESPAWN_MULTIPLIER (1.5f)
+#endif
 
 bool CCarCtrl::bMadDriversCheat;
 int CCarCtrl::NumLawEnforcerCars;
@@ -908,7 +923,11 @@ CCarCtrl::RemoveDistantCars()
 			continue;
 		PossiblyRemoveVehicle(pVehicle);
 		if (pVehicle->bCreateRoadBlockPeds){
+#ifdef IMPROVED_TECH_PART // increased spawn range
+			if ((pVehicle->GetPosition() - FindPlayerCentreOfWorld(CWorld::PlayerInFocus)).Magnitude2D() < DISTANCE_TO_SPAWN_ROADBLOCK_PEDS && !FindPlayerPed()->m_pWanted->IsPlayerHides()) {
+#else
 			if ((pVehicle->GetPosition() - FindPlayerCentreOfWorld(CWorld::PlayerInFocus)).Magnitude2D() < DISTANCE_TO_SPAWN_ROADBLOCK_PEDS) {
+#endif
 				CRoadBlocks::GenerateRoadBlockCopsForCar(pVehicle, pVehicle->m_nRoadblockType);
 				pVehicle->bCreateRoadBlockPeds = false;
 			}
@@ -1729,10 +1748,46 @@ void CCarCtrl::WeaveForObject(CEntity* pOtherEntity, CVehicle* pVehicle, float* 
 
 bool CCarCtrl::PickNextNodeAccordingStrategy(CVehicle* pVehicle)
 {
+#ifdef WANTED_PATHS
+	CVector chaseCarPos;
+	CCopPed* copPed = (CCopPed*)pVehicle->pDriver;
+	if (copPed && copPed->m_nPedType == PEDTYPE_COP && pVehicle->GetModelIndex() != MI_RHINO) {
+		CWanted* wanted = FindPlayerPed()->m_pWanted;
+
+		if (wanted->GetWantedLevel() > 0) {
+			int32 path = ThePaths.FindNodeClosestToCoors(wanted->m_vecLastSeenPosPlayer, PATH_CAR, 50.0f);
+			float diff = FindPlayerCoors().z - ThePaths.m_pathNodes[path].GetZ();
+			bool bPlayerNearToCarPath = path != -1 && diff > -4.0f && diff < 4.0f;
+
+			CWantedPaths wantedPaths = pVehicle->AutoPilot.m_aCurrentSeekWantedPaths;
+			if (!bPlayerNearToCarPath && !wantedPaths.wantedPathNode[0].pos.IsZero())
+				chaseCarPos = wantedPaths.wantedPathNode[1].pos;
+			else
+				chaseCarPos = wanted->m_vecLastSeenPosPlayer;
+
+			bool bPlayerInVehAndItMoves = FindPlayerVehicle() && FindPlayerSpeed().Magnitude2D() > 0.2f;
+			if ((wanted->IsPlayerHides() && bPlayerNearToCarPath && Distance2D(wanted->m_vecLastSeenPosPlayer, pVehicle->GetPosition()) < 60.0f) ||
+				(wanted->IsPlayerHides() && !bPlayerNearToCarPath && Distance2D(wanted->m_vecLastSeenPosPlayer, pVehicle->GetPosition()) < 75.0f) ||
+				(!wanted->IsPlayerHides() && (!bPlayerNearToCarPath || wanted->GetWantedLevel() > 1) && (!FindPlayerVehicle() || !bPlayerInVehAndItMoves) && Distance2D(wanted->m_vecLastSeenPosPlayer, pVehicle->GetPosition()) < 50.0f))
+
+				CCarAI::TellOccupantsToLeaveCarImmediately(pVehicle);
+		}
+
+	} else {
+		chaseCarPos = FindPlayerCoors();
+	}
+#endif
 	pVehicle->AutoPilot.m_nCruiseSpeedMultiplierType = ThePaths.m_pathNodes[pVehicle->AutoPilot.m_nNextRouteNode].speedLimit;
 	switch (pVehicle->AutoPilot.m_nCarMission){
 	case MISSION_RAMPLAYER_FARAWAY:
 	case MISSION_BLOCKPLAYER_FARAWAY:
+#ifdef WANTED_PATHS
+		PickNextNodeToChaseCar(pVehicle,
+			chaseCarPos.x,
+			chaseCarPos.y,
+			chaseCarPos.z,
+			nullptr);
+#else
 		PickNextNodeToChaseCar(pVehicle,
 			FindPlayerCoors().x,
 			FindPlayerCoors().y,
@@ -1740,6 +1795,7 @@ bool CCarCtrl::PickNextNodeAccordingStrategy(CVehicle* pVehicle)
 			FindPlayerCoors().z,
 #endif
 			FindPlayerVehicle());
+#endif
 		return false;
 	case MISSION_GOTOCOORDS:
 	case MISSION_GOTOCOORDS_ACCURATE:
@@ -2247,7 +2303,11 @@ void CCarCtrl::DragCarToPoint(CVehicle* pVehicle, CVector* pPoint)
 	  pVehicle->GetPosition().z - 3.0f, point, &pVehicle->m_aCollPolys[0])){
 		actualAheadZ = point.point.z;
 	}else if (CWorld::ProcessVerticalLine(CVector(posTarget.x, posTarget.y, pVehicle->GetPosition().z + 1.5f),
+#ifdef IMPROVED_TECH_PART // flying cars fix
+	  pVehicle->GetPosition().z - 10.0f, point,
+#else
 	  pVehicle->GetPosition().z - 2.0f, point,
+#endif
 	  pRoadObject, true, false, false, false, false, false, &pVehicle->m_aCollPolys[0])){
 		actualAheadZ = point.point.z;
 		pVehicle->m_pCurGroundEntity = pRoadObject;
@@ -2268,7 +2328,11 @@ void CCarCtrl::DragCarToPoint(CVehicle* pVehicle, CVector* pPoint)
 	  pVehicle->GetPosition().z - 3.0f, point, &pVehicle->m_aCollPolys[1])){
 		actualBehindZ = point.point.z;
 	}else if (CWorld::ProcessVerticalLine(CVector(midPos.x, midPos.y, pVehicle->GetPosition().z + 1.5f),
+#ifdef IMPROVED_TECH_PART // flying cars fix
+	  pVehicle->GetPosition().z - 10.0f, point,
+#else
 	  pVehicle->GetPosition().z - 2.0f, point,
+#endif
 	  pRoadObject, true, false, false, false, false, false, &pVehicle->m_aCollPolys[1])){
 		actualBehindZ = point.point.z;
 		pVehicle->m_pCurGroundEntity = pRoadObject;

@@ -5,6 +5,24 @@
 #define VANILLA_DEFINES
 #endif
 
+#define NDEBUG
+
+/*these macros are used to navigation*/
+#define CLIMBING // also in clump.cpp, Clump::destroy
+#define CROUCH
+#define AIMING
+#define SWIMMING
+
+#define IMPROVED_MENU_AND_INPUT
+
+#define IMPROVED_TECH_PART
+#define WANTED_PATHS
+
+#define NEW_CHEATS
+
+#define UTILS
+/*these macros are used to navigation*/
+
 enum Config {
 	NUMPLAYERS = 1,
 
@@ -53,6 +71,10 @@ enum Config {
 	NUM_CARPATHLINKS = 3500,
 	NUM_MAPOBJECTS = 1250,
 	NUM_PATHCONNECTIONS = 20400,
+#ifdef WANTED_PATHS
+	NUM_WANTEDPATHNODES = 20,
+	NUM_WANTEDPATHS = 100,
+#endif
 
 	// Link list lengths
 	NUMALPHALIST = 20,
@@ -364,8 +386,8 @@ enum Config {
 #	if defined(XINPUT) || defined(GTA_HANDHELD)
 #		define GAMEPAD_MENU		// Add gamepad menu
 #	endif
-#	define TRIANGLE_BACK_BUTTON
-//#	define CIRCLE_BACK_BUTTON
+//#	define TRIANGLE_BACK_BUTTON
+#	define CIRCLE_BACK_BUTTON
 #define LEGACY_MENU_OPTIONS			// i.e. frame sync(vsync)
 #define MUCH_SHORTER_OUTRO_SCREEN
 // #define XBOX_MESSAGE_SCREEN			// Blue background, no "saved successfully press OK" screen etc.
@@ -376,8 +398,8 @@ enum Config {
 #		define NO_ISLAND_LOADING  // disable loadscreen between islands via loading all island data at once, consumes more memory and CPU
 #		define CUTSCENE_BORDERS_SWITCH
 #		define MULTISAMPLING		// adds MSAA option
-#		define INVERT_LOOK_FOR_PAD // enable the hidden option
-#		define PED_CAR_DENSITY_SLIDERS
+//#		define INVERT_LOOK_FOR_PAD // enable the hidden option
+//#		define PED_CAR_DENSITY_SLIDERS
 #	endif
 #endif
 

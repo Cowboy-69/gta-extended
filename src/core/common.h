@@ -336,6 +336,9 @@ void re3_debug(const char *format, ...);
 void re3_trace(const char *filename, unsigned int lineno, const char *func, const char *format, ...);
 void re3_assert(const char *expr, const char *filename, unsigned int lineno, const char *func);
 void re3_usererror(const char *format, ...);
+#ifdef UTILS
+float InterpFloat(float currentValue, float newValue, float interpSpeed);
+#endif
 
 #define DEBUGBREAK() __debugbreak();
 

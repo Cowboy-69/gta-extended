@@ -243,9 +243,17 @@ void CHud::Draw()
 			&& playerPed && !playerPed->GetWeapon()->IsTypeMelee())
 			DrawCrossHair = true;
 
+#ifdef AIMING
+		if (playerPed->bIsPlayerAiming && (Mode == CCam::MODE_M16_1STPERSON_RUNABOUT || Mode == CCam::MODE_ROCKETLAUNCHER_RUNABOUT || Mode == CCam::MODE_SNIPER_RUNABOUT))
+#else
 		if (Mode == CCam::MODE_M16_1STPERSON_RUNABOUT || Mode == CCam::MODE_ROCKETLAUNCHER_RUNABOUT || Mode == CCam::MODE_SNIPER_RUNABOUT)
+#endif
 			DrawCrossHairPC = true;
+#if defined AIMING && defined IMPROVED_MENU_AND_INPUT
+		if (playerPed->bIsPlayerAiming && !playerPed->bIsAutoAiming
+#else
 		if (TheCamera.Cams[TheCamera.ActiveCam].Using3rdPersonMouseCam() && (!CPad::GetPad(0)->GetLookBehindForPed() || TheCamera.m_bPlayerIsInGarage)
+#endif
 			|| Mode == CCam::MODE_1STPERSON_RUNABOUT) {
 			if (playerPed) {
 				if (playerPed->m_nPedState != PED_ENTER_CAR && playerPed->m_nPedState != PED_CARJACK) {
@@ -269,7 +277,11 @@ void CHud::Draw()
 			float fStep = Sin((CTimer::GetTimeInMilliseconds() & 1023)/1024.0f * 6.28f);
 			float fMultBright = SpriteBrightness * 0.03f * (0.25f * fStep + 0.75f);
 			CRect rect;
+#ifdef IMPROVED_MENU_AND_INPUT
+			if (DrawCrossHairPC && !playerPed->bIsAutoAiming) {
+#else
 			if (DrawCrossHairPC && TheCamera.Cams[TheCamera.ActiveCam].Using3rdPersonMouseCam()) {
+#endif
 				float f3rdX = SCREEN_WIDTH * TheCamera.m_f3rdPersonCHairMultX;
 				float f3rdY = SCREEN_HEIGHT * TheCamera.m_f3rdPersonCHairMultY;
 #ifdef ASPECT_RATIO_SCALE
@@ -647,8 +659,19 @@ void CHud::Draw()
 						&& (CTimer::GetTimeInMilliseconds() > playerPed->m_pWanted->m_nLastWantedLevelChange
 							+ 2000 || FRAMECOUNTER & 4)) {
 
+#ifdef WANTED_PATHS
+						if (playerPed->m_pWanted->IsPlayerHides())
+						{
+							WANTED_COLOR_FLASH.a = alpha;
+							CFont::SetColor(WANTED_COLOR_FLASH);
+						} else {
+							WANTED_COLOR.a = alpha;
+							CFont::SetColor(WANTED_COLOR);
+						}
+#else
 						WANTED_COLOR.a = alpha;
 						CFont::SetColor(WANTED_COLOR);
+#endif
 						CFont::PrintString(SCREEN_SCALE_FROM_RIGHT(110.0f + 23.0f * i), SCREEN_SCALE_Y(87.0f), sPrintIcon);
 
 					} else if (playerPed->m_pWanted->m_nMinWantedLevel > i && FRAMECOUNTER & 4) {

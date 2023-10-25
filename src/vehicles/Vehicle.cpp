@@ -43,6 +43,9 @@ bool CVehicle::bCheat8;
 bool CVehicle::bCheat9;
 bool CVehicle::bCheat10;
 bool CVehicle::bHoverCheat;
+#ifdef NEW_CHEATS
+bool CVehicle::bAirWaysCheat;
+#endif
 bool CVehicle::bAllTaxisHaveNitro;
 bool CVehicle::m_bDisableMouseSteering = true;
 bool CVehicle::bDisableRemoteDetonation;
@@ -2341,6 +2344,13 @@ CVehicle::KillPedsInVehicle(void)
 		}
 	}
 }
+
+#ifdef IMPROVED_TECH_PART
+bool CVehicle::IsHighVehicle(void)
+{
+	return Abs(GetColModel()->boundingBox.min.z) + Abs(GetColModel()->boundingBox.max.z) > 2.2f;
+}
+#endif
 
 void
 DestroyVehicleAndDriverAndPassengers(CVehicle* pVehicle)

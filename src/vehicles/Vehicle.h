@@ -375,6 +375,9 @@ public:
 	void ActivateBomb(void);
 	void ActivateBombWhenEntered(void);
 	void KillPedsInVehicle(void);
+#ifdef IMPROVED_TECH_PART
+	bool IsHighVehicle(void);
+#endif
 
 	void SetComponentAtomicAlpha(RpAtomic *atomic, int32 alpha);
 	void UpdateClumpAlpha(void);
@@ -398,6 +401,9 @@ public:
 	static bool bCheat9;
 	static bool bCheat10;
 	static bool bHoverCheat;
+#ifdef NEW_CHEATS
+	static bool bAirWaysCheat;
+#endif
 	static bool bAllTaxisHaveNitro;
 	static bool m_bDisableMouseSteering;
 	static bool bDisableRemoteDetonation;

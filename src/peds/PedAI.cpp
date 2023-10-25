@@ -5896,6 +5896,21 @@ CPed::GetLocalPositionToOpenCarDoor(CVehicle *veh, uint32 component, float seatP
 void
 CPed::SetDuck(uint32 time, bool sth)
 {
+#ifdef SWIMMING
+	if (bIsSwimming)
+		return;
+#endif
+
+#ifdef CROUCH
+	if (RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_IDLE))
+		return;
+#endif
+
+#ifdef CLIMBING
+	if (bIsClimbing)
+		return;
+#endif
+
 	if (bIsDucking || CTimer::GetTimeInMilliseconds() <= m_duckTimer && !sth) {
 		if (sth && CTimer::GetTimeInMilliseconds() + time > m_duckTimer)
 			m_duckTimer = CTimer::GetTimeInMilliseconds() + time;
@@ -5904,7 +5919,11 @@ CPed::SetDuck(uint32 time, bool sth)
 
 	CAnimBlendAssociation *duckAssoc;
 	if (bCrouchWhenShooting) {
+#ifdef CROUCH
+		duckAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_IDLE, 4.0f);
+#else
 		duckAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_DUCK_WEAPON, 4.0f);
+#endif
 		duckAssoc->flags &= ~ASSOC_FADEOUTWHENDONE;
 		bIsDucking = true;
 		m_duckTimer = CTimer::GetTimeInMilliseconds() + time;
@@ -5916,6 +5935,11 @@ CPed::SetDuck(uint32 time, bool sth)
 			m_duckTimer = CTimer::GetTimeInMilliseconds() + time;
 		}
 	}
+
+#ifdef CROUCH
+	if (IsPlayer())
+		TheCamera.Cams[TheCamera.ActiveCam].m_fTargetCameraPosZ = 0.6f;
+#endif
 }
 
 void
@@ -5925,7 +5949,16 @@ CPed::Duck(void)
 		ClearDuck();
 	else if (bIsDucking && bCrouchWhenShooting) {
 		CWeaponInfo *weapon = CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType);
-		CAnimBlendAssociation *crouchAnim = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_DUCK_WEAPON);
+#ifdef CROUCH
+		CAnimBlendAssociation* crouchAnim = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_IDLE);
+		CAnimBlendAssociation* crouchForwardAnim = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_FORWARD);
+		CAnimBlendAssociation* curCrouchBackwardAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_BACKWARD);
+		CAnimBlendAssociation* curCrouchRollLeftAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_ROLL_L);
+		CAnimBlendAssociation* curCrouchRollRightAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_ROLL_R);
+		bool bIsCrouchAnims = crouchAnim || crouchForwardAnim || curCrouchBackwardAssoc || curCrouchRollLeftAssoc || curCrouchRollRightAssoc;
+#else
+		CAnimBlendAssociation* crouchAnim = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_DUCK_WEAPON);
+#endif
 		if (!crouchAnim) {
 			if(GetCrouchFireAnim(weapon))
 				crouchAnim = RpAnimBlendClumpGetAssociation(GetClump(), GetCrouchFireAnim(weapon));
@@ -5934,7 +5967,11 @@ CPed::Duck(void)
 			if(GetCrouchReloadAnim(weapon))
 				crouchAnim = RpAnimBlendClumpGetAssociation(GetClump(), GetCrouchReloadAnim(weapon));
 		}
+#ifdef CROUCH
+		if (!bIsCrouchAnims && m_nPedState != PED_ROLL) {
+#else
 		if (!crouchAnim) {
+#endif
 			bIsDucking = false;
 #if defined FIX_BUGS || defined FREE_CAM
 			if (IsPlayer())
@@ -5947,23 +5984,51 @@ CPed::Duck(void)
 void
 CPed::ClearDuck(bool clearTimer)
 {
+#ifdef CROUCH
+	if (RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_IDLE))
+		return;
+
+	CAnimBlendAssociation* crouchForwardAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_FORWARD);
+	CAnimBlendAssociation* curCrouchBackwardAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_BACKWARD);
+#endif
 	CAnimBlendAssociation *animAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_DUCK_DOWN);
 	if (!animAssoc) {
 		animAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_DUCK_LOW);
 	}
 	if (!animAssoc) {
+#ifdef CROUCH
+		animAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_IDLE);
+		
+#else
 		animAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_DUCK_WEAPON);
+#endif
 	}
 
 	if (animAssoc) {
 		animAssoc->flags |= ASSOC_DELETEFADEDOUT;
 		animAssoc->blendDelta = -4.0f;
 	}
+#ifdef CROUCH
+	if (crouchForwardAssoc) {
+		crouchForwardAssoc->flags |= ASSOC_DELETEFADEDOUT;
+		crouchForwardAssoc->blendDelta = -5.0f;
+	}
+
+	if (curCrouchBackwardAssoc) {
+		curCrouchBackwardAssoc->flags |= ASSOC_DELETEFADEDOUT;
+		curCrouchBackwardAssoc->blendDelta = -5.0f;
+	}
+#endif
 	bIsDucking = false;
 
 	if (clearTimer) {
 		m_duckTimer = 0;
 	}
+
+#ifdef CROUCH
+	if (IsPlayer())
+		TheCamera.Cams[TheCamera.ActiveCam].m_fTargetCameraPosZ = 0.0f;
+#endif
 }
 
 void
@@ -6440,11 +6505,16 @@ CPed::KillCharOnFootArmed(CVector &ourPos, CVector &targetPos, CVector &distWith
 		SetMoveState(PEDMOVE_STILL);
 		return CANT_ATTACK;
 	}
+#ifndef IMPROVED_TECH_PART // wanted system
 	if (m_pedInObjective->IsPlayer()) {
 		CPlayerPed *player = FindPlayerPed();
 		if (m_nPedType == PEDTYPE_COP && player->m_pWanted->m_bIgnoredByCops
 			|| player->m_pWanted->m_bIgnoredByEveryone
+#ifdef IMPROVED_TECH_PART
+			|| (m_pedInObjective->bIsInWater && !player->m_pWanted->IsPlayerHides())
+#else
 			|| m_pedInObjective->bIsInWater
+#endif
 			|| m_pedInObjective->m_nPedState == PED_ARRESTED) {
 
 			if (m_nPedState != PED_ARREST_PLAYER)
@@ -6453,6 +6523,7 @@ CPed::KillCharOnFootArmed(CVector &ourPos, CVector &targetPos, CVector &distWith
 			return CANT_ATTACK;
 		}
 	}
+#endif
 	if (m_pedInObjective->IsPlayer() && m_nPedType != PEDTYPE_COP
 		&& CharCreatedBy != MISSION_CHAR && FindPlayerPed()->m_pWanted->m_CurrentCops != 0) {
 		SetObjective(OBJECTIVE_FLEE_ON_FOOT_TILL_SAFE);
@@ -6469,7 +6540,12 @@ CPed::KillCharOnFootArmed(CVector &ourPos, CVector &targetPos, CVector &distWith
 	float wepRangeAdjusted = wepRange / 3.f;
 
 	float distWithTargetSc = distWithTarget.Magnitude();
+#ifdef IMPROVED_TECH_PART // wanted system
+	if (m_pedInObjective->bInVehicle && m_pedInObjective->m_nPedState != PED_DRAG_FROM_CAR && !m_pedInObjective->IsPlayer()
+		|| (m_pedInObjective->bInVehicle && m_pedInObjective->m_nPedState != PED_DRAG_FROM_CAR && m_pedInObjective == FindPlayerPed() && !FindPlayerPed()->m_pWanted->IsPlayerHides())) {
+#else
 	if (m_pedInObjective->bInVehicle && m_pedInObjective->m_nPedState != PED_DRAG_FROM_CAR) {
+#endif
 		CVehicle *vehOfTarget = m_pedInObjective->m_pMyVehicle;
 		if (vehOfTarget->bIsInWater || vehOfTarget->GetStatus() == STATUS_PLAYER_DISABLED
 			|| m_pedInObjective->IsPlayer() && CPad::GetPad(0)->ArePlayerControlsDisabled()) {
@@ -6532,7 +6608,13 @@ CPed::KillCharOnFootArmed(CVector &ourPos, CVector &targetPos, CVector &distWith
 		}
 		return ATTACK_IN_PROGRESS;
 	}
+#ifdef IMPROVED_TECH_PART // wanted system
+	bool isCopAndPlayerHides = m_nPedType == PEDTYPE_COP && m_pedInObjective == FindPlayerPed() && FindPlayerPed()->m_pWanted->IsPlayerHides();
+
+	if (m_nMoveState == PEDMOVE_STILL && IsPedInControl() && !isCopAndPlayerHides) {
+#else
 	if (m_nMoveState == PEDMOVE_STILL && IsPedInControl()) {
+#endif
 		SetLookFlag(m_pedInObjective, false);
 		TurnBody();
 	}
@@ -6569,14 +6651,32 @@ CPed::KillCharOnFootArmed(CVector &ourPos, CVector &targetPos, CVector &distWith
 		}
 	}
 
+#ifdef IMPROVED_TECH_PART // AI
+	CEntity* hitEntity;
+	bool obstacle = CWorld::ProcessLineOfSight(m_pedInObjective->GetPosition(), GetPosition(), CColPoint{}, hitEntity, true, true, false, true, false, true);
+
+	CVehicle* hitVehicle = (CVehicle*)hitEntity;
+	bool bShootIsDangerous = hitVehicle && hitVehicle->IsHighVehicle();
+
+	if (!bKindaStayInSamePlace && !bStopAndShoot && m_nPedState != PED_ATTACK && !bDuckAndCover && !killPlayerInNoPoliceZone || 
+		(obstacle && isCopAndPlayerHides || obstacle && !bShootIsDangerous)) {
+#else
 	if (!bKindaStayInSamePlace && !bStopAndShoot && m_nPedState != PED_ATTACK && !bDuckAndCover && !killPlayerInNoPoliceZone) {
+#endif
 		if (distWithTargetSc > wepRange
+#ifdef IMPROVED_TECH_PART // AI
+			|| (obstacle && isCopAndPlayerHides || obstacle && bShootIsDangerous)
+#endif
 			|| m_pedInObjective->m_getUpTimer > CTimer::GetTimeInMilliseconds()
 			|| m_pedInObjective->m_nPedState == PED_ARRESTED
 			|| m_pedInObjective->EnteringCar() && distWithTargetSc < 3.0f) {
 
 			if (m_pedInObjective->EnteringCar())
 				wepRangeAdjusted = 2.0f;
+#ifdef IMPROVED_TECH_PART // AI
+			else if (obstacle && isCopAndPlayerHides || obstacle && bShootIsDangerous)
+				wepRangeAdjusted = 1.0f;
+#endif
 
 			if (bUsePedNodeSeek) {
 				CVector bestCoords(0.0f, 0.0f, 0.0f);
@@ -6592,7 +6692,11 @@ CPed::KillCharOnFootArmed(CVector &ourPos, CVector &targetPos, CVector &distWith
 			} else {
 				SetSeek(m_pedInObjective, wepRangeAdjusted);
 			}
+#ifdef IMPROVED_TECH_PART // AI
+			if (m_pedInObjective->m_pCurrentPhysSurface && distWithTargetSc < 5.0f && (!obstacle && isCopAndPlayerHides || obstacle && bShootIsDangerous)) {
+#else
 			if (m_pedInObjective->m_pCurrentPhysSurface && distWithTargetSc < 5.0f) {
+#endif
 				bStopAndShoot = true;
 				b158_8 = true;
 				SetMoveState(PEDMOVE_STILL);
@@ -6603,7 +6707,11 @@ CPed::KillCharOnFootArmed(CVector &ourPos, CVector &targetPos, CVector &distWith
 			return ATTACK_IN_PROGRESS;
 		}
 	}
+#ifdef IMPROVED_TECH_PART // wanted system
+	if (m_attackTimer < CTimer::GetTimeInMilliseconds() && (!FindPlayerPed()->m_pWanted->IsPlayerHides() || CharCreatedBy == MISSION_CHAR)
+#else
 	if (m_attackTimer < CTimer::GetTimeInMilliseconds()
+#endif
 		&& distWithTargetSc < wepRange && m_pedInObjective->m_nPedState != PED_GETUP && m_pedInObjective->m_nPedState != PED_DRAG_FROM_CAR) {
 
 		if (bIsDucking && !bCrouchWhenShooting) {
@@ -6611,7 +6719,11 @@ CPed::KillCharOnFootArmed(CVector &ourPos, CVector &targetPos, CVector &distWith
 			if (!duckAnim)
 				duckAnim = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_DUCK_LOW);
 			if (!duckAnim)
+#ifdef CROUCH
+				duckAnim = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_IDLE);
+#else
 				duckAnim = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_DUCK_WEAPON);
+#endif
 
 			if (duckAnim) {
 				duckAnim->flags |= ASSOC_DELETEFADEDOUT;
@@ -6757,8 +6869,16 @@ CPed::KillCharOnFootMelee(CVector &ourPos, CVector &targetPos, CVector &distWith
 	if (GetWeapon()->m_eWeaponType == WEAPONTYPE_UNARMED && !IsPlayer() && !(m_pedStats->m_flags & STAT_CAN_KICK))
 		wepRange -= 0.3f;
 
+#ifdef IMPROVED_TECH_PART // wanted system
+	bool isCopAndPlayerHides = false;
+	if (m_nPedType == PEDTYPE_COP && victimPlayer && victimPlayer->m_pWanted->IsPlayerHides())
+		isCopAndPlayerHides = true;
+
+	if (distWithTargetSc <= 5.f && victimPlayer && !victimPlayer->m_bNoPosForMeleeAttack && !isCopAndPlayerHides) {
+#else
 	if (distWithTargetSc <= 5.f && victimPlayer && !victimPlayer->m_bNoPosForMeleeAttack) {
-	
+#endif
+
 		if (m_pedInObjective->EnteringCar() && wepRange > 2.f) {
 			m_vecSeekPos = m_pedInObjective->GetPosition();
 			wepRange = 1.0f;
@@ -6821,7 +6941,11 @@ CPed::KillCharOnFootMelee(CVector &ourPos, CVector &targetPos, CVector &distWith
 		}
 		return ATTACK_IN_PROGRESS;
 	}
+#ifdef IMPROVED_TECH_PART // wanted system
+	if (m_nMoveState == PEDMOVE_STILL && IsPedInControl() && !isCopAndPlayerHides) {
+#else
 	if (m_nMoveState == PEDMOVE_STILL && IsPedInControl()) {
+#endif
 		SetLookFlag(m_pedInObjective, false);
 		if(m_nPedState == PED_IDLE || m_nPedState == PED_ATTACK || m_nPedState == PED_FIGHT)
 			TurnBody();
@@ -6898,7 +7022,11 @@ CPed::KillCharOnFootMelee(CVector &ourPos, CVector &targetPos, CVector &distWith
 			if (!duckAnim)
 				duckAnim = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_DUCK_LOW);
 			if (!duckAnim)
+#ifdef CROUCH
+				duckAnim = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_IDLE);
+#else
 				duckAnim = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_DUCK_WEAPON);
+#endif
 
 			if (duckAnim) {
 				duckAnim->flags |= ASSOC_DELETEFADEDOUT;

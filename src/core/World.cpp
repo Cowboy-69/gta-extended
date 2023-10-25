@@ -1862,7 +1862,11 @@ CWorld::SetPedsChoking(float x, float y, float z, float radius, CEntity* reason)
 	for (int32 i = poolSize - 1; i >= 0; i--) {
 		CPed* pPed = CPools::GetPedPool()->GetSlot(i);
 		// suspicious copypaste
+#ifdef IMPROVED_TECH_PART
+		if (pPed && pPed->m_nPedState != PED_DEAD && (!pPed->bInVehicle || pPed->m_pMyVehicle->IsBike()) && !pPed->m_pFire && !pPed->bFireProof && (pPed->CharCreatedBy != MISSION_CHAR || pPed->IsPlayer())) {
+#else
 		if (pPed && pPed->m_nPedState != PED_DEAD && !pPed->bInVehicle && !pPed->m_pFire && !pPed->bFireProof && pPed->CharCreatedBy != MISSION_CHAR) {
+#endif
 			if (Abs(pPed->GetPosition().z - z) < 5.0f && Abs(pPed->GetPosition().x - x) < radius &&
 				Abs(pPed->GetPosition().y - y) < radius) {
 				if (!pPed->IsPlayer())
@@ -2136,6 +2140,25 @@ CWorld::TriggerExplosionSectorList(CPtrList &list, const CVector &position, floa
 			CObject *pObject = (CObject *)pEntity;
 			CVehicle *pVehicle = (CVehicle *)pEntity;
 			if(!pEntity->bExplosionProof && (!pEntity->IsPed() || !pPed->bInVehicle)) {
+#ifdef IMPROVED_TECH_PART // environment
+				if (fMagnitude > 1.5f) {
+					if (pEntity->IsPed() && !CWorld::GetIsLineOfSightClear(pPed->GetPosition(), position, true, false, false, false, false, true))
+						continue;
+
+					if (pEntity->IsVehicle() && pVehicle->IsBike()) {
+						if (!CWorld::GetIsLineOfSightClear(pEntity->GetPosition(), position, true, false, false, false, false, true))
+							continue;
+					} else if (pEntity->IsVehicle()) {
+						if (!CWorld::GetIsLineOfSightClear(pEntity->GetPosition() + pEntity->GetForward() * 1.5f, position, true, false, false, false, false, true) &&
+							!CWorld::GetIsLineOfSightClear(pEntity->GetPosition(), position, true, false, false, false, false, true) &&
+							!CWorld::GetIsLineOfSightClear(pEntity->GetPosition() - pEntity->GetForward() * 1.5f, position, true, false, false, false, false, true))
+							continue;
+					}
+
+					if (pEntity->IsObject() && !CWorld::GetIsLineOfSightClear(pObject->GetPosition(), position, true, false, false, false, false, true))
+						continue;
+				}
+#endif
 				if(pEntity->GetIsStatic()) {
 					if(pEntity->IsObject()) {
 						if (fPower > pObject->m_fUprootLimit || IsFence(pObject->GetModelIndex())) {
@@ -2193,7 +2216,7 @@ CWorld::TriggerExplosionSectorList(CPtrList &list, const CVector &position, floa
 						                        0.0f, 0.0f, fPointZ);
 					}
 					switch(pEntity->GetType()) {
-					case ENTITY_TYPE_VEHICLE:
+					case ENTITY_TYPE_VEHICLE: {
 						if(pEntity->GetStatus() == STATUS_SIMPLE) {
 							pEntity->SetStatus(STATUS_PHYSICS);
 							CCarCtrl::SwitchVehicleToRealPhysics(pVehicle);
@@ -2204,6 +2227,7 @@ CWorld::TriggerExplosionSectorList(CPtrList &list, const CVector &position, floa
 							if(pVehicle->m_nBombTimer) pVehicle->m_nBombTimer /= 10;
 						}
 						break;
+					}
 					case ENTITY_TYPE_PED: {
 						int8 direction = pPed->GetLocalDirection(-vecForceDir);
 						pPed->bIsStanding = false;
@@ -2211,7 +2235,11 @@ CWorld::TriggerExplosionSectorList(CPtrList &list, const CVector &position, floa
 						float fDamage = 250.0f * fDamageMultiplier;
 						pPed->InflictDamage(pCreator, WEAPONTYPE_EXPLOSION, fDamage,
 						                    PEDPIECE_TORSO, direction);
+#ifdef SWIMMING
+						if(pPed->m_nPedState != PED_DIE && !pPed->bIsSwimming)
+#else
 						if(pPed->m_nPedState != PED_DIE)
+#endif
 							pPed->SetFall(2000,
 							              (AnimationId)(direction + ANIM_STD_HIGHIMPACT_FRONT), 0);
 						if(pCreator && pCreator->IsPed()) {

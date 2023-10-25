@@ -43,7 +43,6 @@
 #include "Fluff.h"
 #include "Script.h"
 #include "Wanted.h"
-#include "debugmenu.h"
 
 #ifndef GTA_PS2
 #define CHANNEL_PLAYER_VEHICLE_ENGINE m_nActiveSamples
@@ -1288,12 +1287,13 @@ cAudioManager::ProcessCarHeli(cVehicleParams& params)
 					if (hunterBool) {
 						m_sQueueSample.m_nSampleIndex = SFX_HELI_APACHE_4;
 						m_sQueueSample.m_nBankIndex = SFX_BANK_0;
-						m_sQueueSample.m_nFrequency = 3000 * propellerSpeed + 30000;
+						freq = 3000 * propellerSpeed + 30000;
 					} else {
 						m_sQueueSample.m_nSampleIndex = SFX_CAR_HELI_STA;
 						m_sQueueSample.m_nBankIndex = SFX_BANK_0;
-						m_sQueueSample.m_nFrequency = 3000 * propellerSpeed + 6000;
+						freq = 3000 * propellerSpeed + 6000;
 					}
+					m_sQueueSample.m_nFrequency = freq;
 					m_sQueueSample.m_nCounter = 12;
 					m_sQueueSample.m_bIs2D = FALSE;
 					m_sQueueSample.m_nPriority = 1;
@@ -5185,6 +5185,26 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 			SET_SOUND_REFLECTION(TRUE);
 			break;
 		}
+#ifdef SWIMMING
+		case SOUND_MOVING_IN_WATER:
+			m_sQueueSample.m_nCounter = 38;
+			m_sQueueSample.m_nSampleIndex = SFX_BOAT_WATER_LOOP;
+			m_sQueueSample.m_nBankIndex = SFX_BANK_0;
+			m_sQueueSample.m_bIs2D = FALSE;
+			m_sQueueSample.m_nPriority = 3;
+			m_sQueueSample.m_nFrequency = 22050;
+			m_sQueueSample.m_nLoopCount = 0;
+			Vol = 15;
+			SET_EMITTING_VOLUME(Vol);
+			SET_LOOP_OFFSETS(m_sQueueSample.m_nSampleIndex)
+				m_sQueueSample.m_fSpeedMultiplier = 2.0f;
+			maxDist = BOAT_MOVING_OVER_WATER_MAX_DIST;
+			m_sQueueSample.m_bStatic = FALSE;
+			m_sQueueSample.m_nFramesToPlay = 6;
+			SET_SOUND_REVERB(TRUE);
+			SET_SOUND_REFLECTION(FALSE);
+			break;
+#endif
 		default:
 			SetupPedComments(params, sound);
 			continue;
@@ -5321,7 +5341,7 @@ cAudioManager::SetupPedComments(cPedParams &params, uint16 sound)
 		else
 			Vol = PED_COMMENT_VOLUME_BEHIND_WALL;
 		m_sQueueSample.m_nVolume = ComputeVolume(Vol, maxDist, m_sQueueSample.m_fDistance);
-		pedComment.m_nLoadingTimeout = 10;
+		pedComment.m_nProcess = 10;
 		if (m_sQueueSample.m_nVolume > 0) {
 			pedComment.m_nEntityIndex = m_sQueueSample.m_nEntityIndex;
 			pedComment.m_vecPos = m_sQueueSample.m_vecPos;
@@ -7909,7 +7929,7 @@ cAudioManager::DebugPlayPedComment(int32 sound)
 	tPedComment pedComment;
 
 	pedComment.m_nSampleIndex = sound;
-	pedComment.m_nLoadingTimeout = 10;
+	pedComment.m_nProcess = 10;
 	pedComment.m_nEntityIndex = 0;
 	pedComment.m_fDistance = 0.0f;
 	pedComment.m_nVolume = 99;
@@ -7921,20 +7941,6 @@ cAudioManager::DebugPlayPedComment(int32 sound)
 
 	m_sPedComments.Add(&pedComment);
 }
-
-#ifdef DEBUGMENU
-uint32 nDebugPlayPedComment = SAMPLEBANK_PED_START;
-
-void DebugMenuPlayPedComment()
-{
-	AudioManager.DebugPlayPedComment(nDebugPlayPedComment);
-}
-
-SETTWEAKPATH("Audio");
-TWEAKUINT32N(nDebugPlayPedComment, SAMPLEBANK_PED_START, SAMPLEBANK_PED_END, 1, "Ped Comment ID");
-TWEAKFUNCN(DebugMenuPlayPedComment, "Play Ped Comment");
-
-#endif
 
 void
 cPedComments::Add(tPedComment *com)
@@ -7972,7 +7978,6 @@ cPedComments::Process()
 {
 	uint32 sampleIndex;
 	uint8 queue;
-	bool8 bIsPlayerComment;
 	static uint8 counter = 0;
 	static uint32 prevSamples[10] = { NO_SAMPLE, NO_SAMPLE, NO_SAMPLE, NO_SAMPLE, NO_SAMPLE, NO_SAMPLE, NO_SAMPLE, NO_SAMPLE, NO_SAMPLE, NO_SAMPLE };
 
@@ -7982,36 +7987,19 @@ cPedComments::Process()
 		for(int i = 0; i < ARRAY_SIZE(prevSamples); i++) {
 			if(m_aPedCommentQueue[m_nActiveQueue][m_aPedCommentOrderList[m_nActiveQueue][0]].m_nSampleIndex ==
 			   prevSamples[(counter + 1 + i) % ARRAY_SIZE(prevSamples)]) {
-				m_aPedCommentQueue[m_nActiveQueue][m_aPedCommentOrderList[m_nActiveQueue][0]].m_nLoadingTimeout = -1;
+				m_aPedCommentQueue[m_nActiveQueue][m_aPedCommentOrderList[m_nActiveQueue][0]].m_nProcess = -1;
 				goto PedCommentAlreadyAdded;
 			}
 		}
-#if defined(GTA_PS2) || defined(FIX_BUGS)
-		uint8 IsLoadedResult;
 		sampleIndex = m_aPedCommentQueue[m_nActiveQueue][m_aPedCommentOrderList[m_nActiveQueue][0]].m_nSampleIndex;
-		if (sampleIndex >= PLAYER_COMMENTS_START && sampleIndex <= PLAYER_COMMENTS_END) {
-			IsLoadedResult = SampleManager.IsMissionAudioLoaded(MISSION_AUDIO_PLAYER_COMMENT, sampleIndex);
-			bIsPlayerComment = TRUE;
-		} else {
-			IsLoadedResult = SampleManager.IsPedCommentLoaded(sampleIndex);
-			bIsPlayerComment = FALSE;
-		}
-		switch(IsLoadedResult) {
-#else
-		switch(SampleManager.IsPedCommentLoaded(sampleIndex)) {
-#endif
-		case LOADING_STATUS_NOT_LOADED:
+		switch(SampleManager.IsPedCommentLoaded(sampleIndex)) { // yes, this was a switch
+		case FALSE:
 #if defined(GTA_PC) && !defined(FIX_BUGS)
 			if(!m_bDelay)
 #endif
-#if defined(GTA_PS2) || defined(FIX_BUGS)
-				if (bIsPlayerComment)
-					SampleManager.LoadMissionAudio(MISSION_AUDIO_PLAYER_COMMENT, sampleIndex);
-				else
-#endif
-					SampleManager.LoadPedComment(sampleIndex);
+				SampleManager.LoadPedComment(sampleIndex);
 			break;
-		case LOADING_STATUS_LOADED:
+		case TRUE:
 			AudioManager.m_sQueueSample.m_nEntityIndex = m_aPedCommentQueue[m_nActiveQueue][m_aPedCommentOrderList[m_nActiveQueue][0]].m_nEntityIndex;
 			AudioManager.m_sQueueSample.m_nCounter = 0;
 			AudioManager.m_sQueueSample.m_nSampleIndex = sampleIndex;
@@ -8053,7 +8041,7 @@ cPedComments::Process()
 				(sampleIndex >= SFX_POLICE_HELI_1 && sampleIndex <= SFX_POLICE_HELI_20))
 				AudioManager.m_sQueueSample.m_MaxDistance = PED_COMMENT_POLICE_HELI_MAX_DIST;
 	#ifndef ATTACH_RELEASING_SOUNDS_TO_ENTITIES
-			else if (sampleIndex >= PLAYER_COMMENTS_START && sampleIndex <= PLAYER_COMMENTS_END) { // check if player sfx
+			else if (sampleIndex >= SFX_PLAYER_ANGRY_BUSTED_1 && sampleIndex <= SFX_PLAYER_ON_FIRE_16) { // check if player sfx
 				AudioManager.m_sQueueSample.m_bIs2D = TRUE;
 				AudioManager.m_sQueueSample.m_nPan = 63;
 			}
@@ -8065,7 +8053,7 @@ cPedComments::Process()
 			if (CTimer::GetIsSlowMotionActive())
 				AudioManager.m_sQueueSample.m_nFrequency >>= 1;
 #endif
-			m_aPedCommentQueue[m_nActiveQueue][m_aPedCommentOrderList[m_nActiveQueue][0]].m_nLoadingTimeout = -1;
+			m_aPedCommentQueue[m_nActiveQueue][m_aPedCommentOrderList[m_nActiveQueue][0]].m_nProcess = -1;
 			prevSamples[counter++] = sampleIndex;
 			if(counter == 10) counter = 0;
 			AudioManager.AddSampleToRequestedQueue();
@@ -8074,8 +8062,8 @@ cPedComments::Process()
 			m_bDelay = TRUE;
 #endif
 			break;
-		case LOADING_STATUS_LOADING: break;
-		default: break;
+		default:
+			break;
 		}
 	}
 
@@ -8089,8 +8077,8 @@ PedCommentAlreadyAdded:
 		m_nActiveQueue = 0;
 	}
 	for (uint8 i = 0; i < m_nPedCommentCount[queue]; i++) {
-		if (m_aPedCommentQueue[queue][m_aPedCommentOrderList[queue][i]].m_nLoadingTimeout > 0) {
-			m_aPedCommentQueue[queue][m_aPedCommentOrderList[queue][i]].m_nLoadingTimeout--;
+		if (m_aPedCommentQueue[queue][m_aPedCommentOrderList[queue][i]].m_nProcess > 0) {
+			m_aPedCommentQueue[queue][m_aPedCommentOrderList[queue][i]].m_nProcess--;
 			Add(&m_aPedCommentQueue[queue][m_aPedCommentOrderList[queue][i]]);
 		}
 	}
@@ -10116,7 +10104,7 @@ cAudioManager::ProcessMissionAudioSlot(uint8 slot)
 			m_nMissionAudioLoadingStatus[slot] = LOADING_STATUS_LOADED;
 			nFramesUntilFailedLoad[slot] = 0;
 			break;
-		case LOADING_STATUS_LOADING:
+		case LOADING_STATUS_FAILED:
 			if (++nFramesUntilFailedLoad[slot] >= 120) {
 				nFramesForPretendPlaying[slot] = 0;
 				g_bMissionAudioLoadFailed[slot] = TRUE;

@@ -315,7 +315,11 @@ CPlayerInfo::Process(void)
 				if (!surfaceBelowVeh || !CBridge::ThisIsABridgeObjectMovingUp(surfaceBelowVeh->GetModelIndex())) {
 					CVehicle *veh = m_pPed->m_pMyVehicle;
 					if (!veh->IsBoat() || veh->m_nDoorLock == CARLOCK_LOCKED_PLAYER_INSIDE) {
+#ifdef NEW_CHEATS
+						if ((veh->GetStatus() != STATUS_WRECKED || m_pPed->bInvincibleCheat) && veh->GetStatus() != STATUS_TRAIN_MOVING && veh->m_nDoorLock != CARLOCK_LOCKED_PLAYER_INSIDE) {
+#else
 						if (veh->GetStatus() != STATUS_WRECKED && veh->GetStatus() != STATUS_TRAIN_MOVING && veh->m_nDoorLock != CARLOCK_LOCKED_PLAYER_INSIDE) {
+#endif
 							bool canJumpOff = false;
 							if (veh->m_vehType == VEHICLE_TYPE_BIKE) {
 								canJumpOff = veh->CanPedJumpOffBike();
@@ -324,7 +328,9 @@ CPlayerInfo::Process(void)
 							}
 
 							if (canJumpOff || veh->m_vecMoveSpeed.Magnitude() < 0.1f) {
+#ifndef SWIMMING
 								if (!veh->bIsInWater)
+#endif
 									m_pPed->SetObjective(OBJECTIVE_LEAVE_CAR, veh);
 
 							} else if (veh->GetStatus() != STATUS_PLAYER && veh != CGameLogic::pShortCutTaxi) {
@@ -391,6 +397,11 @@ CPlayerInfo::Process(void)
 							m_pPed->m_vehDoor = 0;
 							m_pPed->SetEnterCar(carBelow, m_pPed->m_vehDoor);
 						}
+#ifdef SWIMMING
+					} else if (m_pPed->bIsSwimming && carBelow->GetModelIndex() == MI_SEASPAR) {
+						m_pPed->SetObjective(OBJECTIVE_ENTER_CAR_AS_DRIVER, carBelow);
+						m_pPed->WarpPedIntoCar(carBelow);
+#endif
 					} else {
 						m_pPed->SetObjective(OBJECTIVE_ENTER_CAR_AS_DRIVER, carBelow);
 					}

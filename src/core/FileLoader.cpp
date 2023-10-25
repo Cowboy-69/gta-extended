@@ -1096,6 +1096,17 @@ CFileLoader::Load2dEffect(const char *line)
 	CTxdStore::PopCurrentTxd();
 }
 
+#ifdef WANTED_PATHS
+void CFileLoader::LoadWantedPathNode(const char* line, int pathID, int pathNode)
+{
+	float x, y, z;
+
+	sscanf(line, "%f %f %f", &x, &y, &z);
+
+	ThePaths.StoreWantedNode(pathID, pathNode, x, y, z);
+}
+#endif
+
 void
 CFileLoader::LoadScene(const char *filename)
 {
@@ -1107,6 +1118,9 @@ CFileLoader::LoadScene(const char *filename)
 		OCCL,
 		PICK,
 		PATH,
+#ifdef WANTED_PATHS
+		WANTED,
+#endif
 	};
 	char *line;
 	int fd;
@@ -1116,6 +1130,12 @@ CFileLoader::LoadScene(const char *filename)
 	section = NONE;
 	pathIndex = -1;
 	debug("Creating objects from %s...\n", filename);
+
+#ifdef WANTED_PATHS
+	int maxWantedPathNodes;
+	int currentWantedPathNode;
+	int wantedPathID;
+#endif
 
 	fd = CFileMgr::OpenFile(filename, "rb");
 	assert(fd > 0);
@@ -1130,6 +1150,9 @@ CFileLoader::LoadScene(const char *filename)
 			else if(isLine4(line, 'p','i','c','k')) section = PICK;
 			else if(isLine4(line, 'p','a','t','h')) section = PATH;
 			else if(isLine4(line, 'o','c','c','l')) section = OCCL;
+#ifdef WANTED_PATHS
+			else if (isLine4(line, 'w', 'a', 'n', 't', 'e', 'd')) section = WANTED;
+#endif
 		}else if(isLine3(line, 'e','n','d')){
 			section = NONE;
 		}else switch(section){
@@ -1165,6 +1188,19 @@ CFileLoader::LoadScene(const char *filename)
 					pathIndex = -1;
 			}
 			break;
+#ifdef WANTED_PATHS
+		case WANTED:
+			if (pathIndex == -1) {
+				sscanf(line, "%i %i", &wantedPathID, &maxWantedPathNodes);
+				currentWantedPathNode = 0;
+				pathIndex = 0;
+			} else {
+				LoadWantedPathNode(line, wantedPathID, currentWantedPathNode);
+				currentWantedPathNode++;
+				if (currentWantedPathNode == maxWantedPathNodes)
+					pathIndex = -1;
+			}
+#endif
 		}
 	}
 	CFileMgr::CloseFile(fd);

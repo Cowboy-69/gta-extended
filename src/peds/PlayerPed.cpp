@@ -24,12 +24,23 @@
 #include "PedPlacement.h"
 #include "VarConsole.h"
 #include "SaveBuf.h"
+#ifdef SWIMMING
+#include "Floater.h"
+#include "Particle.h"
+#endif
+#ifdef IMPROVED_MENU_AND_INPUT
+#include "Frontend.h"
+#endif
 
 #define PAD_MOVE_TO_GAME_WORLD_MOVE 60.0f
 
 bool CPlayerPed::bDontAllowWeaponChange;
 #ifndef MASTER
 bool CPlayerPed::bDebugPlayerInfo;
+#endif
+
+#ifdef NEW_CHEATS
+bool CPlayerPed::bInvincibleCheat;
 #endif
 
 const uint32 CPlayerPed::nSaveStructSize =
@@ -101,11 +112,26 @@ CPlayerPed::CPlayerPed(void) : CPed(PEDTYPE_PLAYER1)
 #ifdef FREE_CAM
 	m_bFreeAimActive = false;
 #endif
+
+#ifdef AIMING
+	bIsPlayerAiming = false;
+#endif
+
+#ifdef SWIMMING
+	bIsTiredSwimmingFast = false;
+#endif
+
+#ifdef IMPROVED_MENU_AND_INPUT
+	bIsAutoAiming = false;
+#endif
 }
 
 void
 CPlayerPed::ClearWeaponTarget()
 {
+#ifdef IMPROVED_MENU_AND_INPUT
+	bIsAutoAiming = false;
+#endif
 	if (m_nPedType == PEDTYPE_PLAYER1) {
 		SetWeaponLockOnTarget(nil);
 		TheCamera.ClearPlayerWeaponMode();
@@ -199,6 +225,261 @@ CPlayerPed::ReactivatePlayerPed(int32 index)
 {
 	CWorld::Add(CWorld::Players[index].m_pPed);
 }
+
+#ifdef CROUCH
+void CPlayerPed::ProcessCrouch(void)
+{
+	if (!bIsDucking)
+		return;
+
+	CAnimBlendAssociation* curCrouchIdleAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_IDLE);
+	CAnimBlendAssociation* curCrouchForwardAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_FORWARD);
+	CAnimBlendAssociation* curCrouchBackwardAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_BACKWARD);
+	CAnimBlendAssociation* curCrouchRollLeftAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_ROLL_L);
+	CAnimBlendAssociation* curCrouchRollRightAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_ROLL_R);
+	bool bIsCurRollAnim = curCrouchRollLeftAssoc || curCrouchRollRightAssoc;
+	bool bIsCurMoveAnim = curCrouchForwardAssoc || curCrouchBackwardAssoc;
+
+	CAnimBlendAssociation* curCrouchFireAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_WEAPON_CROUCHFIRE);
+
+	CPad* pad = GetPadFromPlayer(this);
+	int16 padUpDown = pad->GetPedWalkUpDown();
+	int16 padLeftRight = pad->GetPedWalkLeftRight();
+
+	if (curCrouchForwardAssoc)
+		curCrouchForwardAssoc->speed = Clamp(m_fMoveSpeed - 0.5f, 0.5f, 1.0f);
+
+	if (curCrouchBackwardAssoc)
+		curCrouchBackwardAssoc->speed = 0.5f;
+
+	if (m_nPedState == PED_ROLL)
+	{
+		if (!bIsCurRollAnim)
+			RestorePreviousState();
+
+		return;
+	}
+
+	if (bIsPlayerAiming) {
+		TheCamera.Cams[TheCamera.ActiveCam].m_fTargetCameraPosZ = 0.4f;
+
+		if ((m_fMoveSpeed < 0.1f || (padLeftRight != 0 && padUpDown == 0)) && !curCrouchIdleAssoc && !bIsCurRollAnim || m_nPedState == PED_ROLL)
+			curCrouchIdleAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_IDLE, 4.0f);
+
+		if (m_fMoveSpeed > 0.1f && !bIsCurMoveAnim && !bIsCurRollAnim && (padLeftRight < -20 || padLeftRight > 20)) {
+			if (curCrouchForwardAssoc)
+				delete curCrouchForwardAssoc;
+
+			if (curCrouchBackwardAssoc)
+				delete curCrouchBackwardAssoc;
+
+			if (curCrouchFireAssoc) {
+				delete curCrouchFireAssoc;
+				ClearPointGunAt();
+			}
+
+			float angleToFace;
+			angleToFace = CGeneral::GetRadianAngleBetweenPoints(
+				GetPosition().x - TheCamera.GetRight().x, GetPosition().y - TheCamera.GetRight().y,
+				GetPosition().x, GetPosition().y);
+			angleToFace = CGeneral::LimitRadianAngle(angleToFace);
+			m_fRotationCur = CGeneral::LimitRadianAngle(m_fRotationCur);
+			m_fRotationCur = angleToFace;
+
+			SetPedState(PED_ROLL);
+
+			delete curCrouchIdleAssoc;
+
+			if (padLeftRight < 0) {
+				curCrouchRollLeftAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_ROLL_L, 4.0f);
+				curCrouchRollLeftAssoc->SetFinishCallback(FinishRollCB, this);
+			} else if (padLeftRight > 0) {
+				curCrouchRollRightAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_ROLL_R, 4.0f);
+				curCrouchRollRightAssoc->SetFinishCallback(FinishRollCB, this);
+			}
+
+			return;
+		}
+
+		if (m_fMoveSpeed > 0.1 && !bIsCurRollAnim) {
+			if (padUpDown != 0) {
+				if (padUpDown < 0) {
+					if (!curCrouchForwardAssoc)
+						curCrouchForwardAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_FORWARD, 4.0f);
+				} else if (padUpDown > 0) {
+					if (!curCrouchBackwardAssoc)
+						curCrouchBackwardAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_BACKWARD, 4.0f);
+				}
+			}
+		}
+	} else if (pad) {
+		if (m_fMoveSpeed < 0.1f) {
+			TheCamera.Cams[TheCamera.ActiveCam].m_fTargetCameraPosZ = 0.6f;
+		
+			if (!curCrouchIdleAssoc)
+				curCrouchIdleAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_IDLE, 4.0f);
+		}
+
+		if (m_fMoveSpeed > 0.1f) {
+			TheCamera.Cams[TheCamera.ActiveCam].m_fTargetCameraPosZ = 0.3f;
+
+			if (curCrouchIdleAssoc && !curCrouchForwardAssoc || curCrouchBackwardAssoc)
+				curCrouchForwardAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_FORWARD, 4.0f);
+		}
+	}
+}
+
+void CPlayerPed::FinishRollCB(CAnimBlendAssociation* assoc, void* arg)
+{
+	assoc->blendDelta = -1000.0f;
+
+	CPlayerPed* ped = (CPlayerPed*)arg;
+
+	CAnimManager::BlendAnimation(ped->GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_IDLE, 1000.0f);
+}
+#endif
+
+#ifdef SWIMMING
+void CPlayerPed::ProcessSwimming(void)
+{
+	if (!bIsSwimming)
+		return;
+
+#ifdef AIMING
+	if (bIsPlayerAiming)
+		bIsPlayerAiming = false;
+#endif
+
+	if (m_pFire)
+		m_pFire->Extinguish();
+
+	CAnimBlendAssociation* animAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_ROLLOUT_LHS);
+	if (!animAssoc) {
+		animAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_ROLLOUT_RHS);
+		if (!animAssoc) {
+			animAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_FALL);
+			if (!animAssoc) {
+				animAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_FALL_GLIDE);
+				if (!animAssoc) {
+					animAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_JUMP_GLIDE);
+					if (!animAssoc) {
+						animAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_JUMP_LAUNCH);
+						if (!animAssoc) {
+							animAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_FALL_ONBACK);
+							if (!animAssoc) {
+								animAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_FALL_ONBACK);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if (animAssoc) {
+		animAssoc->flags |= ASSOC_DELETEFADEDOUT;
+		animAssoc->blendDelta = -4.0f;
+	}
+
+	CAnimBlendAssociation* curSwimBreastAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_SWIM_BREAST);
+	CAnimBlendAssociation* curSwimCrawlAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_SWIM_CRAWL);
+	CAnimBlendAssociation* curSwimTreadAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_SWIM_TREAD);
+
+	SetPosition(CVector(GetPosition().x, GetPosition().y, mod_Buoyancy.m_waterlevel - 0.41f));
+
+	CPad* pad = GetPadFromPlayer(this);
+	int16 padUpDown = pad->GetPedWalkUpDown();
+	int16 padLeftRight = pad->GetPedWalkLeftRight();
+
+	if (m_fMoveSpeed < 0.1f && !curSwimTreadAssoc)
+		curSwimTreadAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_SWIM_TREAD, 4.0f);
+
+	float magnitude = 0.05f;
+	if (pad->GetSprint() && (padLeftRight != 0 || padUpDown != 0)) {
+		if (m_fCurrentStamina <= -150.0f)
+			bIsTiredSwimmingFast = true;
+
+		if (!bIsTiredSwimmingFast) {
+			UseSprintEnergy();
+
+			magnitude = 0.1f;
+		}
+	}
+	
+	if ((!pad->GetSprint() || curSwimTreadAssoc) && m_fCurrentStamina < 0.0f) {
+		bIsTiredSwimmingFast = true;
+	}
+	
+	if (m_fMoveSpeed > 0.1f && (padLeftRight != 0 || padUpDown != 0)) {
+		if (pad->GetSprint() && !bIsTiredSwimmingFast && !curSwimCrawlAssoc)
+			curSwimCrawlAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_SWIM_CRAWL, 4.0f);
+		else if ((!pad->GetSprint() || bIsTiredSwimmingFast) && !curSwimBreastAssoc)
+			curSwimBreastAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_SWIM_BREAST, 4.0f);
+
+		if (m_vecMoveSpeed.Magnitude2D() < magnitude)
+			ApplyMoveForce(GetForward() * 0.7f);
+	}
+
+	ApplyMoveForce(CVector(-m_vecMoveSpeed.x * 3.0f, -m_vecMoveSpeed.y * 3.0f, 0.0f));
+
+	if (!curSwimBreastAssoc && curSwimCrawlAssoc) {
+		DMAudio.PlayOneShot(m_audioEntityId, SOUND_MOVING_IN_WATER, 0.0f);
+
+		RwRGBA waterSprayCol = { 48, 48, 64, 0 };
+		CVector waterSprayPos = GetPosition() + GetForward() * 0.25f + CVector(0.0f, 0.0f, 1.0f);
+		CParticle::AddParticle(PARTICLE_WATERSPRAY, waterSprayPos, -m_vecMoveSpeed, nil, 0.6f, waterSprayCol);
+	}
+
+	if (pad->JumpJustDown()) {
+		CEntity* hitEntity;
+		CColPoint hitPoint;
+		bool isHit = CWorld::ProcessLineOfSight(GetPosition() + CVector(0.0f, 0.0f, 0.5f), GetPosition() + CVector(0.0f, 0.0f, 0.5f) + GetForward() * 1.5f, hitPoint, hitEntity, false, true, false, false, false, true);
+		if (!isHit)
+			isHit = CWorld::ProcessLineOfSight(GetPosition() + CVector(0.0f, 0.0f, 0.75f), GetPosition() + CVector(0.0f, 0.0f, 0.75f) + GetForward() * 1.5f, hitPoint, hitEntity, false, true, false, false, false, true);
+		
+		if (isHit && CWorld::GetIsLineOfSightClear(GetPosition(), GetPosition() + CVector(0.0f, 0.0f, 3.0f), false, true, false, false, false, true)) {
+			CVehicle* hitVehicle = (CVehicle*)hitEntity;
+			if (hitVehicle->IsBoat()) {
+				CVector startPos = hitPoint.point + GetForward() * 0.5f + CVector(0.0f, 0.0f, 3.0f);
+				CVector endPos = startPos - CVector(0.0f, 0.0f, 3.0f);
+				if (CWorld::ProcessLineOfSight(startPos, endPos, hitPoint, hitEntity, false, true, false, false, false, true)) {
+					bIsSwimming = false;
+					bAffectedByGravity = true;
+
+					SetPosition(hitPoint.point);
+
+					return;
+				}
+			}
+		}
+
+#ifdef CLIMBING
+		CColPoint hitForwardPoint;
+		CColPoint hitBackwardPoint;
+		CColPoint hitJumpBPoint;
+		if (CanPedClimbingThis(hitForwardPoint, hitBackwardPoint, hitJumpBPoint)) {
+			//RemoveSwimAnims();
+			if (curSwimBreastAssoc) {
+				delete curSwimBreastAssoc;
+			}
+
+			if (curSwimCrawlAssoc) {
+				delete curSwimCrawlAssoc;
+			}
+
+			if (curSwimTreadAssoc) {
+				delete curSwimTreadAssoc;
+			}
+
+			bIsSwimming = false;
+			bAffectedByGravity = true;
+
+			StartClimbing(hitForwardPoint, hitBackwardPoint, hitJumpBPoint);
+		}
+#endif
+	}
+}
+#endif
 
 void
 CPlayerPed::UseSprintEnergy(void)
@@ -315,6 +596,22 @@ CPlayerPed::SetInitialState(void)
 void
 CPlayerPed::SetRealMoveAnim(void)
 {
+#ifdef CROUCH
+	if (bIsDucking) {
+		ProcessCrouch();
+
+		return;
+	}
+#endif
+
+#ifdef SWIMMING
+	if (bIsSwimming) {
+		ProcessSwimming();
+
+		return;
+	}
+#endif
+
 	CAnimBlendAssociation *curWalkAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_WALK);
 	CAnimBlendAssociation *curRunAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_RUN);
 	CAnimBlendAssociation *curSprintAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_RUNFAST);
@@ -1147,6 +1444,9 @@ CPlayerPed::FindWeaponLockOnTarget(void)
 	if (!nextTarget)
 		return false;
 
+#ifdef IMPROVED_MENU_AND_INPUT
+	bIsAutoAiming = true;
+#endif
 	SetWeaponLockOnTarget(nextTarget);
 	bDontAllowWeaponChange = true;
 	SetPointGunAt(nextTarget);
@@ -1160,7 +1460,9 @@ CPlayerPed::ProcessAnimGroups(void)
 	AssocGroupId groupToSet;
 #ifdef PC_PLAYER_CONTROLS
 	if ((m_fWalkAngle <= -DEGTORAD(50.0f) || m_fWalkAngle >= DEGTORAD(50.0f))
+#ifndef IMPROVED_MENU_AND_INPUT	
 		&& TheCamera.Cams[TheCamera.ActiveCam].Using3rdPersonMouseCam()
+#endif
 		&& CanStrafeOrMouseControl()) {
 
 		if (m_fWalkAngle >= -DEGTORAD(130.0f) && m_fWalkAngle <= DEGTORAD(130.0f)) {
@@ -1232,6 +1534,11 @@ CPlayerPed::ProcessAnimGroups(void)
 void
 CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 {
+#ifdef SWIMMING
+	if (bIsSwimming)
+		return;
+#endif
+
 	CWeaponInfo *weaponInfo = CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType);
 	if (m_bHasLockOnTarget && !m_pPointGunAt) {
 		TheCamera.ClearPlayerWeaponMode();
@@ -1239,7 +1546,11 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 		ClearPointGunAt();
 	}
 
+#ifdef CROUCH
+	if (padUsed->DuckJustDown() && !bIsDucking && m_nMoveState != PEDMOVE_SPRINT && weaponInfo->m_nWeaponSlot != WEAPONSLOT_HEAVY && GetWeapon()->m_eWeaponType != WEAPONTYPE_CHAINSAW) {
+#else
 	if (padUsed->DuckJustDown() && !bIsDucking && m_nMoveState != PEDMOVE_SPRINT) {
+#endif
 #ifdef FIX_BUGS
 		// fix tommy being locked into looking at the same spot if you duck just after starting to shoot
 		if(!m_pPointGunAt)
@@ -1266,14 +1577,134 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 
 	if (!m_pFire) {
 		eWeaponType weapon = GetWeapon()->m_eWeaponType;
+#ifdef AIMING
+		uint32 slot = CWeaponInfo::GetWeaponInfo(weapon)->m_nWeaponSlot;
+		if ((slot == WEAPONSLOT_SHOTGUN || slot == WEAPONSLOT_HANDGUN || 
+			slot == WEAPONSLOT_RIFLE || slot == WEAPONSLOT_SUBMACHINEGUN ||
+			weapon == WEAPONTYPE_M60 || weapon == WEAPONTYPE_MINIGUN ||
+			weapon == WEAPONTYPE_FLAMETHROWER) && m_nMoveState != PEDMOVE_SPRINT) {
+
+			bool isFrontObstacle = false;
+			if (padUsed->GetTarget()) {
+				/* from CPed::SetAttack*/
+				CVector aimPos = GetRight() * 0.1f + GetForward() * 0.2f + GetPosition();
+				aimPos += GetUp() * 0.35f;
+				CEntity* obstacle = CWorld::TestSphereAgainstWorld(aimPos, 0.2f, nil, true, false, false, true, false, false);
+				if (obstacle) {
+					if (gaTempSphereColPoints[0].surfaceB != SURFACE_TRANSPARENT_CLOTH && gaTempSphereColPoints[0].surfaceB != SURFACE_METAL_CHAIN_FENCE &&
+						gaTempSphereColPoints[0].surfaceB != SURFACE_WOOD_BENCH && gaTempSphereColPoints[0].surfaceB != SURFACE_SCAFFOLD_POLE) {
+
+						isFrontObstacle = true;
+					}
+				}
+			}
+			
+			bool cantFire = isFrontObstacle || (m_fMoveSpeed != 0.0f && (!CanWeRunAndFireWithWeapon() || bIsDucking));
+
+			if (cantFire) {
+
+				ClearAimFlag();
+				ClearWeaponTarget();
+			}
+
+			if (padUsed->GetWeapon() && bIsPlayerAiming) {
+				if (m_nPedState == PED_ATTACK) {
+					m_fAttackButtonCounter *= Pow(0.94f, CTimer::GetTimeStep());
+				} else {
+					m_fAttackButtonCounter = 0.0f;
+				}
+				SetAttack(nil);
+			}
+
+			if (padUsed->GetTarget() && bIsPlayerAiming && !cantFire && GetWeapon()->m_eWeaponState != WEAPONSTATE_RELOADING && !bIsAutoAiming) {
+				bDontAllowWeaponChange = true;
+
+				SetAimFlag(m_fRotationCur);
+				((CPlayerPed*)this)->m_fFPSMoveHeading = TheCamera.Find3rdPersonQuickAimPitch();
+
+				if (m_nPedState != PED_ATTACK) {
+					SetPointGunAt(nil);
+
+					float multiplier = 1.0f;
+					for (int i = 1; i < 60; i++) {
+						CEntity* hitEntityRaycast;
+						if (CWorld::ProcessLineOfSight(TheCamera.GetPosition(), TheCamera.GetPosition() + TheCamera.GetForward() * 20.0f, CColPoint{}, hitEntityRaycast, true, false, true, false, false, true)) {
+							if (hitEntityRaycast->IsPed()) {
+								CPed* hitPed = (CPed*)hitEntityRaycast;
+								if ((hitPed->CanSeeEntity(this, DEGTORAD(80.0f)) && hitPed->m_nPedType != PEDTYPE_COP) ||
+									(hitPed->CanSeeEntity(this, DEGTORAD(80.0f)) && hitPed->m_nPedType == PEDTYPE_COP && !FindPlayerPed()->m_pWanted->IsPlayerHides())) {
+									m_pPointGunAt = hitPed;
+
+									Say(SOUND_PED_AIMING);
+
+									break;
+								}
+							}
+						}
+
+						CVector spherePos = GetPosition() + CVector(0.0f, 0.0f, 0.6f) + (TheCamera.GetForward() * 0.5f) * multiplier;
+						CEntity* hitEntity = CWorld::TestSphereAgainstWorld(spherePos, 0.25f, this, true, false, true, false, false, false);
+						if (!hitEntity) {
+							if (i == 59 && m_pPointGunAt)
+								m_pPointGunAt = nullptr;
+
+							multiplier++;
+							continue;
+						}
+
+						if (hitEntity->IsPed()) {
+							CPed* hitPed = (CPed*)hitEntity;
+							if ((hitPed->CanSeeEntity(this, DEGTORAD(80.0f)) && hitPed->m_nPedType != PEDTYPE_COP) ||
+								(hitPed->CanSeeEntity(this, DEGTORAD(80.0f)) && hitPed->m_nPedType == PEDTYPE_COP && !FindPlayerPed()->m_pWanted->IsPlayerHides())) {
+								m_pPointGunAt = hitPed;
+
+								Say(SOUND_PED_AIMING);
+
+								break;
+							}
+						} else if (m_pPointGunAt) {
+							m_pPointGunAt = nullptr;
+
+							break;
+						}
+					}
+				}
+			}
+
+			if (padUsed->GetTarget() && m_nPedState != PED_FIGHT) {
+				bIsPlayerAiming = true;
+			} else if (!padUsed->GetTarget() && bIsPlayerAiming) {
+				bIsPlayerAiming = false;
+				ClearWeaponTarget();
+
+				if (bIsDucking)
+					TheCamera.Cams[TheCamera.ActiveCam].m_fTargetCameraPosZ = 0.55f;
+			}
+
+			float diff = DefaultFOV - TheCamera.Cams[TheCamera.ActiveCam].AimingFOV;
+
+			if (bIsPlayerAiming) {
+				if (slot == WEAPONSLOT_RIFLE || weapon == WEAPONTYPE_M60)
+					TheCamera.Cams[TheCamera.ActiveCam].AimingFOV = 40.0f;
+				else
+					TheCamera.Cams[TheCamera.ActiveCam].AimingFOV = 55.0f;
+			}
+		} else if (weapon == WEAPONTYPE_ROCKETLAUNCHER || weapon == WEAPONTYPE_SNIPERRIFLE ||
+			weapon == WEAPONTYPE_LASERSCOPE || weapon == WEAPONTYPE_CAMERA) {
+#else
 		if (weapon == WEAPONTYPE_ROCKETLAUNCHER || weapon == WEAPONTYPE_SNIPERRIFLE ||
 			weapon == WEAPONTYPE_LASERSCOPE || weapon == WEAPONTYPE_M4 ||
 			weapon == WEAPONTYPE_RUGER || weapon == WEAPONTYPE_M60 ||
 			weapon == WEAPONTYPE_CAMERA) {
+#endif
 
 			if (padUsed->TargetJustDown() || TheCamera.m_bJustJumpedOutOf1stPersonBecauseOfTarget) {
 #ifdef FREE_CAM
+#ifdef IMPROVED_MENU_AND_INPUT
+				if (CCamera::bFreeCam) {
+#else
 				if (CCamera::bFreeCam && TheCamera.Cams[0].Using3rdPersonMouseCam()) {
+#endif
 					m_fRotationCur = CGeneral::LimitRadianAngle(-TheCamera.Orientation);
 					SetHeading(m_fRotationCur);
 				}
@@ -1288,7 +1719,14 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 					TheCamera.SetNewPlayerWeaponMode(CCam::MODE_M16_1STPERSON, 0, 0);
 
 				m_fMoveSpeed = 0.0f;
+#ifdef CROUCH
+				if (bIsDucking)
+					CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_IDLE, 1000.0f);
+				else
+					CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_IDLE, 1000.0f);
+#else
 				CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_IDLE, 1000.0f);
+#endif
 				SetPedState(PED_SNIPER_MODE);
 				return;
 			}
@@ -1318,6 +1756,7 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 					m_fAttackButtonCounter = 0.0f;
 					m_bHaveTargetSelected = false;
 				}
+
 				if (GetWeapon()->m_eWeaponType != WEAPONTYPE_UNARMED && GetWeapon()->m_eWeaponType != WEAPONTYPE_BRASSKNUCKLE &&
 					!weaponInfo->IsFlagSet(WEAPONFLAG_FIGHTMODE)) {
 
@@ -1348,7 +1787,11 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 	if (pointedGun == 2) pointedGun = 1;
 
 	// Rotate player/arm when shooting. We don't have auto-rotation anymore
+#ifdef IMPROVED_MENU_AND_INPUT
+	if (CCamera::bFreeCam &&
+#else
 	if (CCamera::m_bUseMouse3rdPerson && CCamera::bFreeCam &&
+#endif
 		m_nSelectedWepSlot == m_currentWeapon && m_nMoveState != PEDMOVE_SPRINT) {
 
 #define CAN_AIM_WITH_ARM (weaponInfo->IsFlagSet(WEAPONFLAG_CANAIM_WITHARM) && !bIsDucking && !bCrouchWhenShooting)
@@ -1416,6 +1859,16 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 	}
 #endif
 
+#if defined IMPROVED_MENU_AND_INPUT && defined AIMING
+	if (!FrontEndMenuManager.m_PrefsAutoaim)
+		return;
+	else
+		if (CPad::GetPad(0)->GetTarget())
+			if (CPad::GetPad(0)->NewState.LeftShoulder2 < 128 && !bIsAutoAiming) {
+				return;
+			}
+#endif
+
 	if (padUsed->GetTarget() && m_nSelectedWepSlot == m_currentWeapon && m_nMoveState != PEDMOVE_SPRINT && !TheCamera.Using1stPersonWeaponMode() && weaponInfo->IsFlagSet(WEAPONFLAG_CANAIM)) {
 		if (m_pPointGunAt) {
 			// what??
@@ -1454,11 +1907,29 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 				if (padUsed->ShiftTargetRightJustDown())
 					FindNextWeaponLockOnTarget(m_pPointGunAt, false);
 			}
+
+#ifdef IMPROVED_MENU_AND_INPUT
+			CCam& camera = TheCamera.Cams[0];
+
+			CVector distForBeta = m_pPointGunAt->GetPosition() - GetPosition();
+			camera.Beta = distForBeta.Heading() + DEGTORAD(92.5f);
+
+			CVector Dist = GetPosition() - m_pPointGunAt->GetPosition();
+			float GroundDist = Dist.Magnitude2D();
+			camera.Alpha = CGeneral::GetATanOfXY(GroundDist, -Dist.z);
+			while (camera.Alpha >= PI) camera.Alpha -= 2.0f * PI;
+			while (camera.Alpha < -PI) camera.Alpha += 2.0f * PI;
+#else
 			TheCamera.SetNewPlayerWeaponMode(CCam::MODE_SYPHON, 0, 0);
 			TheCamera.UpdateAimingCoors(m_pPointGunAt->GetPosition());
-
+#endif
+			
 		} else if (!CCamera::m_bUseMouse3rdPerson) {
+#ifdef IMPROVED_MENU_AND_INPUT
+			if (!bIsAutoAiming || TheCamera.m_bJustJumpedOutOf1stPersonBecauseOfTarget)
+#else
 			if (padUsed->TargetJustDown() || TheCamera.m_bJustJumpedOutOf1stPersonBecauseOfTarget)
+#endif
 				FindWeaponLockOnTarget();
 		}
 	} else if (m_pPointGunAt) {
@@ -1472,6 +1943,7 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 		} else {
 			markPos = m_pPointGunAt->GetPosition();
 		}
+
 		if (bCanPointGunAtTarget) {
 			CWeaponEffects::MarkTarget(markPos, 64, 0, 0, 255, 0.8f);
 		} else {
@@ -1496,13 +1968,20 @@ CPlayerPed::PlayerControlZelda(CPad *padUsed)
 	float upDown = padUsed->GetPedWalkUpDown();
 	float padMoveInGameUnit;
 	bool smoothSprayWithoutMove = false;
-
+#ifdef IMPROVED_MENU_AND_INPUT
+	if (MovementDisabledBecauseOfTargeting() && bIsAutoAiming) {
+#else
 	if (MovementDisabledBecauseOfTargeting()) {
+#endif
 		upDown = 0.0f;
 		leftRight = 0.0f;
 	}
 
+#ifdef CROUCH
+	if (smoothSprayRate > 0.0f && upDown > 0.0f && !bIsDucking) {
+#else
 	if (smoothSprayRate > 0.0f && upDown > 0.0f) {
+#endif
 		padMoveInGameUnit = 0.0f;
 		smoothSprayWithoutMove = true;
 	} else {
@@ -1510,7 +1989,12 @@ CPlayerPed::PlayerControlZelda(CPad *padUsed)
 	}
 
 #ifdef FREE_CAM
+
+#ifdef CROUCH
+	if (TheCamera.Cams[0].Using3rdPersonMouseCam() && smoothSprayRate > 0.0f && !bIsDucking) {
+#else
 	if (TheCamera.Cams[0].Using3rdPersonMouseCam() && smoothSprayRate > 0.0f) {
+#endif
 		padMoveInGameUnit = 0.0f;
 		smoothSprayWithoutMove = false;
 	}
@@ -1519,7 +2003,11 @@ CPlayerPed::PlayerControlZelda(CPad *padUsed)
 	if (padMoveInGameUnit > 0.0f || smoothSprayWithoutMove) {
 		float padHeading = CGeneral::GetRadianAngleBetweenPoints(0.0f, 0.0f, -leftRight, upDown);
 		float neededTurn = CGeneral::LimitRadianAngle(padHeading - camOrientation);
+#ifdef CROUCH
+		if (smoothSprayRate > 0.0f && !bIsDucking) {
+#else
 		if (smoothSprayRate > 0.0f) {
+#endif
 			m_fRotationDest = m_fRotationCur - leftRight / 128.0f * smoothSprayRate * CTimer::GetTimeStep();
 		} else {
 			m_fRotationDest = neededTurn;
@@ -1551,18 +2039,44 @@ CPlayerPed::PlayerControlZelda(CPad *padUsed)
 		return;
 	}
 
+#ifdef SWIMMING
+	if (!CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType)->IsFlagSet(WEAPONFLAG_HEAVY) && padUsed->GetSprint() && !bIsTiredSwimmingFast) {
+#else
 	if (!CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType)->IsFlagSet(WEAPONFLAG_HEAVY) && padUsed->GetSprint()) {
+#endif
+#if defined CROUCH && defined SWIMMING && defined AIMING
+		if ((!m_pCurrentPhysSurface || (!m_pCurrentPhysSurface->bInfiniteMass || m_pCurrentPhysSurface->m_phy_flagA08)) && !bIsPlayerAiming &&
+			!bIsDucking && !RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_IDLE) && !RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_FORWARD) && !bIsSwimming ||
+			bIsSwimming && !RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_SWIM_TREAD))
+			m_nMoveState = PEDMOVE_SPRINT;
+		else if (bIsDucking && !bIsPlayerAiming) {
+			ClearDuck();
+			bCrouchWhenShooting = false;
+		}
+#else
 		if (!m_pCurrentPhysSurface || (!m_pCurrentPhysSurface->bInfiniteMass || m_pCurrentPhysSurface->m_phy_flagA08))
 			m_nMoveState = PEDMOVE_SPRINT;
+#endif
 	}
 
 	if (m_nPedState != PED_FIGHT)
 		SetRealMoveAnim();
 
 	if (!bIsInTheAir && !CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType)->IsFlagSet(WEAPONFLAG_HEAVY)
+#ifdef SWIMMING
+		&& padUsed->JumpJustDown() && m_nPedState != PED_JUMP && m_nPedState != PED_SWIM) {
+#else
 		&& padUsed->JumpJustDown() && m_nPedState != PED_JUMP) {
+#endif
 		ClearAttack();
 		ClearWeaponTarget();
+#ifdef CROUCH
+		if (bIsDucking) {
+			ClearDuck();
+
+			return;
+		}
+#endif
 		if (m_nEvadeAmount != 0 && m_pEvadingFrom) {
 			SetEvasiveDive((CPhysical*)m_pEvadingFrom, 1);
 			m_nEvadeAmount = 0;
@@ -1663,6 +2177,74 @@ CPlayerPed::FindNewAttackPoints(void)
 void
 CPlayerPed::ProcessControl(void)
 {
+#if defined WANTED_PATHS && defined DEBUG
+	CPad* pad = CPad::GetPad(0);
+	if (pad->GetCharJustDown(0x31)) {
+		if (bIsPathRecording) {
+			re3_debug("stop recording");
+
+			char pos[10];
+			int result = snprintf(pos, sizeof pos, "%i nodes", countRecords);
+			CFileMgr::Write(folderRecord, pos, result);
+
+			countRecords = 0;
+
+			CFileMgr::CloseFile(folderRecord);
+		} else {
+			re3_debug("start recording");
+			
+			folderRecord = CFileMgr::OpenFileForWriting("data\\maps\\wanted_paths.txt");
+		}
+
+		bIsPathRecording = !bIsPathRecording;
+	} else if (pad->GetCharJustDown(0x32)) {
+		if (bIsPathRecording) {
+			char pos[100];
+			int a = 0;
+			if (InVehicle())
+				a = snprintf(pos, sizeof pos, "\t%f %f %f %s", FindPlayerVehicle()->GetPosition().x, FindPlayerVehicle()->GetPosition().y, FindPlayerVehicle()->GetPosition().z + 1.0f, "\n");
+			else
+				a = snprintf(pos, sizeof pos, "\t%f %f %f %s", GetPosition().x, GetPosition().y, GetPosition().z + 1.0f, "\n");
+			CFileMgr::Write(folderRecord, pos, a);
+
+			countRecords++;
+			
+			re3_debug("node %i saving", countRecords);
+
+			if (countRecords == 20) {
+				re3_debug("stop recording");
+
+				char pos[10];
+				int result = snprintf(pos, sizeof pos, "%i nodes", countRecords);
+				CFileMgr::Write(folderRecord, pos, result);
+
+				countRecords = 0;
+				
+				CFileMgr::CloseFile(folderRecord);
+
+				bIsPathRecording = false;
+			}
+		}
+	}
+#endif
+
+#ifdef AIMING
+	if (bIsPlayerAiming && (!IsPedInControl() && m_nPedState != PED_ROLL || m_nPedState == PED_FIGHT)) {
+		bIsPlayerAiming = false;
+		ClearWeaponTarget();
+	}
+#endif
+
+#ifdef SWIMMING
+	if (m_fCurrentStamina >= 0.0f && bIsTiredSwimmingFast)
+		bIsTiredSwimmingFast = false;
+#endif
+
+#ifdef CROUCH
+	if (!bIsDucking && TheCamera.Cams[TheCamera.ActiveCam].m_fTargetCameraPosZ != 0.0f)
+		TheCamera.Cams[TheCamera.ActiveCam].m_fTargetCameraPosZ = 0.0f;
+#endif
+
 	// Mobile has some debug/abandoned cheat thing in here: "gbFrankenTommy"
 
 	if (m_nEvadeAmount != 0)
@@ -1793,6 +2375,18 @@ CPlayerPed::ProcessControl(void)
 		}
 	}
 
+#ifdef CROUCH
+	if (m_nPedState == PED_ROLL && !bIsStanding) {
+		RestorePreviousState();
+
+		ClearDuck();
+	}
+
+	if (m_nPedState == PED_ROLL && !RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_ROLL_L) && !RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_ROLL_R)) {
+		SetRealMoveAnim();
+	}
+#endif
+
 	switch (m_nPedState) {
 		case PED_NONE:
 		case PED_IDLE:
@@ -1802,6 +2396,9 @@ CPlayerPed::ProcessControl(void)
 		case PED_FIGHT:
 		case PED_AIM_GUN:
 		case PED_ANSWER_MOBILE:
+#ifdef SWIMMING
+		case PED_SWIM:
+#endif
 			if (!RpAnimBlendClumpGetFirstAssociation(GetClump(), ASSOC_BLOCK) && !m_attachedTo) {
 				if (TheCamera.Using1stPersonWeaponMode()) {
 					if (padUsed)
@@ -1989,6 +2586,16 @@ void
 CPlayerPed::PlayIdleAnimations(CPad *padUsed)
 {
 	CAnimBlendAssociation* assoc;
+
+#ifdef SWIMMING
+	if (bIsSwimming)
+		return;
+#endif
+
+#ifdef CLIMBING
+	if (bIsClimbing)
+		return;
+#endif
 
 	if (TheCamera.m_WideScreenOn || bIsDucking)
 		return;

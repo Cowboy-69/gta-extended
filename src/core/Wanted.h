@@ -2,6 +2,12 @@
 
 #include "Crime.h"
 
+#ifdef IMPROVED_TECH_PART // wanted system
+#define TIME_COPS_SEEN_PLAYER_AFTER_LOST 300000
+#define TIME_DELAY_BEFORE_BEING_SEEN 350
+#define TIME_AUTOMATIC_UPDATED_LAST_SEEN_POS_PLAYER 32000
+#endif
+
 class CEntity;
 class CCopPed;
 
@@ -28,6 +34,17 @@ public:
 	int32 m_nMinWantedLevel;
 	CCrimeBeingQd m_aCrimes[16];
 	CCopPed *m_pCops[10];
+
+#ifdef IMPROVED_TECH_PART // wanted system
+	uint32 m_nLastTimeSeenPlayer;
+	CVector m_vecLastSeenPosPlayer;
+	CVehicle* m_vLastSeenPlayerVehicle;
+	uint32 m_nTimeDelayBeforeBeingSeen;
+	uint32 m_nTimeAutomaticUpdatedPosPlayer;
+
+	bool m_bNextReportIsLastSeen;
+	bool m_bSearchPlayerRandomly;
+#endif
 
 	static int32 MaximumWantedLevel;
 	static int32 nMaximumWantedLevel;
@@ -57,6 +74,11 @@ public:
 	void Suspend();
 
 	bool IsIgnored(void) { return m_bIgnoredByCops || m_bIgnoredByEveryone; }
+
+#ifdef IMPROVED_TECH_PART // wanted system
+	bool IsPlayerLost() const;
+	bool IsPlayerHides() const;
+#endif
 
 	static int32 WorkOutPolicePresence(CVector posn, float radius);
 	static void SetMaximumWantedLevel(int32 level);

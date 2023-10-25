@@ -421,7 +421,11 @@ CPickup::Update(CPlayerPed *player, CVehicle *vehicle, int playerId)
 		// if we didn't then we've got nothing to do
 		if (isPickupTouched && CanBePickedUp(player, playerId)) {
 			if (m_pObject->GetModelIndex() != MI_PICKUP_PROPERTY && m_pObject->GetModelIndex() != MI_PICKUP_PROPERTY_FORSALE)
+#ifdef IMPROVED_MENU_AND_INPUT
+				CPad::GetPad(0)->StartShake(120, 0, 100);
+#else
 				CPad::GetPad(0)->StartShake(120, 100);
+#endif
 
 			eWeaponType weaponType = CPickups::WeaponForModel(m_pObject->GetModelIndex());
 			switch (m_eType)

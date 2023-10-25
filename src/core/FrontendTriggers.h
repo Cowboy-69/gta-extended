@@ -641,7 +641,11 @@ TriggerControls_Vibrations(CMenuOnOffTriggered *widget)
 		CMenuManager::m_PrefsUseVibration = widget->GetMenuSelection();
 		if ( CMenuManager::m_PrefsUseVibration )
 		{
+#ifdef IMPROVED_MENU_AND_INPUT
+			CPad::GetPad(0)->StartShake(300, 150, 150);
+#else
 			CPad::GetPad(0)->StartShake(300, 150);
+#endif
 			TimeToStopPadShaking = CTimer::GetTimeInMillisecondsPauseMode() + 500;
 		}
 	}

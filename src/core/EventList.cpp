@@ -180,7 +180,11 @@ CEventList::FindClosestEvent(eEventType type, CVector posn, int32 *event)
 	int i;
 	float dist;
 	bool found = false;
+#ifdef IMPROVED_TECH_PART // AI
+	float mindist = 100.0f;
+#else
 	float mindist = 60.0f;
+#endif
 
 	for(i = 0; i < NUMEVENTS; i++){
 		if(gaEvent[i].type != type)
@@ -236,10 +240,25 @@ CEventList::ReportCrimeForEvent(eEventType type, intptr crimeId, bool copsDontCa
 #endif
 	CVector playerCoors = FindPlayerCoors();
 
+#ifdef IMPROVED_TECH_PART // wanted system
+	FindPlayerPed()->m_pWanted->m_vecLastSeenPosPlayer = FindPlayerCoors();
+	if (FindPlayerVehicle() && crime != CRIME_POSSESSION_GUN && crime != CRIME_STEAL_CAR)
+		FindPlayerPed()->m_pWanted->m_vLastSeenPlayerVehicle = FindPlayerVehicle();
+
+	if(CWanted::WorkOutPolicePresence(playerCoors, 70.0f) != 0 ||
+#else
 	if(CWanted::WorkOutPolicePresence(playerCoors, 14.0f) != 0 ||
+#endif
 		CGame::germanGame && (crime == CRIME_SHOOT_PED || crime == CRIME_SHOOT_COP || crime == CRIME_COP_BURNED || crime == CRIME_VEHICLE_BURNED)){
 		FindPlayerPed()->m_pWanted->RegisterCrime_Immediately(crime, playerPedCoors, (uint32)crimeId, copsDontCare);
+#ifdef IMPROVED_TECH_PART // wanted system
+		if (type == EVENT_GUNSHOT && FindPlayerPed()->m_pWanted->GetWantedLevel() == 1 && CWanted::WorkOutPolicePresence(playerCoors, 20.0f) != 0)
+			FindPlayerPed()->SetWantedLevelNoDrop(2);
+		else
+			FindPlayerPed()->m_pWanted->SetWantedLevelNoDrop(1);
+#else
 		FindPlayerPed()->m_pWanted->SetWantedLevelNoDrop(1);
+#endif
 	}else
 		FindPlayerPed()->m_pWanted->RegisterCrime(crime, playerPedCoors, (uint32)crimeId, copsDontCare);
 

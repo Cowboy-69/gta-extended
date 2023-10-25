@@ -152,10 +152,16 @@ public:
 	CControllerState PCTempMouseState;
 	// straight out of my IDB
 	int16 Phase;
+#ifdef IMPROVED_MENU_AND_INPUT
+	int16 Mode = 1;
+	uint8 ShakeLowFreq;
+	uint8 ShakeHighFreq;
+#else
 	int16 Mode;
+	uint8 ShakeFreq;
+#endif
 	int16 ShakeDur;
 	uint16 DisablePlayerControls;
-	uint8 ShakeFreq;
 	bool bHornHistory[HORNHISTORY_SIZE];
 	uint8 iCurrHornHistory;
 	int8 JustOutOfFrontend;
@@ -196,8 +202,13 @@ public:
 	void ClearKeyBoardHistory();
 	void UpdateMouse();
 	CControllerState ReconcileTwoControllersInput(CControllerState const &State1, CControllerState const &State2);
+#ifdef IMPROVED_MENU_AND_INPUT
+	void StartShake(int16 nDur, uint8 nLowFreq, uint8 nHighFreq);
+	void StartShake_Distance(int16 nDur, uint8 nLowFreq, uint8 nHighFreq, float fX, float fY, float fz);
+#else
 	void StartShake(int16 nDur, uint8 nFreq);
 	void StartShake_Distance(int16 nDur, uint8 nFreq, float fX, float fY, float fz);
+#endif
 	void StartShake_Train(float fX, float fY);
 #ifdef GTA_PS2_STUFF
 	void AddToCheatString(char c);
@@ -242,7 +253,12 @@ public:
 	bool CycleCameraModeJustDown(void);
 	bool CycleCameraModeUpJustDown(void);
 	bool CycleCameraModeDownJustDown(void);
+#ifdef IMPROVED_MENU_AND_INPUT
+	bool NextStationJustDown(void);
+	bool PrevStationJustDown(void);
+#else
 	bool ChangeStationJustDown(void);
+#endif
 	bool CycleWeaponLeftJustDown(void);
 	bool CycleWeaponRightJustDown(void);
 	bool GetTarget(void);

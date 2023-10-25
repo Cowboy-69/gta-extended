@@ -241,8 +241,13 @@ CCamera::Init(void)
 	m_uiTransitionState = 0;
 	m_uiTimeTransitionStart = 0;
 	m_bLookingAtPlayer = true;
+#ifdef AIMING
+	m_f3rdPersonCHairMultX = 0.51f;
+	m_f3rdPersonCHairMultY = 0.49f;
+#else
 	m_f3rdPersonCHairMultX = 0.53f;
 	m_f3rdPersonCHairMultY = 0.4f;
+#endif
 	m_fAvoidTheGeometryProbsTimer = 0.0f;
 	m_nAvoidTheGeometryProbsDirn = 0;
 }
@@ -629,7 +634,11 @@ CCamera::Process(void)
 	}else
 		LODDistMultiplier = 1.0f;
 	GenerationDistMultiplier = LODDistMultiplier;
+#ifdef IMPROVED_TECH_PART // increased draw distance
+	LODDistMultiplier *= CRenderer::ms_lodDistScale * 2.5f;
+#else
 	LODDistMultiplier *= CRenderer::ms_lodDistScale;
+#endif
 
 	CDraw::SetNearClipZ(RwCameraGetNearClipPlane(m_pRwCamera));
 	CDraw::SetFarClipZ(RwCameraGetFarClipPlane(m_pRwCamera));
@@ -989,6 +998,10 @@ CCamera::CamControl(void)
 				if(FrontEndMenuManager.m_ControlMethod == CONTROL_STANDARD){
 					if(PedZoomIndicator == CAM_ZOOM_3)
 						PedZoomIndicator = CAM_ZOOM_1;
+#ifdef IMPROVED_MENU_AND_INPUT
+					else if (PedZoomIndicator == CAM_ZOOM_1)
+						PedZoomIndicator = CAM_ZOOM_2;
+#endif
 					else
 						PedZoomIndicator = CAM_ZOOM_3;
 				}else
@@ -1000,6 +1013,10 @@ CCamera::CamControl(void)
 				if(FrontEndMenuManager.m_ControlMethod == CONTROL_STANDARD){
 					if(PedZoomIndicator == CAM_ZOOM_3)
 						PedZoomIndicator = CAM_ZOOM_1;
+#ifdef IMPROVED_MENU_AND_INPUT
+					else if (PedZoomIndicator == CAM_ZOOM_1)
+						PedZoomIndicator = CAM_ZOOM_2;
+#endif
 					else
 						PedZoomIndicator = CAM_ZOOM_3;
 				}else
@@ -1045,6 +1062,14 @@ CCamera::CamControl(void)
 				CPad::GetPad(0)->DisablePlayerControls |= PLAYERCONTROL_CAMERA;
 			}
 
+#ifdef IMPROVED_TECH_PART
+			if (PedZoomIndicator == CAM_ZOOM_1)
+				m_fPedZoomValue = 0.7f;
+			else if (PedZoomIndicator == CAM_ZOOM_2)
+				m_fPedZoomValue = 1.7f;
+			else if (PedZoomIndicator == CAM_ZOOM_3)
+				m_fPedZoomValue = 2.7f;
+#else
 			// Zoom value
 			if(PedZoomIndicator == CAM_ZOOM_1)
 				m_fPedZoomValue = 0.25f;
@@ -1052,6 +1077,7 @@ CCamera::CamControl(void)
 				m_fPedZoomValue = 1.5f;
 			else if(PedZoomIndicator == CAM_ZOOM_3)
 				m_fPedZoomValue = 2.9f;
+#endif
 
 			// Smooth zoom value - ugly code
 			if(m_bUseScriptZoomValuePed){
@@ -1238,9 +1264,11 @@ CCamera::CamControl(void)
 						ReqMode = CCam::MODE_LIGHTHOUSE;
 
 			// Fallen into water
+#ifndef SWIMMING
 			if(Cams[ActiveCam].IsTargetInWater(Cams[ActiveCam].Source) &&
 			   Cams[ActiveCam].CamTargetEntity->IsPed())
 				ReqMode = CCam::MODE_PLAYER_FALLEN_WATER;
+#endif
 
 			// Set top down
 			if(PedZoomIndicator == CAM_ZOOM_TOPDOWN &&
@@ -3986,9 +4014,9 @@ float
 CCamera::Find3rdPersonQuickAimPitch(void)
 {
 	float clampedFrontZ = Clamp(Cams[ActiveCam].Front.z, -1.0f, 1.0f);
-
+	
 	float rot = Asin(clampedFrontZ);
-
+	
 	return -(DEGTORAD(((0.5f - m_f3rdPersonCHairMultY) * 1.8f * 0.5f * Cams[ActiveCam].FOV)) + rot);
 }
 

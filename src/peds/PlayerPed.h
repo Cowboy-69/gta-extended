@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Ped.h"
+#ifdef WANTED_PATHS
+#include "FileMgr.h"
+#endif
 
 class CPad;
 class CCopPed;
@@ -56,6 +59,24 @@ public:
 	static bool bDebugPlayerInfo;
 #endif
 
+#ifdef AIMING
+	bool bIsPlayerAiming;
+#endif
+
+#if defined WANTED_PATHS && defined DEBUG
+	int countRecords = 0;
+	int folderRecord;
+	bool bIsPathRecording = false;
+#endif
+
+#ifdef SWIMMING
+	bool bIsTiredSwimmingFast;
+#endif
+
+#ifdef IMPROVED_MENU_AND_INPUT
+	bool bIsAutoAiming;
+#endif
+
 	CPlayerPed();
 	~CPlayerPed();
 	void SetMoveAnim() { };
@@ -104,6 +125,14 @@ public:
 	void FindNewAttackPoints(void);
 	void SetNearbyPedsToInteractWithPlayer(void);
 	void UpdateMeleeAttackers(void);
+#ifdef CROUCH
+	void ProcessCrouch(void);
+
+	static void FinishRollCB(CAnimBlendAssociation* assoc, void* arg);
+#endif
+#ifdef SWIMMING
+	void ProcessSwimming(void);
+#endif
 
 	static void SetupPlayerPed(int32);
 	static void DeactivatePlayerPed(int32);
@@ -112,6 +141,10 @@ public:
 #ifdef COMPATIBLE_SAVES
 	virtual void Save(uint8*& buf);
 	virtual void Load(uint8*& buf);
+#endif
+
+#ifdef NEW_CHEATS
+	static bool bInvincibleCheat;
 #endif
 
 	static const uint32 nSaveStructSize;
