@@ -86,6 +86,10 @@ class CStoredCar
 	int32 m_nFlags;
 	int8 m_nPrimaryColor;
 	int8 m_nSecondaryColor;
+#ifdef IMPROVED_VEHICLES // More colors
+	int8 m_nTertiaryColor;
+	int8 m_nQuaternaryColor;
+#endif
 	int8 m_nRadioStation;
 	int8 m_nVariationA;
 	int8 m_nVariationB;

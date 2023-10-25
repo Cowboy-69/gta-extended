@@ -86,6 +86,9 @@ public:
 #ifdef FIRST_PERSON
 		MODE_REAL_1ST_PERSON,
 #endif
+#ifdef NEW_CHEATS // RCROCKET
+		MODE_FOLLOWPROJECTILE,
+#endif
 	};
 
 	bool    bBelowMinDist; //used for follow ped mode
@@ -262,6 +265,9 @@ public:
 #ifdef FIRST_PERSON
 	void Process_Real_1st_Person(const CVector& CameraTarget, float, float, float);
 	void LimitAngleBetaRelativelyTwoAngles(CVector normalizedRelativeVector, float leftLimitingAngle, float rightLimitingAngle);
+#endif
+#ifdef NEW_CHEATS // RCROCKET
+	void Process_FollowProjectile(const CVector& CameraTarget, float, float, float);
 #endif
 	bool GetLookAlongGroundPos(CEntity *Target, CPed *Cop, CVector &TargetCoors, CVector &SourceOut);
 	bool GetLookFromLampPostPos(CEntity *Target, CPed *Cop, CVector &TargetCoors, CVector &SourceOut);

@@ -2816,6 +2816,11 @@ CPed::InflictDamage(CEntity *damagedBy, eWeaponType method, float damage, ePedPi
 		CPad::GetPad(0)->StartShake(100, 55, 55);
 #endif
 
+#ifdef FEATURES_INI // HealthRegenerationUpToHalf
+		if (bHealthRegenerationUpToHalf)
+			FindPlayerPed()->m_nHealthRegenerationTime = CTimer::GetTimeInMilliseconds();
+#endif
+
 		player->AnnoyPlayerPed(false);
 	}
 

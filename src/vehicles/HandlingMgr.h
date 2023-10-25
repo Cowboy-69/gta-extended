@@ -85,22 +85,12 @@ enum tVehicleType
 	HANDLING_LOVEFIST,
 	HANDLING_BLOODRA,
 	HANDLING_BLOODRB,
-#ifdef NEW_VEHICLES // cars handling
-	HANDLING_PEREN2,
-	HANDLING_TRASH2,
-	HANDLING_HELLENBACH,
-	HANDLING_PREMIER,
-#endif
 
 	HANDLING_BIKE,
 	HANDLING_MOPED,
 	HANDLING_DIRTBIKE,
 	HANDLING_ANGEL,
 	HANDLING_FREEWAY,
-#ifdef NEW_VEHICLES // bikes handling
-	HANDLING_STREETFI,
-	HANDLING_MANCHEZ,
-#endif
 
 	HANDLING_PREDATOR,
 	HANDLING_SPEEDER,
@@ -125,11 +115,7 @@ enum tVehicleType
 
 	NUMHANDLINGS,
 
-#ifdef NEW_VEHICLES // for bikes
-	NUMBIKEHANDLINGS = HANDLING_MANCHEZ+1 - HANDLING_BIKE,
-#else
 	NUMBIKEHANDLINGS = HANDLING_FREEWAY+1 - HANDLING_BIKE,
-#endif
 	NUMFLYINGHANDLINGS = HANDLING_RCCOPTER+1 - HANDLING_SEAPLANE,
 	NUMBOATHANDLINGS = HANDLING_SEAPLANE+1 - HANDLING_PREDATOR,
 };
@@ -202,6 +188,9 @@ struct tHandlingData
 	int32 nMonetaryValue;
 	int8 FrontLights;
 	int8 RearLights;
+#ifdef NEW_VEHICLE_LOADER
+	int8 bBike;
+#endif
 };
 
 struct tBikeHandlingData
@@ -287,7 +276,12 @@ public:
 	tBikeHandlingData *GetBikePointer(uint8 id) { return &BikeHandlingData[id-HANDLING_BIKE]; }
 	tFlyingHandlingData *GetFlyingPointer(uint8 id);
 	tBoatHandlingData *GetBoatPointer(uint8 id);
+#ifdef NEW_VEHICLE_LOADER
+	bool HasRearWheelDrive(tHandlingData *handling) { return handling->Transmission.nDriveType != 'F'; }
+	bool HasFrontWheelDrive(tHandlingData* handling) { return handling->Transmission.nDriveType != 'R'; }
+#else
 	bool HasRearWheelDrive(tVehicleType id) { return HandlingData[id].Transmission.nDriveType != 'F'; }
 	bool HasFrontWheelDrive(tVehicleType id) { return HandlingData[id].Transmission.nDriveType != 'R'; }
+#endif
 };
 extern cHandlingDataMgr mod_HandlingManager;

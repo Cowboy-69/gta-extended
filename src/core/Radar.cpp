@@ -24,7 +24,7 @@
 #ifdef IMPROVED_MENU_AND_INPUT
 #include "Pad.h"
 #endif
-#ifdef IMPROVED_TECH_PART // TEMPORARY, business blip
+#ifdef IMPROVED_TECH_PART // New blips
 #include "Pickups.h"
 #endif
 
@@ -75,8 +75,11 @@ CSprite2d CRadar::RadioWaveSprite;
 #ifdef MAP_ENHANCEMENTS
 CSprite2d CRadar::WaypointSprite;
 #endif
-#ifdef IMPROVED_TECH_PART // TEMPORARY, business blip
+#ifdef IMPROVED_TECH_PART // New blips
 CSprite2d CRadar::HouseForSaleSprite;
+CSprite2d CRadar::BombShopSprite;
+CSprite2d CRadar::RaceSprite;
+CSprite2d CRadar::PharmacySprite;
 #endif
 
 CSprite2d *CRadar::RadarSprites[RADAR_SPRITE_COUNT] = { 
@@ -123,8 +126,11 @@ CSprite2d *CRadar::RadarSprites[RADAR_SPRITE_COUNT] = {
 #ifdef MAP_ENHANCEMENTS
 	&WaypointSprite,
 #endif
-#ifdef IMPROVED_TECH_PART // TEMPORARY, business blip
+#ifdef IMPROVED_TECH_PART // New blips
 	&HouseForSaleSprite,
+	&BombShopSprite,
+	&RaceSprite,
+	&PharmacySprite,
 #endif
 };
 
@@ -912,6 +918,15 @@ void CRadar::DrawGPS()
 	if (!FrontEndMenuManager.m_PrefsGPS)
 		return;
 
+	CVehicle* vehicle = FindPlayerVehicle();
+	if (!FrontEndMenuManager.m_bMenuMapActive && vehicle &&
+		(vehicle->IsBoat() || vehicle->IsRealHeli() || vehicle->IsPlane() || 
+		 vehicle->GetModelIndex() == MI_RCBANDIT || vehicle->GetModelIndex() == MI_RCBARON || 
+		 vehicle->GetModelIndex() == MI_RCGOBLIN || vehicle->GetModelIndex() == MI_RCRAIDER)) {
+
+		return;
+	}
+
 	const uint16 maxNodePoints = 500;
 	static CPathNode* resultNodes[maxNodePoints];
 	static CVector2D nodePoints[maxNodePoints];
@@ -1084,10 +1099,10 @@ void CRadar::DrawGPS()
 						shift[1].y = sinf(angle + 1.5707963f) * 4.0f * mp;
 					}
 
-					Setup2dVertex(lineVerts[vertIndex + 0], nodePoints[i].x + shift[0].x, nodePoints[i].y + shift[0].y, CRGBA(180, 24, 24, 255));
-					Setup2dVertex(lineVerts[vertIndex + 1], nodePoints[i + 1].x + shift[0].x, nodePoints[i + 1].y + shift[0].y, CRGBA(180, 24, 24, 255));
-					Setup2dVertex(lineVerts[vertIndex + 2], nodePoints[i].x + shift[1].x, nodePoints[i].y + shift[1].y, CRGBA(180, 24, 24, 255));
-					Setup2dVertex(lineVerts[vertIndex + 3], nodePoints[i + 1].x + shift[1].x, nodePoints[i + 1].y + shift[1].y, CRGBA(180, 24, 24, 255));
+					Setup2dVertex(lineVerts[vertIndex + 0], nodePoints[i].x + shift[0].x, nodePoints[i].y + shift[0].y, WaypointColor);
+					Setup2dVertex(lineVerts[vertIndex + 1], nodePoints[i + 1].x + shift[0].x, nodePoints[i + 1].y + shift[0].y, WaypointColor);
+					Setup2dVertex(lineVerts[vertIndex + 2], nodePoints[i].x + shift[1].x, nodePoints[i].y + shift[1].y, WaypointColor);
+					Setup2dVertex(lineVerts[vertIndex + 3], nodePoints[i + 1].x + shift[1].x, nodePoints[i + 1].y + shift[1].y, WaypointColor);
 					vertIndex += 4;
 				}
 
@@ -1354,7 +1369,7 @@ CRadar::LoadTextures()
 	KCabsSprite.SetTexture("kcabs");
 	LovefistSprite.SetTexture("lovefist");
 	PrintworksSprite.SetTexture("printworks");
-#ifdef IMPROVED_TECH_PART // TEMPORARY, business blip
+#ifdef IMPROVED_TECH_PART // New blips
 	PropertySprite.SetTexture("business");
 #else
 	PropertySprite.SetTexture("property");
@@ -1410,8 +1425,11 @@ CRadar::LoadTextures()
 #undef WAYPOINT_B
 	}
 #endif
-#ifdef IMPROVED_TECH_PART // TEMPORARY, business blip
+#ifdef IMPROVED_TECH_PART // New blips
 	HouseForSaleSprite.SetTexture("property");
+	BombShopSprite.SetTexture("bomb");
+	RaceSprite.SetTexture("race");
+	PharmacySprite.SetTexture("pharmacy");
 #endif
 	CTxdStore::PopCurrentTxd();
 }
@@ -1610,8 +1628,11 @@ void CRadar::Shutdown()
 #ifdef MAP_ENHANCEMENTS
 	WaypointSprite.Delete();
 #endif
-#ifdef IMPROVED_TECH_PART // TEMPORARY, business blip
+#ifdef IMPROVED_TECH_PART // New blips
 	HouseForSaleSprite.Delete();
+	BombShopSprite.Delete();
+	RaceSprite.Delete();
+	PharmacySprite.Delete();
 #endif
 	RemoveRadarSections();
 }
@@ -2089,10 +2110,19 @@ CRadar::DrawLegend(int32 x, int32 y, int32 sprite)
 			text = TheText.Get("LG_38");
 		break;
 #endif
-#ifdef IMPROVED_TECH_PART // TEMPORARY, business blip
+#ifdef IMPROVED_TECH_PART // New blips
 		case RADAR_SPRITE_HOUSE_FOR_SALE:
 		case RADAR_SPRITE_PROPERTY:
 			text = TheText.Get("LG_39");
+		break;
+		case RADAR_SPRITE_BOMB_SHOP:
+			text = TheText.Get("LG_40");
+		break;
+		case RADAR_SPRITE_RACE:
+			text = TheText.Get("LG_41");
+		break;
+		case RADAR_SPRITE_PHARMACY:
+			text = TheText.Get("LG_42");
 		break;
 #endif
 		default:

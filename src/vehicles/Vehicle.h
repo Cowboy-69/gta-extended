@@ -45,20 +45,12 @@ enum eCarNodes
 	CAR_STEERINGWHEEL,
 	CAR_HEADLIGHT_L,
 	CAR_HEADLIGHT_R,
-	CAR_HEADLIGHT_WING_L,
-	CAR_HEADLIGHT_WING_R,
-	CAR_HEADLIGHT_BUMP_L,
-	CAR_HEADLIGHT_BUMP_R,
 	CAR_TAILLIGHT_L,
 	CAR_TAILLIGHT_R,
 	CAR_REVERSINGLIGHT_L,
 	CAR_REVERSINGLIGHT_R,
-	CAR_REVERSINGLIGHT_BUMP_L,
-	CAR_REVERSINGLIGHT_BUMP_R,
 	CAR_BRAKELIGHT_L,
 	CAR_BRAKELIGHT_R,
-	CAR_BRAKELIGHT_BUMP_L,
-	CAR_BRAKELIGHT_BUMP_R,
 	CAR_INDICATOR_LF,
 	CAR_INDICATOR_RF,
 	CAR_INDICATOR_2_LF,
@@ -67,10 +59,6 @@ enum eCarNodes
 	CAR_INDICATOR_RR,
 	CAR_INDICATOR_2_LR,
 	CAR_INDICATOR_2_RR,
-	CAR_INDICATOR_WING_LF,
-	CAR_INDICATOR_WING_RF,
-	CAR_INDICATOR_2_WING_LF,
-	CAR_INDICATOR_2_WING_RF,
 	CAR_WINDOW_L_MISC,
 	CAR_WINDOW_R_MISC,
 	CAR_WINDOW_REAR,
@@ -232,9 +220,18 @@ class CVehicle : public CPhysical
 public:
 	tHandlingData *pHandling;
 	tFlyingHandlingData *pFlyingHandling;
+#ifdef NEW_VEHICLE_LOADER
+	tAnotherVehicleSampleData *pVehicleSample;
+	tVehicleShadowSettingData *pVehicleShadowSettings;
+	tBoatSoundSettingData *pBoatSoundSettings;
+#endif
 	CAutoPilot AutoPilot;
 	uint8 m_currentColour1;
 	uint8 m_currentColour2;
+#ifdef IMPROVED_VEHICLES // More colors
+	uint8 m_currentColour3;
+	uint8 m_currentColour4;
+#endif
 	int8 m_aExtras[2];
 	int16 m_nAlarmState;
 	int16 m_nRouteSeed;
@@ -333,9 +330,11 @@ public:
 	CStoredCollPoly m_aCollPolys[2];     // poly which is under front/rear part of car
 	float m_fSteerInput;
 	eVehicleType m_vehType;
-#ifdef VEHICLE_MODS
+#if defined VEHICLE_MODS && defined IMPROVED_VEHICLES
 	int m_nTempColor1;
 	int m_nTempColor2;
+	int m_nTempColor3;
+	int m_nTempColor4;
 	int m_nArmorLevel;
 	float m_fAddEngineAcceleration;
 #endif

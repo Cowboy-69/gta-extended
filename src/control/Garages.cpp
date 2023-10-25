@@ -184,6 +184,16 @@ void CGarages::Init(void)
 		   -875.38f, -95.03f, // depth
 		   -869.66f, -107.04f, 15.58f,
 		   GARAGE_MOD, 0);
+
+	AddOne(-901.501f, -1268.791f, 10.542f,
+		   -891.122f, -1265.274f, // depth
+		   -897.072f, -1258.488f, 17.467f,
+		   GARAGE_MOD, 0);
+
+	AddOne(328.419f, 441.153f, 10.014f,
+		   325.326f, 450.675f, // depth
+		   318.205f, 444.41f, 16.657f,
+		   GARAGE_MOD, 0);
 #endif
 }
 
@@ -512,8 +522,8 @@ void CGarage::Update()
 					}
 					else {
 #ifdef VEHICLE_MODS // when mod garage is fully closed, fix lights
-						//for (int32 frameID = BIKE_HEADLIGHT_L; frameID < BIKE_NUM_NODES; frameID++)
-							//((CBike*)FindPlayerVehicle())->SetFrameLightStatus((eBikeNodes)frameID, LIGHT_STATUS_OK);
+						for (int32 frameID = BIKE_HEADLIGHT_L; frameID < BIKE_NUM_NODES; frameID++)
+							((CBike*)FindPlayerVehicle())->SetFrameLightStatus((eBikeNodes)frameID, LIGHT_STATUS_OK);
 #endif
 						((CBike*)(FindPlayerVehicle()))->m_fFireBlowUpTimer = 0.0f;
 						((CBike*)(FindPlayerVehicle()))->Fix();
@@ -530,6 +540,24 @@ void CGarage::Update()
 #else
 					if (!((CAutomobile*)(FindPlayerVehicle()))->bFixedColour) {
 #endif
+#ifdef IMPROVED_VEHICLES // More colors
+						uint8 colour1, colour2, colour3, colour4;
+						uint16 attempt;
+						FindPlayerVehicle()->GetModelInfo()->ChooseVehicleColour(colour1, colour2, colour3, colour4);
+						for (attempt = 0; attempt < 10; attempt++) {
+							if (colour1 != FindPlayerVehicle()->m_currentColour1 || colour2 != FindPlayerVehicle()->m_currentColour2 ||
+								colour3 != FindPlayerVehicle()->m_currentColour3 || colour4 != FindPlayerVehicle()->m_currentColour4) {
+
+								break;
+							}
+							FindPlayerVehicle()->GetModelInfo()->ChooseVehicleColour(colour1, colour2, colour3, colour4);
+						}
+						bChangedColour = (attempt < 10);
+						FindPlayerVehicle()->m_currentColour1 = colour1;
+						FindPlayerVehicle()->m_currentColour2 = colour2;
+						FindPlayerVehicle()->m_currentColour3 = colour3;
+						FindPlayerVehicle()->m_currentColour4 = colour4;
+#else
 						uint8 colour1, colour2;
 						uint16 attempt;
 						FindPlayerVehicle()->GetModelInfo()->ChooseVehicleColour(colour1, colour2);
@@ -541,6 +569,7 @@ void CGarage::Update()
 						bChangedColour = (attempt < 10);
 						FindPlayerVehicle()->m_currentColour1 = colour1;
 						FindPlayerVehicle()->m_currentColour2 = colour2;
+#endif
 #ifdef VEHICLE_MODS // Repainting also paints the spoiler
 						if (FindPlayerVehicle()->IsCar()) {
 							((CAutomobile*)FindPlayerVehicle())->m_nSpoilerColor = colour1;
@@ -1222,8 +1251,8 @@ void CGarage::Update()
 					//for (int32 frameID = CAR_HEADLIGHT_L; frameID < NUM_CAR_NODES; frameID++)
 						//((CAutomobile*)veh)->SetFrameLightStatus((eCarNodes)frameID, LIGHT_STATUS_OK);
 				} else {
-					//for (int32 frameID = BIKE_HEADLIGHT_L; frameID < BIKE_NUM_NODES; frameID++)
-						//((CBike*)veh)->SetFrameLightStatus((eBikeNodes)frameID, LIGHT_STATUS_OK);
+					for (int32 frameID = BIKE_HEADLIGHT_L; frameID < BIKE_NUM_NODES; frameID++)
+						((CBike*)veh)->SetFrameLightStatus((eBikeNodes)frameID, LIGHT_STATUS_OK);
 
 					((CBike*)(veh))->m_fFireBlowUpTimer = 0.0f;
 					((CBike*)(veh))->Fix();
@@ -2129,6 +2158,10 @@ void CStoredCar::StoreCar(CVehicle* pVehicle)
 	m_vecAngle = pVehicle->GetForward();
 	m_nPrimaryColor = pVehicle->m_currentColour1;
 	m_nSecondaryColor = pVehicle->m_currentColour2;
+#ifdef IMPROVED_VEHICLES // More colors
+	m_nTertiaryColor = pVehicle->m_currentColour3;
+	m_nQuaternaryColor = pVehicle->m_currentColour4;
+#endif
 	m_nRadioStation = pVehicle->m_nRadioStation;
 	m_nVariationA = pVehicle->m_aExtras[0];
 	m_nVariationB = pVehicle->m_aExtras[1];
@@ -2191,10 +2224,16 @@ CVehicle* CStoredCar::RestoreCar()
 	pVehicle->pDriver = nil;
 	pVehicle->m_currentColour1 = m_nPrimaryColor;
 	pVehicle->m_currentColour2 = m_nSecondaryColor;
+#ifdef IMPROVED_VEHICLES // More colors
+	pVehicle->m_currentColour3 = m_nTertiaryColor;
+	pVehicle->m_currentColour4 = m_nQuaternaryColor;
+#endif
 	pVehicle->m_nRadioStation = m_nRadioStation;
-#ifdef VEHICLE_MODS // Save/Load
+#if defined VEHICLE_MODS && defined IMPROVED_VEHICLES // Save/Load
 	pVehicle->m_nTempColor1 = m_nPrimaryColor;
 	pVehicle->m_nTempColor2 = m_nSecondaryColor;
+	pVehicle->m_nTempColor3 = m_nTertiaryColor;
+	pVehicle->m_nTempColor4 = m_nQuaternaryColor;
 	pVehicle->m_nArmorLevel = m_nArmorLevel;
 	pVehicle->m_fAddEngineAcceleration = m_fAddEngineAcceleration;
 	if (pVehicle->IsCar()) {
@@ -2679,6 +2718,10 @@ const CStoredCar &CStoredCar::operator=(const CStoredCar & other)
 	m_nFlags = other.m_nFlags;
 	m_nPrimaryColor = other.m_nPrimaryColor;
 	m_nSecondaryColor = other.m_nSecondaryColor;
+#ifdef IMPROVED_VEHICLES // More colors
+	m_nTertiaryColor = other.m_nTertiaryColor;
+	m_nQuaternaryColor = other.m_nQuaternaryColor;
+#endif
 	m_nRadioStation = other.m_nRadioStation;
 	m_nVariationA = other.m_nVariationA;
 	m_nVariationB = other.m_nVariationB;

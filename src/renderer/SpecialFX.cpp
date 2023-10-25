@@ -232,12 +232,20 @@ CSpecialFX::Render2DFXs(void)
 			CSprite2d::DrawRect(CRect(posX, posY + 2, posX+20, posY), CRGBA(255, 255, 255, 64));
 		}
 	}
+#ifdef IMPROVED_TECH_PART // Saving a screenshot after taking a photo
+	if (CSpecialFX::bSnapShotActive && !CWeapon::bTakePhoto) {
+#else
 	if (CSpecialFX::bSnapShotActive) {
+#endif
 		if (++CSpecialFX::SnapShotFrames > 20) {
 			CSpecialFX::bSnapShotActive = false;
 			CTimer::SetTimeScale(1.0f);
 		} else {
+#ifdef IMPROVED_TECH_PART // fix game crash when taking photos
+			CTimer::SetTimeScale(0.2f);
+#else
 			CTimer::SetTimeScale(0.0f); //in andro it's 0.00001
+#endif
 			if (CSpecialFX::SnapShotFrames < 10) {
 				int32 tmp = (255 - 255 * CSpecialFX::SnapShotFrames / 10) * 0.65f;
 				RwRenderStateSet(rwRENDERSTATESRCBLEND, (void*)rwBLENDONE);
@@ -440,6 +448,11 @@ void CBulletTraces::AddTrace(CVector* start, CVector* end, float thickness, uint
 
 void CBulletTraces::AddTrace(CVector* start, CVector* end, int32 weaponType, class CEntity* shooter)
 {
+#ifdef FEATURES_INI // DisableBulletTraces
+	if (bDisableBulletTraces)
+		return;
+#endif
+
 	CPhysical* player;
 	float speed;
 	int16 camMode;

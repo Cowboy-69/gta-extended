@@ -354,6 +354,19 @@ extern uint16 NUMCOLMODELS;
 extern uint16 MAXWHEELMODELS;
 #endif
 
+#ifdef FEATURES_INI
+extern bool bVehiclesDontCatchFireWhenTurningOver;
+extern bool bHealthRegenerationUpToHalf;
+extern bool bWantedStarsHideOnScreenWhenThereIsNoSearch;
+extern bool bRemoveMoneyZerosInTheHud;
+extern bool bPlayerDoesntBounceAwayFromMovingCar;
+extern bool bStandardCarsUseTurnSignals;
+extern bool bCameraShakeInVehicleAtHighSpeed;
+extern bool bMilitaryFiringFromTankAtPlayer;
+extern bool bDisableBulletTraces;
+extern CRGBA WaypointColor;
+#endif
+
 #define DEBUGBREAK() __debugbreak();
 
 // Switch to enable development messages.

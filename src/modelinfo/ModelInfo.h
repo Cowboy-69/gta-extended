@@ -43,6 +43,10 @@ public:
 		return ms_modelInfoPtrs[id]->GetColModel();
 	}
 
+#ifdef NEW_VEHICLE_LOADER
+	static int GetFreeModelID();
+#endif
+
 	static bool IsBoatModel(int32 id);
 	static bool IsBikeModel(int32 id);
 	static bool IsCarModel(int32 id);

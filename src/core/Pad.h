@@ -28,6 +28,9 @@ public:
 #ifdef IMPROVED_MENU_AND_INPUT
 	int16 bWalk;
 #endif
+#if defined IMPROVED_MENU_AND_INPUT && defined IMPROVED_VEHICLES_2 // Turn and emergency signals for player
+	int16 bLeftTurnSignals, bRightTurnSignals, bEmergencyLights;
+#endif
 	float GetLeftStickX(void) { return LeftStickX/32767.0f; };
 	float GetLeftStickY(void) { return LeftStickY/32767.0f; };
 	float GetRightStickX(void) { return RightStickX/32767.0f; };
@@ -266,6 +269,11 @@ public:
 	bool PrevStationJustDown(void);
 #else
 	bool ChangeStationJustDown(void);
+#endif
+#if defined IMPROVED_MENU_AND_INPUT && defined IMPROVED_VEHICLES_2 // Turn and emergency signals for player
+	bool LeftTurnSignalsJustDown();
+	bool RightTurnSignalsJustDown();
+	bool EmergencyLightsJustDown();
 #endif
 	bool CycleWeaponLeftJustDown(void);
 	bool CycleWeaponRightJustDown(void);

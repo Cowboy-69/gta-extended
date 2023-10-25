@@ -1860,10 +1860,18 @@ CPed::ProcessObjective(void)
 								SetExitTrain(m_pMyVehicle);
 							else
 #endif
+#ifdef IMPROVED_TECH_PART // Vehicles are muted when the exit button is held down
+								if (m_pMyVehicle->IsBoat())
+									SetExitBoat(m_pMyVehicle);
+								else if (!IsPlayer() || FindPlayerPed()->GetPlayerInfoForThisPlayerPed()->m_nTimeVehicleEngineOff < CTimer::GetTimeInMilliseconds()) {
+									SetExitCar(m_pMyVehicle, 0);
+								}
+#else
 							if (m_pMyVehicle->IsBoat())
 								SetExitBoat(m_pMyVehicle);
 							else
 								SetExitCar(m_pMyVehicle, 0);
+#endif
 						}
 					} else {
 						RestorePreviousObjective();
@@ -4285,7 +4293,15 @@ CPed::SetExitCar(CVehicle *veh, uint32 wantedDoorNode)
 			thereIsRoom = veh->IsRoomForPedToLeaveCar(optedDoorNode, nil);
 		}
 
+#ifdef IMPROVED_TECH_PART // The player gets off the bike on the right-hand side if he turns right
+		bool bPlayerWantsExitRight = false;
+		if (IsPlayer() && veh->IsBike() && CPad::GetPad(0)->GetSteeringLeftRight() > 0)
+			bPlayerWantsExitRight = true;
+
+		if (!thereIsRoom || bPlayerWantsExitRight) {
+#else
 		if (!thereIsRoom) {
+#endif
 			bool trySideSeat = false;
 			CPed *pedOnSideSeat;
 			int firstOptedDoor = optedDoorNode;
@@ -4368,6 +4384,19 @@ CPed::SetExitCar(CVehicle *veh, uint32 wantedDoorNode)
 			// ...
 			// CVector exitPos = GetPositionToOpenCarDoor(veh, optedDoorNode);
 			if (!veh->IsRoomForPedToLeaveCar(optedDoorNode, nil)) {
+#ifdef IMPROVED_TECH_PART // The player gets off the bike on the right-hand side if he turns right
+				if (thereIsRoom && bPlayerWantsExitRight) {
+					optedDoorNode = firstOptedDoor;
+				} else {
+					if (!IsPlayer() && CharCreatedBy != MISSION_CHAR)
+						return;
+
+					optedDoorNode = firstOptedDoor;
+					m_vehDoor = firstOptedDoor;
+					PositionPedOutOfCollision();
+					teleportNeeded = true;
+				}
+#else
 				if (!IsPlayer() && CharCreatedBy != MISSION_CHAR)
 					return;
 
@@ -4376,6 +4405,7 @@ CPed::SetExitCar(CVehicle *veh, uint32 wantedDoorNode)
 				m_vehDoor = firstOptedDoor;
 				PositionPedOutOfCollision();
 				teleportNeeded = true;
+#endif
 			}
 		}
 
@@ -4538,6 +4568,13 @@ CPed::SetExitCar(CVehicle *veh, uint32 wantedDoorNode)
 			else
 				veh->SetStatus(STATUS_ABANDONED);
 		}
+
+#ifdef IMPROVED_TECH_PART // Vehicles are muted when the exit button is held down
+		if (veh->pDriver == this && IsPlayer() && FindPlayerPed()->GetPlayerInfoForThisPlayerPed()->m_nTimeVehicleEngineOff != 0) {
+			veh->bEngineOn = false;
+			veh->bLightsOn = false;
+		}
+#endif
 	}
 }
 

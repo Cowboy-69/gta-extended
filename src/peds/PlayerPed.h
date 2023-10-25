@@ -54,6 +54,10 @@ public:
 	CVector m_cachedCamUp;
 #endif
 
+#ifdef FEATURES_INI // HealthRegenerationUpToHalf 
+	int m_nHealthRegenerationTime;
+#endif
+
 #ifdef IMPROVED_TECH_PART // skip a phone call
 	bool m_bSkipPhoneCall;
 #endif
@@ -156,6 +160,7 @@ public:
 #ifdef NEW_CHEATS // init
 	static bool bInvincibleCheat;
 	static bool bNoWantedCheat;
+	static bool bRCRocketCheat;
 #endif
 
 	static const uint32 nSaveStructSize;

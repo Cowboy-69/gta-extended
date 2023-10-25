@@ -113,6 +113,10 @@ float NumberOfChunksLoaded;
 bool g_SlowMode = false;
 char version_name[64];
 
+#ifdef IMPROVED_TECH_PART // New screenshot folder and numbering
+uint32 newScreenNumber = 0;
+#endif
+
 
 void GameInit(void);
 void SystemInit(void);
@@ -352,6 +356,34 @@ RwGrabScreen(RwCamera *camera, RwChar *filename)
 	return result;
 }
 
+#ifdef IMPROVED_TECH_PART // New screenshot folder and numbering (thanks to Shagg_E)
+void TakeAndSaveScreenshot() {
+	char s[48];
+	char numberFinal[255];
+	char numberFinal2[255];
+
+	sprintf(numberFinal, "%i", newScreenNumber);
+
+	int8 digitsQuantity = (unsigned)strlen(numberFinal);
+	if (5 > digitsQuantity) {
+		for (int i = digitsQuantity; i < 5; i++) {
+			sprintf(numberFinal2, "0%s", numberFinal); // to prevent 4th digit bug it's better to split this stuff to two different chars
+			strcpy(numberFinal, numberFinal2); // to prevent 4th digit bug it's better to split this stuff to two different chars
+		}
+	}
+	strcpy(s, "screens\\screen_");
+	strcat(s, numberFinal);
+	strcat(s, ".png");
+
+	newScreenNumber++;
+
+	if (CWeapon::bTakePhoto)
+		RsCameraShowRaster(Scene.camera);
+
+	RwGrabScreen(Scene.camera, s);
+}
+#endif
+
 #define TILE_WIDTH 576
 #define TILE_HEIGHT 432
 
@@ -379,8 +411,12 @@ DoRWStuffEndOfFrame(void)
 	}
 #else
 	if (CPad::GetPad(1)->GetLeftShockJustDown() || CPad::GetPad(0)->GetFJustDown(11)) {
+#ifdef IMPROVED_TECH_PART // New screenshot folder and numbering
+		TakeAndSaveScreenshot();
+#else
 		sprintf(s, "screen_%011lld.png", time(nil));
 		RwGrabScreen(Scene.camera, s);
+#endif
 	}
 #endif
 #endif // !MASTER
@@ -774,6 +810,11 @@ ProcessSlowMode(void)
 #ifdef IMPROVED_MENU_AND_INPUT // walking on the key
 	int16 walk = CPad::GetPad(0)->NewState.bWalk;
 #endif
+#if defined IMPROVED_MENU_AND_INPUT && defined IMPROVED_VEHICLES_2 // Turn and emergency signals for player
+	int16 leftTurnSignals = CPad::GetPad(0)->NewState.bLeftTurnSignals;
+	int16 rightTurnSignals = CPad::GetPad(0)->NewState.bRightTurnSignals;
+	int16 emergencyLights = CPad::GetPad(0)->NewState.bEmergencyLights;
+#endif
 	int16 stop = true;
 	
 	do
@@ -839,6 +880,11 @@ ProcessSlowMode(void)
 	CPad::GetPad(0)->NewState.NetworkTalk = networktalk;
 #ifdef IMPROVED_MENU_AND_INPUT // walking on the key
 	CPad::GetPad(0)->NewState.bWalk = walk;
+#endif
+#if defined IMPROVED_MENU_AND_INPUT && defined IMPROVED_VEHICLES_2 // Turn and emergency signals for player
+	CPad::GetPad(0)->NewState.bLeftTurnSignals = leftTurnSignals;
+	CPad::GetPad(0)->NewState.bRightTurnSignals = rightTurnSignals;
+	CPad::GetPad(0)->NewState.bEmergencyLights = emergencyLights;
 #endif
 }
 

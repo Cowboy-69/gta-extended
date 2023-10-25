@@ -243,6 +243,12 @@ enum eMenuScreen
 #ifdef FIRST_PERSON
 	MENUPAGE_FIRST_PERSON,
 #endif
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+	MENUPAGE_CANT_SAVE_GAME,
+#endif
+#if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined IMPROVED_TECH_PART // Other settings
+	MENUPAGE_OTHER_SETTINGS,
+#endif
 	MENUPAGES
 };
 
@@ -341,6 +347,13 @@ enum eMenuAction
 	MENUACTION_AUTOCENTER_IN_VEHICLE_FP,
 	MENUACTION_RELATIVE_CAM_IN_VEHICLE_DB_FP,
 	MENUACTION_DOOM_MODE_FP,
+#endif
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+	MENUACTION_SAVE_GAME_IN_PAUSE,
+#endif
+#if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined IMPROVED_TECH_PART // Other settings
+	MENUACTION_AUTOSAVE,
+	MENUACTION_GALLERY,
 #endif
 };
 
@@ -808,6 +821,10 @@ public:
 	bool m_PrefsAutocenterCamInVeh_FP;
 	bool m_PrefsRelativeCamInVeh_DB_FP;
 	bool m_PrefsDoomMode_FP;
+#endif
+#if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined IMPROVED_TECH_PART // Other settings
+	bool m_PrefsAutosave;
+	bool m_PrefsStoreGalleryPhotos;
 #endif
 
 #ifdef GAMEPAD_MENU

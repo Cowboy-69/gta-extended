@@ -34,6 +34,9 @@
 #ifdef IMPROVED_TECH_PART // skiped phone calls
 #include "AudioManager.h"
 #endif
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE // TEMPORARY
+#include "GenericGameStorage.h"
+#endif
 
 #define PAD_MOVE_TO_GAME_WORLD_MOVE 60.0f
 
@@ -45,6 +48,7 @@ bool CPlayerPed::bDebugPlayerInfo;
 #ifdef NEW_CHEATS // init
 bool CPlayerPed::bInvincibleCheat;
 bool CPlayerPed::bNoWantedCheat;
+bool CPlayerPed::bRCRocketCheat;
 #endif
 
 const uint32 CPlayerPed::nSaveStructSize =
@@ -131,6 +135,10 @@ CPlayerPed::CPlayerPed(void) : CPed(PEDTYPE_PLAYER1)
 
 #ifdef IMPROVED_TECH_PART // skiped phone calls
 	m_bSkipPhoneCall = false;
+#endif
+
+#ifdef FEATURES_INI // HealthRegenerationUpToHalf
+	m_nHealthRegenerationTime = 0;
 #endif
 }
 
@@ -277,7 +285,7 @@ void CPlayerPed::ProcessCrouch(void)
 		if ((m_fMoveSpeed < 0.1f || (padLeftRight != 0 && padUpDown == 0)) && !curCrouchIdleAssoc && !bIsCurRollAnim || m_nPedState == PED_ROLL)
 			curCrouchIdleAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_IDLE, 4.0f);
 
-		if (m_fMoveSpeed > 0.1f && (!curCrouchIdleAssoc || curCrouchIdleAssoc && curCrouchIdleAssoc->blendAmount >= 1.0f) && !bIsCurMoveAnim && !bIsCurRollAnim && 
+		if (pad->GetTarget() && m_fMoveSpeed > 0.1f && (!curCrouchIdleAssoc || curCrouchIdleAssoc && curCrouchIdleAssoc->blendAmount >= 1.0f) && !bIsCurMoveAnim && !bIsCurRollAnim && 
 			(padLeftRight < -20 || padLeftRight > 20)) {
 
 			if (curCrouchForwardAssoc)
@@ -1261,6 +1269,7 @@ CPlayerPed::PlayerControlM16(CPad *padUsed)
 	ProcessWeaponSwitch(padUsed);
 	TheCamera.PlayerExhaustion = (1.0f - (m_fCurrentStamina - -150.0f) / 300.0f) * 0.9f + 0.1f;
 
+#ifndef FIRING_AND_AIMING // The player will not be able to crouch while in turret mode
 	if (padUsed->DuckJustDown() && !bIsDucking && m_nMoveState != PEDMOVE_SPRINT) {
 		bCrouchWhenShooting = true;
 		SetDuck(60000, true);
@@ -1268,6 +1277,7 @@ CPlayerPed::PlayerControlM16(CPad *padUsed)
 		ClearDuck(true);
 		bCrouchWhenShooting = false;
 	}
+#endif
 
 	if (!padUsed->GetTarget() && !m_attachedTo) {
 		RestorePreviousState();
@@ -1715,7 +1725,12 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 		bCrouchWhenShooting = true;
 		SetDuck(60000, true);
 	} else if (bIsDucking && (padUsed->DuckJustDown() || m_nMoveState == PEDMOVE_SPRINT ||
+#ifdef IMPROVED_TECH_PART // When aiming from a sniper or camera, the player doesn't stand up when changing the zoom while sitting
+		((padUsed->GetSprint() || padUsed->ExitVehicleJustDown() || padUsed->JumpJustDown()) && 
+		TheCamera.PlayerWeaponMode.Mode != CCam::MODE_SNIPER && TheCamera.PlayerWeaponMode.Mode != CCam::MODE_CAMERA))) {
+#else
 		padUsed->GetSprint() || padUsed->JumpJustDown() || padUsed->ExitVehicleJustDown())) {
+#endif
 
 #ifdef FIRING_AND_AIMING
 		ClearPointGunAt();
@@ -1853,8 +1868,7 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 
 								break;
 							}
-						}
-						else if (m_pPointGunAt) {
+						} else if (m_pPointGunAt) {
 							m_pPointGunAt = nullptr;
 
 							break;
@@ -1949,7 +1963,7 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 			}
 
 			if (padUsed->MeleeWeaponJustDown()) {
-				if ((GetWeapon()->m_eWeaponType == WEAPONTYPE_UNARMED || GetWeapon()->m_eWeaponType == WEAPONTYPE_BRASSKNUCKLE) && 
+				if ((GetWeapon()->m_eWeaponType == WEAPONTYPE_UNARMED || GetWeapon()->m_eWeaponType == WEAPONTYPE_BRASSKNUCKLE || weaponInfo->IsFlagSet(WEAPONFLAG_FIGHTMODE)) &&
 					(m_fMoveSpeed < 1.0f || m_nPedState == PED_FIGHT)) {
 					
 					StartFightAttack(padUsed->GetWeapon());
@@ -2374,7 +2388,12 @@ CPlayerPed::PlayerControlZelda(CPad *padUsed)
 			return;
 		}
 #endif
+
+#ifdef FEATURES_INI // PlayerDoesntBounceAwayFromMovingCar
+		if (!bPlayerDoesntBounceAwayFromMovingCar && m_nEvadeAmount != 0 && m_pEvadingFrom) {
+#else
 		if (m_nEvadeAmount != 0 && m_pEvadingFrom) {
+#endif
 			SetEvasiveDive((CPhysical*)m_pEvadingFrom, 1);
 			m_nEvadeAmount = 0;
 			m_pEvadingFrom = nil;
@@ -2474,7 +2493,7 @@ CPlayerPed::FindNewAttackPoints(void)
 void
 CPlayerPed::ProcessControl(void)
 {
-#if defined WANTED_PATHS && defined DEBUG
+#if defined DEBUG && defined WANTED_PATHS
 	CPad* pad = CPad::GetPad(0);
 	if (pad->GetCharJustDown(0x31)) { // 1
 		if (bIsPathRecording) {
@@ -2540,6 +2559,22 @@ CPlayerPed::ProcessControl(void)
 #ifdef CROUCH
 	if (!bIsDucking && TheCamera.Cams[TheCamera.ActiveCam].m_fTargetCameraPosZ != 0.0f)
 		TheCamera.Cams[TheCamera.ActiveCam].m_fTargetCameraPosZ = 0.0f;
+#endif
+
+#if defined DEBUG && defined AUTOSAVE_AND_SAVE_ANYWHERE
+	if (CPad::GetPad(0)->GetCharJustDown(0x33)) { // 3
+		DoAutoSave();
+	}
+
+	if (CPad::GetPad(0)->GetCharJustDown(0x34) && PlayerCanMakeQuickSave()) { // 4
+		*(int32*)&CTheScripts::ScriptSpace[CTheScripts::OnAMissionFlag] = 1;
+		CTheScripts::Process();
+
+		bAutoSave = false;
+		IsQuickSave = false;
+		bSaveAnywhere = true;
+		FrontEndMenuManager.m_bActivateSaveMenu = true;
+	}
 #endif
 
 	// Mobile has some debug/abandoned cheat thing in here: "gbFrankenTommy"

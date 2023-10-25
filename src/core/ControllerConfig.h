@@ -70,6 +70,11 @@ enum e_ControllerAction
 	RADAR_ZOOM_OUT,
 	PED_RELOAD,
 #endif
+#if defined IMPROVED_MENU_AND_INPUT && defined IMPROVED_VEHICLES_2 // Turn and emergency signals for player
+	VEHICLE_LEFT_TURNSIGNALS,
+	VEHICLE_RIGHT_TURNSIGNALS,
+	VEHICLE_EMERGENCYLIGHTS,
+#endif
 	MAX_CONTROLLERACTIONS,
 };
 

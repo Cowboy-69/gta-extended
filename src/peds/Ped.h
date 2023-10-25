@@ -1234,6 +1234,9 @@ public:
 	static bool bNastyLimbsCheat;
 	static bool bFannyMagnetCheat;
 	static bool bPedCheat3;
+#ifdef NEW_CHEATS // BIGHEADS
+	static bool bBigHeadsCheat;
+#endif
 	static CVector2D ms_vec2DFleePosition;
 
 #ifndef MASTER

@@ -55,6 +55,9 @@ uint16 CPed::nEnterCarRangeMultiplier = 1;
 bool CPed::bNastyLimbsCheat;
 bool CPed::bFannyMagnetCheat;
 bool CPed::bPedCheat3;
+#ifdef NEW_CHEATS // BIGHEADS
+bool CPed::bBigHeadsCheat;
+#endif
 CVector2D CPed::ms_vec2DFleePosition;
 
 #ifdef CLIMBING
@@ -3284,6 +3287,15 @@ CPed::ProcessControl(void)
 		}
 	} else
 		ServiceTalking();
+
+#ifdef FEATURES_INI // HealthRegenerationUpToHalf
+	if (bHealthRegenerationUpToHalf && IsPlayer() && !DyingOrDead() && m_fHealth < 50.0f &&
+		(FindPlayerPed()->m_fMoveSpeed < 0.1f || InVehicle()) &&
+		CTimer::GetTimeInMilliseconds() > FindPlayerPed()->m_nHealthRegenerationTime + 4500) {
+
+		m_fHealth += 0.1f * CTimer::GetTimeStep();
+	}
+#endif
 }
 
 int32
@@ -5408,6 +5420,20 @@ CPed::PreRender(void)
 		RwMatrix* foreArmR = &RpHAnimHierarchyGetMatrixArray(hier)[idx];
 		RwMatrixScale(foreArmR, &scale, rwCOMBINEPRECONCAT);
 	}
+#ifdef NEW_CHEATS // BIGHEADS
+	else if (bBigHeadsCheat) {
+		RpHAnimHierarchy* hier = GetAnimHierarchyFromSkinClump(GetClump());
+		int32 idx;
+		RwV3d scale;
+
+		scale.x = 3.0f;
+		scale.y = 3.0f;
+		scale.z = 3.0f;
+		idx = RpHAnimIDGetIndex(hier, ConvertPedNode2BoneTag(PED_HEAD));
+		RwMatrix* head = &RpHAnimHierarchyGetMatrixArray(hier)[idx];
+		RwMatrixScale(head, &scale, rwCOMBINEPRECONCAT);
+	}
+#endif
 
 	if (bBodyPartJustCameOff && bIsPedDieAnimPlaying && m_bodyPartBleeding != -1 && (CTimer::GetFrameCounter() & 7) > 3) {
 		CVector bloodDir(0.0f, 0.0f, 0.0f);

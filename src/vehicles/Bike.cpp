@@ -45,7 +45,11 @@ const uint32 CBike::nSaveStructSize =
 #ifdef COMPATIBLE_SAVES
 	1260;
 #else
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+	sizeof(CBike);
+#else
 	sizeof(CBoat);
+#endif
 #endif
 
 
@@ -70,6 +74,36 @@ CBike::CBike(int32 id, uint8 CreatedBy)
 {
 	int i;
 	CVehicleModelInfo *mi = (CVehicleModelInfo*)CModelInfo::GetModelInfo(id);
+#ifdef NEW_VEHICLE_LOADER
+	if (id >= MI_FIRST_NEW_VEHICLE) {
+		if (strcmp(mi->m_anotherAnimFileName, "bikes") == 0)
+			m_bikeAnimType = ASSOCGRP_BIKE_STANDARD;
+		else if (strcmp(mi->m_anotherAnimFileName, "bikev") == 0)
+			m_bikeAnimType = ASSOCGRP_BIKE_VESPA;
+		else if (strcmp(mi->m_anotherAnimFileName, "bikeh") == 0)
+			m_bikeAnimType = ASSOCGRP_BIKE_HARLEY;
+		else if (strcmp(mi->m_anotherAnimFileName, "biked") == 0)
+			m_bikeAnimType = ASSOCGRP_BIKE_DIRT;
+	} else {
+		switch(id){
+		case MI_ANGEL:
+		case MI_FREEWAY:
+			m_bikeAnimType = ASSOCGRP_BIKE_HARLEY;
+			break;
+		case MI_PIZZABOY:
+		case MI_FAGGIO:
+			m_bikeAnimType = ASSOCGRP_BIKE_VESPA;
+			break;
+		case MI_PCJ600:
+			m_bikeAnimType = ASSOCGRP_BIKE_STANDARD;
+			break;
+		case MI_SANCHEZ:
+			m_bikeAnimType = ASSOCGRP_BIKE_DIRT;
+			break;
+		default: assert(0 && "invalid bike model ID");
+		}
+	}
+#else
 	switch(id){
 	case MI_ANGEL:
 	case MI_FREEWAY:
@@ -80,19 +114,14 @@ CBike::CBike(int32 id, uint8 CreatedBy)
 		m_bikeAnimType = ASSOCGRP_BIKE_VESPA;
 		break;
 	case MI_PCJ600:
-#ifdef NEW_VEHICLES // for bikes, anim group
-	case MI_STREETFI:
-#endif
 		m_bikeAnimType = ASSOCGRP_BIKE_STANDARD;
 		break;
 	case MI_SANCHEZ:
-#ifdef NEW_VEHICLES // for bikes, anim group
-	case MI_MANCHEZ:
-#endif
 		m_bikeAnimType = ASSOCGRP_BIKE_DIRT;
 		break;
 	default: assert(0 && "invalid bike model ID");
 	}
+#endif
 	m_vehType = VEHICLE_TYPE_BIKE;
 
 	m_fFireBlowUpTimer = 0.0f;
@@ -101,14 +130,32 @@ CBike::CBike(int32 id, uint8 CreatedBy)
 
 	SetModelIndex(id);
 
+#ifdef NEW_VEHICLE_LOADER
+	if (GetModelIndex() >= MI_FIRST_NEW_VEHICLE) {
+		pVehicleShadowSettings = &mi->vehicleShadowData;
+		pVehicleSample = &mi->vehicleSampleData;
+		pHandling = &mi->handlingData;
+		pBikeHandling = &mi->bikeHandlingData;
+		pFlyingHandling = &mi->flyingHandlingData;
+	} else {
+		pHandling = mod_HandlingManager.GetHandlingData((tVehicleType)mi->m_handlingId);
+		pBikeHandling = mod_HandlingManager.GetBikePointer((tVehicleType)mi->m_handlingId);
+		pFlyingHandling = mod_HandlingManager.GetFlyingPointer((tVehicleType)mi->m_handlingId);
+	}
+#else
 	pHandling = mod_HandlingManager.GetHandlingData((tVehicleType)mi->m_handlingId);
 	pBikeHandling = mod_HandlingManager.GetBikePointer((tVehicleType)mi->m_handlingId);
 	pFlyingHandling = mod_HandlingManager.GetFlyingPointer((tVehicleType)mi->m_handlingId);
+#endif
 
 	m_bike_unused1 = 20.0f;
 	m_bike_unused2 = 0;
 
+#ifdef IMPROVED_VEHICLES // More colors
+	mi->ChooseVehicleColour(m_currentColour1, m_currentColour2, m_currentColour3, m_currentColour4);
+#else
 	mi->ChooseVehicleColour(m_currentColour1, m_currentColour2);
+#endif
 
 	m_fRearForkLength = 0.0f;
 	m_fFrontForkY = 0.0;
@@ -1777,14 +1824,18 @@ CBike::Render(void)
 	CVehicleModelInfo *mi = (CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex());
 
 	m_nSetPieceExtendedRangeTime = CTimer::GetTimeInMilliseconds() + 3000;
-#ifdef VEHICLE_MODS
+#if defined VEHICLE_MODS && defined IMPROVED_VEHICLES
 	uint8 color1 = CGarages::bPlayerInModGarage ? m_nTempColor1 : m_currentColour1;
 	uint8 color2 = CGarages::bPlayerInModGarage ? m_nTempColor2 : m_currentColour2;
-	mi->SetVehicleColour(color1, color2);
+	uint8 color3 = CGarages::bPlayerInModGarage ? m_nTempColor3 : m_currentColour3;
+	uint8 color4 = CGarages::bPlayerInModGarage ? m_nTempColor4 : m_currentColour4;
+	mi->SetVehicleColour(color1, color2, color3, color4);
 
 	if (FindPlayerVehicle() == this && !CGarages::bPlayerInModGarage) {
 		m_nTempColor1 = m_currentColour1;
 		m_nTempColor2 = m_currentColour2;
+		m_nTempColor3 = m_currentColour3;
+		m_nTempColor4 = m_currentColour4;
 	}
 #else
 	mi->SetVehicleColour(m_currentColour1, m_currentColour2);
@@ -1827,9 +1878,31 @@ CBike::Render(void)
 
 		m_bIndicatorState[INDICATORS_LEFT] = angle < -0.2f;
 		m_bIndicatorState[INDICATORS_RIGHT] = angle > 0.2f;
-	} else if (this == FindPlayerVehicle() || AutoPilot.m_nDrivingStyle == DRIVINGSTYLE_PLOUGH_THROUGH || bRenderScorched) {
+	} else if (AutoPilot.m_nDrivingStyle == DRIVINGSTYLE_PLOUGH_THROUGH || bRenderScorched) {
 		m_bIndicatorState[INDICATORS_LEFT] = false;
 		m_bIndicatorState[INDICATORS_RIGHT] = false;
+	} else if (this == FindPlayerVehicle()) {
+		CPad* pad = CPad::GetPad(0);
+
+		if (pad->LeftTurnSignalsJustDown()) {
+			m_bIndicatorState[INDICATORS_LEFT] = !m_bIndicatorState[INDICATORS_LEFT];
+			if (m_bIndicatorState[INDICATORS_LEFT]) m_bIndicatorState[INDICATORS_RIGHT] = false;
+		}
+		
+		if (pad->RightTurnSignalsJustDown()) {
+			m_bIndicatorState[INDICATORS_RIGHT] = !m_bIndicatorState[INDICATORS_RIGHT];
+			if (m_bIndicatorState[INDICATORS_RIGHT]) m_bIndicatorState[INDICATORS_LEFT] = false;
+		}
+
+		if (pad->EmergencyLightsJustDown()) {
+			if (m_bIndicatorState[INDICATORS_LEFT] == m_bIndicatorState[INDICATORS_RIGHT]) {
+				m_bIndicatorState[INDICATORS_LEFT] = !m_bIndicatorState[INDICATORS_LEFT];
+				m_bIndicatorState[INDICATORS_RIGHT] = !m_bIndicatorState[INDICATORS_RIGHT];
+			} else {
+				m_bIndicatorState[INDICATORS_LEFT] = true;
+				m_bIndicatorState[INDICATORS_RIGHT] = true;
+			}
+		}
 	}
 
 	CRGBA indicatorOffColor = CRGBA(150, 125, 0, 255);
@@ -3253,7 +3326,11 @@ void CBike::DoVehicleLights(void)
 		m_randomSeed/50000.0f < CWeather::Foggyness ||
 		m_randomSeed/50000.0f < CWeather::WetRoads;
 	if(shouldLightsBeOn != bLightsOn && GetStatus() != STATUS_WRECKED){
+#ifdef IMPROVED_TECH_PART // Vehicles are muted when the exit button is held down
+		if(GetStatus() == STATUS_ABANDONED || GetStatus() == STATUS_PLAYER_DISABLED) {
+#else
 		if(GetStatus() == STATUS_ABANDONED){
+#endif
 			// Turn off lights on abandoned vehicles only when we they're far away
 			if(bLightsOn &&
 			   Abs(TheCamera.GetPosition().x - GetPosition().x) + Abs(TheCamera.GetPosition().y - GetPosition().y) > 100.0f)

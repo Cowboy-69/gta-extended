@@ -235,6 +235,11 @@ void CHud::Draw()
 	if (CReplay::IsPlayingBack())
 		return;
 
+#ifdef IMPROVED_TECH_PART // Saving a screenshot after taking a photo
+	if (CWeapon::bTakePhoto)
+		return;
+#endif
+
 	if (m_Wants_To_Draw_Hud && !TheCamera.m_WideScreenOn) {
 		// unused statics in here
 		bool DrawCrossHair = false;
@@ -438,6 +443,11 @@ void CHud::Draw()
 			m_LastDisplayScore = CWorld::Players[CWorld::PlayerInFocus].m_nVisibleMoney;
 		}
 		if (m_DisplayScoreState != FADED_OUT) {
+#ifdef FEATURES_INI // RemoveMoneyZerosInTheHud
+			if (bRemoveMoneyZerosInTheHud)
+				sprintf(sTemp, "$%01d", CWorld::Players[CWorld::PlayerInFocus].m_nVisibleMoney);
+			else
+#endif
 			sprintf(sTemp, "$%08d", CWorld::Players[CWorld::PlayerInFocus].m_nVisibleMoney);
 			AsciiToUnicode(sTemp, sPrint);
 
@@ -664,7 +674,12 @@ void CHud::Draw()
 			m_LastWanted = playerPed->m_pWanted->GetWantedLevel();
 		}
 
+#ifdef FEATURES_INI // WantedStarsHideOnScreenWhenThereIsNoSearch
+		if (bWantedStarsHideOnScreenWhenThereIsNoSearch && m_LastWanted > 0 && m_WantedState != FADED_OUT || 
+			!bWantedStarsHideOnScreenWhenThereIsNoSearch && m_WantedState != FADED_OUT) {
+#else
 		if (m_WantedState != FADED_OUT) {
+#endif
 			CFont::SetBackgroundOff();
 			CFont::SetScale(SCREEN_SCALE_X(HUD_TEXT_SCALE_X), SCREEN_SCALE_Y(HUD_TEXT_SCALE_Y));
 			CFont::SetJustifyOff();
@@ -1147,7 +1162,7 @@ void CHud::Draw()
 			m_bDrawRadar = true;
 			CRadar::DrawGPS();
 			m_bDrawRadar = false;
-			CRadar::DrawPropertyBlips();
+			//CRadar::DrawPropertyBlips();
 #endif
 			CRadar::DrawBlips();
 		}

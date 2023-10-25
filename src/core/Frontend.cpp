@@ -62,7 +62,7 @@ const CRGBA SCROLLBAR_COLOR = LABEL_COLOR;
 
 #ifdef IMPROVED_MENU_AND_INPUT
 #define NUM_PC_FOOT_OPTIONS 20
-#define NUM_PC_VEHICLE_OPTIONS 18
+#define NUM_PC_VEHICLE_OPTIONS 21
 
 #define hasNativeList(screen) (screen == MENUPAGE_SKIN_SELECT || screen == MENUPAGE_PC_FOOT_CONTROLS || screen == MENUPAGE_PC_VEHICLE_CONTROLS)
 #else
@@ -580,6 +580,10 @@ CMenuManager::CMenuManager()
 	m_PrefsRelativeCamInVeh_DB_FP = false;
 	m_PrefsDoomMode_FP = false;
 #endif
+#if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined IMPROVED_TECH_PART // Other settings
+	m_PrefsAutosave = true;
+	m_PrefsStoreGalleryPhotos = true;
+#endif
 }
 
 void
@@ -1088,12 +1092,30 @@ CMenuManager::DrawStandardMenus(bool activeScreen)
 	switch (m_nCurrScreen) {
 		case MENUPAGE_CHOOSE_LOAD_SLOT:
 		case MENUPAGE_CHOOSE_DELETE_SLOT:
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+			CSprite2d::Draw2DPolygon(MENU_X_LEFT_ALIGNED(38.0f), MENU_Y(85.0f),
+				MENU_X_LEFT_ALIGNED(615.0f), MENU_Y(75.0f),
+				MENU_X_LEFT_ALIGNED(30.0f), MENU_Y(320.0f), 
+				MENU_X_LEFT_ALIGNED(605.0f), MENU_Y(320.0f), CRGBA(LIST_BACKGROUND_COLOR.r, LIST_BACKGROUND_COLOR.g, LIST_BACKGROUND_COLOR.b, FadeIn(LIST_BACKGROUND_COLOR.a)));
+			CSprite2d::Draw2DPolygon(MENU_X_LEFT_ALIGNED(30.0f), MENU_Y(320.0f),
+				MENU_X_LEFT_ALIGNED(605.0f), MENU_Y(320.0f),
+				MENU_X_LEFT_ALIGNED(30.0f), MENU_Y(347.0f),
+				MENU_X_LEFT_ALIGNED(605.0f), MENU_Y(347.0f), CRGBA(25, 150, 200, FadeIn(LIST_BACKGROUND_COLOR.a)));
+			break;
+		case MENUPAGE_CHOOSE_SAVE_SLOT:
+			CSprite2d::Draw2DPolygon(MENU_X_LEFT_ALIGNED(38.0f), MENU_Y(85.0f),
+				MENU_X_LEFT_ALIGNED(615.0f), MENU_Y(75.0f),
+				MENU_X_LEFT_ALIGNED(30.0f), MENU_Y(320.0f),
+				MENU_X_LEFT_ALIGNED(605.0f), MENU_Y(330.0f), CRGBA(LIST_BACKGROUND_COLOR.r, LIST_BACKGROUND_COLOR.g, LIST_BACKGROUND_COLOR.b, FadeIn(LIST_BACKGROUND_COLOR.a)));
+			break;
+#else
 		case MENUPAGE_CHOOSE_SAVE_SLOT:
 			CSprite2d::Draw2DPolygon(MENU_X_LEFT_ALIGNED(38.0f), MENU_Y(85.0f),
 				MENU_X_LEFT_ALIGNED(615.0f), MENU_Y(75.0f),
 				MENU_X_LEFT_ALIGNED(30.0f), MENU_Y(320.0f), 
 				MENU_X_LEFT_ALIGNED(605.0f), MENU_Y(330.0f), CRGBA(LIST_BACKGROUND_COLOR.r, LIST_BACKGROUND_COLOR.g, LIST_BACKGROUND_COLOR.b, FadeIn(LIST_BACKGROUND_COLOR.a)));
 			break;
+#endif
 		case MENUPAGE_SOUND_SETTINGS:
 			PrintRadioSelector();
 			break;
@@ -1193,7 +1215,11 @@ CMenuManager::DrawStandardMenus(bool activeScreen)
 #endif
 			wchar* rightText = nil;
 			wchar* leftText;
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+			if (aScreens[m_nCurrScreen].m_aEntries[i].m_SaveSlot >= SAVESLOT_0 && aScreens[m_nCurrScreen].m_aEntries[i].m_SaveSlot <= SAVESLOT_8) {
+#else
 			if (aScreens[m_nCurrScreen].m_aEntries[i].m_SaveSlot >= SAVESLOT_1 && aScreens[m_nCurrScreen].m_aEntries[i].m_SaveSlot <= SAVESLOT_8) {
+#endif
 				CFont::SetColor(CRGBA(0, 0, 0, FadeIn(255)));
 				CFont::SetFontStyle(FONT_LOCALE(FONT_STANDARD));
 				CFont::SetScale(MENU_X(MEDIUMTEXT_X_SCALE), MENU_Y(MEDIUMTEXT_Y_SCALE));
@@ -1237,8 +1263,11 @@ CMenuManager::DrawStandardMenus(bool activeScreen)
 #endif
 
 			if (aScreens[m_nCurrScreen].m_aEntries[i].m_Action != MENUACTION_LABEL && aScreens[m_nCurrScreen].m_aEntries[i].m_EntryName[0] != '\0') {
-
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+				if (aScreens[m_nCurrScreen].m_aEntries[i].m_SaveSlot >= SAVESLOT_0 && aScreens[m_nCurrScreen].m_aEntries[i].m_SaveSlot <= SAVESLOT_8) {
+#else
 				if (aScreens[m_nCurrScreen].m_aEntries[i].m_SaveSlot >= SAVESLOT_1 && aScreens[m_nCurrScreen].m_aEntries[i].m_SaveSlot <= SAVESLOT_8) {
+#endif
 					CFont::SetRightJustifyOff();
 
 					leftText = nil;
@@ -1331,6 +1360,20 @@ CMenuManager::DrawStandardMenus(bool activeScreen)
 						rightText = TheText.Get("FEC_ONF");
 					else
 						rightText = TheText.Get("FEC_INC");
+					break;
+#endif
+#if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined IMPROVED_TECH_PART // Other settings
+				case MENUACTION_AUTOSAVE:
+					if (m_PrefsAutosave)
+						rightText = TheText.Get("FEM_ON");
+					else
+						rightText = TheText.Get("FEM_OFF");
+					break;
+				case MENUACTION_GALLERY:
+					if (m_PrefsStoreGalleryPhotos)
+						rightText = TheText.Get("FEM_ON");
+					else
+						rightText = TheText.Get("FEM_OFF");
 					break;
 #endif
 				case MENUACTION_FRAMESYNC:
@@ -1599,7 +1642,11 @@ CMenuManager::DrawStandardMenus(bool activeScreen)
 #ifdef FIRST_PERSON
 						action == MENUACTION_FOV_FP ||
 #endif
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+						saveSlot >= SAVESLOT_0 && saveSlot <= SAVESLOT_8
+#else
 						saveSlot >= SAVESLOT_1 && saveSlot <= SAVESLOT_8
+#endif
 #ifdef CUSTOM_FRONTEND_OPTIONS
 						|| action == MENUACTION_CFO_SLIDER
 #endif
@@ -1679,7 +1726,11 @@ CMenuManager::DrawStandardMenus(bool activeScreen)
 					if (rightText) {
 						CFont::SetCentreOff();
 						CFont::SetRightJustifyOn();
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+						if (aScreens[m_nCurrScreen].m_aEntries[i].m_SaveSlot >= SAVESLOT_0 && aScreens[m_nCurrScreen].m_aEntries[i].m_SaveSlot <= SAVESLOT_8) {
+#else
 						if (aScreens[m_nCurrScreen].m_aEntries[i].m_SaveSlot >= SAVESLOT_1 && aScreens[m_nCurrScreen].m_aEntries[i].m_SaveSlot <= SAVESLOT_8) {
+#endif
 							CFont::SetFontStyle(FONT_LOCALE(FONT_STANDARD));
 							CFont::SetScale(MENU_X(MEDIUMTEXT_X_SCALE), MENU_Y(MEDIUMTEXT_Y_SCALE));
 						} else {
@@ -2076,6 +2127,17 @@ CMenuManager::DrawControllerBound(int32 yStart, int32 xStart, int32 unused, int8
 				case 17:
 					controllerAction = RADAR_ZOOM_OUT;
 					break;
+#ifdef IMPROVED_VEHICLES_2 // Turn and emergency signals for player
+				case 18:
+					controllerAction = VEHICLE_LEFT_TURNSIGNALS;
+					break;
+				case 19:
+					controllerAction = VEHICLE_RIGHT_TURNSIGNALS;
+					break;
+				case 20:
+					controllerAction = VEHICLE_EMERGENCYLIGHTS;
+					break;
+#endif
 				default:
 					break;
 			}
@@ -2457,7 +2519,11 @@ CMenuManager::DrawControllerSetupScreen()
 
 	CFont::PrintString(SCREEN_STRETCH_FROM_RIGHT(MENUHEADER_POS_X), SCREEN_SCALE_Y(MENUHEADER_POS_Y), TheText.Get("FET_STI"));
 
+#ifdef IMPROVED_VEHICLES_2 // Turn and emergency signals for player
+	wchar *actionTexts[22];
+#else
 	wchar *actionTexts[21];
+#endif
 
 	if (m_nCurrScreen == MENUPAGE_PC_FOOT_CONTROLS) {
 		actionTexts[0] = TheText.Get("FEC_FIR");
@@ -2500,7 +2566,14 @@ CMenuManager::DrawControllerSetupScreen()
 		actionTexts[15] = TheText.Get("FEC_LOL");
 		actionTexts[16] = TheText.Get("FEC_LOR");
 		actionTexts[17] = TheText.Get("FEC_RZO");
+#ifdef IMPROVED_VEHICLES_2 // Turn and emergency signals for player
+		actionTexts[18] = TheText.Get("FEC_LTS");
+		actionTexts[19] = TheText.Get("FEC_RTS");
+		actionTexts[20] = TheText.Get("FEC_EML");
+		actionTexts[21] = nil;
+#else
 		actionTexts[18] = nil;
+#endif
 	}
 
 	// Blue panel background
@@ -5420,8 +5493,13 @@ CMenuManager::ProcessUserInput(uint8 goDown, uint8 goUp, uint8 optionSelected, u
 			{
 				int saveSlot = aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_SaveSlot;
 
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+				if (saveSlot >= SAVESLOT_0 && saveSlot <= SAVESLOT_8) {
+					m_nCurrSaveSlot = saveSlot - SAVESLOT_0;
+#else
 				if (saveSlot >= SAVESLOT_1 && saveSlot <= SAVESLOT_8) {
 					m_nCurrSaveSlot = saveSlot - SAVESLOT_1;
+#endif
 					if (Slots[m_nCurrSaveSlot] != SLOT_EMPTY && Slots[m_nCurrSaveSlot] != SLOT_CORRUPTED) {
 						if (m_nCurrScreen == MENUPAGE_CHOOSE_LOAD_SLOT) {
 							SwitchToNewScreen(MENUPAGE_LOAD_SLOT_CONFIRM);
@@ -5627,6 +5705,10 @@ CMenuManager::ProcessUserInput(uint8 goDown, uint8 goUp, uint8 optionSelected, u
 					m_PrefsRelativeCamInVeh_DB_FP = false;
 					m_PrefsDoomMode_FP = false;
 #endif
+#if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined IMPROVED_TECH_PART // Other settings
+					m_PrefsAutosave = true;
+					m_PrefsStoreGalleryPhotos = true;
+#endif
 					SaveSettings();
 				} else if (m_nCurrScreen == MENUPAGE_CONTROLLER_PC) {
 					ControlsManager.MakeControllerActionsBlank();
@@ -5676,6 +5758,21 @@ CMenuManager::ProcessUserInput(uint8 goDown, uint8 goUp, uint8 optionSelected, u
 				}
 				SaveSettings();
 				break;
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+			case MENUACTION_SAVE_GAME_IN_PAUSE:
+				if (PlayerCanMakeQuickSave()) {
+					*(int32*)&CTheScripts::ScriptSpace[CTheScripts::OnAMissionFlag] = 1;
+					CTheScripts::Process();
+
+					bAutoSave = false;
+					IsQuickSave = false;
+					bSaveAnywhere = true;
+					SwitchToNewScreen(MENUPAGE_CHOOSE_SAVE_SLOT);
+				} else {
+					SwitchToNewScreen(MENUPAGE_CANT_SAVE_GAME);
+				}
+				break;
+#endif
 #ifdef CUSTOM_FRONTEND_OPTIONS
 			case MENUACTION_CFO_SELECT:
 			case MENUACTION_CFO_DYNAMIC:
@@ -5712,7 +5809,11 @@ CMenuManager::ProcessUserInput(uint8 goDown, uint8 goUp, uint8 optionSelected, u
 		if (!goBack) {
 #ifdef FIX_BUGS
 			int saveSlot = aScreens[currScreen].m_aEntries[currOption].m_SaveSlot;
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+			if (saveSlot >= SAVESLOT_0 && saveSlot <= SAVESLOT_8 && Slots[currOption] != SLOT_OK)
+#else
 			if (saveSlot >= SAVESLOT_1 && saveSlot <= SAVESLOT_8 && Slots[currOption] != SLOT_OK)
+#endif
 #else
 			int saveSlot = aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_SaveSlot;
 			if (saveSlot >= SAVESLOT_1 && saveSlot <= SAVESLOT_8 && Slots[m_nCurrOption] != SLOT_OK)
@@ -5945,6 +6046,16 @@ CMenuManager::ProcessOnOffMenuOptions()
 		break;
 	case MENUACTION_DOOM_MODE_FP:
 		m_PrefsDoomMode_FP = !m_PrefsDoomMode_FP;
+		SaveSettings();
+		break;
+#endif
+#if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined IMPROVED_TECH_PART // Other settings
+	case MENUACTION_AUTOSAVE:
+		m_PrefsAutosave = !m_PrefsAutosave;
+		SaveSettings();
+		break;
+	case MENUACTION_GALLERY:
+		m_PrefsStoreGalleryPhotos = !m_PrefsStoreGalleryPhotos;
 		SaveSettings();
 		break;
 #endif
@@ -6285,6 +6396,10 @@ CMenuManager::ProcessFileActions()
 			static bool waitedForScreen = false;
 
 			if (waitedForScreen) {
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+				if (bSaveAnywhere)
+					*(int32*)&CTheScripts::ScriptSpace[CTheScripts::OnAMissionFlag] = 0;
+#endif
 				int8 SaveSlot = PcSaveHelper.SaveSlot(m_nCurrSaveSlot);
 				PcSaveHelper.PopulateSlotInfo();
 				if (SaveSlot) {
@@ -6319,6 +6434,11 @@ CMenuManager::SwitchMenuOnAndOff()
 			|| CPad::GetPad(0)->GetBackJustUp() && !m_bGameNotLoaded && m_nCurrScreen == MENUPAGE_PAUSE_MENU && m_bMenuActive
 #endif
 			) {
+
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+			if (m_nCurrScreen == MENUPAGE_CHOOSE_SAVE_SLOT && bSaveAnywhere)
+				*(int32*)&CTheScripts::ScriptSpace[CTheScripts::OnAMissionFlag] = 0;
+#endif
 
 			if (m_nCurrScreen != MENUPAGE_LOADING_IN_PROGRESS
 #ifdef XBOX_MESSAGE_SCREEN
@@ -6600,7 +6720,7 @@ CMenuManager::PrintMap(void)
 
 #ifdef IMPROVED_TECH_PART // GPS and property
 	CRadar::DrawGPS();
-	CRadar::DrawPropertyBlips();
+	//CRadar::DrawPropertyBlips();
 #endif
 	CRadar::DrawBlips();
 	if (m_PrefsShowLegends) {

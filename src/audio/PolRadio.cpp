@@ -482,6 +482,11 @@ cAudioManager::SetupSuspectLastSeenReport()
 					main_color = gCarColourTable[color1][1];
 					color_pre_modifier = gCarColourTable[color1][0];
 					color_post_modifier = gCarColourTable[color1][2];
+#ifdef NEW_VEHICLE_LOADER
+					if (veh->GetModelIndex() >= MI_FIRST_NEW_VEHICLE) {
+						sample = veh->GetModelInfo()->m_policeRadioIndex;
+					} else
+#endif
 					switch (veh->GetModelIndex()) {
 					case MI_LANDSTAL:
 					case MI_PATRIOT:
@@ -499,9 +504,6 @@ cAudioManager::SetupSuspectLastSeenReport()
 					case MI_SABRETUR:
 					case MI_VIRGO:
 					case MI_BLISTAC:
-#ifdef NEW_VEHICLES
-					case MI_HELLENBACH:
-#endif
 							sample = SFX_POLICE_RADIO_TUDOOR;
 							break;
 					case MI_STINGER:
@@ -519,9 +521,6 @@ cAudioManager::SetupSuspectLastSeenReport()
 						break;
 					case MI_PEREN:
 					case MI_REGINA:
-#ifdef NEW_VEHICLES
-					case MI_PEREN2:
-#endif
 						sample = SFX_POLICE_RADIO_STATION_WAGON;
 						break;
 					case MI_SENTINEL:
@@ -533,9 +532,6 @@ cAudioManager::SetupSuspectLastSeenReport()
 					case MI_OCEANIC:
 					case MI_HERMES:
 					case MI_GREENWOO:
-#ifdef NEW_VEHICLES
-					case MI_PREMIER:
-#endif
 						sample = SFX_POLICE_RADIO_SEDAN;
 						break;
 					case MI_RIO:
@@ -545,9 +541,6 @@ cAudioManager::SetupSuspectLastSeenReport()
 						sample = SFX_POLICE_RADIO_FIRE_TRUCK;
 						break;
 					case MI_TRASH:
-#ifdef NEW_VEHICLES
-					case MI_TRASH2:
-#endif
 						sample = SFX_POLICE_RADIO_GARBAGE_TRUCK;
 						break;
 					case MI_STRETCH:
@@ -623,10 +616,6 @@ cAudioManager::SetupSuspectLastSeenReport()
 					case MI_PCJ600:
 					case MI_FREEWAY:
 					case MI_SANCHEZ:
-#ifdef NEW_VEHICLES // for bikes
-					case MI_STREETFI:
-					case MI_MANCHEZ:
-#endif
 						sample = SFX_POLICE_RADIO_MOTOBIKE;
 						break;
 					case MI_COACH:

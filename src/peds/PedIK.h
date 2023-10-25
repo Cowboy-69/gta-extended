@@ -54,11 +54,6 @@ public:
 	bool PointGunInDirection(float targetYaw, float targetPitch);
 	bool PointGunInDirectionUsingArm(float targetYaw, float targetPitch);
 	bool PointGunAtPosition(CVector const& position);
-#ifdef IMPROVED_VEHICLES_2 // steering wheel IK
-	bool PointHandAtPosition(CVector const& position, PedNode armNode);
-	bool PointHandInDirection(float targetYaw, float targetPitch, PedNode armNode);
-	bool PointHandInDirectionUsingArm(float targetYaw, float targetPitch, PedNode armNode);
-#endif
 	void GetComponentPosition(RwV3d &pos, uint32 node);
 	void RotateTorso(AnimBlendFrameData* animBlend, LimbOrientation* limb, bool changeRoll);
 	void ExtractYawAndPitchLocal(RwMatrix *mat, float *yaw, float *pitch);

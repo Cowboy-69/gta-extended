@@ -664,7 +664,11 @@ CCarCtrl::GenerateOneRandomCar()
 		delete pVehicle;
 		return;
 	}
+#ifdef IMPROVED_VEHICLES // More colors
+	pVehicleModel->AvoidSameVehicleColour(&pVehicle->m_currentColour1, &pVehicle->m_currentColour2, &pVehicle->m_currentColour3, &pVehicle->m_currentColour4);
+#else
 	pVehicleModel->AvoidSameVehicleColour(&pVehicle->m_currentColour1, &pVehicle->m_currentColour2);
+#endif
 	CWorld::Add(pVehicle);
 	if (carClass == COPS || carClass == COPS_BOAT)
 		CCarAI::AddPoliceCarOccupants(pVehicle);

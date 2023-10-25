@@ -758,6 +758,11 @@ void CReplay::StoreCarUpdate(CVehicle *vehicle, int id)
 	vp->mi = vehicle->GetModelIndex();
 	vp->primary_color = vehicle->m_currentColour1;
 	vp->secondary_color = vehicle->m_currentColour2;
+#ifdef IMPROVED_VEHICLES // More colors
+	vp->tertiary_color = vehicle->m_currentColour3;
+	vp->quaternary_color = vehicle->m_currentColour4;
+#endif
+
 	if (vehicle->GetModelIndex() == MI_RHINO)
 		vp->car_gun = 128.0f / PI * ((CAutomobile*)vehicle)->m_fCarGunLR;
 	else
@@ -1001,6 +1006,10 @@ bool CReplay::PlayBackThisFrameInterpolation(CAddressInReplayBuffer *buffer, flo
 					vp->matrix.DecompressIntoFullMatrix(new_v->GetMatrix());
 					new_v->m_currentColour1 = vp->primary_color;
 					new_v->m_currentColour2 = vp->secondary_color;
+#ifdef IMPROVED_VEHICLES // More colors
+					new_v->m_currentColour3 = vp->tertiary_color;
+					new_v->m_currentColour4 = vp->quaternary_color;
+#endif
 					CWorld::Add(new_v);
 				}
 			}

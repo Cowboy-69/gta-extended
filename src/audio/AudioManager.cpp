@@ -1113,8 +1113,8 @@ cAudioManager::ProcessActiveQueues()
 #endif
 
 #ifdef IMPROVED_TECH_PART // fix game crash due to low timeScale
-	if (timeScale < 0.2f)
-		timeScale = 0.5f;
+	//if (timeScale < 0.2f)
+		//timeScale = 0.5f;
 #endif
 
 	for (uint8 i = 0; i < m_nActiveSamples; i++) {

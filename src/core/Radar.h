@@ -96,8 +96,11 @@ enum eRadarSprite
 #ifdef MAP_ENHANCEMENTS
 	RADAR_SPRITE_WAYPOINT,
 #endif
-#ifdef IMPROVED_TECH_PART // TEMPORARY - business blip
+#ifdef IMPROVED_TECH_PART // New blips
 	RADAR_SPRITE_HOUSE_FOR_SALE,
+	RADAR_SPRITE_BOMB_SHOP,
+	RADAR_SPRITE_RACE,
+	RADAR_SPRITE_PHARMACY,
 #endif
 	RADAR_SPRITE_COUNT
 };
@@ -229,8 +232,11 @@ public:
 	static CSprite2d RadioEspantosoSprite;
 	static CSprite2d RadioEmotionSprite;
 	static CSprite2d RadioWaveSprite;
-#ifdef IMPROVED_TECH_PART // TEMPORARY, business blip
+#ifdef IMPROVED_TECH_PART // New blips
 	static CSprite2d HouseForSaleSprite;
+	static CSprite2d BombShopSprite;
+	static CSprite2d RaceSprite;
+	static CSprite2d PharmacySprite;
 #endif
 	static CSprite2d *RadarSprites[RADAR_SPRITE_COUNT];
 	static float cachedCos;

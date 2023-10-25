@@ -74,7 +74,9 @@ struct tPickupMessage
 
 class CPickups
 {
+#ifndef AUTOSAVE_AND_SAVE_ANYWHERE
 	static int32 aPickUpsCollected[NUMCOLLECTEDPICKUPS];
+#endif
 	static int16 CollectedPickUpIndex;
 	static int16 NumMessages;
 	static tPickupMessage aMessages[NUMPICKUPMESSAGES];
@@ -108,6 +110,9 @@ public:
 	static void Save(uint8 *buf, uint32 *size);
 
 	static CPickup aPickUps[NUMPICKUPS];
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+	static int32 aPickUpsCollected[NUMCOLLECTEDPICKUPS];
+#endif
 
 	// unused
 	static bool bPickUpcamActivated;

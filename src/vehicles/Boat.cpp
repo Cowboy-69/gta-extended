@@ -64,10 +64,29 @@ CBoat::CBoat(int mi, uint8 owner) : CVehicle(owner)
 	m_nPoliceShoutTimer = CTimer::GetTimeInMilliseconds();
 	SetModelIndex(mi);
 
+#ifdef NEW_VEHICLE_LOADER
+	if (GetModelIndex() >= MI_FIRST_NEW_VEHICLE) {
+		pVehicleShadowSettings = &minfo->vehicleShadowData;
+		pVehicleSample = &minfo->vehicleSampleData;
+		pBoatSoundSettings = &minfo->boatSoundData;
+		pHandling = &minfo->handlingData;
+		pFlyingHandling = &minfo->flyingHandlingData;
+		pBoatHandling = &minfo->boatHandlingData;
+	} else {
+		pHandling = mod_HandlingManager.GetHandlingData((tVehicleType)minfo->m_handlingId);
+		pFlyingHandling = mod_HandlingManager.GetFlyingPointer((tVehicleType)minfo->m_handlingId);
+		pBoatHandling = mod_HandlingManager.GetBoatPointer((tVehicleType)minfo->m_handlingId);
+	}
+#else
 	pHandling = mod_HandlingManager.GetHandlingData((tVehicleType)minfo->m_handlingId);
 	pFlyingHandling = mod_HandlingManager.GetFlyingPointer((tVehicleType)minfo->m_handlingId);
 	pBoatHandling = mod_HandlingManager.GetBoatPointer((tVehicleType)minfo->m_handlingId);
+#endif
+#ifdef IMPROVED_VEHICLES // More colors
+	minfo->ChooseVehicleColour(m_currentColour1, m_currentColour2, m_currentColour3, m_currentColour4);
+#else
 	minfo->ChooseVehicleColour(m_currentColour1, m_currentColour2);
+#endif
 
 	m_fMass = pHandling->fMass;
 	m_fTurnMass = pHandling->fTurnMass / 2.0f;
@@ -1110,7 +1129,11 @@ RwImVertexIndex KeepWaterOutIndices[6];
 void
 CBoat::Render()
 {
+#ifdef IMPROVED_VEHICLES // More colors
+	((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->SetVehicleColour(m_currentColour1, m_currentColour2, m_currentColour3, m_currentColour4);
+#else
 	((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->SetVehicleColour(m_currentColour1, m_currentColour2);
+#endif
 	m_nSetPieceExtendedRangeTime = CTimer::GetTimeInMilliseconds() + 3000;
 	if (!CVehicle::bWheelsOnlyCheat)
 		CEntity::Render();

@@ -189,9 +189,11 @@ CVehicle::CVehicle(uint8 CreatedBy)
 	AutoPilot.m_bIgnorePathfinding = false;
 	AutoPilot.m_nSwitchDistance = 20;
 
-#ifdef VEHICLE_MODS
+#if defined VEHICLE_MODS && defined IMPROVED_VEHICLES
 	m_nTempColor1 = 0;
 	m_nTempColor2 = 0;
+	m_nTempColor3 = 0;
+	m_nTempColor4 = 0;
 	m_nArmorLevel = 0;
 	m_fAddEngineAcceleration = 0.0f;
 #endif

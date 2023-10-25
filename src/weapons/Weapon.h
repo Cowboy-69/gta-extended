@@ -23,6 +23,9 @@ public:
 	bool m_bAddRotOffset;
 	
 	static bool bPhotographHasBeenTaken;
+#ifdef IMPROVED_TECH_PART // Saving a screenshot after taking a photo
+	static bool bTakePhoto;
+#endif
 	
 	CWeapon() {
 		m_bAddRotOffset = false;

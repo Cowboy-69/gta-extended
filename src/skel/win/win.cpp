@@ -2279,6 +2279,41 @@ WinMain(HINSTANCE instance,
 #else
 						gGameState = GS_INIT_LOGO_MPEG;
 #endif
+
+#ifdef IMPROVED_TECH_PART // New screenshot folder and numbering (thanks to Shagg_E)
+						WIN32_FIND_DATA findData;
+						HANDLE handle = FindFirstFile("screens\\*.*", &findData);
+						if (handle != INVALID_HANDLE_VALUE)
+						{
+							int32 currentScreenNumber = 0;
+							int32 highestScreenNumber = 0;
+							HANDLE handle2 = FindFirstFile("screens\\*.png", &findData);
+							for (int i = 1; handle2 != INVALID_HANDLE_VALUE && i; i = FindNextFile(handle2, &findData)) {
+								int32 number = 0;
+								unsigned int nameLength = (unsigned)strlen(findData.cFileName);
+								nameLength -= 4;
+								int8 oneDigit;
+								for (int i = 0; i < nameLength; i++) {
+									if (findData.cFileName[i] > 47 && findData.cFileName[i] < 58) {
+										oneDigit = findData.cFileName[i] - 48;
+										number = number * 10 + oneDigit;
+									}
+								}
+								currentScreenNumber = number;
+
+								if (currentScreenNumber > highestScreenNumber)
+									highestScreenNumber = currentScreenNumber;
+							}
+							FindClose(handle2);
+							if (highestScreenNumber != 0) {
+								highestScreenNumber++;
+								newScreenNumber = highestScreenNumber;
+							}
+						} else {
+							_psCreateFolder("screens");
+						}
+						FindClose(handle);
+#endif
 						TRACE("gGameState = GS_INIT_LOGO_MPEG");
 						break;
 					}

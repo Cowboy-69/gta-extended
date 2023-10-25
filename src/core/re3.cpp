@@ -235,6 +235,48 @@ extern uint16 NUMCOLMODELS = ReadAndGetGameLimit("NUMCOLMODELS");
 extern uint16 MAXWHEELMODELS = ReadAndGetGameLimit("MAXWHEELMODELS");
 #endif
 
+#ifdef FEATURES_INI
+mINI::INIFile featuresIni("features.ini");
+mINI::INIStructure featuresCfg;
+
+uint8 bInitFeaturesIni = featuresIni.read(featuresCfg);
+
+uint16 ReadAndGetFeature(const char* key)
+{
+	mINI::INIMap<std::string> section = featuresCfg.get("Features");
+	if (section.has(key)) {
+		char* endPtr;
+		return strtol(section.get(key).c_str(), &endPtr, 0);
+	}
+	return 0;
+}
+
+CRGBA ReadAndGetWaypointColor(const char* key)
+{
+	CRGBA color = CRGBA(180, 24, 24, 255);
+
+	mINI::INIMap<std::string> section = featuresCfg.get("Features");
+	if (section.has(key)) {
+		uint32 red, green, blue;
+		sscanf(section.get(key).c_str(), "%i, %i, %i", &red, &green, &blue);
+		color = CRGBA(red, green, blue, 255);
+		return color;
+	}
+	return color;
+}
+
+extern bool bVehiclesDontCatchFireWhenTurningOver = ReadAndGetFeature("VehiclesDontCatchFireWhenTurningOver");
+extern bool bHealthRegenerationUpToHalf = ReadAndGetFeature("HealthRegenerationUpToHalf");
+extern bool bWantedStarsHideOnScreenWhenThereIsNoSearch = ReadAndGetFeature("WantedStarsHideOnScreenWhenThereIsNoSearch");
+extern bool bRemoveMoneyZerosInTheHud = ReadAndGetFeature("RemoveMoneyZerosInTheHud");
+extern bool bPlayerDoesntBounceAwayFromMovingCar = ReadAndGetFeature("PlayerDoesntBounceAwayFromMovingCar");
+extern bool bStandardCarsUseTurnSignals = ReadAndGetFeature("StandardCarsUseTurnSignals");
+extern bool bCameraShakeInVehicleAtHighSpeed = ReadAndGetFeature("CameraShakeInVehicleAtHighSpeed");
+extern bool bMilitaryFiringFromTankAtPlayer = ReadAndGetFeature("MilitaryFiringFromTankAtPlayer");
+extern bool bDisableBulletTraces = ReadAndGetFeature("DisableBulletTraces");
+CRGBA WaypointColor = ReadAndGetWaypointColor("WaypointColorRGB");
+#endif
+
 bool ReadIniIfExists(const char *cat, const char *key, uint32 *out)
 {
 	mINI::INIMap<std::string> section = cfg.get(cat);
@@ -629,6 +671,10 @@ bool LoadINISettings()
 	ReadIniIfExists("Climbing", "ClimbingWithRaisedHandsOffsetSpeed", &CPed::highClimbingOffsetSpeed);
 	ReadIniIfExists("Climbing", "PlayerVerticalVelocityAtWhichStartsToFall", &CPed::playerVerticalVelocityAtWhichStartsToFall);
 #endif*/
+#if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined IMPROVED_TECH_PART // Other settings
+	ReadIniIfExists("Other", "Autosave", &FrontEndMenuManager.m_PrefsAutosave);
+	ReadIniIfExists("Other", "StoreGalleryPhotos", &FrontEndMenuManager.m_PrefsStoreGalleryPhotos);
+#endif
 
 #ifdef CUSTOM_FRONTEND_OPTIONS
 	bool migrate = cfg.get("FrontendOptions").size() != 0;
@@ -776,6 +822,10 @@ void SaveINISettings()
 	StoreIni("Climbing", "ClimbingWithRaisedHandsOffsetSpeed", CPed::highClimbingOffsetSpeed);
 	StoreIni("Climbing", "PlayerVerticalVelocityAtWhichStartsToFall", CPed::playerVerticalVelocityAtWhichStartsToFall);
 #endif*/
+#if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined IMPROVED_TECH_PART // Other settings
+	StoreIni("Other", "Autosave", FrontEndMenuManager.m_PrefsAutosave);
+	StoreIni("Other", "StoreGalleryPhotos", FrontEndMenuManager.m_PrefsStoreGalleryPhotos);
+#endif
 
 #ifdef CUSTOM_FRONTEND_OPTIONS
 	for (int i = 0; i < MENUPAGES; i++) {
@@ -826,11 +876,14 @@ void ChittyChittyBangBangCheat();
 void StrongGripCheat();
 void SpecialCarCheats();
 void PickUpChicksCheat();
-#ifdef NEW_CHEATS // init
+#ifdef NEW_CHEATS
 void InvincibleCheat();
 void AirWaysCheat();
 void TeargasCheat();
 void NoWantedCheat();
+void PhotographerCheat();
+void RCRocketCheat();
+void BigHeadsCheat();
 #endif
 
 DebugMenuEntry *carCol1;
@@ -1101,13 +1154,39 @@ DebugMenuPopulate(void)
 		DebugMenuAddCmd("Cheats", "Strong grip", StrongGripCheat);
 		DebugMenuAddCmd("Cheats", "Special car", SpecialCarCheats);
 		DebugMenuAddCmd("Cheats", "Pickup chicks", PickUpChicksCheat);
-#ifdef NEW_CHEATS // init
+#ifdef NEW_CHEATS
 		DebugMenuAddCmd("Cheats", "Invincible", InvincibleCheat);
 		DebugMenuAddCmd("Cheats", "AirWays", AirWaysCheat);
 		DebugMenuAddCmd("Cheats", "Give teargas", TeargasCheat);
 		DebugMenuAddCmd("Cheats", "No wanted", NoWantedCheat);
+		DebugMenuAddCmd("Cheats", "Give camera", PhotographerCheat);
+		DebugMenuAddCmd("Cheats", "RC Rocket", RCRocketCheat);
+		DebugMenuAddCmd("Cheats", "Big heads", BigHeadsCheat);
 #endif
 
+#ifdef NEW_VEHICLE_LOADER
+		static int spawnCarName = MI_LANDSTAL;
+		e = DebugMenuAddVar("Spawn", "Select default car name", &spawnCarName, nil, 1, MI_LANDSTAL, MI_VICECHEE, carnames);
+		DebugMenuEntrySetWrap(e, true);
+		DebugMenuAddCmd("Spawn", "Spawn default car", [](){
+			if(spawnCarName == MI_CHOPPER ||
+				spawnCarName == MI_AIRTRAIN ||
+				spawnCarName == MI_DEADDODO)
+				return;
+			SpawnCar(spawnCarName);
+		});
+
+		static uint8 dummy;
+		static int spawnCarID = MI_FIRST_NEW_VEHICLE;
+		e = DebugMenuAddVar("Spawn", "Select new car ID", &spawnCarID, nil, 1, MI_FIRST_NEW_VEHICLE, MI_LAST_NEW_VEHICLE, nil);
+		DebugMenuEntrySetWrap(e, true);
+		DebugMenuAddCmd("Spawn", "Spawn new car", []() { 
+			if (!CModelInfo::GetModelInfo(spawnCarID))
+				return;
+
+			SpawnCar(spawnCarID); 
+		});
+#else
 		static int spawnCarId = MI_LANDSTAL;
 		e = DebugMenuAddVar("Spawn", "Spawn Car ID", &spawnCarId, nil, 1, MI_LANDSTAL, MI_VICECHEE, carnames);
 		DebugMenuEntrySetWrap(e, true);
@@ -1118,7 +1197,7 @@ DebugMenuPopulate(void)
 				return;
 			SpawnCar(spawnCarId);
 		});
-		static uint8 dummy;
+#endif
 		carCol1 = DebugMenuAddVar("Spawn", "First colour", &dummy, nil, 1, 0, 255, nil);
 		carCol2 = DebugMenuAddVar("Spawn", "Second colour", &dummy, nil, 1, 0, 255, nil);
 		DebugMenuAddCmd("Spawn", "Spawn Stinger", [](){ SpawnCar(MI_STINGER); });
@@ -1149,14 +1228,6 @@ DebugMenuPopulate(void)
 		DebugMenuAddCmd("Spawn", "Spawn Freeway", [](){ SpawnCar(MI_FREEWAY); });
 		DebugMenuAddCmd("Spawn", "Spawn Squalo", [](){ SpawnCar(MI_SQUALO); });
 		DebugMenuAddCmd("Spawn", "Spawn Skimmer", [](){ SpawnCar(MI_SKIMMER); });
-#ifdef NEW_VEHICLES
-		DebugMenuAddCmd("Spawn", "Spawn Streetfighter", []() { SpawnCar(MI_STREETFI); });
-		DebugMenuAddCmd("Spawn", "Spawn Perennial 2", []() { SpawnCar(MI_PEREN2); });
-		DebugMenuAddCmd("Spawn", "Spawn Trashmaster 2", []() { SpawnCar(MI_TRASH2); });
-		DebugMenuAddCmd("Spawn", "Spawn Hellenbach GT", []() { SpawnCar(MI_HELLENBACH); });
-		DebugMenuAddCmd("Spawn", "Spawn Premier", []() { SpawnCar(MI_PREMIER); });
-		DebugMenuAddCmd("Spawn", "Spawn Manchez", []() { SpawnCar(MI_MANCHEZ); });
-#endif
 
 		DebugMenuAddVarBool8("Render", "Draw hud", &CHud::m_Wants_To_Draw_Hud, nil);
 #ifdef PROPER_SCALING	
@@ -1321,7 +1392,7 @@ extern bool gbRenderWorld2;
 	}
 }
 
-#ifdef VEHICLE_MODS // mod garage
+#if defined VEHICLE_MODS && defined IMPROVED_VEHICLES // mod garage
 DebugMenuEntry* carTintLevel;
 DebugMenuEntry* carAddSuspensionForceLevel;
 DebugMenuEntry* carWheelNumber;
@@ -1333,6 +1404,8 @@ DebugMenuEntry* carRoofScoopNumber;
 DebugMenuEntry* carBonnetScoopNumber;
 DebugMenuEntry* carVentsNumber;
 DebugMenuEntry* carHasSupercharger;
+DebugMenuEntry* carCol3;
+DebugMenuEntry* carCol4;
 
 void SetTempWindowTintLevel()
 {
@@ -1462,7 +1535,7 @@ void SetTempColor2()
 
 	DebugMenuEntrySetAddress(carCol2, &playerVeh->m_nTempColor2);
 }
-void PaintVehicle()
+void PaintVehicle2()
 {
 	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
 
@@ -1492,6 +1565,74 @@ void PaintVehicle()
 	if (carCol2) {
 		DebugMenuEntrySetAddress(carCol2, &playerVeh->m_nTempColor2);
 		playerVeh->m_currentColour2 = playerVeh->m_nTempColor2;
+	}
+
+	if (FindPlayerPed()->m_pWanted->GetWantedLevel() != 0)
+		FindPlayerPed()->m_pWanted->Suspend();
+
+	DMAudio.PlayFrontEndSound(SOUND_GARAGE_OPENING, 1);
+	CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - price);
+}
+void SetTempColor3()
+{
+	CVehicle* playerVeh = FindPlayerVehicle();
+
+	if (!playerVeh || !carCol3)
+		return;
+
+	DebugMenuEntrySetAddress(carCol3, &playerVeh->m_nTempColor3);
+}
+void SetTempColor4()
+{
+	CVehicle* playerVeh = FindPlayerVehicle();
+
+	if (!playerVeh || !carCol4)
+		return;
+
+	DebugMenuEntrySetAddress(carCol4, &playerVeh->m_nTempColor4);
+}
+void PaintVehicle4()
+{
+	CAutomobile* playerVeh = (CAutomobile*)FindPlayerVehicle();
+
+	if (!playerVeh)
+		return;
+
+	if (playerVeh->m_nTempColor1 == playerVeh->m_currentColour1 &&
+		playerVeh->m_nTempColor2 == playerVeh->m_currentColour2 &&
+		playerVeh->m_nTempColor3 == playerVeh->m_currentColour3 &&
+		playerVeh->m_nTempColor4 == playerVeh->m_currentColour4) {
+
+		CMessages::AddMessageJumpQ(TheText.Get("GA_24"), 4000, 1);
+		return;
+	}
+
+	int price = 100;
+
+	if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney < price) {
+		CMessages::AddMessageJumpQ(TheText.Get("GA_23"), 4000, 1);
+		DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
+		return;
+	}
+
+	if (carCol1) {
+		DebugMenuEntrySetAddress(carCol1, &playerVeh->m_nTempColor1);
+		playerVeh->m_currentColour1 = playerVeh->m_nTempColor1;
+	}
+
+	if (carCol2) {
+		DebugMenuEntrySetAddress(carCol2, &playerVeh->m_nTempColor2);
+		playerVeh->m_currentColour2 = playerVeh->m_nTempColor2;
+	}
+
+	if (carCol3) {
+		DebugMenuEntrySetAddress(carCol3, &playerVeh->m_nTempColor3);
+		playerVeh->m_currentColour3 = playerVeh->m_nTempColor3;
+	}
+
+	if (carCol4) {
+		DebugMenuEntrySetAddress(carCol4, &playerVeh->m_nTempColor4);
+		playerVeh->m_currentColour4 = playerVeh->m_nTempColor4;
 	}
 
 	if (FindPlayerPed()->m_pWanted->GetWantedLevel() != 0)
@@ -1997,6 +2138,12 @@ void LeaveModGarage()
 	if (playerVeh->m_nTempColor2 != playerVeh->m_currentColour2)
 		playerVeh->m_nTempColor2 = playerVeh->m_currentColour2;
 
+	if (playerVeh->m_nTempColor3 != playerVeh->m_currentColour3)
+		playerVeh->m_nTempColor3 = playerVeh->m_currentColour3;
+
+	if (playerVeh->m_nTempColor4 != playerVeh->m_currentColour4)
+		playerVeh->m_nTempColor4 = playerVeh->m_currentColour4;
+
 	if (playerVeh->m_nTempRimsColor != playerVeh->m_nRimsColor)
 		playerVeh->m_nTempRimsColor = playerVeh->m_nRimsColor;
 
@@ -2024,11 +2171,23 @@ VehicleModMenuPopulate(void)
 	if (!playerVeh)
 		return;
 
-	carCol1 = DebugMenuAddVar("Paint", "First colour", &dummy, SetTempColor1, 1, 0, 94, nil);
-	DebugMenuEntrySetAddress(carCol1, &playerVeh->m_nTempColor1);
-	carCol2 = DebugMenuAddVar("Paint", "Second colour", &dummy, SetTempColor2, 1, 0, 94, nil);
-	DebugMenuEntrySetAddress(carCol2, &playerVeh->m_nTempColor2);
-	DebugMenuAddCmd("Paint", "Paint vehicle, $50", PaintVehicle);
+	if (playerVeh->GetModelInfo()->bHasManyColors) {
+		carCol1 = DebugMenuAddVar("Paint", "Primary colour", &dummy, SetTempColor1, 1, 0, 94, nil);
+		DebugMenuEntrySetAddress(carCol1, &playerVeh->m_nTempColor1);
+		carCol2 = DebugMenuAddVar("Paint", "Secondary colour", &dummy, SetTempColor2, 1, 0, 94, nil);
+		DebugMenuEntrySetAddress(carCol2, &playerVeh->m_nTempColor2);
+		carCol3 = DebugMenuAddVar("Paint", "Tertiary colour", &dummy, SetTempColor3, 1, 0, 94, nil);
+		DebugMenuEntrySetAddress(carCol3, &playerVeh->m_nTempColor3);
+		carCol4 = DebugMenuAddVar("Paint", "Quaternary colour", &dummy, SetTempColor4, 1, 0, 94, nil);
+		DebugMenuEntrySetAddress(carCol4, &playerVeh->m_nTempColor4);
+		DebugMenuAddCmd("Paint", "Paint vehicle, $100", PaintVehicle4);
+	} else {
+		carCol1 = DebugMenuAddVar("Paint", "Primary colour", &dummy, SetTempColor1, 1, 0, 94, nil);
+		DebugMenuEntrySetAddress(carCol1, &playerVeh->m_nTempColor1);
+		carCol2 = DebugMenuAddVar("Paint", "Secondary colour", &dummy, SetTempColor2, 1, 0, 94, nil);
+		DebugMenuEntrySetAddress(carCol2, &playerVeh->m_nTempColor2);
+		DebugMenuAddCmd("Paint", "Paint vehicle, $50", PaintVehicle2);
+	}
 
 	DebugMenuAddCmd("Armor", "Purchase level 1 armor, $1000", []() {PurchaseArmor(1, 1000); });
 	DebugMenuAddCmd("Armor", "Purchase level 2 armor, $2000", []() {PurchaseArmor(2, 2000); });
@@ -2058,12 +2217,14 @@ VehicleModMenuPopulate(void)
 		DebugMenuEntrySetAddress(carAddSuspensionForceLevel, &playerCar->m_nTempAddSuspensionForceLevel);
 		DebugMenuAddCmd("Suspension", "Purchase suspension, $500", PurchaseSuspension);
 
-		carWheelNumber = DebugMenuAddVar("Wheels", "Wheel model", &dummy, SetTempWheelModelIndex, 1, 1, MAXWHEELMODELS, nil);
-		DebugMenuEntrySetAddress(carWheelNumber, &playerCar->m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber);
-		DebugMenuAddCmd("Wheels", "Purchase wheels, $1000", PurchaseWheels);
-		carRimsColor = DebugMenuAddVar("Wheels", "Rims color", &dummy, SetTempRimsColor, 1, 0, 94, nil);
-		DebugMenuEntrySetAddress(carRimsColor, &playerCar->m_nTempRimsColor);
-		DebugMenuAddCmd("Wheels", "Paint rims, $50", PaintRims);
+		if (playerVeh->GetModelInfo()->m_wheelId != 249) {
+			carWheelNumber = DebugMenuAddVar("Wheels", "Wheel model", &dummy, SetTempWheelModelIndex, 1, 1, MAXWHEELMODELS, nil);
+			DebugMenuEntrySetAddress(carWheelNumber, &playerCar->m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber);
+			DebugMenuAddCmd("Wheels", "Purchase wheels, $1000", PurchaseWheels);
+			carRimsColor = DebugMenuAddVar("Wheels", "Rims color", &dummy, SetTempRimsColor, 1, 0, 94, nil);
+			DebugMenuEntrySetAddress(carRimsColor, &playerCar->m_nTempRimsColor);
+			DebugMenuAddCmd("Wheels", "Paint rims, $50", PaintRims);
+		}
 		DebugMenuAddCmd("Wheels", "Purchase bulletproof tyres, $500", PurchaseTyres);
 
 		DebugMenuAddCmd("Hydraulics", "Purchase hydraulics, $1500", PurchaseHydraulics);

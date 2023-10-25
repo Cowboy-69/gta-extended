@@ -36,6 +36,9 @@ public:
 #ifdef WANTED_PATHS
 	static void LoadWantedPathNode(const char* line, int pathID, int pathNode);
 #endif
+#ifdef NEW_VEHICLE_LOADER
+	static void LoadAnotherVehicleObject(const char* line);
+#endif
 
 	static void LoadScene(const char *filename);
 	static void LoadObjectInstance(const char *line);

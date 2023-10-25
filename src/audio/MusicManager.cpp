@@ -557,7 +557,8 @@ cMusicManager::ServiceGameMode()
 			}
 #endif
 #ifdef IMPROVED_MENU_AND_INPUT
-			if (CPad::GetPad(0)->NextStationJustDown())
+			if (CPad::GetPad(0)->NextStationJustDown() && 
+				(CPad::GetPad(0)->IsAffectedByController || !CPad::GetPad(0)->IsAffectedByController && TheCamera.Cams[TheCamera.ActiveCam].Mode != CCam::MODE_HELICANNON_1STPERSON))
 #else
 			if (CPad::GetPad(0)->ChangeStationJustDown())
 #endif

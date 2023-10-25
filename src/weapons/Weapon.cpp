@@ -49,6 +49,9 @@
 #ifdef IMPROVED_TECH_PART // blood screen droplets
 #include "screendroplets.h"
 #endif
+#ifdef IMPROVED_TECH_PART // Saving a screenshot after taking a photo
+#include "main.h"
+#endif
 
 float fReloadAnimSampleFraction[5] = {  0.5f,  0.7f,  0.75f,  0.75f,  0.7f };
 float fSeaSparrowAimingAngle = 10.0f;
@@ -57,6 +60,9 @@ float fPlayerAimScaleDist = 5.0f;
 float fPlayerAimScale = 2.5f;
 
 bool CWeapon::bPhotographHasBeenTaken;
+#ifdef IMPROVED_TECH_PART // Saving a screenshot after taking a photo
+bool CWeapon::bTakePhoto;
+#endif
 
 #ifdef SECUROM
 int32 sniperPirateCheck = 0x00797743; // 'Cwy\0' ???
@@ -132,6 +138,13 @@ CWeapon::UpdateWeapons(void)
 	CExplosion::Update();
 	CProjectileInfo::Update();
 	CBulletInfo::Update();
+
+#ifdef IMPROVED_TECH_PART // Saving a screenshot after taking a photo
+	if (bTakePhoto) {
+		TakeAndSaveScreenshot();
+		bTakePhoto = false;
+	}
+#endif
 }
 
 
@@ -2476,6 +2489,10 @@ CWeapon::TakePhotograph(CEntity *shooter)
 		CSpecialFX::SnapShotFrames = 0;
 		CStats::PhotosTaken++;
 		bPhotographHasBeenTaken = true;
+
+#ifdef IMPROVED_TECH_PART // Saving a screenshot after taking a photo
+		bTakePhoto = FrontEndMenuManager.m_PrefsStoreGalleryPhotos;
+#endif
 		
 		for ( int32 i = CPools::GetPedPool()->GetSize() - 1; i >= 0; i--)
 		{
@@ -3549,6 +3566,26 @@ void CWeapon::CheckForShootingVehicleLights(CEntity* victim, CColPoint point)
 
 			automobile->SetFrameLightStatus((eCarNodes)frameID, LIGHT_STATUS_BROKEN);
 			DMAudio.PlayOneShot(automobile->m_audioEntityId, SOUND_CAR_LIGHT_BREAK, 1.0f);
+
+			break;
+		}
+	} else {
+		CBike* bike = (CBike*)vehicle;
+		for (int frameID = BIKE_HEADLIGHT_L; frameID < BIKE_NUM_NODES; frameID++) {
+			RwFrame* lightFrame = bike->m_aBikeNodes[frameID];
+			if (!lightFrame)
+				continue;
+
+			if (bike->GetFrameLightStatus((eBikeNodes)frameID) == LIGHT_STATUS_BROKEN)
+				continue;
+
+			float radius = 0.035f;
+			float distanceSqr = (point.point - lightFrame->getLTM()->pos).MagnitudeSqr();
+			if (distanceSqr > radius || point.normal.z > 0.9f)
+				continue;
+
+			bike->SetFrameLightStatus((eBikeNodes)frameID, LIGHT_STATUS_BROKEN);
+			DMAudio.PlayOneShot(bike->m_audioEntityId, SOUND_CAR_LIGHT_BREAK, 1.0f);
 
 			break;
 		}

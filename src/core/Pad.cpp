@@ -308,8 +308,8 @@ void HealthCheat()
 		} else if (FindPlayerVehicle()->m_vehType == VEHICLE_TYPE_BIKE) {
 			((CBike*)FindPlayerVehicle())->Fix();
 
-			//for (int32 frameID = BIKE_HEADLIGHT_L; frameID < BIKE_NUM_NODES; frameID++)
-				//((CBike*)FindPlayerVehicle())->SetFrameLightStatus((eBikeNodes)frameID, LIGHT_STATUS_OK);
+			for (int32 frameID = BIKE_HEADLIGHT_L; frameID < BIKE_NUM_NODES; frameID++)
+				((CBike*)FindPlayerVehicle())->SetFrameLightStatus((eBikeNodes)frameID, LIGHT_STATUS_OK);
 		}
 #else
 		if (FindPlayerVehicle()->m_vehType == VEHICLE_TYPE_CAR) {
@@ -621,7 +621,7 @@ void DoChicksWithGunsCheat(void) {
 	CPad::bHasPlayerCheated = true;
 }
 
-#ifdef NEW_CHEATS // init
+#ifdef NEW_CHEATS
 void Cowboy69Cheat(void) {
 	CStreaming::RequestModel(MI_PYTHON, STREAMFLAGS_DONT_REMOVE);
 	CStreaming::LoadAllRequestedModels(false);
@@ -699,6 +699,37 @@ void NoWantedCheat(void) {
 	FindPlayerPed()->bNoWantedCheat = !FindPlayerPed()->bNoWantedCheat;
 
 	CPad::bHasPlayerCheated = true;
+}
+
+void PhotographerCheat(void) {
+	CStreaming::RequestModel(MI_CAMERA, STREAMFLAGS_DONT_REMOVE);
+	CStreaming::LoadAllRequestedModels(false);
+	FindPlayerPed()->GiveWeapon(WEAPONTYPE_CAMERA, 100);
+	CStreaming::SetModelIsDeletable(MI_CAMERA);
+
+	wchar* string;
+	string = TheText.Get("CHEAT1");
+	CHud::SetHelpMessage(string, true);
+
+	CPad::bHasPlayerCheated = true;
+}
+
+void RCRocketCheat(void) {
+	wchar* string;
+	if (FindPlayerPed()->bInvincibleCheat)
+		string = TheText.Get("CHEATOF");
+	else
+		string = TheText.Get("CHEAT1");
+
+	CHud::SetHelpMessage(string, true);
+
+	FindPlayerPed()->bRCRocketCheat = !FindPlayerPed()->bRCRocketCheat;
+
+	CPad::bHasPlayerCheated = true;
+}
+
+void BigHeadsCheat(void) {
+	CPed::bBigHeadsCheat = !CPed::bBigHeadsCheat;
 }
 #endif
 
@@ -793,6 +824,9 @@ CControllerState::Clear(void)
 	NetworkTalk = 0;
 #ifdef IMPROVED_MENU_AND_INPUT // walking on the key
 	bWalk = 0;
+#endif
+#if defined IMPROVED_MENU_AND_INPUT && defined IMPROVED_VEHICLES_2 // Turn and emergency signals for player
+	bLeftTurnSignals = bRightTurnSignals = bEmergencyLights = 0;
 #endif
 }
 
@@ -1135,6 +1169,11 @@ CControllerState CPad::ReconcileTwoControllersInput(CControllerState const &Stat
 	_RECONCILE_BUTTON(NetworkTalk);
 #ifdef IMPROVED_MENU_AND_INPUT // walking on the key
 	_RECONCILE_BUTTON(bWalk);
+#endif
+#if defined IMPROVED_MENU_AND_INPUT && defined IMPROVED_VEHICLES_2 // Turn and emergency signals for player
+	_RECONCILE_BUTTON(bLeftTurnSignals);
+	_RECONCILE_BUTTON(bRightTurnSignals);
+	_RECONCILE_BUTTON(bEmergencyLights);
 #endif
 	_RECONCILE_AXIS(LeftStickX);
 	_RECONCILE_AXIS(LeftStickY);
@@ -1785,7 +1824,7 @@ void CPad::AddToPCCheatString(char c)
 		RenderWaterLayersCheat();
 #endif
 
-#ifdef NEW_CHEATS // init
+#ifdef NEW_CHEATS
 	// COWBOY69
 	if (!_CHEATCMP("96YOBWOC"))
 		Cowboy69Cheat();
@@ -1805,6 +1844,18 @@ void CPad::AddToPCCheatString(char c)
 	// AEZAKMI
 	if (!_CHEATCMP("IMKAZEA"))
 		NoWantedCheat();
+
+	// PHOTOGRAPHER
+	if (!_CHEATCMP("REHPARGOTOHP"))
+		PhotographerCheat();
+
+	// RCROCKET
+	if (!_CHEATCMP("TEKCORCR"))
+		RCRocketCheat();
+
+	// BIGHEADS
+	if (!_CHEATCMP("SDAEHGIB"))
+		BigHeadsCheat();
 #endif
 
 #undef _CHEATCMP
@@ -3107,7 +3158,7 @@ int32 CPad::GetWeapon(void)
 		case 0:
 		case 2:
 		{
-			if (FindPlayerVehicle()) {
+			if (FindPlayerVehicle() || CPad::GetPad(0)->IsAffectedByController && TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_HELICANNON_1STPERSON) {
 				if (IsAffectedByController)
 					return NewState.RightShoulder1 || NewState.Circle;
 
@@ -3561,6 +3612,32 @@ bool CPad::PrevStationJustDown(void)
 	}
 
 	return false;
+}
+#endif
+
+#if defined IMPROVED_MENU_AND_INPUT && defined IMPROVED_VEHICLES_2 // Turn and emergency signals for player
+bool CPad::LeftTurnSignalsJustDown()
+{
+	if (ArePlayerControlsDisabled())
+		return false;
+
+	return !!(NewState.bLeftTurnSignals && !OldState.bLeftTurnSignals);
+}
+
+bool CPad::RightTurnSignalsJustDown()
+{
+	if (ArePlayerControlsDisabled())
+		return false;
+
+	return !!(NewState.bRightTurnSignals && !OldState.bRightTurnSignals);
+}
+
+bool CPad::EmergencyLightsJustDown()
+{
+	if (ArePlayerControlsDisabled())
+		return false;
+
+	return !!(NewState.bEmergencyLights && !OldState.bEmergencyLights);
 }
 #endif
 
@@ -4313,6 +4390,8 @@ void CPad::ResetCheats(void)
 	CVehicle::bAirWaysCheat = false;
 	CPlayerPed::bInvincibleCheat = false;
 	CPlayerPed::bNoWantedCheat = false;
+	CPlayerPed::bRCRocketCheat = false;
+	CPed::bBigHeadsCheat = false;
 #endif
 }
 

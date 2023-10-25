@@ -211,6 +211,12 @@ void CControllerConfigManager::InitDefaultControlConfiguration()
 #ifdef IMPROVED_MENU_AND_INPUT
 	SetControllerKeyAssociatedWithAction    (VEHICLE_LOOKBEHIND,                  'C',		  KEYBOARD);
 #endif
+
+#if defined IMPROVED_MENU_AND_INPUT && defined IMPROVED_VEHICLES_2 // Turn and emergency signals for player
+	SetControllerKeyAssociatedWithAction    (VEHICLE_LEFT_TURNSIGNALS,                  'Z',		  KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_RIGHT_TURNSIGNALS,                  'X',		  KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_EMERGENCYLIGHTS,                  'Y',		  KEYBOARD);
+#endif
 																		          
 	SetControllerKeyAssociatedWithAction    (TOGGLE_SUBMISSIONS,                  rsPLUS,     KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (TOGGLE_SUBMISSIONS,                  rsCAPSLK,   OPTIONAL_EXTRA);
@@ -571,6 +577,11 @@ void CControllerConfigManager::InitialiseControllerActionNameArray()
 	SETACTIONNAME(RADAR_ZOOM_OUT);
 	SETACTIONNAME(PED_RELOAD);
 #endif
+#if defined IMPROVED_MENU_AND_INPUT && defined IMPROVED_VEHICLES_2 // Turn and emergency signals for player
+	SETACTIONNAME(VEHICLE_LEFT_TURNSIGNALS);
+	SETACTIONNAME(VEHICLE_RIGHT_TURNSIGNALS);
+	SETACTIONNAME(VEHICLE_EMERGENCYLIGHTS);
+#endif
 
 #undef SETACTIONNAME
 }
@@ -884,6 +895,41 @@ void CControllerConfigManager::AffectControllerStateOn_ButtonDown_Driving(int32 
 		else
 			state.RightStickY = -128;
 	}
+
+#ifdef IMPROVED_MENU_AND_INPUT
+	if (button == GetControllerKeyAssociatedWithAction(GO_LEFT, type)) 
+	{
+		if (state.DPadRight || m_aSimCheckers[SIM_X1][type])
+		{
+			m_aSimCheckers[SIM_X1][type] = true;
+			state.DPadLeft = 0;
+			state.DPadRight = 0;
+		}
+		else
+			state.DPadLeft = 255;
+	}
+
+	if (button == GetControllerKeyAssociatedWithAction(GO_RIGHT, type)) 
+	{
+		if (state.DPadLeft || m_aSimCheckers[SIM_X1][type])
+		{
+			m_aSimCheckers[SIM_X1][type] = true;
+			state.DPadLeft = 0;
+			state.DPadRight = 0;
+		}
+		else
+			state.DPadRight = 255;
+	}
+#endif
+
+#if defined IMPROVED_MENU_AND_INPUT && defined IMPROVED_VEHICLES_2 // Turn and emergency signals for player
+	if (button == GetControllerKeyAssociatedWithAction(VEHICLE_LEFT_TURNSIGNALS, type))
+		state.bLeftTurnSignals = 255;
+	if (button == GetControllerKeyAssociatedWithAction(VEHICLE_RIGHT_TURNSIGNALS, type))
+		state.bRightTurnSignals = 255;
+	if (button == GetControllerKeyAssociatedWithAction(VEHICLE_EMERGENCYLIGHTS, type))
+		state.bEmergencyLights = 255;
+#endif
 }
 
 void CControllerConfigManager::AffectControllerStateOn_ButtonDown_FirstPersonOnly(int32 button, eControllerType type, CControllerState &state)
@@ -1031,6 +1077,14 @@ void CControllerConfigManager::AffectControllerStateOn_ButtonDown_FirstAndThirdP
 				state.RightStickY = -128;
 		}
 	}
+
+#ifdef IMPROVED_MENU_AND_INPUT
+	if (button == GetControllerKeyAssociatedWithAction(GO_LEFT, type))
+		state.LeftStickX = -255;
+
+	if (button == GetControllerKeyAssociatedWithAction(GO_RIGHT, type))
+		state.LeftStickX = 255;
+#endif
 }
 
 void CControllerConfigManager::AffectControllerStateOn_ButtonDown_AllStates(int32 button, eControllerType type, CControllerState &state)
@@ -1043,11 +1097,9 @@ void CControllerConfigManager::AffectControllerStateOn_ButtonDown_AllStates(int3
 		state.Circle = 255;
 #endif
 
+#ifndef IMPROVED_MENU_AND_INPUT
 	if (button == GetControllerKeyAssociatedWithAction(GO_LEFT, type))
 	{
-#ifdef IMPROVED_MENU_AND_INPUT
-		state.LeftStickX = -255;
-#else
 		if (state.DPadRight || m_aSimCheckers[SIM_X1][type])
 		{
 			m_aSimCheckers[SIM_X1][type] = true;
@@ -1056,14 +1108,10 @@ void CControllerConfigManager::AffectControllerStateOn_ButtonDown_AllStates(int3
 		}
 		else
 			state.DPadLeft = 255;
-#endif
 	}
 
 	if (button == GetControllerKeyAssociatedWithAction(GO_RIGHT, type))
 	{
-#ifdef IMPROVED_MENU_AND_INPUT
-		state.LeftStickX = 255;
-#else
 		if (state.DPadLeft || m_aSimCheckers[SIM_X1][type])
 		{
 			m_aSimCheckers[SIM_X1][type] = true;
@@ -1072,8 +1120,8 @@ void CControllerConfigManager::AffectControllerStateOn_ButtonDown_AllStates(int3
 		}
 		else
 			state.DPadRight = 255;
-#endif
 	}
+#endif
 
 	if (button == GetControllerKeyAssociatedWithAction(NETWORK_TALK, type))
 		state.NetworkTalk = 255;
@@ -1854,6 +1902,11 @@ void CControllerConfigManager::DeleteMatchingVehicleControls(e_ControllerAction 
 		CLEAR_ACTION_IF_NEEDED(VEHICLE_TURRETRIGHT);
 		CLEAR_ACTION_IF_NEEDED(VEHICLE_TURRETUP);
 		CLEAR_ACTION_IF_NEEDED(VEHICLE_TURRETDOWN);
+#if defined IMPROVED_MENU_AND_INPUT && defined IMPROVED_VEHICLES_2 // Turn and emergency signals for player
+		CLEAR_ACTION_IF_NEEDED(VEHICLE_LEFT_TURNSIGNALS);
+		CLEAR_ACTION_IF_NEEDED(VEHICLE_RIGHT_TURNSIGNALS);
+		CLEAR_ACTION_IF_NEEDED(VEHICLE_EMERGENCYLIGHTS);
+#endif
 	}
 }
 
@@ -1923,6 +1976,11 @@ bool CControllerConfigManager::IsAnyVehicleActionAssignedToMouseKey(int32 key)
 		CHECK_ACTION(PED_WALK);
 		CHECK_ACTION(RADAR_ZOOM_OUT);
 		CHECK_ACTION(PED_RELOAD);
+#endif
+#if defined IMPROVED_MENU_AND_INPUT && defined IMPROVED_VEHICLES_2 // Turn and emergency signals for player
+		CHECK_ACTION(VEHICLE_LEFT_TURNSIGNALS);
+		CHECK_ACTION(VEHICLE_RIGHT_TURNSIGNALS);
+		CHECK_ACTION(VEHICLE_EMERGENCYLIGHTS);
 #endif
 	}
 	return false;
@@ -2055,6 +2113,11 @@ e_ControllerActionType CControllerConfigManager::GetActionType(e_ControllerActio
 	case VEHICLE_TURRETRIGHT:
 	case VEHICLE_TURRETUP:
 	case VEHICLE_TURRETDOWN:
+#if defined IMPROVED_MENU_AND_INPUT && defined IMPROVED_VEHICLES_2 // Turn and emergency signals for player
+	case VEHICLE_LEFT_TURNSIGNALS:
+	case VEHICLE_RIGHT_TURNSIGNALS:
+	case VEHICLE_EMERGENCYLIGHTS:
+#endif
 		return ACTIONTYPE_VEHICLE;
 		break;
 
