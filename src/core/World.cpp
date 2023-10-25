@@ -378,6 +378,12 @@ CWorld::ProcessLineOfSightSectorList(CPtrList &list, const CColLine &line, CColP
 			if(colmodel && CCollision::ProcessLineOfSight(line, e->GetMatrix(), *colmodel, point, mindist,
 			                                              ignoreSeeThrough, ignoreShootThrough))
 				entity = e;
+
+#ifdef IMPROVED_TECH_PART // fixing the bug of wheel shooting through the car
+			if (carTyres && entity && entity->IsVehicle())
+				carTyres = false;
+#endif
+
 			if(carTyres && ((CVehicle*)e)->SetUpWheelColModel(&tyreCol) && CCollision::ProcessLineOfSight(line, e->GetMatrix(), tyreCol, tyreColPoint, tyreDist, false, ignoreShootThrough)){
 				float dp1 = DotProduct(line.p1 - line.p0, e->GetRight());
 				float dp2 = DotProduct(point.point - e->GetPosition(), e->GetRight());

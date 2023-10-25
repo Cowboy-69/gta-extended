@@ -287,7 +287,7 @@ CHeli::ProcessControl(void)
 
 	float fTargetDist = vTargetDist.Magnitude();
 #ifdef IMPROVED_TECH_PART // wanted system
-	if (!FindPlayerPed()->m_pWanted->IsPlayerHides()) {
+	if (!FindPlayerPed()->m_pWanted->IsPlayerHides() && m_heliStatus != HELI_STATUS_SHOT_DOWN) {
 		m_vPotentialPlayerPosOffset = { 0.0f, 0.0f, 0.0f };
 
 		if ((CCullZones::PlayerNoRain() || CGame::IsInInterior()) && fTargetDist < 100.0f)

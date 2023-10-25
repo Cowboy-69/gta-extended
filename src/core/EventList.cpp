@@ -252,7 +252,7 @@ CEventList::ReportCrimeForEvent(eEventType type, intptr crimeId, bool copsDontCa
 		CGame::germanGame && (crime == CRIME_SHOOT_PED || crime == CRIME_SHOOT_COP || crime == CRIME_COP_BURNED || crime == CRIME_VEHICLE_BURNED)){
 		FindPlayerPed()->m_pWanted->RegisterCrime_Immediately(crime, playerPedCoors, (uint32)crimeId, copsDontCare);
 #ifdef IMPROVED_TECH_PART // wanted system
-		if (type == EVENT_GUNSHOT && FindPlayerPed()->m_pWanted->GetWantedLevel() == 1 && CWanted::WorkOutPolicePresence(playerCoors, 20.0f) != 0)
+		if (type == EVENT_GUNSHOT && FindPlayerPed()->m_pWanted->GetWantedLevel() == 1 && CWanted::WorkOutPolicePresence(playerCoors, 15.0f) != 0)
 			FindPlayerPed()->SetWantedLevelNoDrop(2);
 		else
 			FindPlayerPed()->m_pWanted->SetWantedLevelNoDrop(1);

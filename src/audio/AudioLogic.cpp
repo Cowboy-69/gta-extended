@@ -832,9 +832,18 @@ enum eVehicleModel {
 	BLOODRA,
 	BLOODRB,
 	VICECHEE,
+#ifdef NEW_VEHICLES // vehicle sound
+	STREETFI,
+	PEREN2,
+	TRASH2,
+	HELLENBACH,
+	PREMIER,
+	MANCHEZ,
+#else
 	CAR237,
 	CAR238,
 	CAR239,
+#endif
 	MAX_CARS,
 
 	// HACK so this compiles
@@ -969,9 +978,19 @@ const tVehicleSampleData aVehicleSettings[MAX_CARS] = {
 	{SFX_CAR_REV_1, CAR_SFX_BANKS_OFFSET, SFX_CAR_HORN_JEEP, 26513, SFX_CAR_HORN_JEEP, 9500, NEW_DOOR},
 	{SFX_CAR_REV_9, SFX_BANK_CADILLAC, SFX_CAR_HORN_JEEP, 26513, SFX_CAR_HORN_JEEP, 9400, NEW_DOOR},
 	{SFX_CAR_REV_2, SFX_BANK_PORSCHE, SFX_CAR_HORN_PORSCHE, 11025, SFX_POLICE_SIREN_SLOW, 11000, NEW_DOOR},
+#ifdef NEW_VEHICLES // vehicle sound
+	{SFX_CAR_REV_20, SFX_BANK_SPORTS_BIKE, SFX_CAR_HORN_JEEP, 27000, SFX_CAR_HORN_JEEP, 9600, NEW_DOOR},
+	{SFX_CAR_REV_11, SFX_BANK_PACARD, SFX_CAR_HORN_56CHEV, 12893, SFX_CAR_HORN_JEEP, 9500, OLD_DOOR},
+	{SFX_CAR_REV_5, SFX_BANK_TRUCK, SFX_CAR_HORN_TRUCK, 31478, SFX_CAR_HORN_JEEP, 9800, TRUCK_DOOR},
+	{SFX_CAR_REV_11, SFX_BANK_PACARD, SFX_CAR_HORN_56CHEV, 10233, SFX_CAR_HORN_JEEP, 9800, NEW_DOOR},
+	{SFX_CAR_REV_10, SFX_BANK_PATHFINDER, SFX_CAR_HORN_BMW328, 10796, SFX_CAR_HORN_JEEP, 9200, NEW_DOOR},
+	{SFX_CAR_REV_19, SFX_BANK_HONDA250, SFX_CAR_HORN_JEEP, 30000, SFX_CAR_HORN_JEEP, 9000, NEW_DOOR},
+#else
 	{SFX_CAR_REV_1, CAR_SFX_BANKS_OFFSET, SFX_CAR_HORN_JEEP, 26513, SFX_CAR_HORN_JEEP, 9200, NEW_DOOR},
 	{SFX_CAR_REV_1, CAR_SFX_BANKS_OFFSET, SFX_CAR_HORN_JEEP, 26513, SFX_CAR_HORN_JEEP, 9300, NEW_DOOR},
-	{SFX_CAR_REV_1, CAR_SFX_BANKS_OFFSET, SFX_CAR_HORN_JEEP, 26513, SFX_CAR_HORN_JEEP, 9400, NEW_DOOR} };
+	{SFX_CAR_REV_1, CAR_SFX_BANKS_OFFSET, SFX_CAR_HORN_JEEP, 26513, SFX_CAR_HORN_JEEP, 9400, NEW_DOOR} 
+#endif
+};
 
 bool8 bPlayerJustEnteredCar;
 
@@ -1019,7 +1038,14 @@ cAudioManager::ProcessVehicle(CVehicle* veh)
 	params.m_pVehicle = veh;
 	params.m_fDistance = GetDistanceSquared(m_sQueueSample.m_vecPos);
 	params.m_pTransmission = veh->pHandling != nil ? &veh->pHandling->Transmission : nil;
+#ifdef NEW_VEHICLES
+	if (veh->m_modelIndex >= MI_FIRST_NEW_VEHICLE && veh->m_modelIndex <= MI_LAST_NEW_VEHICLE)
+		params.m_nIndex = MAX_CARS + (veh->m_modelIndex - NUM_NEW_VEHICLE_MODELS);
+	else
+		params.m_nIndex = veh->m_modelIndex - MI_FIRST_VEHICLE;
+#else
 	params.m_nIndex = veh->m_modelIndex - MI_FIRST_VEHICLE;
+#endif
 	if (veh->GetStatus() == STATUS_SIMPLE)
 		params.m_fVelocityChange = veh->AutoPilot.m_fMaxTrafficSpeed * 0.02f;
 	else
@@ -4258,9 +4284,15 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 						m_sQueueSample.m_nSampleIndex = SFX_CAR_WIND_17;
 						break;
 					case MI_PCJ600:
+#ifdef NEW_VEHICLES // for bikes, wind
+					case MI_STREETFI:
+#endif
 						m_sQueueSample.m_nSampleIndex = SFX_CAR_WIND_20;
 						break;
 					case MI_SANCHEZ:
+#ifdef NEW_VEHICLES // for bikes, wind
+					case MI_MANCHEZ:
+#endif
 						m_sQueueSample.m_nSampleIndex = SFX_CAR_WIND_19;
 						break;
 					case MI_PIZZABOY:

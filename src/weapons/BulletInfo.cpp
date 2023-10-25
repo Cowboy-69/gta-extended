@@ -182,6 +182,11 @@ void CBulletInfo::Update(void)
 						if ( pBullet->m_eWeaponType == WEAPONTYPE_FLAMETHROWER ) {
 							gFireManager.StartFire(pHitEntity, pBullet->m_pSource, 0.8f, 1);
 						} else {
+#ifdef IMPROVED_VEHICLES_2 // check for shooting vehicle lights and petrolcap
+							CWeapon::CheckForShootingVehicleLights(pHitEntity, point);
+							CWeapon::CheckForShootingVehiclePetrolCap(source, pHitEntity, point);
+#endif
+
 							for (int j=0; j<NUM_VEHICLE_SPARKS; j++) {
 								CParticle::AddParticle(PARTICLE_SPARK, point.point, point.normal / 20);
 							}

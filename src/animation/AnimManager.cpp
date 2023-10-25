@@ -859,14 +859,22 @@ char const* aPlayer2ArmedAnimations[] = {
 char const* aPlayerBBBatAnimations[] = {
 	"walk_player",
 	"run_player",
+#ifdef IMPROVED_TECH_PART // sprint with bat
+	"SPRINT_civi",
+#else
 	"run_player",
+#endif
 	"IDLE_STANCE",
 	"walk_start",
 };
 char const* aPlayerChainsawAnimations[] = {
 	"walk_csaw",
 	"run_csaw",
+#ifdef IMPROVED_TECH_PART // sprint with chainsaw
+	"sprint_csaw",
+#else
 	"run_csaw",
+#endif
 	"IDLE_csaw",
 	"walk_start_csaw",
 };

@@ -44,6 +44,10 @@ enum {
 	VEHICLE_FLAG_ANGLECULL	= 0x1000,
 	VEHICLE_FLAG_REARDOOR	= 0x2000,
 	VEHICLE_FLAG_FRONTDOOR	= 0x4000,
+#ifdef VEHICLE_MODS // vehicle flags
+	VEHICLE_FLAG_VEHMOD_OK = 0x8000,
+	VEHICLE_FLAG_VEHMOD_DAM = 0x16000,
+#endif
 };
 
 RwObjectNameIdAssocation carIds[] = {
@@ -66,11 +70,83 @@ RwObjectNameIdAssocation carIds[] = {
 	{ "boot_dummy",		CAR_BOOT,	VEHICLE_FLAG_REAR | VEHICLE_FLAG_COLLAPSE },
 	{ "bump_rear_dummy",	CAR_BUMP_REAR,	VEHICLE_FLAG_REAR | VEHICLE_FLAG_COLLAPSE },
 	{ "windscreen_dummy",	CAR_WINDSCREEN,	VEHICLE_FLAG_WINDSCREEN | VEHICLE_FLAG_DRAWLAST | VEHICLE_FLAG_FRONT | VEHICLE_FLAG_COLLAPSE },
+#ifdef VEHICLE_MODS
+	{ "vm_spoiler_ok",	CAR_SPOILER_OK,	VEHICLE_FLAG_REAR | VEHICLE_FLAG_VEHMOD_OK},
+	{ "vm_spoiler_dam",	CAR_SPOILER_DAM,	VEHICLE_FLAG_REAR | VEHICLE_FLAG_VEHMOD_DAM},
+	{ "vm_skirt_l",		CAR_SKIRT_L,	VEHICLE_FLAG_LEFT | VEHICLE_FLAG_VEHMOD_OK},
+	{ "vm_skirt_r",		CAR_SKIRT_R,	VEHICLE_FLAG_RIGHT | VEHICLE_FLAG_VEHMOD_OK},
+	{ "vm_rf_scoop",	CAR_RF_SCOOP,	VEHICLE_FLAG_VEHMOD_OK},
+	{ "vm_bnt_scoop_ok",	CAR_BNT_SCOOP_OK,	VEHICLE_FLAG_VEHMOD_OK},
+	{ "vm_bnt_scoop_dam",	CAR_BNT_SCOOP_DAM,	VEHICLE_FLAG_VEHMOD_DAM},
+	{ "vm_vent_l_ok",		CAR_VENT_L_OK,	VEHICLE_FLAG_VEHMOD_OK},
+	{ "vm_vent_l_dam",		CAR_VENT_L_DAM,	VEHICLE_FLAG_VEHMOD_DAM},
+	{ "vm_vent_r_ok",		CAR_VENT_R_OK,	VEHICLE_FLAG_VEHMOD_OK},
+	{ "vm_vent_r_dam",		CAR_VENT_R_DAM,	VEHICLE_FLAG_VEHMOD_DAM},
+	//{ "vm_supercharger",	CAR_SUPERCHARGER,	VEHICLE_FLAG_VEHMOD_DAM},
+#endif
+
+#ifdef IMPROVED_VEHICLES_2
+	{ "steeringwheel",	CAR_STEERINGWHEEL,	VEHICLE_FLAG_LEFT },
+	
+	{ "headlight_l",			CAR_HEADLIGHT_L,	VEHICLE_FLAG_LEFT | VEHICLE_FLAG_DRAWLAST },
+	{ "headlight_l_hi",			CAR_HEADLIGHT_L,	VEHICLE_FLAG_LEFT | VEHICLE_FLAG_DRAWLAST },
+	{ "headlight_wing_l",		CAR_HEADLIGHT_WING_L,	VEHICLE_FLAG_LEFT },
+	{ "headlight_bump_l",		CAR_HEADLIGHT_BUMP_L,	VEHICLE_FLAG_LEFT },
+	{ "taillight_l",			CAR_TAILLIGHT_L,	VEHICLE_FLAG_LEFT },
+	{ "reversinglight_l",		CAR_REVERSINGLIGHT_L,	VEHICLE_FLAG_LEFT },
+	{ "reversinglight_bump_l",	CAR_REVERSINGLIGHT_BUMP_L,	VEHICLE_FLAG_LEFT },
+	{ "brakelight_l",			CAR_BRAKELIGHT_L,	VEHICLE_FLAG_LEFT },
+	{ "brakelight_bump_l",		CAR_BRAKELIGHT_BUMP_L,	VEHICLE_FLAG_LEFT },
+	{ "indicator_lf",			CAR_INDICATOR_LF,	VEHICLE_FLAG_LEFT },
+	{ "indicator_lr",			CAR_INDICATOR_LR,	VEHICLE_FLAG_LEFT },
+	{ "indicator_2_lr",			CAR_INDICATOR_2_LR,	VEHICLE_FLAG_LEFT },
+	{ "indicator_wing_l",		CAR_INDICATOR_WING_LF,	VEHICLE_FLAG_LEFT },
+	{ "indicator_2_wing_l",		CAR_INDICATOR_2_WING_LF,	VEHICLE_FLAG_LEFT },
+	{ "window_misc_l_hi",		CAR_WINDOW_L_MISC,	VEHICLE_FLAG_LEFT | VEHICLE_FLAG_DRAWLAST},
+
+	{ "window_rear_hi",			CAR_WINDOW_REAR,	VEHICLE_FLAG_REAR | VEHICLE_FLAG_DRAWLAST},
+
+	{ "headlight_r",			CAR_HEADLIGHT_R,	VEHICLE_FLAG_RIGHT | VEHICLE_FLAG_DRAWLAST },
+	{ "headlight_r_hi",			CAR_HEADLIGHT_R,	VEHICLE_FLAG_RIGHT | VEHICLE_FLAG_DRAWLAST },
+	{ "headlight_wing_r",		CAR_HEADLIGHT_WING_R,	VEHICLE_FLAG_RIGHT },
+	{ "headlight_bump_r",		CAR_HEADLIGHT_BUMP_R,	VEHICLE_FLAG_RIGHT },
+	{ "taillight_r",			CAR_TAILLIGHT_R,	VEHICLE_FLAG_RIGHT },
+	{ "reversinglight_r",		CAR_REVERSINGLIGHT_R,	VEHICLE_FLAG_RIGHT },
+	{ "reversinglight_bump_r",	CAR_REVERSINGLIGHT_BUMP_R,	VEHICLE_FLAG_RIGHT },
+	{ "brakelight_r",			CAR_BRAKELIGHT_R,	VEHICLE_FLAG_RIGHT },
+	{ "brakelight_bump_r",		CAR_BRAKELIGHT_BUMP_R,	VEHICLE_FLAG_RIGHT },
+	{ "indicator_rf",			CAR_INDICATOR_RF,	VEHICLE_FLAG_RIGHT },
+	{ "indicator_rr",			CAR_INDICATOR_RR,	VEHICLE_FLAG_RIGHT },
+	{ "indicator_2_rr",			CAR_INDICATOR_2_RR,	VEHICLE_FLAG_RIGHT },
+	{ "indicator_wing_r",		CAR_INDICATOR_WING_RF,	VEHICLE_FLAG_RIGHT },
+	{ "indicator_2_wing_r",		CAR_INDICATOR_2_WING_RF,	VEHICLE_FLAG_RIGHT },
+	{ "window_misc_r_hi",		CAR_WINDOW_R_MISC,	VEHICLE_FLAG_RIGHT | VEHICLE_FLAG_DRAWLAST},
+#endif
 
 	{ "ped_frontseat",	CAR_POS_FRONTSEAT,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
 	{ "ped_backseat",	CAR_POS_BACKSEAT,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
 	{ "headlights",		CAR_POS_HEADLIGHTS,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
 	{ "taillights",		CAR_POS_TAILLIGHTS,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+#ifdef IMPROVED_VEHICLES_2
+	{ "headlights2",			CAR_POS_HEADLIGHTS_2,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "taillights2",			CAR_POS_TAILLIGHTS_2,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "headlights_wing",		CAR_POS_HEADLIGHTS_WING,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "headlights_bump",		CAR_POS_HEADLIGHTS_BUMP,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "headlights_bump2",		CAR_POS_HEADLIGHTS_2_BUMP,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "reversinglights",		CAR_POS_REVERSINGLIGHTS, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "reversinglights_bump",	CAR_POS_REVERSINGLIGHTS_BUMP, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "brakelights",			CAR_POS_BRAKELIGHTS, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "brakelights2",			CAR_POS_BRAKELIGHTS_2, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "brakelights_bump",		CAR_POS_BRAKELIGHTS_BUMP, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "indicators_f",			CAR_POS_INDICATORS_F, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "indicators_r",			CAR_POS_INDICATORS_R, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "indicators_wing_f",		CAR_POS_INDICATORS_WING_F, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "indicators_2_wing_f",	CAR_POS_INDICATORS_2_WING_F, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "engine",					CAR_POS_ENGINE, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "overheat",				CAR_POS_OVERHEAT, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "overheat_2",				CAR_POS_OVERHEAT_2, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "petrolcap",				CAR_POS_PETROLCAP, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+#endif
 	{ "exhaust",		CAR_POS_EXHAUST,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
 	{ "extra1",		0, VEHICLE_FLAG_DRAWLAST | VEHICLE_FLAG_COMP | CLUMP_FLAG_NO_HIERID },
 	{ "extra2",		0, VEHICLE_FLAG_DRAWLAST | VEHICLE_FLAG_COMP | CLUMP_FLAG_NO_HIERID },
@@ -142,11 +218,26 @@ RwObjectNameIdAssocation bikeIds[] = {
 	{ "wheel_rear",		BIKE_WHEEL_REAR,	0 },
 	{ "mudguard",		BIKE_MUDGUARD,	0 },
 	{ "handlebars",		BIKE_HANDLEBARS,	0 },
+#ifdef IMPROVED_VEHICLES_2
+	{ "headlight_l",	BIKE_HEADLIGHT_L,	VEHICLE_FLAG_FRONT },
+	{ "taillight_l",	BIKE_TAILLIGHT_L,	VEHICLE_FLAG_LEFT },
+	{ "indicator_lf",	BIKE_INDICATOR_LF,	VEHICLE_FLAG_LEFT },
+	{ "indicator_lr",	BIKE_INDICATOR_LR,	VEHICLE_FLAG_LEFT },
+	{ "indicator_rf",	BIKE_INDICATOR_RF,	VEHICLE_FLAG_RIGHT },
+	{ "indicator_rr",	BIKE_INDICATOR_RR,	VEHICLE_FLAG_RIGHT },
+#endif
 	{ "ped_frontseat",	CAR_POS_FRONTSEAT,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
 	{ "ped_backseat",	CAR_POS_BACKSEAT,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
 	{ "headlights",		CAR_POS_HEADLIGHTS,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
 	{ "taillights",		CAR_POS_TAILLIGHTS,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
 	{ "exhaust",		CAR_POS_EXHAUST,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+#ifdef IMPROVED_VEHICLES_2
+	{ "indicators_f",	CAR_POS_INDICATORS_F, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "indicators_r",	CAR_POS_INDICATORS_R, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "overheat",		CAR_POS_OVERHEAT, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "overheat_2",		CAR_POS_OVERHEAT_2, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+	{ "petrolcap",		CAR_POS_PETROLCAP, VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
+#endif
 	{ "extra1",		0,	VEHICLE_FLAG_DRAWLAST | VEHICLE_FLAG_COMP | CLUMP_FLAG_NO_HIERID },
 	{ "extra2",		0,	VEHICLE_FLAG_DRAWLAST | VEHICLE_FLAG_COMP | CLUMP_FLAG_NO_HIERID },
 	{ "extra3",		0,	VEHICLE_FLAG_DRAWLAST | VEHICLE_FLAG_COMP | CLUMP_FLAG_NO_HIERID },
@@ -249,6 +340,14 @@ CVehicleModelInfo::SetClump(RpClump *clump)
 	PreprocessHierarchy();
 	FindEditableMaterialList();
 	SetEnvironmentMap();
+
+#ifdef IMPROVED_VEHICLES_2 // set light textures
+	RwTexDictionary* modelTxd = CTxdStore::GetSlot(GetTxdSlot())->texDict;
+	if (modelTxd) {
+		lightsOffTexture = RwTexDictionaryFindNamedTexture(modelTxd, "lights");
+		lightsOnTexture = RwTexDictionaryFindNamedTexture(modelTxd, "lightson");
+	}
+#endif
 }
 
 void
@@ -275,9 +374,17 @@ CVehicleModelInfo::ConvertAnimFileIndex(void)
 RwFrame*
 CVehicleModelInfo::CollapseFramesCB(RwFrame *frame, void *data)
 {
+#ifdef VEHICLE_MODS // don't move upgrade frame
+	if (!strstr(GetFrameNodeName(frame), "vm_")) {
+		RwFrameForAllChildren(frame, CollapseFramesCB, data);
+		RwFrameForAllObjects(frame, MoveObjectsCB, data);
+		RwFrameDestroy(frame);
+	}
+#else
 	RwFrameForAllChildren(frame, CollapseFramesCB, data);
 	RwFrameForAllObjects(frame, MoveObjectsCB, data);
 	RwFrameDestroy(frame);
+#endif
 	return frame;
 }
 
@@ -302,6 +409,13 @@ CVehicleModelInfo::HideDamagedAtomicCB(RpAtomic *atomic, void *data)
 RpAtomic*
 CVehicleModelInfo::HideAllComponentsAtomicCB(RpAtomic *atomic, void *data)
 {
+#ifdef VEHICLE_MODS
+	if (strstr(GetFrameNodeName(RpAtomicGetFrame(atomic)), "supercharger") ||
+		strstr(GetFrameNodeName(RpAtomicGetFrame(atomic)), "carb") ||
+		strstr(GetFrameNodeName(RpAtomicGetFrame(atomic)), "flywheel"))
+		return atomic;
+#endif
+
 	if(CVisibilityPlugins::GetAtomicId(atomic) & (uintptr)data)
 		RpAtomicSetFlags(atomic, 0);
 	else
@@ -331,11 +445,21 @@ CVehicleModelInfo::SetAtomicRendererCB(RpAtomic *atomic, void *data)
 	name = GetFrameNodeName(RpAtomicGetFrame(atomic));
 	alpha = false;
 	RpGeometryForAllMaterials(RpAtomicGetGeometry(atomic), HasAlphaMaterialCB, &alpha);
+#ifdef IMPROVED_VEHICLES_2
+	if (strstr(name, "_hi") || !CGeneral::faststrncmp(name, "extra", 5)) {
+		if (alpha || strncmp(name, "windscreen", 10) == 0) {
+			CVisibilityPlugins::SetAtomicRenderCallback(atomic, CVisibilityPlugins::RenderVehicleHiDetailAlphaCB);
+			if (strncmp(name, "window", 6) == 0)
+				CVisibilityPlugins::SetAtomicFlag(atomic, ATOMIC_FLAG_DOORWINDOW);
+		} else
+			CVisibilityPlugins::SetAtomicRenderCallback(atomic, CVisibilityPlugins::RenderVehicleHiDetailCB);
+#else
 	if(strstr(name, "_hi") || !CGeneral::faststrncmp(name, "extra", 5)) {
 		if(alpha || strncmp(name, "windscreen", 10) == 0)
 			CVisibilityPlugins::SetAtomicRenderCallback(atomic, CVisibilityPlugins::RenderVehicleHiDetailAlphaCB);
 		else
 			CVisibilityPlugins::SetAtomicRenderCallback(atomic, CVisibilityPlugins::RenderVehicleHiDetailCB);
+#endif
 	}else if(strstr(name, "_lo")){
 		RpClumpRemoveAtomic(clump, atomic);
 		RpAtomicDestroy(atomic);
@@ -596,6 +720,35 @@ CVehicleModelInfo::PreprocessHierarchy(void)
 		}
 
 		SetVehicleComponentFlags(assoc.frame, desc[i].flags);
+
+#ifdef VEHICLE_MODS // set default window material color
+		if (strncmp(desc[i].name, "door_lf_dummy", 13) == 0) {
+			RpAtomic* doorAtomic = nil;
+			RwFrameForAllObjects(assoc.frame, GetCurrentAtomicObjectCB, &doorAtomic);
+			if (doorAtomic) {
+				for (int i = 0; i < doorAtomic->geometry->matList.numMaterials; i++) {
+					RpMaterial* material = doorAtomic->geometry->matList.materials[i];
+
+					if (material->color.alpha == 255)
+						continue;
+
+					m_nDefaultWindowMaterialColor = material->color;
+					break;
+				}
+			}
+		}
+#endif
+
+#ifdef IMPROVED_VEHICLES_2 // set default window material color
+		if (strncmp(desc[i].name, "door_lf_dummy", 13) == 0) {
+			RpAtomic* windowAtomic = nil;
+			RwFrameForAllObjects(assoc.frame, GetWindowAtomicObjectCB, &windowAtomic);
+			if (windowAtomic) {
+				RpMaterial* material = windowAtomic->geometry->matList.materials[0];
+				m_nDefaultWindowMaterialColor = material->color;
+			}
+		}
+#endif
 
 		if(desc[i].flags & VEHICLE_FLAG_ADD_WHEEL){
 			if(m_wheelId == -1)

@@ -541,6 +541,9 @@ CShadows::StoreShadowForVehicle(CVehicle *pCar, VEH_SHD_TYPE type)
 				case MI_PIZZABOY:
 				case MI_PCJ600:
 				case MI_FAGGIO:
+#ifdef NEW_VEHICLES // for bikes
+				case MI_STREETFI:
+#endif
 				{
 					fVehicleHeight *= 1.2f;
 					size = 0.05f;
@@ -550,6 +553,9 @@ CShadows::StoreShadowForVehicle(CVehicle *pCar, VEH_SHD_TYPE type)
 				case MI_ANGEL:
 				case MI_FREEWAY:
 				case MI_SANCHEZ:
+#ifdef NEW_VEHICLES // for bikes
+				case MI_MANCHEZ:
+#endif
 				{
 					fVehicleHeight *= 1.5f;
 					size *= 0.03f;

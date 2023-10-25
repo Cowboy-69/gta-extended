@@ -408,7 +408,9 @@ CWanted::UpdateWantedLevel()
 #ifdef IMPROVED_TECH_PART // wanted system
 bool CWanted::IsPlayerLost() const
 {
-	return CTimer::GetTimeInMilliseconds() - FindPlayerPed()->m_pWanted->m_nLastTimeSeenPlayer > TIME_COPS_SEEN_PLAYER_AFTER_LOST;
+	int wantedLevel = FindPlayerPed()->m_pWanted->GetWantedLevel();
+	int timeCopsSeenPlayerAfterLost = 25000 + (5000 * wantedLevel);
+	return CTimer::GetTimeInMilliseconds() - FindPlayerPed()->m_pWanted->m_nLastTimeSeenPlayer > timeCopsSeenPlayerAfterLost;
 }
 
 bool CWanted::IsPlayerHides() const
@@ -447,7 +449,11 @@ CWanted::WorkOutPolicePresence(CVector posn, float radius)
 				wanted->m_vecLastSeenPosPlayer = FindPlayerCoors();
 			}
 
-			if ((posn - ped->GetPosition()).Magnitude() < radius) {
+			float searchRadius = radius;
+			if (ped->InVehicle() && wanted->GetWantedLevel() >= 2)
+				searchRadius = 90.0f;
+
+			if ((posn - ped->GetPosition()).Magnitude() < searchRadius) {
 				float angleOfSight;
 				if (ped->InVehicle()) {
 					angleOfSight = -1.0f;
@@ -469,7 +475,7 @@ CWanted::WorkOutPolicePresence(CVector posn, float radius)
 				playerHeadPos.z = 0.0f;
 				FindPlayerPed()->m_pedIK.GetComponentPosition(playerHeadPos, PED_HEAD);
 				
-				CEntity* hitEntity;
+				CEntity* hitEntity = nil;
 				if (FindPlayerPed()->bIsDucking) {
 					CWorld::ProcessLineOfSight(copHeadPos, playerHeadPos, CColPoint{}, hitEntity, true, true, false, false, false, true, true, true);
 				} else {
@@ -486,18 +492,18 @@ CWanted::WorkOutPolicePresence(CVector posn, float radius)
 					CWorld::ProcessLineOfSight(copHeadPos, playerHeadPos, CColPoint{}, hitEntity, true, bCheckVehicles, false, false, false, true, true, true);
 				}
 
-				bool isCopSeesPlayer = angleOfSight < -0.25f && !hitEntity;
+				bool bCopSeesPlayer = angleOfSight < -0.25f && !hitEntity;
 				
 				int event;
-				if ((wanted->GetWantedLevel() == 0 && isCopSeesPlayer) ||
+				if ((wanted->GetWantedLevel() == 0 && bCopSeesPlayer) ||
 					(wanted->GetWantedLevel() > 0 && !wanted->IsPlayerLost()) ||
 					CEventList::FindClosestEvent(EVENT_GUNSHOT, posn, &event))
 					numPolice++;
 
-				if (isCopSeesPlayer)
+				if (bCopSeesPlayer)
 					nobodySawPlayer = false;
 
-				if (isCopSeesPlayer && timeDelayDiff > TIME_DELAY_BEFORE_BEING_SEEN) {
+				if (bCopSeesPlayer && timeDelayDiff > TIME_DELAY_BEFORE_BEING_SEEN) {
 					if (FindPlayerVehicle() && !wanted->IsPlayerHides())
 						wanted->m_vLastSeenPlayerVehicle = FindPlayerVehicle();
 
@@ -611,6 +617,9 @@ void
 CWanted::Update(void)
 {
 #ifdef IMPROVED_TECH_PART // wanted system
+	if (m_nWantedLevel > 0 && IsPlayerLost())
+		SetWantedLevel(0);
+
 	if (!IsPlayerHides())
 		m_vecLastSeenPosPlayer = FindPlayerCoors();
 
@@ -625,6 +634,8 @@ CWanted::Update(void)
 			m_nTimeAutomaticUpdatedPosPlayer = CTimer::GetTimeInMilliseconds();
 			m_bSearchPlayerRandomly = true;
 		}
+
+		CWanted::WorkOutPolicePresence(FindPlayerCoors(), 150.0f);
 	}
 #endif
 

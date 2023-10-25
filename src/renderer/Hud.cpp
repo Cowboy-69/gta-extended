@@ -25,6 +25,9 @@
 #include "main.h"
 #include "General.h"
 #include "VarConsole.h"
+#ifdef VEHICLE_MODS
+#include "Garages.h"
+#endif
 
 #if defined(FIX_BUGS)
 	#define SCREEN_SCALE_X_FIX(a) SCREEN_SCALE_X(a)
@@ -450,7 +453,11 @@ void CHud::Draw()
 			CFont::SetColor(MONEY_COLOR);
 
 			if (FrontEndMenuManager.m_PrefsShowHud) {
+#ifdef VEHICLE_MODS // HUD in mod garage
+				CFont::PrintString(SCREEN_SCALE_FROM_RIGHT(110.0f), SCREEN_SCALE_Y(CGarages::bPlayerInModGarage ? 10.0f : 43.0f), sPrint);
+#else
 				CFont::PrintString(SCREEN_SCALE_FROM_RIGHT(110.0f), SCREEN_SCALE_Y(43.0f), sPrint);
+#endif
 			}
 		}
 
@@ -463,7 +470,11 @@ void CHud::Draw()
 			alpha = CHud::DrawFadeState(HUD_WEAPON_FADING, 1);
 			m_LastWeapon = playerPed->GetWeapon()->m_eWeaponType;
 		}
+#ifdef VEHICLE_MODS // hide some hud elements when a player in the mod garage
+		if (m_WeaponState != FADED_OUT && !CGarages::bPlayerInModGarage) {
+#else
 		if (m_WeaponState != FADED_OUT) {
+#endif
 			CWeapon *weapon = playerPed->GetWeapon();
 			int32 AmmoAmount = CWeaponInfo::GetWeaponInfo((eWeaponType)WeaponType)->m_nAmountofAmmunition;
 			int32 AmmoInClip = weapon->m_nAmmoInClip;
@@ -565,7 +576,11 @@ void CHud::Draw()
 			m_LastTimeEnergyLost = CWorld::Players[CWorld::PlayerInFocus].m_nTimeLastHealthLoss;
 		}
 
+#ifdef VEHICLE_MODS // hide some hud elements when a player in the mod garage
+		if (m_EnergyLostState != FADED_OUT && !CGarages::bPlayerInModGarage) {
+#else
 		if (m_EnergyLostState != FADED_OUT) {
+#endif
 			CFont::SetBackgroundOff();
 			CFont::SetScale(SCREEN_SCALE_X(HUD_TEXT_SCALE_X), SCREEN_SCALE_Y(HUD_TEXT_SCALE_Y));
 			CFont::SetJustifyOff();
@@ -607,7 +622,11 @@ void CHud::Draw()
 			/*
 				DrawArmour
 			*/
+#ifdef VEHICLE_MODS // hide some hud elements when a player in the mod garage
+			if (!CGarages::bPlayerInModGarage && (m_ItemToFlash == ITEM_ARMOUR && FRAMECOUNTER & 8 || m_ItemToFlash != ITEM_ARMOUR)) {
+#else
 			if (m_ItemToFlash == ITEM_ARMOUR && FRAMECOUNTER & 8 || m_ItemToFlash != ITEM_ARMOUR) {
+#endif
 				CFont::SetScale(SCREEN_SCALE_X(HUD_TEXT_SCALE_X), SCREEN_SCALE_Y(HUD_TEXT_SCALE_Y));
 				if (playerPed->m_fArmour > 1.0f) {
 					AsciiToUnicode("<", sPrintIcon);
@@ -672,17 +691,27 @@ void CHud::Draw()
 						WANTED_COLOR.a = alpha;
 						CFont::SetColor(WANTED_COLOR);
 #endif
+#ifdef VEHICLE_MODS // HUD in mod garage
+						CFont::PrintString(SCREEN_SCALE_FROM_RIGHT(110.0f + 23.0f * i), SCREEN_SCALE_Y(CGarages::bPlayerInModGarage ? 35.0f : 87.0f), sPrintIcon);
+#else
 						CFont::PrintString(SCREEN_SCALE_FROM_RIGHT(110.0f + 23.0f * i), SCREEN_SCALE_Y(87.0f), sPrintIcon);
-
+#endif
 					} else if (playerPed->m_pWanted->m_nMinWantedLevel > i && FRAMECOUNTER & 4) {
 						WANTED_COLOR_FLASH.a = alpha;
 						CFont::SetColor(WANTED_COLOR_FLASH);
+#ifdef VEHICLE_MODS // HUD in mod garage
+						CFont::PrintString(SCREEN_SCALE_FROM_RIGHT(110.0f + 23.0f * i), SCREEN_SCALE_Y(CGarages::bPlayerInModGarage ? 35.0f : 87.0f), sPrintIcon);
+#else
 						CFont::PrintString(SCREEN_SCALE_FROM_RIGHT(110.0f + 23.0f * i), SCREEN_SCALE_Y(87.0f), sPrintIcon);
-
+#endif
 					} else if (playerPed->m_pWanted->GetWantedLevel() <= i) {
 						NOTWANTED_COLOR.a = alpha;
 						CFont::SetColor(NOTWANTED_COLOR);
+#ifdef VEHICLE_MODS // HUD in mod garage
+						CFont::PrintString(SCREEN_SCALE_FROM_RIGHT(110.0f + 23.0f * i), SCREEN_SCALE_Y(CGarages::bPlayerInModGarage ? 35.0f : 87.0f), sPrintIcon);
+#else
 						CFont::PrintString(SCREEN_SCALE_FROM_RIGHT(110.0f + 23.0f * i), SCREEN_SCALE_Y(87.0f), sPrintIcon);
+#endif
 					}
 				}
 			}
@@ -943,7 +972,11 @@ void CHud::Draw()
 		/*
 			DrawClock
 		*/
+#ifdef VEHICLE_MODS // hide some hud elements when a player in the mod garage
+		if (m_ClockState && !CGarages::bPlayerInModGarage) {
+#else
 		if (m_ClockState) {
+#endif
 			CFont::SetJustifyOff();
 			CFont::SetCentreOff();
 			CFont::SetBackgroundOff();
@@ -1082,8 +1115,13 @@ void CHud::Draw()
 		/*
 			DrawRadar
 		*/
+#ifdef VEHICLE_MODS // HUD in mod garage
+		if (!CGarages::bPlayerInModGarage && FrontEndMenuManager.m_PrefsRadarMode != 2 &&
+			!m_HideRadar && (m_ItemToFlash == ITEM_RADAR && FRAMECOUNTER & 8 || m_ItemToFlash != ITEM_RADAR)) {
+#else
 		if (FrontEndMenuManager.m_PrefsRadarMode != 2 &&
 			!m_HideRadar && (m_ItemToFlash == ITEM_RADAR && FRAMECOUNTER & 8 || m_ItemToFlash != ITEM_RADAR)) {
+#endif
 
 			RwRenderStateSet(rwRENDERSTATETEXTUREFILTER, (void*)rwFILTERNEAREST);
 			CRadar::DrawMap();

@@ -128,6 +128,12 @@ void CCarGenerator::DoInternalProcessing()
 	pVehicle->SetOrientation(0.0f, 0.0f, DEGTORAD(m_fAngle));
 	pVehicle->SetStatus(STATUS_ABANDONED);
 	pVehicle->m_nDoorLock = CARLOCK_UNLOCKED;
+
+#ifdef VEHICLE_MODS // TrySetRandomCarMod for parked vehicles
+	if (pVehicle->IsCar())
+		((CAutomobile*)pVehicle)->TrySetRandomCarMod();
+#endif
+
 	CWorld::Add(pVehicle);
 	if (CGeneral::GetRandomNumberInRange(0, 100) < m_nAlarm)
 		pVehicle->m_nAlarmState = -1;

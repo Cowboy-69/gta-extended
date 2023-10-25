@@ -51,10 +51,20 @@
 #include "Bike.h"
 #include "Wanted.h"
 #include "SaveBuf.h"
+#ifdef VEHICLE_MODS
+#include "ClumpModelInfo.h"
+#endif
+#ifdef IMPROVED_VEHICLES_2
+#include "TxdStore.h"
+#include "NodeName.h"
+#include "Debug.h"
+#endif
 
 bool bAllCarCheat;
 
+#ifndef IMPROVED_VEHICLES
 RwObject *GetCurrentAtomicObjectCB(RwObject *object, void *data);
+#endif
 
 bool CAutomobile::m_sAllTaxiLights;
 
@@ -235,6 +245,47 @@ CAutomobile::CAutomobile(int32 id, uint8 CreatedBy)
 		bExplosionProof = true;
 		bBulletProof = true;
 	}
+
+#ifdef IMPROVED_VEHICLES_2 // init
+	m_bIndicatorState[INDICATORS_LEFT] = false;
+	m_bIndicatorState[INDICATORS_RIGHT] = false;
+#endif
+
+#ifdef VEHICLE_MODS // init
+	m_nWindowTintLevel = 1;
+	m_nTempWindowTintLevel = 1;
+	m_nAddSuspensionForceLevel = 1;
+	m_nTempAddSuspensionForceLevel = 1;
+	m_nTempColor1 = 0;
+	m_nTempColor2 = 0;
+	m_nRimsColor = 1;
+	m_nTempRimsColor = 1;
+	m_nSpoilerColor = -1;
+	m_nTempSpoilerColor = -1;
+	m_fAddBrakeDeceleration = 0.0f;
+	m_fCarbRotation = 0.0f;
+	m_aDefaultBonnetOkAtomic = nil;
+	m_aDefaultBonnetDamAtomic = nil;
+	bHasHydraulics = GetModelIndex() == MI_VOODOO;
+
+	for (int upgradeID = 0; upgradeID < NUM_UPGRADES; upgradeID++) {
+		if (upgradeID == UPGRADE_WHEELS) {
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeModelIndex = mi->m_wheelId;
+			m_aUpgrades[UPGRADE_WHEELS].m_nTempUpgradeModelIndex = mi->m_wheelId;
+			SetWheelNumber(mi->m_wheelId);
+		} else {
+			m_aUpgrades[upgradeID].m_nUpgradeModelIndex = 0;
+			m_aUpgrades[upgradeID].m_nTempUpgradeModelIndex = 0;
+			m_aUpgrades[upgradeID].m_nUpgradeNumber = 0;
+		}
+	}
+
+	if (m_aCarNodes[CAR_SUPERCHARGER]) {
+		RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SUPERCHARGER]->child), 0); // supercharger
+		RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SUPERCHARGER]->child->child->child), 0); // carb
+		RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SUPERCHARGER]->child->child->next->child), 0); // flywheel
+	}
+#endif
 }
 
 void
@@ -424,11 +475,6 @@ CAutomobile::ProcessControl(void)
 			if(bHoverCheat)
 				DoHoverSuspensionRatios();
 
-#ifdef NEW_CHEATS // AIRWAYS
-			if (bAirWaysCheat)
-				DoHoverAboveSurface();
-#endif
-
 			if(m_aSuspensionSpringRatio[0] < 1.0f && CSurfaceTable::GetAdhesionGroup(m_aWheelColPoints[0].surfaceB) == ADHESIVE_SAND ||
 			   m_aSuspensionSpringRatio[1] < 1.0f && CSurfaceTable::GetAdhesionGroup(m_aWheelColPoints[1].surfaceB) == ADHESIVE_SAND ||
 			   m_aSuspensionSpringRatio[2] < 1.0f && CSurfaceTable::GetAdhesionGroup(m_aWheelColPoints[2].surfaceB) == ADHESIVE_SAND ||
@@ -518,8 +564,15 @@ CAutomobile::ProcessControl(void)
 		else
 			m_fBrakePedal = 0.0f;
 		bIsHandbrakeOn = false;
-
+		
+#ifdef IMPROVED_VEHICLES // steer angle save after exit from vehicle etc
+		if (m_fSteerAngle < 0.0f)
+			m_fSteerAngle = Max(m_fSteerAngle, -DEGTORAD(pHandling->fSteeringLock));
+		else
+			m_fSteerAngle = Min(m_fSteerAngle, DEGTORAD(pHandling->fSteeringLock));
+#else
 		m_fSteerAngle = 0.0f;
+#endif
 		m_fGasPedal = 0.0f;
 		if(!IsAlarmOn())
 			m_nCarHornTimer = 0;
@@ -535,7 +588,14 @@ CAutomobile::ProcessControl(void)
 		m_fBrakePedal = 0.05f;
 		bIsHandbrakeOn = true;
 
+#ifdef IMPROVED_VEHICLES // steer angle save after exit from vehicle etc
+		if (m_fSteerAngle < 0.0f)
+			m_fSteerAngle = Max(m_fSteerAngle, -DEGTORAD(pHandling->fSteeringLock));
+		else
+			m_fSteerAngle = Min(m_fSteerAngle, DEGTORAD(pHandling->fSteeringLock));
+#else
 		m_fSteerAngle = 0.0f;
+#endif
 		m_fGasPedal = 0.0f;
 		if(!IsAlarmOn())
 			m_nCarHornTimer = 0;
@@ -555,7 +615,14 @@ CAutomobile::ProcessControl(void)
 			bIsHandbrakeOn = false;
 		}
 
+#ifdef IMPROVED_VEHICLES // steer angle save after exit from vehicle etc
+		if (m_fSteerAngle < 0.0f)
+			m_fSteerAngle = Max(m_fSteerAngle, -DEGTORAD(pHandling->fSteeringLock));
+		else
+			m_fSteerAngle = Min(m_fSteerAngle, DEGTORAD(pHandling->fSteeringLock));
+#else
 		m_fSteerAngle = 0.0f;
+#endif
 		m_fGasPedal = 0.0f;
 		if(!IsAlarmOn())
 			m_nCarHornTimer = 0;
@@ -564,8 +631,8 @@ CAutomobile::ProcessControl(void)
 	}
 
 #ifdef NEW_CHEATS // AIRWAYS
-	if (bAirWaysCheat && GetStatus() != STATUS_PLAYER && !bAffectedByGravity)
-		bAffectedByGravity = true;
+	if (bAirWaysCheat && !bRenderScorched)
+		DoHoverAboveSurface();
 #endif
 
 	// Skip physics if object is found to have been static recently
@@ -635,6 +702,11 @@ CAutomobile::ProcessControl(void)
 
 	VehicleDamage(0.0f, 0);
 
+#ifdef VEHICLE_MODS // hydraulics
+	if (bHasHydraulics)
+		HydraulicControl();
+#endif
+
 	// special control
 	switch(GetModelIndex()){
 #ifndef IMPROVED_TECH_PART
@@ -646,9 +718,11 @@ CAutomobile::ProcessControl(void)
 		TankControl();
 		BlowUpCarsInPath();
 		break;
+#ifndef VEHICLE_MODS // hydraulics
 	case MI_VOODOO:
 		HydraulicControl();
 		break;
+#endif
 	default:
 		if(CVehicle::bCheat3 || carHasNitro){
 			// Make vehicle jump when horn is sounded
@@ -792,7 +866,25 @@ CAutomobile::ProcessControl(void)
 				if(i == CARWHEEL_REAR_LEFT || i == CARWHEEL_REAR_RIGHT)
 					bias = 1.0f - bias;
 
+#ifdef VEHICLE_MODS // suspension
+				float addSuspensionForceLevel = 1.0f;
+				switch (CGarages::bPlayerInModGarage ? m_nTempAddSuspensionForceLevel : m_nAddSuspensionForceLevel) {
+					case 2:
+						addSuspensionForceLevel = 1.5f;
+						break;
+					case 3:
+						addSuspensionForceLevel = 2.0f;
+						break;
+					case 4:
+						addSuspensionForceLevel = 2.5f;
+						break;
+					default:
+						break;
+				}
+				ApplySpringCollisionAlt(pHandling->fSuspensionForceLevel / addSuspensionForceLevel,
+#else
 				ApplySpringCollisionAlt(pHandling->fSuspensionForceLevel,
+#endif
 					springDirections[i], contactPoints[i],
 					m_aSuspensionSpringRatio[i], bias, m_aWheelColPoints[i].normal);
 
@@ -846,7 +938,11 @@ CAutomobile::ProcessControl(void)
 		fwdSpeed = DotProduct(m_vecMoveSpeed, GetForward());
 		if(!strongGrip1 && !CVehicle::bCheat3)
 			gripCheat = false;
+#ifdef VEHICLE_MODS // engine acceleration
+		float acceleration = pHandling->Transmission.CalculateDriveAcceleration(m_fGasPedal, m_nCurrentGear, m_fChangeGearTime, fwdSpeed, gripCheat, m_fAddEngineAcceleration);
+#else
 		float acceleration = pHandling->Transmission.CalculateDriveAcceleration(m_fGasPedal, m_nCurrentGear, m_fChangeGearTime, fwdSpeed, gripCheat);
+#endif
 		acceleration /= m_fForceMultiplier;
 
 		if(IsRealHeli() || IsRealPlane())
@@ -871,7 +967,11 @@ CAutomobile::ProcessControl(void)
 				ApplyTurnForce(-GRAVITY*Min(m_fTurnMass, 2500.0f)*GetUp(), -1.0f*GetForward());
 		}
 
+#ifdef VEHICLE_MODS // brake deceleration
+		brake = m_fBrakePedal * (pHandling->fBrakeDeceleration + m_fAddBrakeDeceleration) * CTimer::GetTimeStep();
+#else
 		brake = m_fBrakePedal * pHandling->fBrakeDeceleration * CTimer::GetTimeStep();
+#endif
 		bool neutralHandling = GetStatus() != STATUS_PLAYER && GetStatus() != STATUS_PLAYER_REMOTE && (pHandling->Flags & HANDLING_NEUTRALHANDLING);
 		float brakeBiasFront = neutralHandling ? 1.0f : 2.0f*pHandling->fBrakeBias;
 		float brakeBiasRear  = neutralHandling ? 1.0f : 2.0f-pHandling->fBrakeBias;	// looks like a bug, but it was correct in III...
@@ -1389,7 +1489,11 @@ CAutomobile::ProcessControl(void)
 					m_bSirenOrAlarm = !m_bSirenOrAlarm;
 				}else
 					m_nCarHornTimer = 0;
+#ifdef VEHICLE_MODS // hydraulics
+			}else if(!bHasHydraulics && !CVehicle::bCheat3 && !carHasNitro){
+#else
 			}else if(GetModelIndex() != MI_VOODOO && !CVehicle::bCheat3 && !carHasNitro){
+#endif
 				if(!IsAlarmOn()){
 					if(Pads[0].GetHorn())
 						m_nCarHornTimer = 1;
@@ -1535,10 +1639,19 @@ CAutomobile::ProcessControl(void)
 
 
 
+#ifdef IMPROVED_VEHICLES_2 // move engine fire particles to AddDamagedVehicleParticles
+	if(m_fHealth < 250.0f && GetStatus() != STATUS_WRECKED){
+		// Blow up car after 5 seconds
+		m_fFireBlowUpTimer += CTimer::GetTimeStepInMilliseconds();
+		if(m_fFireBlowUpTimer > 5000.0f)
+			BlowUpCar(m_pSetOnFireEntity);
+	}else
+		m_fFireBlowUpTimer = 0.0f;
+
+#else
 	// Process car on fire
 	// A similar calculation of damagePos is done elsewhere for smoke
 
-	uint8 engineStatus = Damage.GetEngineStatus();
 	CVector damagePos = ((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->m_positions[CAR_POS_HEADLIGHTS];
 
 	switch(Damage.GetDoorStatus(DOOR_BONNET)){
@@ -1587,6 +1700,8 @@ CAutomobile::ProcessControl(void)
 			BlowUpCar(m_pSetOnFireEntity);
 	}else
 		m_fFireBlowUpTimer = 0.0f;
+#endif
+	uint8 engineStatus = Damage.GetEngineStatus();
 
 	// Decrease car health if engine is damaged badly
 	if(engineStatus > ENGINE_STATUS_ON_FIRE && m_fHealth > 250.0f)
@@ -1764,6 +1879,17 @@ CAutomobile::PreRender(void)
 #ifdef IMPROVED_TECH_PART
 	if (GetModelIndex() == MI_FIRETRUCK)
 		FireTruckControl();
+#endif
+
+#ifdef IMPROVED_VEHICLES // SwitchVehicleToRealPhysics when the car is next to the player
+	if (GetStatus() == STATUS_SIMPLE && FindPlayerVehicle() != this) {
+		float radiusSqr = 750.0f;
+		float distanceSqr = (GetPosition() - FindPlayerCoors()).MagnitudeSqr();
+		if (distanceSqr < radiusSqr) {
+			SetStatus(STATUS_PHYSICS);
+			CCarCtrl::SwitchVehicleToRealPhysics(this);
+		}
+	}
 #endif
 
 	if(GetModelIndex() == MI_RHINO && m_aCarNodes[CAR_WINDSCREEN]){
@@ -2425,6 +2551,9 @@ CAutomobile::PreRender(void)
 	   GetVehicleAppearance() != VEHICLE_APPEARANCE_HELI) {
 	// Process lights
 
+#ifdef IMPROVED_VEHICLES_2
+		DoVehicleLights();
+#else
 	// Turn lights on/off
 	bool shouldLightsBeOn = 
 		CClock::GetHours() > 20 ||
@@ -2552,11 +2681,13 @@ CAutomobile::PreRender(void)
 				CCoronas::UpdateCoronaCoors((uintptr)this + 1, lightR, 50.0f*TheCamera.LODDistMultiplier, angle);
 		}
 
+#ifndef IMPROVED_VEHICLES // remove bright lights (cubes)
 		// bright lights
 		if(Damage.GetLightStatus(VEHLIGHT_FRONT_LEFT) == LIGHT_STATUS_OK && !bNoBrightHeadLights)
 			CBrightLights::RegisterOne(lightL, GetUp(), GetRight(), GetForward(), pHandling->FrontLights + BRIGHTLIGHT_FRONT);
 		if(Damage.GetLightStatus(VEHLIGHT_FRONT_RIGHT) == LIGHT_STATUS_OK && !bNoBrightHeadLights)
 			CBrightLights::RegisterOne(lightR, GetUp(), GetRight(), GetForward(), pHandling->FrontLights + BRIGHTLIGHT_FRONT);
+#endif
 
 		// Taillights
 
@@ -2575,6 +2706,7 @@ CAutomobile::PreRender(void)
 				// reversing
 				intensity += 0.4f;
 				size += 0.3f;
+
 				if(Damage.GetLightStatus(VEHLIGHT_REAR_LEFT) == LIGHT_STATUS_OK)
 					CCoronas::RegisterCorona((uintptr)this + 14, 128*intensity, 128*intensity, 128*intensity, 255,
 						lightL, size, 50.0f*TheCamera.LODDistMultiplier,
@@ -2586,7 +2718,7 @@ CAutomobile::PreRender(void)
 						CCoronas::TYPE_STREAK, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
 						CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
 			}else{
-				if(m_fBrakePedal > 0.0f){
+				if (m_fBrakePedal > 0.0f) {
 					intensity += 0.4f;
 					size += 0.3f;
 				}
@@ -2624,11 +2756,13 @@ CAutomobile::PreRender(void)
 				CCoronas::UpdateCoronaCoors((uintptr)this + 15, lightR, 50.0f, angle);
 		}
 
+#ifndef IMPROVED_VEHICLES // remove bright lights (cubes)
 		// bright lights
 		if(Damage.GetLightStatus(VEHLIGHT_REAR_LEFT) == LIGHT_STATUS_OK)
 			CBrightLights::RegisterOne(lightL, GetUp(), GetRight(), GetForward(), pHandling->RearLights + BRIGHTLIGHT_REAR);
 		if(Damage.GetLightStatus(VEHLIGHT_REAR_RIGHT) == LIGHT_STATUS_OK)
 			CBrightLights::RegisterOne(lightR, GetUp(), GetRight(), GetForward(), pHandling->RearLights + BRIGHTLIGHT_REAR);
+#endif
 
 		// Light shadows
 		if(!alarmOff){
@@ -2687,35 +2821,39 @@ CAutomobile::PreRender(void)
 				if(m_fGasPedal < 0.0f){
 					// reversing
 					if(Damage.GetLightStatus(VEHLIGHT_REAR_LEFT) == LIGHT_STATUS_OK)
-						CCoronas::RegisterCorona((uintptr)this + 14, 120, 120, 120, 255,
+						CCoronas::RegisterCorona((uintptr)this + 16, 120, 120, 120, 255,
 							lightL, 1.2f, 50.0f*TheCamera.LODDistMultiplier,
 							CCoronas::TYPE_STAR, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
 							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, 0.0f);
 					if(Damage.GetLightStatus(VEHLIGHT_REAR_RIGHT) == LIGHT_STATUS_OK)
-						CCoronas::RegisterCorona((uintptr)this + 15, 120, 120, 120, 255,
+						CCoronas::RegisterCorona((uintptr)this + 17, 120, 120, 120, 255,
 							lightR, 1.2f, 50.0f*TheCamera.LODDistMultiplier,
 							CCoronas::TYPE_STAR, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
 							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, 0.0f);
+#ifndef IMPROVED_VEHICLES // remove bright lights (cubes)
 					if(Damage.GetLightStatus(VEHLIGHT_REAR_LEFT) == LIGHT_STATUS_OK)
 						CBrightLights::RegisterOne(lightL, GetUp(), GetRight(), GetForward(), pHandling->RearLights + BRIGHTLIGHT_FRONT);
 					if(Damage.GetLightStatus(VEHLIGHT_REAR_RIGHT) == LIGHT_STATUS_OK)
 						CBrightLights::RegisterOne(lightR, GetUp(), GetRight(), GetForward(), pHandling->RearLights + BRIGHTLIGHT_FRONT);
+#endif
 				}else{
 					// braking
 					if(Damage.GetLightStatus(VEHLIGHT_REAR_LEFT) == LIGHT_STATUS_OK)
-						CCoronas::RegisterCorona((uintptr)this + 14, 120, 0, 0, 255,
+						CCoronas::RegisterCorona((uintptr)this + 18, 120, 0, 0, 255,
 							lightL, 1.2f, 50.0f*TheCamera.LODDistMultiplier,
 							CCoronas::TYPE_STAR, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
 							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, 0.0f);
 					if(Damage.GetLightStatus(VEHLIGHT_REAR_RIGHT) == LIGHT_STATUS_OK)
-						CCoronas::RegisterCorona((uintptr)this + 15, 120, 0, 0, 255,
+						CCoronas::RegisterCorona((uintptr)this + 19, 120, 0, 0, 255,
 							lightR, 1.2f, 50.0f*TheCamera.LODDistMultiplier,
 							CCoronas::TYPE_STAR, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
 							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, 0.0f);
+#ifndef IMPROVED_VEHICLES // remove bright lights (cubes)
 					if(Damage.GetLightStatus(VEHLIGHT_REAR_LEFT) == LIGHT_STATUS_OK)
 						CBrightLights::RegisterOne(lightL, GetUp(), GetRight(), GetForward(), pHandling->RearLights + BRIGHTLIGHT_REAR);
 					if(Damage.GetLightStatus(VEHLIGHT_REAR_RIGHT) == LIGHT_STATUS_OK)
 						CBrightLights::RegisterOne(lightR, GetUp(), GetRight(), GetForward(), pHandling->RearLights + BRIGHTLIGHT_REAR);
+#endif
 				}
 			}else{
 				if(Damage.GetLightStatus(VEHLIGHT_REAR_LEFT) == LIGHT_STATUS_OK)
@@ -2730,6 +2868,7 @@ CAutomobile::PreRender(void)
 				CCoronas::UpdateCoronaCoors((uintptr)this + 15, lightR, 50.0f*TheCamera.LODDistMultiplier, 0.0f);
 		}
 	}
+#endif
 	// end of lights
 	}
 
@@ -2816,10 +2955,6 @@ CAutomobile::PreRender(void)
 		} else if (bAllDodosCheat && m_nDriveWheelsOnGround == 0 && m_nDriveWheelsOnGroundPrev == 0) {
 			mat.RotateY(-HALFPI);
 #endif
-#ifdef NEW_CHEATS // AIRWAYS
-		} else if (bAirWaysCheat) {
-			mat.RotateY(-HALFPI);
-#endif
 		}else{
 			// tilt wheel depending oh how much it presses on ground
 			float groundOffset = pos.z + m_fHeightAboveRoad - 0.5f*mi->m_wheelScale;
@@ -2828,6 +2963,10 @@ CAutomobile::PreRender(void)
 			mat.RotateY(Asin(Clamp(-groundOffset, -1.0f, 1.0f)));
 		}
 	}
+#ifdef NEW_CHEATS // AIRWAYS
+	if (bAirWaysCheat)
+		mat.RotateY(-HALFPI);
+#endif
 	if(pHandling->Flags & HANDLING_FAT_REARW)
 		mat.Scale(1.15f*mi->m_wheelScale, mi->m_wheelScale, mi->m_wheelScale);
 	else
@@ -2861,10 +3000,6 @@ CAutomobile::PreRender(void)
 		} else if (bAllDodosCheat && m_nDriveWheelsOnGround == 0 && m_nDriveWheelsOnGroundPrev == 0) {
 			mat.RotateY(HALFPI);
 #endif
-#ifdef NEW_CHEATS // AIRWAYS
-		} else if (bAirWaysCheat) {
-			mat.RotateY(HALFPI);
-#endif
 		}else{
 			// tilt wheel depending oh how much it presses on ground
 			float groundOffset = pos.z + m_fHeightAboveRoad - 0.5f*mi->m_wheelScale;
@@ -2873,6 +3008,10 @@ CAutomobile::PreRender(void)
 			mat.RotateY(Asin(Clamp(groundOffset, -1.0f, 1.0f)));
 		}
 	}
+#ifdef NEW_CHEATS // AIRWAYS
+	if (bAirWaysCheat)
+		mat.RotateY(HALFPI);
+#endif
 	if(pHandling->Flags & HANDLING_FAT_REARW)
 		mat.Scale(1.15f*mi->m_wheelScale, mi->m_wheelScale, mi->m_wheelScale);
 	else
@@ -2898,10 +3037,6 @@ CAutomobile::PreRender(void)
 			} else if (bAllDodosCheat && m_nDriveWheelsOnGround == 0 && m_nDriveWheelsOnGroundPrev == 0) {
 				mat.RotateY(-HALFPI);
 #endif
-#ifdef NEW_CHEATS // AIRWAYS
-			} else if (bAirWaysCheat) {
-				mat.RotateY(-HALFPI);
-#endif
 			}else{
 				// tilt wheel depending oh how much it presses on ground
 				float groundOffset = pos.z + m_fHeightAboveRoad - 0.5f*mi->m_wheelScale;
@@ -2910,6 +3045,10 @@ CAutomobile::PreRender(void)
 				mat.RotateY(Asin(Clamp(-groundOffset, -1.0f, 1.0f)));
 			}
 		}
+#ifdef NEW_CHEATS // AIRWAYS
+		if (bAirWaysCheat)
+			mat.RotateY(-HALFPI);
+#endif
 		if(pHandling->Flags & HANDLING_FAT_REARW)
 			mat.Scale(1.15f*mi->m_wheelScale, mi->m_wheelScale, mi->m_wheelScale);
 		else
@@ -2936,10 +3075,6 @@ CAutomobile::PreRender(void)
 			} else if (bAllDodosCheat && m_nDriveWheelsOnGround == 0 && m_nDriveWheelsOnGroundPrev == 0) {
 				mat.RotateY(HALFPI);
 #endif
-#ifdef NEW_CHEATS // AIRWAYS
-			} else if (bAirWaysCheat) {
-				mat.RotateY(HALFPI);
-#endif
 			}else{
 				// tilt wheel depending oh how much it presses on ground
 				float groundOffset = pos.z + m_fHeightAboveRoad - 0.5f*mi->m_wheelScale;
@@ -2948,6 +3083,10 @@ CAutomobile::PreRender(void)
 				mat.RotateY(Asin(Clamp(groundOffset, -1.0f, 1.0f)));
 			}
 		}
+#ifdef NEW_CHEATS // AIRWAYS
+		if (bAirWaysCheat)
+			mat.RotateY(HALFPI);
+#endif
 		if(pHandling->Flags & HANDLING_FAT_REARW)
 			mat.Scale(1.15f*mi->m_wheelScale, mi->m_wheelScale, mi->m_wheelScale);
 		else
@@ -3074,10 +3213,6 @@ CAutomobile::PreRender(void)
 			} else if (bAllDodosCheat && m_nDriveWheelsOnGround == 0 && m_nDriveWheelsOnGroundPrev == 0) {
 				mat.RotateY(-HALFPI);
 #endif
-#ifdef NEW_CHEATS // AIRWAYS
-			} else if (bAirWaysCheat) {
-				mat.RotateY(-HALFPI);
-#endif
 			}else{
 				// tilt wheel depending oh how much it presses on ground
 				float groundOffset = pos.z + m_fHeightAboveRoad - 0.5f*mi->m_wheelScale;
@@ -3086,6 +3221,10 @@ CAutomobile::PreRender(void)
 				mat.RotateY(Asin(Clamp(-groundOffset, -1.0f, 1.0f)));
 			}
 		}
+#ifdef NEW_CHEATS // AIRWAYS
+		if (bAirWaysCheat)
+			mat.RotateY(-HALFPI);
+#endif
 		if(pHandling->Flags & HANDLING_NARROW_FRONTW)
 			mat.Scale(0.7f*mi->m_wheelScale, mi->m_wheelScale, mi->m_wheelScale);
 		else
@@ -3119,10 +3258,6 @@ CAutomobile::PreRender(void)
 			} else if (bAllDodosCheat && m_nDriveWheelsOnGround == 0 && m_nDriveWheelsOnGroundPrev == 0) {
 				mat.RotateY(HALFPI);
 #endif
-#ifdef NEW_CHEATS // AIRWAYS
-			} else if (bAirWaysCheat) {
-				mat.RotateY(HALFPI);
-#endif
 			}else{
 				// tilt wheel depending oh how much it presses on ground
 				float groundOffset = pos.z + m_fHeightAboveRoad - 0.5f*mi->m_wheelScale;
@@ -3131,6 +3266,10 @@ CAutomobile::PreRender(void)
 				mat.RotateY(Asin(Clamp(groundOffset, -1.0f, 1.0f)));
 			}
 		}
+#ifdef NEW_CHEATS // AIRWAYS
+		if (bAirWaysCheat)
+			mat.RotateY(HALFPI);
+#endif
 		if(pHandling->Flags & HANDLING_NARROW_FRONTW)
 			mat.Scale(0.7f*mi->m_wheelScale, mi->m_wheelScale, mi->m_wheelScale);
 		else
@@ -3146,8 +3285,79 @@ CAutomobile::PreRender(void)
 		ProcessSwingingDoor(CAR_BOOT, DOOR_BOOT);
 	}
 
+#ifdef IMPROVED_VEHICLES_2 // rotate steering wheel
+	if (m_aCarNodes[CAR_STEERINGWHEEL]) {
+		CMatrix mat;
+		CVector pos;
+		mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_STEERINGWHEEL]));
+		pos = mat.GetPosition();
+		float headingX = Atan2(mat.GetForward().z, mat.GetForward().y);
+		mat.SetRotate(headingX, -m_fSteerAngle * 2.0f, 0.0f);
+		mat.Translate(pos);
+		mat.UpdateRW();
+
+		/*if (pDriver && pDriver == FindPlayerPed()) {
+			CVector leftHandPos = m_aCarNodes[CAR_STEERINGWHEEL]->getLTM()->pos - m_aCarNodes[CAR_STEERINGWHEEL]->getLTM()->right * 0.09f;
+			CVector rightHandPos = m_aCarNodes[CAR_STEERINGWHEEL]->getLTM()->pos + m_aCarNodes[CAR_STEERINGWHEEL]->getLTM()->right * 0.09f;
+			CDebug::AddLine(leftHandPos, pDriver->GetPosition(), 0xFFFFFFFF, 0xff0000);
+			CDebug::AddLine(rightHandPos, pDriver->GetPosition(), 0xFFFFFFFF, 0xff0000);
+
+			pDriver->m_pedIK.PointHandAtPosition(leftHandPos, PED_UPPERARML);
+			pDriver->m_pedIK.PointHandAtPosition(rightHandPos, PED_UPPERARMR);
+		}*/
+	}
+#endif
+
+#ifdef IMPROVED_VEHICLES // rotate supercharger things
+	if (m_aCarNodes[CAR_SUPERCHARGER] && bEngineOn) {
+		float carbRotation = 0.0f;
+		float flywheelRotation = 0.0f;
+
+		if(m_fPropellerRotation > TWOPI) m_fPropellerRotation -= TWOPI;
+
+		if(Abs(m_fGasPedal) > 0.0f){
+			m_fPropellerRotation += 0.2f*CTimer::GetTimeStep();
+			flywheelRotation = m_fPropellerRotation;
+
+			if(m_fCarbRotation < 1.3f){
+				m_fCarbRotation = Min(m_fCarbRotation +0.1f*CTimer::GetTimeStep(), 1.3f);
+				carbRotation = m_fCarbRotation;
+			}else{
+				float wave = Sin((CTimer::GetTimeInMilliseconds()%10000)/70.0f);
+				carbRotation = m_fCarbRotation + 0.13*wave;
+			}
+		}else{
+			m_fPropellerRotation += 0.1f*CTimer::GetTimeStep();
+			flywheelRotation = m_fPropellerRotation;
+
+			if(m_fCarbRotation > 0.0f){
+				m_fCarbRotation = Max(m_fCarbRotation -0.05f*CTimer::GetTimeStep(), 0.0f);
+				carbRotation = m_fCarbRotation;
+			}
+		}
+
+		RwFrame* carbFrame = m_aCarNodes[CAR_SUPERCHARGER]->child->child->child;
+		mat.Attach(RwFrameGetMatrix(carbFrame));
+		pos = mat.GetPosition();
+		mat.SetRotateX(carbRotation);
+		mat.Translate(pos);
+		mat.UpdateRW();
+
+		RwFrame* flywheelFrame = m_aCarNodes[CAR_SUPERCHARGER]->child->child->next->child;
+		mat.Attach(RwFrameGetMatrix(flywheelFrame));
+		pos = mat.GetPosition();
+		mat.SetRotateY(flywheelRotation);
+		mat.Translate(pos);
+		mat.UpdateRW();
+	}
+#endif
+
 	if((GetModelIndex() == MI_PHEONIX || GetModelIndex() == MI_BFINJECT) &&
+#ifdef IMPROVED_VEHICLES
+		bEngineOn && m_aCarNodes[CAR_WING_LR]){
+#else
 	   GetStatus() == STATUS_PLAYER && m_aCarNodes[CAR_WING_LR]){
+#endif
 		float rotation = 0.0f;
 
 		if(GetModelIndex() == MI_BFINJECT)
@@ -3194,7 +3404,565 @@ CAutomobile::Render(void)
 {
 	CVehicleModelInfo *mi = (CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex());
 
+#ifdef VEHICLE_MODS
+	uint8 color1 = CGarages::bPlayerInModGarage ? m_nTempColor1 : m_currentColour1;
+	uint8 color2 = CGarages::bPlayerInModGarage ? m_nTempColor2 : m_currentColour2;
+	mi->SetVehicleColour(color1, color2);
+
+	if (m_nSpoilerColor == -1) {
+		m_nSpoilerColor = color1;
+		m_nTempSpoilerColor = color1;
+	}
+
+	if (FindPlayerVehicle() == this && !CGarages::bPlayerInModGarage) {
+		m_nTempColor1 = m_currentColour1;
+		m_nTempColor2 = m_currentColour2;
+	}
+
+	// rims
+	for (int nodeID = CAR_WHEEL_RF; nodeID <= CAR_WHEEL_LB; nodeID++) {
+		if (!m_aCarNodes[nodeID])
+			continue;
+
+		RpAtomic* wheelAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[nodeID], GetCurrentAtomicObjectCB, &wheelAtomic);
+
+		if (!wheelAtomic)
+			continue;
+
+		RpMaterial* material = wheelAtomic->geometry->matList.materials[0];
+		int wheelColor = CGarages::bPlayerInModGarage ? m_nTempRimsColor : m_nRimsColor;
+		material->color = CVehicleModelInfo::ms_vehicleColourTable[wheelColor];
+	}
+
+	// spoiler
+	for (int frameID = CAR_SPOILER_OK; frameID <= CAR_SPOILER_DAM; frameID++) {
+		if (!m_aCarNodes[frameID])
+			continue;
+
+		RpAtomic* upgradeAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[frameID], GetCurrentAtomicObjectCB, &upgradeAtomic);
+		if (!upgradeAtomic)
+			continue;
+
+		RpMaterial* material = upgradeAtomic->geometry->matList.materials[0];
+		int color = CGarages::bPlayerInModGarage ? m_nTempSpoilerColor : m_nSpoilerColor;
+		material->color = CVehicleModelInfo::ms_vehicleColourTable[color];
+	}
+
+	// vehicle mods
+	for (int frameID = CAR_SKIRT_L; frameID <= CAR_VENT_R_DAM; frameID++) {
+		if (!m_aCarNodes[frameID])
+			continue;
+
+		RpAtomic* upgradeAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[frameID], GetCurrentAtomicObjectCB, &upgradeAtomic);
+		if (!upgradeAtomic)
+			continue;
+
+		RpMaterial* material = upgradeAtomic->geometry->matList.materials[0];
+		int color = CGarages::bPlayerInModGarage ? m_nTempColor1 : m_currentColour1;
+		material->color = CVehicleModelInfo::ms_vehicleColourTable[color];
+	}
+
+	// modified bonnet
+	if (m_aCarNodes[CAR_SUPERCHARGER]) {
+		RpAtomic* upgradeAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_BONNET], GetCurrentAtomicObjectCB, &upgradeAtomic);
+		if (upgradeAtomic) {
+			RpMaterial* material = upgradeAtomic->geometry->matList.materials[0];
+			int color = CGarages::bPlayerInModGarage ? m_nTempColor1 : m_currentColour1;
+			material->color = CVehicleModelInfo::ms_vehicleColourTable[color];
+		}
+	}
+
+	if (CGarages::IsCarTintable(this)) {
+		// windows alpha
+		CRGBA windowColor = mi->m_nDefaultWindowMaterialColor;
+		int tintLevel = CGarages::bPlayerInModGarage ? m_nTempWindowTintLevel : m_nWindowTintLevel;
+		if (tintLevel > 2 && FindPlayerVehicle() == this && TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON) {
+			windowColor = CRGBA(0, 0, 0, 150);
+		} else {
+			switch (tintLevel) {
+			case 2:
+				windowColor = CRGBA(0, 0, 0, 150);
+				break;
+			case 3:
+				windowColor = CRGBA(0, 0, 0, 187);
+				break;
+			case 4:
+				windowColor = CRGBA(0, 0, 0, 225);
+				break;
+			}
+		}
+
+		for (int frameID = CAR_WING_RF; frameID <= CAR_DOOR_LR; frameID++) {
+			if (!m_aCarNodes[frameID])
+				continue;
+
+			RpAtomic* atomic = nil;
+			RwFrameForAllObjects(m_aCarNodes[frameID], GetCurrentAtomicObjectCB, &atomic);
+
+			if (!atomic)
+				continue;
+
+			if (CVisibilityPlugins::GetAtomicId(atomic) & ATOMIC_FLAG_DAM)
+				continue;
+
+			for (int i = 0; i < atomic->geometry->matList.numMaterials; i++) {
+				RpMaterial* material = atomic->geometry->matList.materials[i];
+
+				if (material->color.alpha == 255)
+					continue;
+
+				RwRGBA color = windowColor;
+				material->color = color;
+			}
+		}
+		if (m_aCarNodes[CAR_WINDSCREEN] && Damage.GetPanelStatus(VEHPANEL_WINDSCREEN) == PANEL_STATUS_OK) {
+			RpAtomic* windscreenAtomic = nil;
+			RwFrameForAllObjects(m_aCarNodes[CAR_WINDSCREEN], GetCurrentAtomicObjectCB, &windscreenAtomic);
+			if (windscreenAtomic) {
+				for (int i = 0; i < windscreenAtomic->geometry->matList.numMaterials; i++) {
+					RpMaterial* material = windscreenAtomic->geometry->matList.materials[i];
+
+					if (material->color.alpha == 255)
+						continue;
+
+					RwRGBA color = windowColor;
+					material->color = color;
+				}
+			}
+		}
+		if (m_aCarNodes[CAR_BOOT]) {
+			RpAtomic* windscreenAtomic = nil;
+			RwFrameForAllObjects(m_aCarNodes[CAR_BOOT], GetCurrentAtomicObjectCB, &windscreenAtomic);
+			if (windscreenAtomic) {
+				for (int i = 0; i < windscreenAtomic->geometry->matList.numMaterials; i++) {
+					RpMaterial* material = windscreenAtomic->geometry->matList.materials[i];
+
+					if (material->color.alpha == 255)
+						continue;
+
+					RwRGBA color = windowColor;
+					material->color = color;
+				}
+			}
+		}
+		// chassis windows
+		RwObjectNameAssociation assoc;
+		assoc.frame = nil;
+		assoc.name = "chassis_hi";
+		RwFrameForAllChildren(RpClumpGetFrame(GetClump()), CClumpModelInfo::FindFrameFromNameWithoutIdCB, &assoc);
+		if (assoc.frame != nil) {
+			RpAtomic* chassisAtomic = nil;
+			RwFrameForAllObjects(assoc.frame, GetCurrentAtomicObjectCB, &chassisAtomic);
+			if (chassisAtomic) {
+				for (int i = 0; i < chassisAtomic->geometry->matList.numMaterials; i++) {
+					RpMaterial* material = chassisAtomic->geometry->matList.materials[i];
+
+					if (material->color.alpha == 255)
+						continue;
+
+					RwRGBA color = windowColor;
+					material->color = color;
+				}
+			}
+		}
+	}
+#else
 	mi->SetVehicleColour(m_currentColour1, m_currentColour2);
+#endif
+
+#ifdef IMPROVED_VEHICLES_2 // change the color, ambient and material texture
+	bool bLightsBroken = false;
+	float ambientOff = 1.0f;
+	float ambientOn = 10.0f;
+
+	// headlights
+	if (m_aCarNodes[CAR_HEADLIGHT_L]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_HEADLIGHT_L], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+
+			material->surfaceProps.ambient = bLightsOn ? ambientOn : ambientOff;
+			material = bLightsOn ? RpMaterialSetTexture(material, mi->lightsOnTexture) : RpMaterialSetTexture(material, mi->lightsOffTexture);
+		}
+	}
+	if (m_aCarNodes[CAR_HEADLIGHT_R]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_HEADLIGHT_R], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+
+			material->surfaceProps.ambient = bLightsOn ? ambientOn : ambientOff;
+			material = bLightsOn ? RpMaterialSetTexture(material, mi->lightsOnTexture) : RpMaterialSetTexture(material, mi->lightsOffTexture);
+		}
+	}
+	if (m_aCarNodes[CAR_HEADLIGHT_WING_L]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_HEADLIGHT_WING_L], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+
+			material->surfaceProps.ambient = bLightsOn ? ambientOn : ambientOff;
+			material = bLightsOn ? RpMaterialSetTexture(material, mi->lightsOnTexture) : RpMaterialSetTexture(material, mi->lightsOffTexture);
+		}
+	}
+	if (m_aCarNodes[CAR_HEADLIGHT_WING_R]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_HEADLIGHT_WING_R], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+
+			material->surfaceProps.ambient = bLightsOn ? ambientOn : ambientOff;
+			material = bLightsOn ? RpMaterialSetTexture(material, mi->lightsOnTexture) : RpMaterialSetTexture(material, mi->lightsOffTexture);
+		}
+	}
+	if (m_aCarNodes[CAR_HEADLIGHT_BUMP_L]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_HEADLIGHT_BUMP_L], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+
+			material->surfaceProps.ambient = bLightsOn ? ambientOn : ambientOff;
+			material = bLightsOn ? RpMaterialSetTexture(material, mi->lightsOnTexture) : RpMaterialSetTexture(material, mi->lightsOffTexture);
+		}
+	}
+	if (m_aCarNodes[CAR_HEADLIGHT_BUMP_R]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_HEADLIGHT_BUMP_R], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+
+			material->surfaceProps.ambient = bLightsOn ? ambientOn : ambientOff;
+			material = bLightsOn ? RpMaterialSetTexture(material, mi->lightsOnTexture) : RpMaterialSetTexture(material, mi->lightsOffTexture);
+		}
+	}
+
+	// taillights
+	if (m_aCarNodes[CAR_TAILLIGHT_L]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_TAILLIGHT_L], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+
+			material->surfaceProps.ambient = bLightsOn ? ambientOn : ambientOff;
+			material = bLightsOn ? RpMaterialSetTexture(material, mi->lightsOnTexture) : RpMaterialSetTexture(material, mi->lightsOffTexture);
+		}
+	}
+	if (m_aCarNodes[CAR_TAILLIGHT_R]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_TAILLIGHT_R], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+
+			material->surfaceProps.ambient = bLightsOn ? ambientOn : ambientOff;
+			material = bLightsOn ? RpMaterialSetTexture(material, mi->lightsOnTexture) : RpMaterialSetTexture(material, mi->lightsOffTexture);
+		}
+	}
+
+	// reversing lights
+	if (m_aCarNodes[CAR_REVERSINGLIGHT_L]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_REVERSINGLIGHT_L], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+			bool bLightOn = m_fGasPedal < 0.0f && !bRenderScorched;
+
+			material->surfaceProps.ambient = bLightOn ? ambientOn : ambientOff;
+			material = bLightOn ? RpMaterialSetTexture(material, mi->lightsOnTexture) : RpMaterialSetTexture(material, mi->lightsOffTexture);
+		}
+	}
+	if (m_aCarNodes[CAR_REVERSINGLIGHT_R]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_REVERSINGLIGHT_R], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+			bool bLightOn = m_fGasPedal < 0.0f && !bRenderScorched;
+
+			material->surfaceProps.ambient = bLightOn ? ambientOn : ambientOff;
+			material = bLightOn ? RpMaterialSetTexture(material, mi->lightsOnTexture) : RpMaterialSetTexture(material, mi->lightsOffTexture);
+		}
+	}
+	if (m_aCarNodes[CAR_REVERSINGLIGHT_BUMP_L]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_REVERSINGLIGHT_BUMP_L], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+			bool bLightOn = m_fGasPedal < 0.0f && !bRenderScorched;
+
+			material->surfaceProps.ambient = bLightOn ? ambientOn : ambientOff;
+			material = bLightOn ? RpMaterialSetTexture(material, mi->lightsOnTexture) : RpMaterialSetTexture(material, mi->lightsOffTexture);
+		}
+	}
+	if (m_aCarNodes[CAR_REVERSINGLIGHT_BUMP_R]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_REVERSINGLIGHT_BUMP_R], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+			bool bLightOn = m_fGasPedal < 0.0f && !bRenderScorched;
+
+			material->surfaceProps.ambient = bLightOn ? ambientOn : ambientOff;
+			material = bLightOn ? RpMaterialSetTexture(material, mi->lightsOnTexture) : RpMaterialSetTexture(material, mi->lightsOffTexture);
+		}
+	}
+
+	// brake lights
+	if (m_aCarNodes[CAR_BRAKELIGHT_L]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_BRAKELIGHT_L], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+			bool bLightOn = GetStatus() != STATUS_ABANDONED && m_fBrakePedal > 0.0f && !bRenderScorched;
+
+			material->surfaceProps.ambient = bLightOn ? ambientOn : ambientOff;
+			material = bLightOn ? RpMaterialSetTexture(material, mi->lightsOnTexture) : RpMaterialSetTexture(material, mi->lightsOffTexture);
+		}
+	}
+	if (m_aCarNodes[CAR_BRAKELIGHT_R]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_BRAKELIGHT_R], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+			bool bLightOn = GetStatus() != STATUS_ABANDONED && m_fBrakePedal > 0.0f && !bRenderScorched;
+
+			material->surfaceProps.ambient = bLightOn ? ambientOn : ambientOff;
+			material = bLightOn ? RpMaterialSetTexture(material, mi->lightsOnTexture) : RpMaterialSetTexture(material, mi->lightsOffTexture);
+		}
+	}
+	if (m_aCarNodes[CAR_BRAKELIGHT_BUMP_L]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_BRAKELIGHT_BUMP_L], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+			bool bLightOn = GetStatus() != STATUS_ABANDONED && m_fBrakePedal > 0.0f && !bRenderScorched;
+
+			material->surfaceProps.ambient = bLightOn ? ambientOn : ambientOff;
+			material = bLightOn ? RpMaterialSetTexture(material, mi->lightsOnTexture) : RpMaterialSetTexture(material, mi->lightsOffTexture);
+		}
+	}
+	if (m_aCarNodes[CAR_BRAKELIGHT_BUMP_R]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_BRAKELIGHT_BUMP_R], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+			bool bLightOn = GetStatus() != STATUS_ABANDONED && m_fBrakePedal > 0.0f && !bRenderScorched;
+
+			material->surfaceProps.ambient = bLightOn ? ambientOn : ambientOff;
+			material = bLightOn ? RpMaterialSetTexture(material, mi->lightsOnTexture) : RpMaterialSetTexture(material, mi->lightsOffTexture);
+		}
+	}
+
+	// indicators
+	if (pDriver && !pDriver->DyingOrDead() && this != FindPlayerVehicle() && AutoPilot.m_nDrivingStyle < DRIVINGSTYLE_AVOID_CARS && !bRenderScorched) {
+		CVector2D vehicleRight = GetRight();
+		CVector2D nextPathLinkForward = AutoPilot.m_nNextDirection * ThePaths.m_carPathLinks[AutoPilot.m_nNextPathNodeInfo].GetDirection();
+		float angle = DotProduct2D(vehicleRight, nextPathLinkForward);
+
+		m_bIndicatorState[INDICATORS_LEFT] = angle < -0.2f;
+		m_bIndicatorState[INDICATORS_RIGHT] = angle > 0.2f;
+	} else if (this == FindPlayerVehicle() || AutoPilot.m_nDrivingStyle >= DRIVINGSTYLE_AVOID_CARS || bRenderScorched) {
+		m_bIndicatorState[INDICATORS_LEFT] = false;
+		m_bIndicatorState[INDICATORS_RIGHT] = false;
+	}
+
+	CRGBA indicatorOffColor = CRGBA(150, 125, 0, 255);
+	CRGBA indicatorOnColor = CRGBA(255, 225, 0, 255);
+	
+	// forward indicators
+	if (m_aCarNodes[CAR_INDICATOR_LF]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_INDICATOR_LF], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			bool bindicatorOn = m_bIndicatorState[INDICATORS_LEFT] == true && CTimer::GetTimeInMilliseconds() & 512;
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+			material->surfaceProps.ambient = bindicatorOn ? ambientOn : ambientOff;
+			RwRGBA color = bindicatorOn ? indicatorOnColor : indicatorOffColor;
+			material->color = color;
+		}
+	}
+	if (m_aCarNodes[CAR_INDICATOR_RF]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_INDICATOR_RF], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			bool bindicatorOn = m_bIndicatorState[INDICATORS_RIGHT] == true && CTimer::GetTimeInMilliseconds() & 512;
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+			material->surfaceProps.ambient = bindicatorOn ? ambientOn : ambientOff;
+			RwRGBA color = bindicatorOn ? indicatorOnColor : indicatorOffColor;
+			material->color = color;
+		}
+	}
+	if (m_aCarNodes[CAR_INDICATOR_WING_LF]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_INDICATOR_WING_LF], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			bool bindicatorOn = m_bIndicatorState[INDICATORS_LEFT] == true && CTimer::GetTimeInMilliseconds() & 512;
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+			material->surfaceProps.ambient = bindicatorOn ? ambientOn : ambientOff;
+			RwRGBA color = bindicatorOn ? indicatorOnColor : indicatorOffColor;
+			material->color = color;
+		}
+	}
+	if (m_aCarNodes[CAR_INDICATOR_WING_RF]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_INDICATOR_WING_RF], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			bool bindicatorOn = m_bIndicatorState[INDICATORS_LEFT] == true && CTimer::GetTimeInMilliseconds() & 512;
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+			material->surfaceProps.ambient = bindicatorOn ? ambientOn : ambientOff;
+			RwRGBA color = bindicatorOn ? indicatorOnColor : indicatorOffColor;
+			material->color = color;
+		}
+	}
+	if (m_aCarNodes[CAR_INDICATOR_2_WING_LF]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_INDICATOR_2_WING_LF], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			bool bindicatorOn = m_bIndicatorState[INDICATORS_LEFT] == true && CTimer::GetTimeInMilliseconds() & 512;
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+			material->surfaceProps.ambient = bindicatorOn ? ambientOn : ambientOff;
+			RwRGBA color = bindicatorOn ? indicatorOnColor : indicatorOffColor;
+			material->color = color;
+		}
+	}
+	if (m_aCarNodes[CAR_INDICATOR_2_WING_RF]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_INDICATOR_2_WING_RF], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			bool bindicatorOn = m_bIndicatorState[INDICATORS_LEFT] == true && CTimer::GetTimeInMilliseconds() & 512;
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+			material->surfaceProps.ambient = bindicatorOn ? ambientOn : ambientOff;
+			RwRGBA color = bindicatorOn ? indicatorOnColor : indicatorOffColor;
+			material->color = color;
+		}
+	}
+
+	// rear indicators
+	if (m_aCarNodes[CAR_INDICATOR_LR]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_INDICATOR_LR], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			bool bindicatorOn = m_bIndicatorState[INDICATORS_LEFT] == true && CTimer::GetTimeInMilliseconds() & 512;
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+			material->surfaceProps.ambient = bindicatorOn ? ambientOn : ambientOff;
+			RwRGBA color = bindicatorOn ? indicatorOnColor : indicatorOffColor;
+			material->color = color;
+		}
+	}
+	if (m_aCarNodes[CAR_INDICATOR_RR]) {
+		RpAtomic* lightAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_INDICATOR_RR], GetCurrentAtomicObjectCB, &lightAtomic);
+		if (lightAtomic) {
+			bool bindicatorOn = m_bIndicatorState[INDICATORS_RIGHT] == true && CTimer::GetTimeInMilliseconds() & 512;
+			RpMaterial* material = lightAtomic->geometry->matList.materials[0];
+			material->surfaceProps.ambient = bindicatorOn ? ambientOn : ambientOff;
+			RwRGBA color = bindicatorOn ? indicatorOnColor : indicatorOffColor;
+			material->color = color;
+		}
+	}
+
+	// windows alpha
+	CRGBA windowColor;
+
+	int tintLevel = CGarages::bPlayerInModGarage ? m_nTempWindowTintLevel : m_nWindowTintLevel;
+	switch (tintLevel) {
+		case 2:
+			windowColor = CRGBA(0, 0, 0, 150);
+			break;
+		case 3:
+			windowColor = CRGBA(0, 0, 0, 187);
+			break;
+		case 4:
+			windowColor = CRGBA(0, 0, 0, 225);
+			break;
+		default:
+			windowColor = mi->m_nDefaultWindowMaterialColor;
+			break;
+	}
+	
+	if (m_aCarNodes[CAR_DOOR_LF]) {
+		RpAtomic* windowAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_DOOR_LF], GetWindowAtomicObjectCB, &windowAtomic);
+		if (windowAtomic) {
+			RpMaterial* material = windowAtomic->geometry->matList.materials[0];
+
+			RwRGBA color = windowColor;
+			material->color = color;
+		}
+	}
+	if (m_aCarNodes[CAR_DOOR_RF]) {
+		RpAtomic* windowAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_DOOR_RF], GetWindowAtomicObjectCB, &windowAtomic);
+		if (windowAtomic) {
+			RpMaterial* material = windowAtomic->geometry->matList.materials[0];
+
+			RwRGBA color = windowColor;
+			material->color = color;
+		}
+	}
+	if (m_aCarNodes[CAR_DOOR_LR]) {
+		RpAtomic* windowAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_DOOR_LR], GetWindowAtomicObjectCB, &windowAtomic);
+		if (windowAtomic) {
+			RpMaterial* material = windowAtomic->geometry->matList.materials[0];
+
+			RwRGBA color = windowColor;
+			material->color = color;
+		}
+	}
+	if (m_aCarNodes[CAR_DOOR_RR]) {
+		RpAtomic* windowAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_DOOR_RR], GetWindowAtomicObjectCB, &windowAtomic);
+		if (windowAtomic) {
+			RpMaterial* material = windowAtomic->geometry->matList.materials[0];
+
+			RwRGBA color = windowColor;
+			material->color = color;
+		}
+	}
+	if (m_aCarNodes[CAR_BOOT]) {
+		RpAtomic* windowAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_BOOT], GetWindowAtomicObjectCB, &windowAtomic);
+		if (windowAtomic) {
+			RpMaterial* material = windowAtomic->geometry->matList.materials[0];
+
+			RwRGBA color = windowColor;
+			material->color = color;
+		}
+	}
+	if (m_aCarNodes[CAR_WINDOW_REAR]) {
+		RpAtomic* windowAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_WINDOW_REAR], GetCurrentAtomicObjectCB, &windowAtomic);
+		if (windowAtomic) {
+			RpMaterial* material = windowAtomic->geometry->matList.materials[0];
+
+			RwRGBA color = windowColor;
+			material->color = color;
+		}
+	}
+	if (m_aCarNodes[CAR_WINDOW_L_MISC]) {
+		RpAtomic* windowAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_WINDOW_L_MISC], GetCurrentAtomicObjectCB, &windowAtomic);
+		if (windowAtomic) {
+			RpMaterial* material = windowAtomic->geometry->matList.materials[0];
+
+			RwRGBA color = windowColor;
+			material->color = color;
+		}
+	}
+	if (m_aCarNodes[CAR_WINDOW_R_MISC]) {
+		RpAtomic* windowAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_WINDOW_R_MISC], GetCurrentAtomicObjectCB, &windowAtomic);
+		if (windowAtomic) {
+			RpMaterial* material = windowAtomic->geometry->matList.materials[0];
+
+			RwRGBA color = windowColor;
+			material->color = color;
+		}
+	}
+#endif
 
 	if(IsRealHeli()){
 		RpAtomic *atomic = nil;
@@ -4191,6 +4959,20 @@ CAutomobile::DoDriveByShootings(void)
 		pDriver->RemoveWeaponModel(weapon->GetInfo()->m_nModelId);
 #endif
 
+#if defined FIRING_AND_AIMING && defined IMPROVED_VEHICLES_2 // remove driver window during driveby
+	if (FindPlayerPed()->bIsPlayerAiming) {
+		float angle = DotProduct(GetRight(), TheCamera.GetForward());
+		if (angle < -0.1f) {
+			if (m_aCarNodes[CAR_DOOR_LF]) {
+				RpAtomic* windowAtomic = nil;
+				RwFrameForAllObjects(m_aCarNodes[CAR_DOOR_LF], GetWindowAtomicObjectCB, &windowAtomic);
+				if (windowAtomic) 
+					RpAtomicSetFlags(windowAtomic, 0);
+			}
+		}
+	}
+#endif
+
 #if defined FIRING_AND_AIMING && defined FIRST_PERSON // reloading weapon during driveby/first person/use pistol
 	if (FindPlayerPed()->bIsPlayerAiming || TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON ||
 		(CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->m_nWeaponSlot == WEAPONSLOT_HANDGUN && !FindPlayerPed()->bIsPlayerAiming)) {
@@ -4291,7 +5073,7 @@ void CAutomobile::DoHoverAboveSurface(void)
 		m_aWheelColPoints[i].surfaceB = SURFACE_DEFAULT;
 	}
 
-	CPad* pad = CPad::GetPad(0);
+	/*CPad* pad = CPad::GetPad(0);
 
 	CVector upVector;
 
@@ -4342,6 +5124,69 @@ void CAutomobile::DoHoverAboveSurface(void)
 
 	ApplyMoveForce(GetForward() * movementForce * pad->GetAccelerate() / 255);
 	ApplyMoveForce(-GetForward() * movementForce * pad->GetBrake() / 255);
+
+	ApplyTurnForce(GetUp() * 50.0f, upVector + centerOfMass);*/
+	bool bPlayerVehicle = FindPlayerVehicle() == this;
+
+	CVector upVector;
+
+	float waterLevel;
+	CColPoint hitPoint;
+	CEntity* hitEntity;
+	if ((bPlayerVehicle && !CPad::GetPad(0)->GetCarGunUpDown() || !bPlayerVehicle) &&
+		CWorld::ProcessLineOfSight(GetPosition(), GetPosition() - GetUp() * 5.0f, hitPoint, hitEntity, true, false, false, false, false, false, true) ||
+		CWorld::ProcessLineOfSight(GetPosition(), GetPosition() - CVector(0.0f, 0.0f, 3.0f), hitPoint, hitEntity, true, false, false, false, false, false, true)) {
+
+		float height = m_vecMoveSpeed.Magnitude2D() < 0.1f ? 0.9f : 1.5f;
+		float dist = (GetPosition().z - height) - hitPoint.point.z;
+		dist *= 20.0f;
+		ApplyMoveForce(CVector(0.0f, 0.0f, 20.0f - dist));
+
+		upVector = -hitPoint.normal;
+	} else if (CWaterLevel::GetWaterLevel(GetPosition(), &waterLevel, false) && GetPosition().z < (waterLevel + 3.0f)) {
+		float dist = (GetPosition().z - 1.0f) - waterLevel;
+		dist *= 20.0f;
+		ApplyMoveForce(CVector(0.0f, 0.0f, 20.0f - dist));
+
+		upVector = GetUp();
+		if (GetUp().z > 0.0f)
+			upVector.z = -upVector.z;
+	} else {
+		float loweringForce = 30.0f;
+		ApplyMoveForce(CVector(0.0f, 0.0f, -1.0f) * loweringForce * bIsHandbrakeOn);
+
+		upVector = GetUp();
+		if (GetUp().z > 0.0f)
+			upVector.z = -upVector.z;
+		else
+			ApplyTurnForce(upVector * 20.0f, GetRight());
+	}
+
+	float movementForce = pHandling->Transmission.fMaxVelocity * 80.0f;
+	float pitchForce = 50.0f;
+	float yawForce = pHandling->fMass / 60.0f;
+
+	ApplyMoveForce(-m_vecMoveSpeed * 100.0f);
+	m_vecTurnSpeed *= 0.9f;
+
+	CVector centerOfMass = Multiply3x3(GetMatrix(), m_vecCentreOfMass);
+
+	if (bPlayerVehicle) {
+		CPad* pad = CPad::GetPad(0);
+		
+		ApplyTurnForce(GetRight() * yawForce * pad->GetSteeringLeftRight() / 255, GetForward() + centerOfMass);
+		ApplyTurnForce(-GetUp() * 17.0f * pad->GetSteeringLeftRight() / 255, GetRight() + centerOfMass);
+
+		ApplyTurnForce(GetUp() * pitchForce * -pad->GetCarGunUpDown() / 255, GetForward() + centerOfMass);
+		ApplyTurnForce(GetUp() * pitchForce * pad->GetSteeringUpDown() / 255, GetForward() + centerOfMass);
+
+		ApplyMoveForce(GetForward() * movementForce * pad->GetAccelerate() / 255);
+		ApplyMoveForce(-GetForward() * movementForce * pad->GetBrake() / 255);
+	} else {
+		ApplyTurnForce(GetRight() * yawForce * -m_fSteerAngle, GetForward() + centerOfMass);
+		ApplyMoveForce(GetForward() * movementForce * m_fGasPedal);
+
+	}
 
 	ApplyTurnForce(GetUp() * 50.0f, upVector + centerOfMass);
 }
@@ -4535,13 +5380,58 @@ CAutomobile::VehicleDamage(float impulse, uint16 damagedPiece)
 
 		if(GetUp().z > 0.0f || m_vecMoveSpeed.MagnitudeSqr() > 0.1f){
 			float impulseMult = bMoreResistantToDamage ? 0.5f : 4.0f;
+#ifdef IMPROVED_VEHICLES // the wheels fall off when you hit it hard
+			if (impulse * pHandling->fCollisionDamageMultiplier > 900.0f ||
+				m_pDamageEntity && m_pDamageEntity->IsVehicle() && (((CVehicle*)m_pDamageEntity)->m_fDamageImpulse + impulse) * pHandling->fCollisionDamageMultiplier > 1000.0f) {
 
+				switch (damagedPiece) {
+					case CAR_PIECE_BUMP_FRONT: {
+						CVector2D leftWheelPos2D = CVector2D(m_aWheelColPoints[0].point.x, m_aWheelColPoints[0].point.y);
+						CVector2D rightWheelPos2D = CVector2D(m_aWheelColPoints[2].point.x, m_aWheelColPoints[2].point.y);
+						CVector2D impulsePos2D = CVector2D(GetPosition().x + m_vecDamageNormal.x, GetPosition().y + m_vecDamageNormal.y);
+						if (DistanceSqr2D(impulsePos2D, leftWheelPos2D.x, leftWheelPos2D.y) < DistanceSqr2D(impulsePos2D, rightWheelPos2D.x, rightWheelPos2D.y))
+							SetWheelMissing(CARWHEEL_FRONT_RIGHT);
+						else
+							SetWheelMissing(CARWHEEL_FRONT_LEFT);
+						break;
+					}
+					case CAR_PIECE_WING_LF:
+						SetWheelMissing(CARWHEEL_FRONT_LEFT);
+						break;
+					case CAR_PIECE_WING_RF:
+						SetWheelMissing(CARWHEEL_FRONT_LEFT);
+						break;
+					case CAR_PIECE_BUMP_REAR: {
+						CVector2D leftWheelPos2D = CVector2D(m_aWheelColPoints[1].point.x, m_aWheelColPoints[1].point.y);
+						CVector2D rightWheelPos2D = CVector2D(m_aWheelColPoints[3].point.x, m_aWheelColPoints[3].point.y);
+						CVector2D impulsePos2D = CVector2D(GetPosition().x + m_vecDamageNormal.x, GetPosition().y + m_vecDamageNormal.y);
+						if (DistanceSqr2D(impulsePos2D, leftWheelPos2D.x, leftWheelPos2D.y) > DistanceSqr2D(impulsePos2D, rightWheelPos2D.x, rightWheelPos2D.y))
+							SetWheelMissing(CARWHEEL_REAR_RIGHT);
+						else
+							SetWheelMissing(CARWHEEL_REAR_LEFT);
+						break;
+					}
+				}
+			}
+#endif
+#ifdef IMPROVED_VEHICLES_2 // remove lights
+			float maxImpulse = 600.0f;
+			float comparedValue = maxImpulse - impulse;
+#endif
 			switch(damagedPiece){
 			case CAR_PIECE_BUMP_FRONT:
 				GetComponentWorldPosition(CAR_BUMP_FRONT, pos);
 				dmgDrawCarCollidingParticles(pos, impulse*damageMultiplier);
-				if(Damage.ApplyDamage(COMPONENT_BUMPER_FRONT, impulse*impulseMult, pHandling->fCollisionDamageMultiplier))
+#ifdef IMPROVED_VEHICLES_2 // remove lights when front bumper is damaged
+				if (Damage.ApplyDamage(COMPONENT_BUMPER_FRONT, impulse * impulseMult, pHandling->fCollisionDamageMultiplier)) {
 					SetBumperDamage(CAR_BUMP_FRONT, VEHBUMPER_FRONT);
+					SetFrameLightStatus(CAR_HEADLIGHT_BUMP_L, LIGHT_STATUS_BROKEN);
+					SetFrameLightStatus(CAR_HEADLIGHT_BUMP_R, LIGHT_STATUS_BROKEN);
+				}
+#else
+				if (Damage.ApplyDamage(COMPONENT_BUMPER_FRONT, impulse * impulseMult, pHandling->fCollisionDamageMultiplier))
+					SetBumperDamage(CAR_BUMP_FRONT, VEHBUMPER_FRONT);
+#endif
 				if(m_aCarNodes[CAR_BONNET] && Damage.GetPanelStatus(VEHBUMPER_FRONT) == PANEL_STATUS_MISSING){
 			case CAR_PIECE_BONNET:
 					GetComponentWorldPosition(CAR_BONNET, pos);
@@ -4550,8 +5440,47 @@ CAutomobile::VehicleDamage(float impulse, uint16 damagedPiece)
 					if(Damage.ApplyDamage(COMPONENT_DOOR_BONNET, impulse*impulseMult, pHandling->fCollisionDamageMultiplier))
 						SetDoorDamage(CAR_BONNET, DOOR_BONNET);
 				}
+#ifdef IMPROVED_VEHICLES_2 // remove lights
+				if (CGeneral::GetRandomNumberInRange(0.0f, maxImpulse) > comparedValue) SetFrameLightStatus(CAR_HEADLIGHT_L, LIGHT_STATUS_BROKEN);
+				if (CGeneral::GetRandomNumberInRange(0.0f, maxImpulse) > comparedValue) SetFrameLightStatus(CAR_HEADLIGHT_R, LIGHT_STATUS_BROKEN);
+				if (CGeneral::GetRandomNumberInRange(0.0f, maxImpulse) > comparedValue) SetFrameLightStatus(CAR_INDICATOR_LF, LIGHT_STATUS_BROKEN);
+				if (CGeneral::GetRandomNumberInRange(0.0f, maxImpulse) > comparedValue) SetFrameLightStatus(CAR_INDICATOR_RF, LIGHT_STATUS_BROKEN);
+				if (CGeneral::GetRandomNumberInRange(0.0f, maxImpulse) > comparedValue) SetFrameLightStatus(CAR_INDICATOR_2_LF, LIGHT_STATUS_BROKEN);
+				if (CGeneral::GetRandomNumberInRange(0.0f, maxImpulse) > comparedValue) SetFrameLightStatus(CAR_INDICATOR_2_RF, LIGHT_STATUS_BROKEN);
+#endif
 				break;
 
+#ifdef IMPROVED_VEHICLES_2 // remove lights
+			case CAR_PIECE_BUMP_REAR:
+				GetComponentWorldPosition(CAR_BUMP_REAR, pos);
+				dmgDrawCarCollidingParticles(pos, impulse * damageMultiplier);
+				if (Damage.ApplyDamage(COMPONENT_BUMPER_REAR, impulse * impulseMult, pHandling->fCollisionDamageMultiplier)) {
+					SetBumperDamage(CAR_BUMP_REAR, VEHBUMPER_REAR);
+					SetFrameLightStatus(CAR_REVERSINGLIGHT_BUMP_L, LIGHT_STATUS_BROKEN);
+					SetFrameLightStatus(CAR_REVERSINGLIGHT_BUMP_R, LIGHT_STATUS_BROKEN);
+					SetFrameLightStatus(CAR_BRAKELIGHT_BUMP_L, LIGHT_STATUS_BROKEN);
+					SetFrameLightStatus(CAR_BRAKELIGHT_BUMP_R, LIGHT_STATUS_BROKEN);
+				}
+				if (m_aCarNodes[CAR_BOOT] && Damage.GetPanelStatus(VEHBUMPER_REAR) == PANEL_STATUS_MISSING) {
+			case CAR_PIECE_BOOT:
+				GetComponentWorldPosition(CAR_BOOT, pos);
+				dmgDrawCarCollidingParticles(pos, impulse * damageMultiplier);
+				if (Damage.ApplyDamage(COMPONENT_DOOR_BOOT, impulse * impulseMult, pHandling->fCollisionDamageMultiplier))
+					SetDoorDamage(CAR_BOOT, DOOR_BOOT);
+				}
+				
+				if (CGeneral::GetRandomNumberInRange(0.0f, maxImpulse) > comparedValue) SetFrameLightStatus(CAR_TAILLIGHT_L, LIGHT_STATUS_BROKEN);
+				if (CGeneral::GetRandomNumberInRange(0.0f, maxImpulse) > comparedValue) SetFrameLightStatus(CAR_TAILLIGHT_R, LIGHT_STATUS_BROKEN);
+				if (CGeneral::GetRandomNumberInRange(0.0f, maxImpulse) > comparedValue) SetFrameLightStatus(CAR_BRAKELIGHT_L, LIGHT_STATUS_BROKEN);
+				if (CGeneral::GetRandomNumberInRange(0.0f, maxImpulse) > comparedValue) SetFrameLightStatus(CAR_BRAKELIGHT_R, LIGHT_STATUS_BROKEN);
+				if (CGeneral::GetRandomNumberInRange(0.0f, maxImpulse) > comparedValue) SetFrameLightStatus(CAR_REVERSINGLIGHT_L, LIGHT_STATUS_BROKEN);
+				if (CGeneral::GetRandomNumberInRange(0.0f, maxImpulse) > comparedValue) SetFrameLightStatus(CAR_REVERSINGLIGHT_R, LIGHT_STATUS_BROKEN);
+				if (CGeneral::GetRandomNumberInRange(0.0f, maxImpulse) > comparedValue) SetFrameLightStatus(CAR_INDICATOR_LR, LIGHT_STATUS_BROKEN);
+				if (CGeneral::GetRandomNumberInRange(0.0f, maxImpulse) > comparedValue) SetFrameLightStatus(CAR_INDICATOR_RR, LIGHT_STATUS_BROKEN);
+				if (CGeneral::GetRandomNumberInRange(0.0f, maxImpulse) > comparedValue) SetFrameLightStatus(CAR_INDICATOR_2_LR, LIGHT_STATUS_BROKEN);
+				if (CGeneral::GetRandomNumberInRange(0.0f, maxImpulse) > comparedValue) SetFrameLightStatus(CAR_INDICATOR_2_RR, LIGHT_STATUS_BROKEN);
+				break;
+#else
 			case CAR_PIECE_BUMP_REAR:
 				GetComponentWorldPosition(CAR_BUMP_REAR, pos);
 				dmgDrawCarCollidingParticles(pos, impulse*damageMultiplier);
@@ -4565,6 +5494,7 @@ CAutomobile::VehicleDamage(float impulse, uint16 damagedPiece)
 						SetDoorDamage(CAR_BOOT, DOOR_BOOT);
 				}
 				break;
+#endif
 
 			case CAR_PIECE_DOOR_LF:
 				GetComponentWorldPosition(CAR_DOOR_LF, pos);
@@ -4591,6 +5521,28 @@ CAutomobile::VehicleDamage(float impulse, uint16 damagedPiece)
 					SetDoorDamage(CAR_DOOR_RR, DOOR_REAR_RIGHT);
 				break;
 
+#ifdef IMPROVED_VEHICLES_2 // remove lights when wing is damaged
+			case CAR_PIECE_WING_LF:
+				GetComponentWorldPosition(CAR_WING_LF, pos);
+				dmgDrawCarCollidingParticles(pos, impulse * damageMultiplier);
+				if (Damage.ApplyDamage(COMPONENT_PANEL_FRONT_LEFT, impulse * impulseMult, pHandling->fCollisionDamageMultiplier)) {
+					SetPanelDamage(CAR_WING_LF, VEHPANEL_FRONT_LEFT);
+					SetFrameLightStatus(CAR_HEADLIGHT_WING_L, LIGHT_STATUS_BROKEN);
+					SetFrameLightStatus(CAR_INDICATOR_WING_LF, LIGHT_STATUS_BROKEN);
+					SetFrameLightStatus(CAR_INDICATOR_2_WING_LF, LIGHT_STATUS_BROKEN);
+				}
+				break;
+			case CAR_PIECE_WING_RF:
+				GetComponentWorldPosition(CAR_WING_RF, pos);
+				dmgDrawCarCollidingParticles(pos, impulse * damageMultiplier);
+				if (Damage.ApplyDamage(COMPONENT_PANEL_FRONT_RIGHT, impulse * impulseMult, pHandling->fCollisionDamageMultiplier)) {
+					SetPanelDamage(CAR_WING_RF, VEHPANEL_FRONT_RIGHT);
+					SetFrameLightStatus(CAR_HEADLIGHT_WING_R, LIGHT_STATUS_BROKEN);
+					SetFrameLightStatus(CAR_INDICATOR_WING_RF, LIGHT_STATUS_BROKEN);
+					SetFrameLightStatus(CAR_INDICATOR_2_WING_RF, LIGHT_STATUS_BROKEN);
+				}
+				break;
+#else
 			case CAR_PIECE_WING_LF:
 				GetComponentWorldPosition(CAR_WING_LF, pos);
 				dmgDrawCarCollidingParticles(pos, impulse*damageMultiplier);
@@ -4603,6 +5555,7 @@ CAutomobile::VehicleDamage(float impulse, uint16 damagedPiece)
 				if(Damage.ApplyDamage(COMPONENT_PANEL_FRONT_RIGHT, impulse*impulseMult, pHandling->fCollisionDamageMultiplier))
 					SetPanelDamage(CAR_WING_RF, VEHPANEL_FRONT_RIGHT);
 				break;
+#endif
 			case CAR_PIECE_WING_LR:
 				GetComponentWorldPosition(CAR_WING_LR, pos);
 				dmgDrawCarCollidingParticles(pos, impulse*damageMultiplier);
@@ -4634,8 +5587,26 @@ CAutomobile::VehicleDamage(float impulse, uint16 damagedPiece)
 			}
 		}
 
-		float damage = (impulse-minImpulse)*pHandling->fCollisionDamageMultiplier*0.6f*damageMultiplier;
-
+		float damage = (impulse - minImpulse) * pHandling->fCollisionDamageMultiplier * 0.6f * damageMultiplier;
+#ifdef VEHICLE_MODS // armor
+		float absorbedDamage = 1.0f;
+		switch (m_nArmorLevel)
+		{
+		case 1:
+			absorbedDamage = 1.25f;
+			break;
+		case 2:
+			absorbedDamage = 1.5f;
+			break;
+		case 3:
+			absorbedDamage = 1.75f;
+			break;
+		case 4:
+			absorbedDamage = 2.0f;
+			break;
+		}
+		damage /= absorbedDamage;
+#endif
 		if(GetModelIndex() == MI_SECURICA && m_pDamageEntity && m_pDamageEntity->GetStatus() == STATUS_PLAYER)
 			damage *= 7.0f;
 
@@ -4747,6 +5718,57 @@ float fSpeedMult[] = {
 void
 CAutomobile::AddDamagedVehicleParticles(void)
 {
+#ifdef IMPROVED_VEHICLES_2 // change engine fire position
+	if (m_fHealth < 250.0f && GetStatus() != STATUS_WRECKED) {
+		// Car is on fire
+		CVector enginePos = ((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->m_positions[CAR_POS_ENGINE];
+		CVector overheatPos = ((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->m_positions[CAR_POS_OVERHEAT];
+		CVector overheat2Pos = ((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->m_positions[CAR_POS_OVERHEAT_2];
+
+		enginePos = GetMatrix() * enginePos;
+		overheatPos = GetMatrix() * overheatPos;
+		overheat2Pos = GetMatrix() * overheat2Pos;
+
+		CVector direction = m_vecMoveSpeed + GetUp() * m_vecMoveSpeed.Magnitude() * 0.15f;
+		bool bBonnetOpenOrMissing = false;
+		switch (Damage.GetDoorStatus(DOOR_BONNET)) {
+		case DOOR_STATUS_OK:
+		case DOOR_STATUS_SMASHED:
+			direction += GetForward() * 0.03f;
+			break;
+		case DOOR_STATUS_SWINGING:
+		case DOOR_STATUS_MISSING:
+			bBonnetOpenOrMissing = true;
+			break;
+		}
+
+		bool bRearEngine = GetModelIndex() == MI_INFERNUS || GetModelIndex() == MI_CHEETAH || GetModelIndex() == MI_VICECHEE;
+
+		if (bBonnetOpenOrMissing && !bRearEngine) {
+			CParticle::AddParticle(PARTICLE_CARFLAME, enginePos,
+				CVector(0.0f, 0.0f, CGeneral::GetRandomNumberInRange(0.01125f, 0.09f)),
+				nil, 0.63f);
+
+			CVector coors = enginePos;
+			coors.x += CGeneral::GetRandomNumberInRange(-0.5625f, 0.5625f),
+				coors.y += CGeneral::GetRandomNumberInRange(-0.5625f, 0.5625f),
+				coors.z += CGeneral::GetRandomNumberInRange(0.5625f, 2.25f);
+			CParticle::AddParticle(PARTICLE_CARFLAME_SMOKE, coors, CVector(0.0f, 0.0f, 0.0f));
+
+			CParticle::AddParticle(PARTICLE_ENGINE_SMOKE2, enginePos, CVector(0.0f, 0.0f, 0.0f), nil, 0.5f);
+		} else {
+			CParticle::AddParticle(PARTICLE_CARFLAME_SMALL, overheatPos, direction);
+			CParticle::AddParticle(PARTICLE_CARFLAME_SMALL, overheat2Pos, direction);
+
+			CParticle::AddParticle(PARTICLE_CARFLAME_SMOKE_SMALL, overheatPos, direction);
+			CParticle::AddParticle(PARTICLE_CARFLAME_SMOKE_SMALL, overheat2Pos, direction);
+
+			CParticle::AddParticle(PARTICLE_ENGINE_SMOKE2_SMALL, overheatPos, direction);
+			CParticle::AddParticle(PARTICLE_ENGINE_SMOKE2_SMALL, overheat2Pos, direction);
+		}
+	}
+#endif
+
 	int i, n;
 
 	if(this == FindPlayerVehicle() && TheCamera.GetLookingForwardFirstPerson())
@@ -4756,6 +5778,115 @@ CAutomobile::AddDamagedVehicleParticles(void)
 	if(m_fHealth >= 650.0f)
 		return;
 
+#ifdef IMPROVED_VEHICLES_2 // change engine smoke position
+	CVector direction = m_vecMoveSpeed + GetUp() * m_vecMoveSpeed.Magnitude() * 0.1f;
+	CVector enginePos = ((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->m_positions[CAR_POS_ENGINE];
+	CVector overheatPos = ((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->m_positions[CAR_POS_OVERHEAT];
+	CVector overheat2Pos = ((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->m_positions[CAR_POS_OVERHEAT_2];
+	bool bBonnetOpenOrMissing = false;
+	switch (Damage.GetDoorStatus(DOOR_BONNET)) {
+		case DOOR_STATUS_OK:
+		case DOOR_STATUS_SMASHED:
+			direction += GetForward() * 0.02f;
+			break;
+		case DOOR_STATUS_SWINGING:
+		case DOOR_STATUS_MISSING:
+			bBonnetOpenOrMissing = true;
+			break;
+	}
+
+	enginePos = GetMatrix() * enginePos;
+	overheatPos = GetMatrix() * overheatPos;
+	overheat2Pos = GetMatrix() * overheat2Pos;
+
+	bool electric = pHandling->Transmission.nEngineType == 'E';
+
+	bool bRearEngine = GetModelIndex() == MI_INFERNUS || GetModelIndex() == MI_CHEETAH || GetModelIndex() == MI_VICECHEE;
+
+	if(electric && m_fHealth < 320.0f && m_fHealth > 1.0f){
+		direction = 0.85f*m_vecMoveSpeed;
+		direction += GetRight() * CGeneral::GetRandomNumberInRange(0.0f, 0.04f) * (1.0f - 2.0f*m_vecMoveSpeed.Magnitude());
+		direction.z += 0.001f;
+		n = (CGeneral::GetRandomNumber() & 7) + 2;
+		for(i = 0; i < n; i++)
+			CParticle::AddParticle(PARTICLE_SPARK_SMALL, enginePos, direction);
+		if(((CTimer::GetFrameCounter() + m_randomSeed) & 7) == 0)
+			CParticle::AddParticle(PARTICLE_ENGINE_SMOKE2, enginePos, 0.8f*m_vecMoveSpeed, nil, 0.1f, 0, 0, 0, 1000);
+	}else if(electric && m_fHealth < 460.0f){
+		direction = 0.85f*m_vecMoveSpeed;
+		direction += GetRight() * CGeneral::GetRandomNumberInRange(0.0f, 0.04f) * (1.0f - 2.0f*m_vecMoveSpeed.Magnitude());
+		direction.z += 0.001f;
+		n = (CGeneral::GetRandomNumber() & 3) + 1;
+		for(i = 0; i < n; i++)
+			CParticle::AddParticle(PARTICLE_SPARK_SMALL, enginePos, direction);
+		if(((CTimer::GetFrameCounter() + m_randomSeed) & 0xF) == 0)
+			CParticle::AddParticle(PARTICLE_ENGINE_SMOKE, enginePos, 0.8f*m_vecMoveSpeed, nil, 0.1f, 0, 0, 0, 1000);
+	}else if(m_fHealth < 250.0f){
+		// nothing
+	}else if(m_fHealth < 320.0f){
+		if (bBonnetOpenOrMissing && !bRearEngine) {
+			CParticle::AddParticle(PARTICLE_ENGINE_SMOKE2, enginePos, fSpeedMult[0] * direction);
+		} else {
+			CParticle::AddParticle(PARTICLE_ENGINE_SMOKE2_SMALL, overheatPos, direction);
+			CParticle::AddParticle(PARTICLE_ENGINE_SMOKE2_SMALL, overheat2Pos, direction);
+		}
+	}else if(m_fHealth < 390.0f){
+		if (bBonnetOpenOrMissing && !bRearEngine) {
+			CParticle::AddParticle(PARTICLE_ENGINE_STEAM, enginePos, fSpeedMult[1] * direction);
+			CParticle::AddParticle(PARTICLE_ENGINE_SMOKE, enginePos, fSpeedMult[2] * direction);
+		} else {
+			CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheatPos, direction);
+			CParticle::AddParticle(PARTICLE_ENGINE_SMOKE_SMALL, overheatPos, direction);
+			CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheat2Pos, direction);
+			CParticle::AddParticle(PARTICLE_ENGINE_SMOKE_SMALL, overheat2Pos, direction);
+		}
+	}else if(m_fHealth < 460.0f){
+		if (((CTimer::GetFrameCounter() + m_randomSeed) & 3) == 0 ||
+			((CTimer::GetFrameCounter() + m_randomSeed) & 3) == 2) {
+
+			if (bBonnetOpenOrMissing && !bRearEngine) {
+				CParticle::AddParticle(PARTICLE_ENGINE_STEAM, enginePos, fSpeedMult[3] * direction);
+			} else {
+				CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheatPos, direction);
+				CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheat2Pos, direction);
+			}
+		}
+	}else{
+		int rnd = CTimer::GetFrameCounter() + m_randomSeed;
+		if(rnd < 10 ||
+		   rnd < 70 && rnd > 25 ||
+		   rnd < 160 && rnd > 100 ||
+		   rnd < 200 && rnd > 175 ||
+		   rnd > 235)
+			return;
+		direction.z += 0.05f*Max(1.0f - 1.6f*m_vecMoveSpeed.Magnitude(), 0.0f);
+		if(electric){
+			direction = 0.85f*m_vecMoveSpeed;
+			direction += GetRight() * CGeneral::GetRandomNumberInRange(0.0f, 0.04f) * (1.0f - 2.0f*m_vecMoveSpeed.Magnitude());
+			direction.z += 0.001f;
+			n = (CGeneral::GetRandomNumber() & 2) + 2;
+			for(i = 0; i < n; i++)
+				CParticle::AddParticle(PARTICLE_SPARK_SMALL, enginePos, direction);
+			if(((CTimer::GetFrameCounter() + m_randomSeed) & 0xF) == 0)
+				CParticle::AddParticle(PARTICLE_ENGINE_SMOKE, enginePos, 0.8f*m_vecMoveSpeed, nil, 0.1f, 0, 0, 0, 1000);
+		}else{
+			if (bBonnetOpenOrMissing && !bRearEngine) {
+				if (TheCamera.GetLookDirection() != LOOKING_FORWARD)
+					CParticle::AddParticle(PARTICLE_ENGINE_STEAM, enginePos, direction);
+				else if (((CTimer::GetFrameCounter() + m_randomSeed) & 1) == 0)
+					CParticle::AddParticle(PARTICLE_ENGINE_STEAM, enginePos, fSpeedMult[4] * m_vecMoveSpeed);
+			} else {
+				if (TheCamera.GetLookDirection() != LOOKING_FORWARD) {
+					CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheatPos, direction);
+					CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheat2Pos, direction);
+				} else if (((CTimer::GetFrameCounter() + m_randomSeed) & 1) == 0) {
+					CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheatPos, direction);
+					CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheat2Pos, direction);
+				}
+			}
+		}
+	}
+#else
 	CVector direction = fSpeedMult[5]*m_vecMoveSpeed;
 	CVector damagePos = ((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->m_positions[CAR_POS_HEADLIGHTS];
 
@@ -4841,6 +5972,7 @@ CAutomobile::AddDamagedVehicleParticles(void)
 				CParticle::AddParticle(PARTICLE_ENGINE_STEAM, damagePos, fSpeedMult[4]*m_vecMoveSpeed);
 		}
 	}
+#endif
 }
 
 int32
@@ -5235,6 +6367,11 @@ CAutomobile::BlowUpCar(CEntity *culprit)
 		CExplosion::AddExplosion(this, culprit, EXPLOSION_CAR_QUICK, GetPosition(), 0);
 	else
 		CExplosion::AddExplosion(this, culprit, EXPLOSION_CAR, GetPosition(), 0);
+
+#ifdef NEW_CHEATS // AIRWAYS
+	if (bAirWaysCheat)
+		bAffectedByGravity = true;
+#endif
 }
 
 bool
@@ -5753,6 +6890,20 @@ CAutomobile::ProcessSwingingDoor(int32 component, eDoors door)
 		// make both doors invisible on car
 		SetComponentVisibility(m_aCarNodes[CAR_BONNET], ATOMIC_FLAG_NONE);
 		Damage.SetDoorStatus(DOOR_BONNET, DOOR_STATUS_MISSING);
+#ifdef VEHICLE_MODS // hide bonnet upgrades after bonnet rip off
+		if (m_aCarNodes[CAR_BNT_SCOOP_OK] && GetFirstObject(m_aCarNodes[CAR_BNT_SCOOP_OK]))
+			RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_BNT_SCOOP_OK]), 0);
+		if (m_aCarNodes[CAR_BNT_SCOOP_DAM] && GetFirstObject(m_aCarNodes[CAR_BNT_SCOOP_DAM]))
+			RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_BNT_SCOOP_DAM]), 0);
+		if (m_aCarNodes[CAR_VENT_L_OK] && GetFirstObject(m_aCarNodes[CAR_VENT_L_OK]))
+			RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_L_OK]), 0);
+		if (m_aCarNodes[CAR_VENT_L_DAM] && GetFirstObject(m_aCarNodes[CAR_VENT_L_DAM]))
+			RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_L_DAM]), 0);
+		if (m_aCarNodes[CAR_VENT_R_OK] && GetFirstObject(m_aCarNodes[CAR_VENT_R_OK]))
+			RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_R_OK]), 0);
+		if (m_aCarNodes[CAR_VENT_R_DAM] && GetFirstObject(m_aCarNodes[CAR_VENT_R_DAM]))
+			RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_R_DAM]), 0);
+#endif
 
 		if(comp){
 			if(CGeneral::GetRandomNumber() & 1)
@@ -5782,6 +6933,11 @@ CAutomobile::Fix(void)
 	RpClumpForAllAtomics((RpClump*)m_rwObject, CVehicleModelInfo::HideAllComponentsAtomicCB, (void*)ATOMIC_FLAG_DAM);
 
 	for(component = CAR_BUMP_FRONT; component < NUM_CAR_NODES; component++){
+#ifdef VEHICLE_MODS // not to change matrix upgrades after car fix
+		if (component >= CAR_SPOILER_OK && component <= CAR_SUPERCHARGER)
+			continue;
+#endif
+
 		if(m_aCarNodes[component]){
 			CMatrix mat(RwFrameGetMatrix(m_aCarNodes[component]));
 			mat.SetTranslate(mat.GetPosition());
@@ -5841,6 +6997,16 @@ GetCurrentAtomicObjectCB(RwObject *object, void *data)
 		*(RpAtomic**)data = atomic;
 	return object;
 }
+
+#ifdef IMPROVED_VEHICLES_2
+RwObject* GetWindowAtomicObjectCB(RwObject* object, void* data)
+{
+	RpAtomic* atomic = (RpAtomic*)object;
+	if(CVisibilityPlugins::GetAtomicId(atomic) & ATOMIC_FLAG_DOORWINDOW)
+		((RpAtomic**)data)[0] = atomic;
+	return object;
+}
+#endif
 
 CObject*
 CAutomobile::SpawnFlyingComponent(int32 component, uint32 type)
@@ -6065,6 +7231,29 @@ CAutomobile::SetDoorDamage(int32 component, eDoors door, bool noFlyingComponents
 	case DOOR_STATUS_SMASHED:
 		// show damaged part
 		SetComponentVisibility(m_aCarNodes[component], ATOMIC_FLAG_DAM);
+#ifdef VEHICLE_MODS // show damaged upgrade after hit
+		if (component == CAR_BOOT) {
+			if (m_aCarNodes[CAR_SPOILER_DAM]) {
+				if (m_aCarNodes[CAR_SPOILER_OK] && GetFirstObject(m_aCarNodes[CAR_SPOILER_OK]))
+					RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SPOILER_OK]), 0);
+				if (GetFirstObject(m_aCarNodes[CAR_SPOILER_DAM]))
+					RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SPOILER_DAM]), rpATOMICRENDER);
+			}
+		} else if (component == CAR_BONNET) {
+			if (m_aCarNodes[CAR_BNT_SCOOP_OK] && GetFirstObject(m_aCarNodes[CAR_BNT_SCOOP_OK]))
+				RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_BNT_SCOOP_OK]), 0);
+			if (m_aCarNodes[CAR_BNT_SCOOP_DAM] && GetFirstObject(m_aCarNodes[CAR_BNT_SCOOP_DAM]))
+				RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_BNT_SCOOP_DAM]), rpATOMICRENDER);
+			if (m_aCarNodes[CAR_VENT_L_OK] && GetFirstObject(m_aCarNodes[CAR_VENT_L_OK]))
+				RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_L_OK]), 0);
+			if (m_aCarNodes[CAR_VENT_L_DAM] && GetFirstObject(m_aCarNodes[CAR_VENT_L_DAM]))
+				RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_L_DAM]), rpATOMICRENDER);
+			if (m_aCarNodes[CAR_VENT_R_OK] && GetFirstObject(m_aCarNodes[CAR_VENT_R_OK]))
+				RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_R_OK]), 0);
+			if (m_aCarNodes[CAR_VENT_R_DAM] && GetFirstObject(m_aCarNodes[CAR_VENT_R_DAM]))
+				RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_R_DAM]), rpATOMICRENDER);
+		}
+#endif
 		break;
 	case DOOR_STATUS_SWINGING:
 		// turn off angle cull for swinging doors
@@ -6081,17 +7270,81 @@ CAutomobile::SetDoorDamage(int32 component, eDoors door, bool noFlyingComponents
 		}
 		// hide both
 		SetComponentVisibility(m_aCarNodes[component], ATOMIC_FLAG_NONE);
+#ifdef VEHICLE_MODS // hide ok and dam upgrade after hit
+		if (component == CAR_BOOT) {
+			if (m_aCarNodes[CAR_SPOILER_DAM]) {
+				if (m_aCarNodes[CAR_SPOILER_OK] && GetFirstObject(m_aCarNodes[CAR_SPOILER_OK]))
+					RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SPOILER_OK]), 0);
+				if (GetFirstObject(m_aCarNodes[CAR_SPOILER_DAM]))
+					RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SPOILER_DAM]), 0);
+			}
+		} else if (component == CAR_BONNET) {
+			if (m_aCarNodes[CAR_BNT_SCOOP_OK] && GetFirstObject(m_aCarNodes[CAR_BNT_SCOOP_OK]))
+				RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_BNT_SCOOP_OK]), 0);
+			if (m_aCarNodes[CAR_BNT_SCOOP_DAM] && GetFirstObject(m_aCarNodes[CAR_BNT_SCOOP_DAM]))
+				RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_BNT_SCOOP_DAM]), 0);
+			if (m_aCarNodes[CAR_VENT_L_OK] && GetFirstObject(m_aCarNodes[CAR_VENT_L_OK]))
+				RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_L_OK]), 0);
+			if (m_aCarNodes[CAR_VENT_L_DAM] && GetFirstObject(m_aCarNodes[CAR_VENT_L_DAM]))
+				RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_L_DAM]), 0);
+			if (m_aCarNodes[CAR_VENT_R_OK] && GetFirstObject(m_aCarNodes[CAR_VENT_R_OK]))
+				RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_R_OK]), 0);
+			if (m_aCarNodes[CAR_VENT_R_DAM] && GetFirstObject(m_aCarNodes[CAR_VENT_R_DAM]))
+				RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_R_DAM]), 0);
+		}
+#endif
 		break;
 	}
 }
 
+#ifdef IMPROVED_VEHICLES
+void CAutomobile::SetWheelMissing(int32 wheel)
+{
+	if (Damage.m_wheelStatus[wheel] == WHEEL_STATUS_MISSING)
+		return;
+
+	Damage.m_wheelStatus[wheel] = WHEEL_STATUS_MISSING;
+	RpAtomic* atomic = nil;
+
+	switch (wheel)
+	{
+		case CARWHEEL_FRONT_LEFT:
+			SpawnFlyingComponent(CAR_WHEEL_LF, COMPGROUP_WHEEL);
+			RwFrameForAllObjects(m_aCarNodes[CAR_WHEEL_LF], GetCurrentAtomicObjectCB, &atomic);
+			if (atomic) RpAtomicSetFlags(atomic, 0);
+			break;
+		case CARWHEEL_REAR_LEFT:
+			SpawnFlyingComponent(CAR_WHEEL_LB, COMPGROUP_WHEEL);
+			RwFrameForAllObjects(m_aCarNodes[CAR_WHEEL_LB], GetCurrentAtomicObjectCB, &atomic);
+			if (atomic) RpAtomicSetFlags(atomic, 0);
+			break;
+		case CARWHEEL_FRONT_RIGHT:
+			SpawnFlyingComponent(CAR_WHEEL_RF, COMPGROUP_WHEEL);
+			RwFrameForAllObjects(m_aCarNodes[CAR_WHEEL_RF], GetCurrentAtomicObjectCB, &atomic);
+			if (atomic) RpAtomicSetFlags(atomic, 0);
+			break;
+		case CARWHEEL_REAR_RIGHT:
+			SpawnFlyingComponent(CAR_WHEEL_RB, COMPGROUP_WHEEL);
+			RwFrameForAllObjects(m_aCarNodes[CAR_WHEEL_RB], GetCurrentAtomicObjectCB, &atomic);
+			if (atomic) RpAtomicSetFlags(atomic, 0);
+			break;
+	}
+	
+}
+#endif
 
 static RwObject*
 SetVehicleAtomicVisibilityCB(RwObject *object, void *data)
 {
 	uint32 flags = (uint32)(uintptr)data;
 	RpAtomic *atomic = (RpAtomic*)object;
+#ifdef IMPROVED_VEHICLES_2 // remove window after door missing
+	if((CVisibilityPlugins::GetAtomicId(atomic) & (ATOMIC_FLAG_OK|ATOMIC_FLAG_DAM|ATOMIC_FLAG_DOORWINDOW)) == flags)
+		RpAtomicSetFlags(atomic, rpATOMICRENDER);
+	else if((CVisibilityPlugins::GetAtomicId(atomic) & (ATOMIC_FLAG_OK|ATOMIC_FLAG_DAM)) == flags)
+#else
 	if((CVisibilityPlugins::GetAtomicId(atomic) & (ATOMIC_FLAG_OK|ATOMIC_FLAG_DAM)) == flags)
+#endif
 		RpAtomicSetFlags(atomic, rpATOMICRENDER);
 	else
 		RpAtomicSetFlags(atomic, 0);
@@ -6145,6 +7398,1394 @@ CAutomobile::ReduceHornCounter(void)
 	if(m_nCarHornTimer != 0)
 		m_nCarHornTimer--;
 }
+
+#ifdef IMPROVED_VEHICLES_2
+void CAutomobile::DoVehicleLights()
+{
+	// from CAutomobile::PreRender, modified
+
+	CVehicleModelInfo* mi = (CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex());
+
+	CVector headLightPos = mi->m_positions[CAR_POS_HEADLIGHTS];
+	eCarNodes headlightLeftFrame = CAR_HEADLIGHT_L;
+	eCarNodes headlightRightFrame = CAR_HEADLIGHT_R;
+	if (headLightPos.IsZero()) {
+		headLightPos = mi->m_positions[CAR_POS_HEADLIGHTS_WING];
+		headlightLeftFrame = CAR_HEADLIGHT_WING_L;
+		headlightRightFrame = CAR_HEADLIGHT_WING_R;
+		if (headLightPos.IsZero()) {
+			headLightPos = mi->m_positions[CAR_POS_HEADLIGHTS_BUMP];
+			headlightLeftFrame = CAR_HEADLIGHT_BUMP_L;
+			headlightRightFrame = CAR_HEADLIGHT_BUMP_R;
+		}
+	}
+
+	CVector indicatorForwardLightPos = mi->m_positions[CAR_POS_INDICATORS_F];
+	eCarNodes indicatorLeftForwardFrame = CAR_INDICATOR_LF;
+	eCarNodes indicatorRightForwardFrame = CAR_INDICATOR_RF;
+	if (indicatorForwardLightPos.IsZero()) {
+		indicatorForwardLightPos = mi->m_positions[CAR_POS_INDICATORS_WING_F];
+		indicatorLeftForwardFrame = CAR_INDICATOR_2_LF;
+		indicatorRightForwardFrame = CAR_INDICATOR_2_RF;
+	}
+
+	CVector reversingLightPos = mi->m_positions[CAR_POS_REVERSINGLIGHTS];
+	eCarNodes reversingLeftFrame = CAR_REVERSINGLIGHT_L;
+	eCarNodes reversingRightFrame = CAR_REVERSINGLIGHT_R;
+	if (reversingLightPos.IsZero()) {
+		reversingLightPos = mi->m_positions[CAR_POS_REVERSINGLIGHTS_BUMP];
+		reversingLeftFrame = CAR_REVERSINGLIGHT_BUMP_L;
+		reversingRightFrame = CAR_REVERSINGLIGHT_BUMP_R;
+	}
+
+	CVector brakeLightPos = mi->m_positions[CAR_POS_BRAKELIGHTS];
+	CVector brakeLightPos2 = mi->m_positions[CAR_POS_BRAKELIGHTS_2];
+	eCarNodes brakeLeftFrame = CAR_BRAKELIGHT_L;
+	eCarNodes brakeRightFrame = CAR_BRAKELIGHT_R;
+	if (brakeLightPos.IsZero()) {
+		brakeLightPos = mi->m_positions[CAR_POS_BRAKELIGHTS_BUMP];
+		brakeLeftFrame = CAR_BRAKELIGHT_BUMP_L;
+		brakeRightFrame = CAR_BRAKELIGHT_BUMP_R;
+	}
+
+	// Turn lights on/off
+	bool shouldLightsBeOn = 
+		CClock::GetHours() > 20 ||
+		CClock::GetHours() > 19 && CClock::GetMinutes() > (m_randomSeed & 0x3F) ||
+		CClock::GetHours() < 7 ||
+		CClock::GetHours() < 8 && CClock::GetMinutes() < (m_randomSeed & 0x3F) ||
+		m_randomSeed/50000.0f < CWeather::Foggyness ||
+		m_randomSeed/50000.0f < CWeather::WetRoads;
+	if(shouldLightsBeOn != bLightsOn && GetStatus() != STATUS_WRECKED){
+		if(GetStatus() == STATUS_ABANDONED){
+			// Turn off lights on abandoned vehicles only when we they're far away
+			if(bLightsOn &&
+			   Abs(TheCamera.GetPosition().x - GetPosition().x) + Abs(TheCamera.GetPosition().y - GetPosition().y) > 100.0f)
+				bLightsOn = false;
+		}else
+			bLightsOn = shouldLightsBeOn;
+	}
+
+	// Actually render the lights
+	bool alarmOn = false;
+	bool alarmOff = false;
+	if(IsAlarmOn()){
+		if(CTimer::GetTimeInMilliseconds() & 0x100)
+			alarmOn = true;
+		else
+			alarmOff = true;
+	}
+
+	CVector lookVector = GetPosition() - TheCamera.GetPosition();
+	float camDist = lookVector.Magnitude();
+	if (camDist != 0.0f)
+		lookVector *= 1.0f / camDist;
+	else
+		lookVector = CVector(1.0f, 0.0f, 0.0f);
+
+	// 1.0 if directly behind car, -1.0 if in front
+	float behindness = DotProduct(lookVector, GetForward());
+	behindness = Clamp(behindness, -1.0f, 1.0f);	// shouldn't be necessary
+	// 0.0 if behind car, PI if in front
+	// Abs not necessary
+	float angle = Abs(Acos(behindness));
+
+	if(bEngineOn && bLightsOn || alarmOn || alarmOff){
+		// Headlights
+		
+		CVector lightR = GetMatrix() * headLightPos;
+		CVector lightL = lightR;
+		lightL -= GetRight()*2.0f*headLightPos.x;
+
+		// Headlight coronas
+		if(DotProduct(lightR-TheCamera.GetPosition(), GetForward()) < 0.0f &&
+		   (TheCamera.Cams[TheCamera.ActiveCam].Mode != CCam::MODE_1STPERSON || this != FindPlayerVehicle())){
+			// In front of car
+			float intensity = -0.5f*behindness + 0.3f;
+			float size = 0.0f - behindness;
+
+			if (!mi->m_positions[CAR_POS_HEADLIGHTS_2].IsZero())
+				size -= 0.3f;
+
+			if(alarmOff){
+				if(GetFrameLightStatus(headlightLeftFrame) == LIGHT_STATUS_OK)
+					CCoronas::RegisterCorona((uintptr)this, 0, 0, 0, 0,
+						lightL, size, 0.0f,
+						CCoronas::TYPE_STREAK, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+						CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+				if(GetFrameLightStatus(headlightRightFrame) == LIGHT_STATUS_OK)
+					CCoronas::RegisterCorona((uintptr)this + 1, 0, 0, 0, 0,
+						lightR, size, 0.0f,
+						CCoronas::TYPE_STREAK, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+						CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+			}else{
+				if (pHandling->Flags & HANDLING_HALOGEN_LIGHTS) {
+					if (GetFrameLightStatus(headlightLeftFrame) == LIGHT_STATUS_OK)
+						CCoronas::RegisterCorona((uintptr)this, 190 * intensity, 190 * intensity, 255 * intensity, 255,
+							lightL, size, 50.0f * TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+					if (GetFrameLightStatus(headlightRightFrame) == LIGHT_STATUS_OK)
+						CCoronas::RegisterCorona((uintptr)this + 1, 190 * intensity, 190 * intensity, 255 * intensity, 255,
+							lightR, size, 50.0f * TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+				} else {
+					if (GetFrameLightStatus(headlightLeftFrame) == LIGHT_STATUS_OK)
+						CCoronas::RegisterCorona((uintptr)this, 210 * intensity, 210 * intensity, 195 * intensity, 255,
+							lightL, size, 50.0f * TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+					if (GetFrameLightStatus(headlightRightFrame) == LIGHT_STATUS_OK)
+						CCoronas::RegisterCorona((uintptr)this + 1, 210 * intensity, 210 * intensity, 195 * intensity, 255,
+							lightR, size, 50.0f * TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+				}
+			}
+		}else{
+			// Behind car
+			if(GetFrameLightStatus(headlightLeftFrame) == LIGHT_STATUS_OK)
+				CCoronas::UpdateCoronaCoors((uintptr)this, lightL, 50.0f*TheCamera.LODDistMultiplier, angle);
+			if(GetFrameLightStatus(headlightRightFrame) == LIGHT_STATUS_OK)
+				CCoronas::UpdateCoronaCoors((uintptr)this + 1, lightR, 50.0f*TheCamera.LODDistMultiplier, angle);
+		}
+
+		// Headlights 2
+
+		CVector headLight2Pos = mi->m_positions[CAR_POS_HEADLIGHTS_2];
+		if (headLight2Pos.IsZero())
+			headLight2Pos = mi->m_positions[CAR_POS_HEADLIGHTS_2_BUMP];
+
+		if (!headLight2Pos.IsZero()) {
+			lightR = GetMatrix() * headLight2Pos;
+			lightL = lightR;
+			lightL -= GetRight()*2.0f*headLight2Pos.x;
+
+			// Headlight coronas
+			if(DotProduct(lightR-TheCamera.GetPosition(), GetForward()) < 0.0f &&
+			   (TheCamera.Cams[TheCamera.ActiveCam].Mode != CCam::MODE_1STPERSON || this != FindPlayerVehicle())){
+				// In front of car
+				float intensity = -0.5f*behindness + 0.3f;
+				float size = 0.0f - behindness;
+
+				size -= 0.3f;
+
+				if(alarmOff){
+					if(GetFrameLightStatus(headlightLeftFrame) == LIGHT_STATUS_OK)
+						CCoronas::RegisterCorona((uintptr)this + 26, 0, 0, 0, 0,
+							lightL, size, 0.0f,
+							CCoronas::TYPE_STREAK, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+					if(GetFrameLightStatus(headlightRightFrame) == LIGHT_STATUS_OK)
+						CCoronas::RegisterCorona((uintptr)this + 27, 0, 0, 0, 0,
+							lightR, size, 0.0f,
+							CCoronas::TYPE_STREAK, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+				}else{
+					if (pHandling->Flags & HANDLING_HALOGEN_LIGHTS) {
+						if (GetFrameLightStatus(headlightLeftFrame) == LIGHT_STATUS_OK)
+							CCoronas::RegisterCorona((uintptr)this + 26, 190 * intensity, 190 * intensity, 255 * intensity, 255,
+								lightL, size, 50.0f * TheCamera.LODDistMultiplier,
+								CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+								CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+						if (GetFrameLightStatus(headlightRightFrame) == LIGHT_STATUS_OK)
+							CCoronas::RegisterCorona((uintptr)this + 27, 190 * intensity, 190 * intensity, 255 * intensity, 255,
+								lightR, size, 50.0f * TheCamera.LODDistMultiplier,
+								CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+								CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+					} else {
+						if (GetFrameLightStatus(headlightLeftFrame) == LIGHT_STATUS_OK)
+							CCoronas::RegisterCorona((uintptr)this + 26, 210 * intensity, 210 * intensity, 195 * intensity, 255,
+								lightL, size, 50.0f * TheCamera.LODDistMultiplier,
+								CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+								CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+						if (GetFrameLightStatus(headlightRightFrame) == LIGHT_STATUS_OK)
+							CCoronas::RegisterCorona((uintptr)this + 27, 210 * intensity, 210 * intensity, 195 * intensity, 255,
+								lightR, size, 50.0f * TheCamera.LODDistMultiplier,
+								CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+								CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+					}
+				}
+			}else{
+				// Behind car
+				if(GetFrameLightStatus(headlightLeftFrame) == LIGHT_STATUS_OK)
+					CCoronas::UpdateCoronaCoors((uintptr)this + 26, lightL, 50.0f*TheCamera.LODDistMultiplier, angle);
+				if(GetFrameLightStatus(headlightRightFrame) == LIGHT_STATUS_OK)
+					CCoronas::UpdateCoronaCoors((uintptr)this + 27, lightR, 50.0f*TheCamera.LODDistMultiplier, angle);
+			}
+		}
+
+		// Taillights
+
+		CVector tailLightPos = mi->m_positions[CAR_POS_TAILLIGHTS];
+		lightR = GetMatrix() * tailLightPos;
+		lightL = lightR;
+		lightL -= GetRight()*2.0f*tailLightPos.x;
+
+		// Taillight coronas
+		if(DotProduct(lightR-TheCamera.GetPosition(), GetForward()) > 0.0f){
+			// Behind car
+			float intensity = (behindness + 1.0f)*0.4f;
+			float size = (behindness + 1.0f)*0.5f;
+
+			if (!mi->m_positions[CAR_POS_TAILLIGHTS_2].IsZero() || !mi->m_positions[CAR_POS_BRAKELIGHTS_2].IsZero())
+				size -= 0.3f;
+
+			if(alarmOff){
+				if(GetFrameLightStatus(CAR_TAILLIGHT_L) == LIGHT_STATUS_OK)
+					CCoronas::RegisterCorona((uintptr)this + 14, 0, 0, 0, 0,
+						lightL, size, 0.0f,
+						CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+						CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+				if(GetFrameLightStatus(CAR_TAILLIGHT_R) == LIGHT_STATUS_OK)
+					CCoronas::RegisterCorona((uintptr)this + 15, 0, 0, 0, 0,
+						lightR, size, 0.0f,
+						CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+						CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+			}else{
+				if(GetFrameLightStatus(CAR_TAILLIGHT_L) == LIGHT_STATUS_OK)
+					CCoronas::RegisterCorona((uintptr)this + 14, 128*intensity, 0, 0, 255,
+						lightL, size, 50.0f*TheCamera.LODDistMultiplier,
+						CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+						CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+				if(GetFrameLightStatus(CAR_TAILLIGHT_R) == LIGHT_STATUS_OK)
+					CCoronas::RegisterCorona((uintptr)this + 15, 128*intensity, 0, 0, 255,
+						lightR, size, 50.0f*TheCamera.LODDistMultiplier,
+						CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+						CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+			}
+
+			// Taillights 2
+			CVector tailLight2Pos = mi->m_positions[CAR_POS_TAILLIGHTS_2];
+			if (!tailLight2Pos.IsZero()) {
+				lightR = GetMatrix() * tailLight2Pos;
+				lightL = lightR;
+				lightL -= GetRight() * 2.0f * tailLight2Pos.x;
+				if(alarmOff){
+					if(GetFrameLightStatus(CAR_TAILLIGHT_L) == LIGHT_STATUS_OK)
+						CCoronas::RegisterCorona((uintptr)this + 28, 0, 0, 0, 0,
+							lightL, size, 0.0f,
+							CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+					if(GetFrameLightStatus(CAR_TAILLIGHT_R) == LIGHT_STATUS_OK)
+						CCoronas::RegisterCorona((uintptr)this + 29, 0, 0, 0, 0,
+							lightR, size, 0.0f,
+							CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+				}else{
+					if(GetFrameLightStatus(CAR_TAILLIGHT_L) == LIGHT_STATUS_OK)
+						CCoronas::RegisterCorona((uintptr)this + 28, 128*intensity, 0, 0, 255,
+							lightL, size, 50.0f*TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+					if(GetFrameLightStatus(CAR_TAILLIGHT_R) == LIGHT_STATUS_OK)
+						CCoronas::RegisterCorona((uintptr)this + 29, 128*intensity, 0, 0, 255,
+							lightR, size, 50.0f*TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+				}
+			}
+
+			if (mi->m_positions[CAR_POS_TAILLIGHTS_2].IsZero() || mi->m_positions[CAR_POS_BRAKELIGHTS_2].IsZero())
+				size -= 0.3f;
+
+			// reversing
+			lightR = GetMatrix() * reversingLightPos;
+			lightL = lightR;
+			lightL -= GetRight() * 2.0f * reversingLightPos.x;
+			if (m_fGasPedal < 0.0f) {
+				if (GetFrameLightStatus(reversingLeftFrame) == LIGHT_STATUS_OK)
+					CCoronas::RegisterCorona((uintptr)this + 16, 128 * intensity, 128 * intensity, 128 * intensity, 255,
+						lightL, size, 50.0f * TheCamera.LODDistMultiplier,
+						CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+						CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+				if (GetFrameLightStatus(reversingRightFrame) == LIGHT_STATUS_OK)
+					CCoronas::RegisterCorona((uintptr)this + 17, 128 * intensity, 128 * intensity, 128 * intensity, 255,
+						lightR, size, 50.0f * TheCamera.LODDistMultiplier,
+						CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+						CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+			} else {
+				if (GetFrameLightStatus(reversingLeftFrame) == LIGHT_STATUS_OK)
+					CCoronas::UpdateCoronaCoors((uintptr)this + 16, lightL, 50.0f, angle);
+				if (GetFrameLightStatus(reversingRightFrame) == LIGHT_STATUS_OK)
+					CCoronas::UpdateCoronaCoors((uintptr)this + 17, lightR, 50.0f, angle);
+			}
+
+			// braking
+			lightR = GetMatrix() * brakeLightPos;
+			lightL = lightR;
+			lightL -= GetRight() * 2.0f * brakeLightPos.x;
+			if (m_fBrakePedal > 0.0f && GetStatus() != STATUS_ABANDONED) {
+				if (GetFrameLightStatus(brakeLeftFrame) == LIGHT_STATUS_OK)
+					CCoronas::RegisterCorona((uintptr)this + 18, 128 * intensity, 0, 0, 255,
+						lightL, size, 50.0f * TheCamera.LODDistMultiplier,
+						CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+						CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+				if (GetFrameLightStatus(brakeRightFrame) == LIGHT_STATUS_OK)
+					CCoronas::RegisterCorona((uintptr)this + 19, 128 * intensity, 0, 0, 255,
+						lightR, size, 50.0f * TheCamera.LODDistMultiplier,
+						CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+						CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+			} else {
+				if (GetFrameLightStatus(brakeLeftFrame) == LIGHT_STATUS_OK)
+					CCoronas::UpdateCoronaCoors((uintptr)this + 18, lightL, 50.0f, angle);
+				if (GetFrameLightStatus(brakeRightFrame) == LIGHT_STATUS_OK)
+					CCoronas::UpdateCoronaCoors((uintptr)this + 19, lightR, 50.0f, angle);
+			}
+
+			// braking 2
+			if (!brakeLightPos2.IsZero()) {
+				lightR = GetMatrix() * brakeLightPos2;
+				lightL = lightR;
+				lightL -= GetRight() * 2.0f * brakeLightPos.x;
+				if (m_fBrakePedal > 0.0f && GetStatus() != STATUS_ABANDONED) {
+					if (GetFrameLightStatus(brakeLeftFrame) == LIGHT_STATUS_OK)
+						CCoronas::RegisterCorona((uintptr)this + 30, 128 * intensity, 0, 0, 255,
+							lightL, size, 50.0f * TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+					if (GetFrameLightStatus(brakeRightFrame) == LIGHT_STATUS_OK)
+						CCoronas::RegisterCorona((uintptr)this + 31, 128 * intensity, 0, 0, 255,
+							lightR, size, 50.0f * TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+				} else {
+					if (GetFrameLightStatus(brakeLeftFrame) == LIGHT_STATUS_OK)
+						CCoronas::UpdateCoronaCoors((uintptr)this + 30, lightL, 50.0f, angle);
+					if (GetFrameLightStatus(brakeRightFrame) == LIGHT_STATUS_OK)
+						CCoronas::UpdateCoronaCoors((uintptr)this + 31, lightR, 50.0f, angle);
+				}
+			}
+		}else{
+			// In front of car
+			// missing LODDistMultiplier probably a BUG
+			if(GetFrameLightStatus(CAR_TAILLIGHT_L) == LIGHT_STATUS_OK)
+				CCoronas::UpdateCoronaCoors((uintptr)this + 14, lightL, 50.0f, angle);
+			if(GetFrameLightStatus(CAR_TAILLIGHT_R) == LIGHT_STATUS_OK)
+				CCoronas::UpdateCoronaCoors((uintptr)this + 15, lightR, 50.0f, angle);
+			if (GetFrameLightStatus(CAR_TAILLIGHT_L) == LIGHT_STATUS_OK)
+				CCoronas::UpdateCoronaCoors((uintptr)this + 28, lightL, 50.0f, angle);
+			if (GetFrameLightStatus(CAR_TAILLIGHT_R) == LIGHT_STATUS_OK)
+				CCoronas::UpdateCoronaCoors((uintptr)this + 29, lightR, 50.0f, angle);
+		}
+
+		// Light shadows
+		if(!alarmOff){
+			CVector pos = GetPosition();
+			CVector2D fwd(GetForward());
+			fwd.Normalise();
+			float f = headLightPos.y + 6.0f;
+			pos += CVector(f*fwd.x, f*fwd.y, 2.0f);
+
+			if(GetFrameLightStatus(headlightLeftFrame) == LIGHT_STATUS_OK ||
+				GetFrameLightStatus(headlightRightFrame) == LIGHT_STATUS_OK)
+				CShadows::StoreCarLightShadow(this, (uintptr)this + 22, gpShadowHeadLightsTex, &pos,
+					7.0f*fwd.x, 7.0f*fwd.y, 5.5f*fwd.y, -5.5f*fwd.x, 45, 45, 45, 7.0f);
+
+			f = (tailLightPos.y - 2.5f) - (headLightPos.y + 6.0f);
+			pos += CVector(f*fwd.x, f*fwd.y, 0.0f);
+			if(GetFrameLightStatus(CAR_TAILLIGHT_L) == LIGHT_STATUS_OK ||
+				GetFrameLightStatus(CAR_TAILLIGHT_R) == LIGHT_STATUS_OK)
+				CShadows::StoreCarLightShadow(this, (uintptr)this + 25, gpShadowExplosionTex, &pos,
+					3.0f, 0.0f, 0.0f, -3.0f, 35, 0, 0, 4.0f);
+		}
+
+		if(this == FindPlayerVehicle() && !alarmOff){
+			if(GetFrameLightStatus(headlightLeftFrame) == LIGHT_STATUS_OK ||
+				GetFrameLightStatus(headlightRightFrame) == LIGHT_STATUS_OK)
+				CPointLights::AddLight(CPointLights::LIGHT_DIRECTIONAL, GetPosition(), GetForward(),
+					20.0f, 1.0f, 1.0f, 1.0f,
+					FindPlayerVehicle()->m_vecMoveSpeed.MagnitudeSqr2D() < sq(0.45f) ? CPointLights::FOG_NORMAL : CPointLights::FOG_NONE,
+					false);
+			CVector pos = GetPosition() - 4.0f*GetForward();
+			if(GetFrameLightStatus(CAR_TAILLIGHT_L) == LIGHT_STATUS_OK ||
+				GetFrameLightStatus(CAR_TAILLIGHT_L) == LIGHT_STATUS_OK) {
+				if(m_fBrakePedal > 0.0f)
+					CPointLights::AddLight(CPointLights::LIGHT_POINT, pos, CVector(0.0f, 0.0f, 0.0f),
+						10.0f, 1.0f, 0.0f, 0.0f,
+						CPointLights::FOG_NONE, false);
+				else
+					CPointLights::AddLight(CPointLights::LIGHT_POINT, pos, CVector(0.0f, 0.0f, 0.0f),
+						7.0f, 0.6f, 0.0f, 0.0f,
+						CPointLights::FOG_NONE, false);
+			}
+		}
+	}else if(GetStatus() != STATUS_ABANDONED && GetStatus() != STATUS_WRECKED){
+		// Lights off
+
+		CVector tailLightPos = mi->m_positions[CAR_POS_TAILLIGHTS];
+		CVector lightR = GetMatrix() * tailLightPos;
+		CVector lightL = lightR;
+		lightL -= GetRight() * 2.0f * tailLightPos.x;
+
+		if(m_fBrakePedal > 0.0f || m_fGasPedal < 0.0f){
+			CVector lookVector = GetPosition() - TheCamera.GetPosition();
+			lookVector.Normalise();
+			float behindness = DotProduct(lookVector, GetForward());
+			if(behindness > 0.0f){
+				if(m_fGasPedal < 0.0f){
+					// reversing
+					lightR = GetMatrix() * reversingLightPos;
+					lightL = lightR;
+					lightL -= GetRight() * 2.0f * reversingLightPos.x;
+					if(GetFrameLightStatus(reversingLeftFrame) == LIGHT_STATUS_OK)
+						CCoronas::RegisterCorona((uintptr)this + 16, 120, 120, 120, 255,
+							lightL, 1.2f, 50.0f*TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_STAR, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, 0.0f);
+					if(GetFrameLightStatus(reversingRightFrame) == LIGHT_STATUS_OK)
+						CCoronas::RegisterCorona((uintptr)this + 17, 120, 120, 120, 255,
+							lightR, 1.2f, 50.0f*TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_STAR, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, 0.0f);
+				} else {
+					float size = 1.2f;
+					if (!mi->m_positions[CAR_POS_BRAKELIGHTS_2].IsZero())
+						size -= 0.5f;
+
+					// braking
+					lightR = GetMatrix() * brakeLightPos;
+					lightL = lightR;
+					lightL -= GetRight() * 2.0f * brakeLightPos.x;
+					if(GetFrameLightStatus(brakeLeftFrame) == LIGHT_STATUS_OK)
+						CCoronas::RegisterCorona((uintptr)this + 18, 120, 0, 0, 255,
+							lightL, size, 50.0f*TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_STAR, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, 0.0f);
+					if(GetFrameLightStatus(brakeRightFrame) == LIGHT_STATUS_OK)
+						CCoronas::RegisterCorona((uintptr)this + 19, 120, 0, 0, 255,
+							lightR, size, 50.0f*TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_STAR, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, 0.0f);
+
+					// braking 2
+					if (!brakeLightPos2.IsZero()) {
+						lightR = GetMatrix() * brakeLightPos2;
+						lightL = lightR;
+						lightL -= GetRight() * 2.0f * brakeLightPos2.x;
+						if(GetFrameLightStatus(brakeLeftFrame) == LIGHT_STATUS_OK)
+							CCoronas::RegisterCorona((uintptr)this + 30, 120, 0, 0, 255,
+								lightL, size, 50.0f*TheCamera.LODDistMultiplier,
+								CCoronas::TYPE_STAR, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+								CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, 0.0f);
+						if(GetFrameLightStatus(brakeRightFrame) == LIGHT_STATUS_OK)
+							CCoronas::RegisterCorona((uintptr)this + 31, 120, 0, 0, 255,
+								lightR, size, 50.0f*TheCamera.LODDistMultiplier,
+								CCoronas::TYPE_STAR, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+								CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, 0.0f);
+					}
+				}
+			}else{
+				if(GetFrameLightStatus(CAR_TAILLIGHT_L) == LIGHT_STATUS_OK)
+					CCoronas::UpdateCoronaCoors((uintptr)this + 14, lightL, 50.0f*TheCamera.LODDistMultiplier, 0.0f);
+				if(GetFrameLightStatus(CAR_TAILLIGHT_R) == LIGHT_STATUS_OK)
+					CCoronas::UpdateCoronaCoors((uintptr)this + 15, lightR, 50.0f*TheCamera.LODDistMultiplier, 0.0f);
+			}
+		}else{
+			if(GetFrameLightStatus(CAR_TAILLIGHT_L) == LIGHT_STATUS_OK)
+				CCoronas::UpdateCoronaCoors((uintptr)this + 14, lightL, 50.0f*TheCamera.LODDistMultiplier, 0.0f);
+			if(GetFrameLightStatus(CAR_TAILLIGHT_R) == LIGHT_STATUS_OK)
+				CCoronas::UpdateCoronaCoors((uintptr)this + 15, lightR, 50.0f*TheCamera.LODDistMultiplier, 0.0f);
+
+			lightR = GetMatrix() * reversingLightPos;
+			lightL = lightR;
+			lightL -= GetRight() * 2.0f * reversingLightPos.x;
+			if (GetFrameLightStatus(reversingLeftFrame) == LIGHT_STATUS_OK)
+				CCoronas::UpdateCoronaCoors((uintptr)this + 16, lightL, 50.0f * TheCamera.LODDistMultiplier, 0.0f);
+			if (GetFrameLightStatus(reversingRightFrame) == LIGHT_STATUS_OK)
+				CCoronas::UpdateCoronaCoors((uintptr)this + 17, lightR, 50.0f * TheCamera.LODDistMultiplier, 0.0f);
+
+			lightR = GetMatrix() * brakeLightPos;
+			lightL = lightR;
+			lightL -= GetRight() * 2.0f * brakeLightPos.x;
+			if (GetFrameLightStatus(brakeLeftFrame) == LIGHT_STATUS_OK)
+				CCoronas::UpdateCoronaCoors((uintptr)this + 18, lightL, 50.0f * TheCamera.LODDistMultiplier, 0.0f);
+			if (GetFrameLightStatus(brakeRightFrame) == LIGHT_STATUS_OK)
+				CCoronas::UpdateCoronaCoors((uintptr)this + 19, lightR, 50.0f * TheCamera.LODDistMultiplier, 0.0f);
+
+			lightR = GetMatrix() * brakeLightPos2;
+			lightL = lightR;
+			lightL -= GetRight() * 2.0f * brakeLightPos2.x;
+			if (GetFrameLightStatus(brakeLeftFrame) == LIGHT_STATUS_OK)
+				CCoronas::UpdateCoronaCoors((uintptr)this + 30, lightL, 50.0f * TheCamera.LODDistMultiplier, 0.0f);
+			if (GetFrameLightStatus(brakeRightFrame) == LIGHT_STATUS_OK)
+				CCoronas::UpdateCoronaCoors((uintptr)this + 31, lightR, 50.0f * TheCamera.LODDistMultiplier, 0.0f);
+		}
+	}
+
+	// forward indicators
+	CVector lightR = GetMatrix() * indicatorForwardLightPos;
+	CVector lightL = lightR;
+	lightL -= GetRight() * 2.0f * indicatorForwardLightPos.x;
+	if (DotProduct(lightR - TheCamera.GetPosition(), GetForward()) < 0.0f) {
+		if (m_bIndicatorState[INDICATORS_LEFT] && CTimer::GetTimeInMilliseconds() & 512) {
+			if (GetFrameLightStatus(indicatorLeftForwardFrame) == LIGHT_STATUS_OK)
+				CCoronas::RegisterCorona((uintptr)this + 20, 255, 127, 0, 255,
+					lightL, 0.2f, 50.0f * TheCamera.LODDistMultiplier,
+					CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+					CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+		} else {
+			if (GetFrameLightStatus(indicatorLeftForwardFrame) == LIGHT_STATUS_OK)
+				CCoronas::UpdateCoronaCoors((uintptr)this + 20, lightL, 50.0f * TheCamera.LODDistMultiplier, angle);
+		}
+		if (m_bIndicatorState[INDICATORS_RIGHT] && CTimer::GetTimeInMilliseconds() & 512) {
+			if (GetFrameLightStatus(indicatorRightForwardFrame) == LIGHT_STATUS_OK)
+				CCoronas::RegisterCorona((uintptr)this + 26, 255, 127, 0, 255,
+					lightR, 0.2f, 50.0f * TheCamera.LODDistMultiplier,
+					CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+					CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+		} else {
+			if (GetFrameLightStatus(indicatorRightForwardFrame) == LIGHT_STATUS_OK)
+				CCoronas::UpdateCoronaCoors((uintptr)this + 26, lightR, 50.0f * TheCamera.LODDistMultiplier, angle);
+		}
+
+		return;
+	} else {
+		if (GetFrameLightStatus(indicatorLeftForwardFrame) == LIGHT_STATUS_OK)
+			CCoronas::UpdateCoronaCoors((uintptr)this + 20, lightL, 50.0f * TheCamera.LODDistMultiplier, angle);
+		if (GetFrameLightStatus(indicatorRightForwardFrame) == LIGHT_STATUS_OK)
+			CCoronas::UpdateCoronaCoors((uintptr)this + 26, lightR, 50.0f * TheCamera.LODDistMultiplier, angle);
+	}
+
+	// rear indicators
+	CVector indicatorRearLightPos = mi->m_positions[CAR_POS_INDICATORS_R];
+	lightR = GetMatrix() * indicatorRearLightPos;
+	lightL = lightR;
+	lightL -= GetRight() * 2.0f * indicatorRearLightPos.x;
+	if (DotProduct(lightR - TheCamera.GetPosition(), GetForward()) > 0.0f) {
+		if (m_bIndicatorState[INDICATORS_LEFT] && CTimer::GetTimeInMilliseconds() & 512) {
+			if (GetFrameLightStatus(CAR_INDICATOR_LR) == LIGHT_STATUS_OK)
+				CCoronas::RegisterCorona((uintptr)this + 25, 255, 127, 0, 255,
+					lightL, 0.2f, 50.0f * TheCamera.LODDistMultiplier,
+					CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+					CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+		} else {
+			if (GetFrameLightStatus(CAR_INDICATOR_LR) == LIGHT_STATUS_OK)
+				CCoronas::UpdateCoronaCoors((uintptr)this + 25, lightL, 50.0f * TheCamera.LODDistMultiplier, angle);
+		}
+		if (m_bIndicatorState[INDICATORS_RIGHT] && CTimer::GetTimeInMilliseconds() & 512) {
+			if (GetFrameLightStatus(CAR_INDICATOR_RR) == LIGHT_STATUS_OK)
+				CCoronas::RegisterCorona((uintptr)this + 23, 255, 127, 0, 255,
+					lightR, 0.2f, 50.0f * TheCamera.LODDistMultiplier,
+					CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+					CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+		} else {
+			if (GetFrameLightStatus(CAR_INDICATOR_RR) == LIGHT_STATUS_OK)
+				CCoronas::UpdateCoronaCoors((uintptr)this + 23, lightR, 50.0f * TheCamera.LODDistMultiplier, angle);
+		}
+	} else {
+		if (GetFrameLightStatus(CAR_INDICATOR_LR) == LIGHT_STATUS_OK)
+			CCoronas::UpdateCoronaCoors((uintptr)this + 25, lightL, 50.0f * TheCamera.LODDistMultiplier, angle);
+		if (GetFrameLightStatus(CAR_INDICATOR_RR) == LIGHT_STATUS_OK)
+			CCoronas::UpdateCoronaCoors((uintptr)this + 23, lightR, 50.0f * TheCamera.LODDistMultiplier, angle);
+	}
+}
+
+void CAutomobile::SetFrameLightStatus(eCarNodes frameNode, eLightStatus status)
+{
+	if (!m_aCarNodes[frameNode])
+		return;
+
+	if (GetFrameLightStatus(frameNode) == status)
+		return;
+
+	if (status == LIGHT_STATUS_BROKEN)
+		DMAudio.PlayOneShot(m_audioEntityId, SOUND_CAR_LIGHT_BREAK, 0.0f);
+
+	RpAtomic* lightAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[frameNode]);
+
+	if (!lightAtomic)
+		return;
+
+	RpAtomicSetFlags(lightAtomic, LIGHT_STATUS_OK ? rpATOMICRENDER : 0);
+
+	/*CMatrix mat;
+	mat.Attach(RwFrameGetMatrix(m_aCarNodes[frameNode]));
+	mat.rx = status == LIGHT_STATUS_OK ? 1.0f : 0.0f;
+	mat.fy = status == LIGHT_STATUS_OK ? 1.0f : 0.0f;
+	mat.uz = status == LIGHT_STATUS_OK ? 1.0f : 0.0f;
+	mat.UpdateRW();*/
+}
+
+eLightStatus CAutomobile::GetFrameLightStatus(eCarNodes frameNode)
+{
+	if (!m_aCarNodes[frameNode])
+		return LIGHT_STATUS_BROKEN;
+
+	eLightStatus status = LIGHT_STATUS_OK;
+
+	RpAtomic* lightAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[frameNode]);
+	if (lightAtomic)
+		if (RpAtomicGetFlags(lightAtomic) == 0)
+			status = LIGHT_STATUS_BROKEN;
+
+	/*RwMatrix mat = m_aCarNodes[frameNode]->matrix;
+	if (mat.right.x == 0.0f && mat.at.y == 0.0f && mat.up.z == 0.0f)
+		status = LIGHT_STATUS_BROKEN;*/
+
+	return status;
+}
+#endif
+
+#ifdef VEHICLE_MODS
+void CAutomobile::TrySetRandomCarMod(bool bForce)
+{
+	if (IsLawEnforcementVehicle())
+		return;
+
+	if (!bForce && CGeneral::GetRandomNumberInRange(0.0f, 1.0f) < 0.93f)
+		return;
+	
+	if (CGeneral::GetRandomNumberInRange(0.0f, 1.0f) < 0.5f) {
+		m_nWindowTintLevel = CGeneral::GetRandomNumberInRange(1, 5);
+		m_nTempWindowTintLevel = m_nWindowTintLevel;
+	}
+
+	if (CGeneral::GetRandomNumberInRange(0.0f, 1.0f) < 0.5f) {
+		m_nAddSuspensionForceLevel = CGeneral::GetRandomNumberInRange(0.0f, 0.5f);
+		m_nTempAddSuspensionForceLevel = m_nAddSuspensionForceLevel;
+	}
+
+	if (bForce || CGeneral::GetRandomNumberInRange(0.0f, 1.0f) < 0.5f) {
+		int wheels[MAXWHEELMODELS] = { MI_WHEEL_RIM, MI_WHEEL_OFFROAD, MI_WHEEL_TRUCK, MI_WHEEL_SPORT,
+									   MI_WHEEL_SALOON, MI_WHEEL_LIGHTVAN, MI_WHEEL_CLASSIC, MI_WHEEL_ALLOY,
+									   MI_WHEEL_LIGHTTRUCK, MI_WHEEL_SMALLCAR, MI_WHEEL_CLASSIC2, MI_WHEEL_SALOON2 };
+		SetWheels(wheels[CGeneral::GetRandomNumberInRange(0, MAXWHEELMODELS)]);
+	}
+
+	if (bForce || CGeneral::GetRandomNumberInRange(0.0f, 1.0f) < 0.5f) {
+		int colorID = CGeneral::GetRandomNumberInRange(0, 94);
+		m_currentColour1 = colorID;
+		m_currentColour2 = colorID;
+		m_nTempColor1 = colorID;
+		m_nTempColor2 = colorID;
+	}
+
+	if (bForce || CGeneral::GetRandomNumberInRange(0.0f, 1.0f) < 0.5f) {
+		int colorID = CGeneral::GetRandomNumberInRange(0, 94);
+		m_nRimsColor = colorID;
+		m_nTempRimsColor = colorID;
+	}
+
+	if (bForce || CGeneral::GetRandomNumberInRange(0.0f, 1.0f) < 0.5f) {
+		int colorID = CGeneral::GetRandomNumberInRange(0, 94);
+		m_nSpoilerColor = colorID;
+		m_nTempSpoilerColor = colorID;
+	}
+
+	if (bForce || CGeneral::GetRandomNumberInRange(0.0f, 1.0f) < 0.5f) {
+		int upgradeID = CGeneral::GetRandomNumberInRange(MI_SPOILER_1, MI_SPOILER_9);
+		SetUpgrade(upgradeID, false);
+	}
+
+	if (bForce || CGeneral::GetRandomNumberInRange(0.0f, 1.0f) < 0.5f) {
+		int upgradeID = CGeneral::GetRandomNumberInRange(MI_BNT_SCOOP_1, MI_BNT_SCOOP_4);
+		SetUpgrade(upgradeID, false);
+	}
+
+	if (bForce || CGeneral::GetRandomNumberInRange(0.0f, 1.0f) < 0.5f) {
+		SetUpgrade(MI_SIDE_SKIRT_L_1, false);
+	}
+
+	if (bForce || CGeneral::GetRandomNumberInRange(0.0f, 1.0f) < 0.5f) {
+		SetUpgrade(MI_RF_SCOOP_1, false);
+	}
+
+	if (bForce || CGeneral::GetRandomNumberInRange(0.0f, 1.0f) < 0.5f) {
+		if (CGeneral::GetRandomNumberInRange(0.0f, 1.0f) < 0.5f)
+			SetUpgrade(MI_BNT_VENT_L_1, false);
+		else
+			SetUpgrade(MI_BNT_VENT_L_2, false);
+	}
+}
+
+void CAutomobile::SetWheels(int modelIndex)
+{
+	SetWheelNumber(modelIndex);
+
+	for (int nodeID = CAR_WHEEL_RF; nodeID <= CAR_WHEEL_LB; nodeID++) {
+		if (!m_aCarNodes[nodeID])
+			continue;
+
+		RpAtomic* wheelAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[nodeID], GetCurrentAtomicObjectCB, &wheelAtomic);
+
+		if (!wheelAtomic)
+			continue;
+
+		RpAtomic* newWheelAtomic = (RpAtomic*)CModelInfo::GetModelInfo(modelIndex)->CreateInstance();
+
+		if (!newWheelAtomic)
+			continue;
+
+		RpClumpRemoveAtomic(GetClump(), wheelAtomic);
+		RpAtomicDestroy(wheelAtomic);
+
+		RwFrameDestroy(RpAtomicGetFrame(newWheelAtomic));
+		RpAtomicSetFrame(newWheelAtomic, m_aCarNodes[nodeID]);
+		RpClumpAddAtomic(GetClump(), newWheelAtomic);
+	}
+}
+void CAutomobile::SetWheelNumber(int modelIndex)
+{
+	switch (modelIndex) {
+		case MI_WHEEL_RIM:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 1;
+			break;
+		case MI_WHEEL_OFFROAD:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 2;
+			break;
+		case MI_WHEEL_TRUCK:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 3;
+			break;
+		case MI_WHEEL_SPORT:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 4;
+			break;
+		case MI_WHEEL_SALOON:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 5;
+			break;
+		case MI_WHEEL_LIGHTVAN:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 6;
+			break;
+		case MI_WHEEL_CLASSIC:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 7;
+			break;
+		case MI_WHEEL_ALLOY:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 8;
+			break;
+		case MI_WHEEL_LIGHTTRUCK:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 9;
+			break;
+		case MI_WHEEL_SMALLCAR:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 10;
+			break;
+		case MI_WHEEL_CLASSIC2:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 11;
+			break;
+		case MI_WHEEL_SALOON2:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 12;
+			break;
+		default:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 1;
+			break;
+	}
+}
+
+int CAutomobile::GetWheelModelIndexFromWheelNumber()
+{
+	switch (m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber) {
+		case 1:
+			return MI_WHEEL_RIM;
+		case 2:
+			return MI_WHEEL_OFFROAD;
+		case 3:
+			return MI_WHEEL_TRUCK;
+		case 4:
+			return MI_WHEEL_SPORT;
+		case 5:
+			return MI_WHEEL_SALOON;
+		case 6:
+			return MI_WHEEL_LIGHTVAN;
+		case 7:
+			return MI_WHEEL_CLASSIC;
+		case 8:
+			return MI_WHEEL_ALLOY;
+		case 9:
+			return MI_WHEEL_LIGHTTRUCK;
+		case 10:
+			return MI_WHEEL_SMALLCAR;
+		case 11:
+			return MI_WHEEL_CLASSIC2;
+		case 12:
+			return MI_WHEEL_SALOON2;
+		default:
+			return MI_WHEEL_RIM;
+	}
+}
+
+RwObject* GetOkAtomicObjectCB(RwObject* object, void* data)
+{
+	RpAtomic* atomic = (RpAtomic*)object;
+	if (CVisibilityPlugins::GetAtomicId(atomic) & ATOMIC_FLAG_OK)
+		((RpAtomic**)data)[0] = atomic;
+	return object;
+}
+
+RwObject* GetDamAtomicObjectCB(RwObject* object, void* data)
+{
+	RpAtomic* atomic = (RpAtomic*)object;
+	if (CVisibilityPlugins::GetAtomicId(atomic) & ATOMIC_FLAG_DAM)
+		((RpAtomic**)data)[0] = atomic;
+	return object;
+}
+
+void CAutomobile::SetUpgrade(int modelIndex, bool temporary)
+{
+	CMatrix mat;
+
+	// spoilers
+	if (modelIndex >= MI_SPOILER_1 && modelIndex <= MI_SPOILER_9) {
+		if (!m_aCarNodes[CAR_SPOILER_OK] && !m_aCarNodes[CAR_SPOILER_DAM])
+			return;
+
+		RpAtomic* newOkUpgradeAtomic = (RpAtomic*)CModelInfo::GetModelInfo(modelIndex)->CreateInstance();
+		RpAtomic* newDamUpgradeAtomic = (RpAtomic*)CModelInfo::GetModelInfo(modelIndex)->CreateInstance();
+
+		if (!newOkUpgradeAtomic || !newDamUpgradeAtomic)
+			return;
+
+		RwFrameDestroy(RpAtomicGetFrame(newOkUpgradeAtomic));
+		RwFrameDestroy(RpAtomicGetFrame(newDamUpgradeAtomic));
+
+		// ok upgrade
+		RpAtomic* currentOkUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SPOILER_OK]);
+
+		if (currentOkUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentOkUpgradeAtomic);
+			RpAtomicDestroy(currentOkUpgradeAtomic);
+		}
+
+		RpAtomicSetFrame(newOkUpgradeAtomic, m_aCarNodes[CAR_SPOILER_OK]);
+		RpClumpAddAtomic(GetClump(), newOkUpgradeAtomic);
+
+		CVehicleModelInfo::SetEnvironmentMapCB(newOkUpgradeAtomic, nil);
+
+		mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_SPOILER_OK]));
+		mat.UpdateRW();
+
+		if (m_aCarNodes[CAR_SPOILER_DAM]) {
+			CVisibilityPlugins::SetAtomicFlag(newOkUpgradeAtomic, ATOMIC_FLAG_OK);
+			if (Damage.GetDoorStatus(DOOR_BOOT) == DOOR_STATUS_SMASHED)
+				RpAtomicSetFlags(newOkUpgradeAtomic, 0);
+
+			// dam upgrade
+			RpAtomic* currentDamUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SPOILER_DAM]);
+
+			if (currentDamUpgradeAtomic) {
+				RpClumpRemoveAtomic(GetClump(), currentDamUpgradeAtomic);
+				RpAtomicDestroy(currentDamUpgradeAtomic);
+			}
+
+			RpAtomicSetFrame(newDamUpgradeAtomic, m_aCarNodes[CAR_SPOILER_DAM]);
+			RpClumpAddAtomic(GetClump(), newDamUpgradeAtomic);
+
+			CVehicleModelInfo::SetEnvironmentMapCB(newDamUpgradeAtomic, nil);
+
+			mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_SPOILER_DAM]));
+			mat.UpdateRW();
+
+			CVisibilityPlugins::SetAtomicFlag(newDamUpgradeAtomic, ATOMIC_FLAG_DAM);
+			if (Damage.GetDoorStatus(DOOR_BOOT) == DOOR_STATUS_OK)
+				RpAtomicSetFlags(newDamUpgradeAtomic, 0);
+		}
+
+		if (!temporary) {
+			m_aUpgrades[UPGRADE_SPOILER].m_nUpgradeModelIndex = modelIndex;
+			m_aUpgrades[UPGRADE_SPOILER].m_nTempUpgradeModelIndex = modelIndex;
+			m_aUpgrades[UPGRADE_SPOILER].m_nUpgradeNumber = (modelIndex + 1) - MI_SPOILER_1;
+		}
+
+		return;
+	}
+
+	// side skirts
+	if (modelIndex >= MI_SIDE_SKIRT_L_1 && modelIndex <= MI_SIDE_SKIRT_R_1) {
+		if (!m_aCarNodes[CAR_SKIRT_L] || !m_aCarNodes[CAR_SKIRT_R])
+			return;
+
+		RpAtomic* newLeftUpgradeAtomic = nil;
+		RpAtomic* newRightUpgradeAtomic = nil;
+		if (modelIndex == MI_SIDE_SKIRT_L_1 || modelIndex == MI_SIDE_SKIRT_R_1) {
+			newLeftUpgradeAtomic = (RpAtomic*)CModelInfo::GetModelInfo(MI_SIDE_SKIRT_L_1)->CreateInstance();
+			newRightUpgradeAtomic = (RpAtomic*)CModelInfo::GetModelInfo(MI_SIDE_SKIRT_R_1)->CreateInstance();
+		}
+
+		if (!newLeftUpgradeAtomic || !newRightUpgradeAtomic)
+			return;
+
+		RwFrameDestroy(RpAtomicGetFrame(newLeftUpgradeAtomic));
+		RwFrameDestroy(RpAtomicGetFrame(newRightUpgradeAtomic));
+
+		RpAtomic* currentLeftUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SKIRT_L]);
+		RpAtomic* currentRightUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SKIRT_R]);
+		if (currentLeftUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentLeftUpgradeAtomic);
+			RpAtomicDestroy(currentLeftUpgradeAtomic);
+		}
+		if (currentRightUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentRightUpgradeAtomic);
+			RpAtomicDestroy(currentRightUpgradeAtomic);
+		}
+
+		RpAtomicSetFrame(newLeftUpgradeAtomic, m_aCarNodes[CAR_SKIRT_L]);
+		RpClumpAddAtomic(GetClump(), newLeftUpgradeAtomic);
+
+		RpAtomicSetFrame(newRightUpgradeAtomic, m_aCarNodes[CAR_SKIRT_R]);
+		RpClumpAddAtomic(GetClump(), newRightUpgradeAtomic);
+
+		CVehicleModelInfo::SetEnvironmentMapCB(newLeftUpgradeAtomic, nil);
+		CVehicleModelInfo::SetEnvironmentMapCB(newRightUpgradeAtomic, nil);
+
+		mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_SKIRT_L]));
+		mat.UpdateRW();
+
+		mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_SKIRT_R]));
+		mat.UpdateRW();
+
+		if (!temporary) {
+			m_aUpgrades[UPGRADE_SKIRTS].m_nUpgradeModelIndex = modelIndex;
+			m_aUpgrades[UPGRADE_SKIRTS].m_nTempUpgradeModelIndex = modelIndex;
+			if (modelIndex == MI_SIDE_SKIRT_L_1 || modelIndex == MI_SIDE_SKIRT_R_1)
+				m_aUpgrades[UPGRADE_SKIRTS].m_nUpgradeNumber = 1;
+		}
+
+		return;
+	}
+
+	// bonnet scoop
+	if (modelIndex >= MI_BNT_SCOOP_1 && modelIndex <= MI_BNT_SCOOP_4) {
+		if (!m_aCarNodes[CAR_BNT_SCOOP_OK] || !m_aCarNodes[CAR_BNT_SCOOP_DAM])
+			return;
+
+		RpAtomic* newOkUpgradeAtomic = (RpAtomic*)CModelInfo::GetModelInfo(modelIndex)->CreateInstance();
+		RpAtomic* newDamUpgradeAtomic = (RpAtomic*)CModelInfo::GetModelInfo(modelIndex)->CreateInstance();
+
+		if (!newOkUpgradeAtomic || !newDamUpgradeAtomic)
+			return;
+
+		RwFrameDestroy(RpAtomicGetFrame(newOkUpgradeAtomic));
+		RwFrameDestroy(RpAtomicGetFrame(newDamUpgradeAtomic));
+
+		// ok upgrade
+		RpAtomic* currentOkUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_BNT_SCOOP_OK]);
+		if (currentOkUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentOkUpgradeAtomic);
+			RpAtomicDestroy(currentOkUpgradeAtomic);
+		}
+
+		RpAtomicSetFrame(newOkUpgradeAtomic, m_aCarNodes[CAR_BNT_SCOOP_OK]);
+		RpClumpAddAtomic(GetClump(), newOkUpgradeAtomic);
+
+		CVehicleModelInfo::SetEnvironmentMapCB(newOkUpgradeAtomic, nil);
+
+		mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_BNT_SCOOP_OK]));
+		mat.UpdateRW();
+
+		CVisibilityPlugins::SetAtomicFlag(newOkUpgradeAtomic, ATOMIC_FLAG_OK);
+		if (Damage.GetDoorStatus(DOOR_BONNET) == DOOR_STATUS_SMASHED)
+			RpAtomicSetFlags(newOkUpgradeAtomic, 0);
+
+		// dam upgrade
+		RpAtomic* currentDamUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_BNT_SCOOP_DAM]);
+
+		if (currentDamUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentDamUpgradeAtomic);
+			RpAtomicDestroy(currentDamUpgradeAtomic);
+		}
+
+		RpAtomicSetFrame(newDamUpgradeAtomic, m_aCarNodes[CAR_BNT_SCOOP_DAM]);
+		RpClumpAddAtomic(GetClump(), newDamUpgradeAtomic);
+
+		CVehicleModelInfo::SetEnvironmentMapCB(newDamUpgradeAtomic, nil);
+
+		mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_BNT_SCOOP_DAM]));
+		mat.UpdateRW();
+
+		CVisibilityPlugins::SetAtomicFlag(newDamUpgradeAtomic, ATOMIC_FLAG_DAM);
+		if (Damage.GetDoorStatus(DOOR_BONNET) == DOOR_STATUS_OK)
+			RpAtomicSetFlags(newDamUpgradeAtomic, 0);
+
+		if (!temporary) {
+			m_aUpgrades[UPGRADE_BONNET_SCOOP].m_nUpgradeModelIndex = modelIndex;
+			m_aUpgrades[UPGRADE_BONNET_SCOOP].m_nTempUpgradeModelIndex = modelIndex;
+			m_aUpgrades[UPGRADE_BONNET_SCOOP].m_nUpgradeNumber = (modelIndex + 1) - MI_BNT_SCOOP_1;
+		}
+
+		return;
+	}
+
+	// roof scoop
+	if (modelIndex >= MI_RF_SCOOP_1 && modelIndex <= MI_RF_SCOOP_1) {
+		if (!m_aCarNodes[CAR_RF_SCOOP])
+			return;
+
+		RpAtomic* newUpgradeAtomic = (RpAtomic*)CModelInfo::GetModelInfo(modelIndex)->CreateInstance();
+
+		if (!newUpgradeAtomic)
+			return;
+
+		RwFrameDestroy(RpAtomicGetFrame(newUpgradeAtomic));
+
+		RpAtomic* currentUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_RF_SCOOP]);
+		if (currentUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentUpgradeAtomic);
+			RpAtomicDestroy(currentUpgradeAtomic);
+		}
+
+		RpAtomicSetFrame(newUpgradeAtomic, m_aCarNodes[CAR_RF_SCOOP]);
+		RpClumpAddAtomic(GetClump(), newUpgradeAtomic);
+
+		CVehicleModelInfo::SetEnvironmentMapCB(newUpgradeAtomic, nil);
+
+		mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_RF_SCOOP]));
+		mat.UpdateRW();
+
+		if (!temporary) {
+			m_aUpgrades[UPGRADE_ROOF_SCOOP].m_nUpgradeModelIndex = modelIndex;
+			m_aUpgrades[UPGRADE_ROOF_SCOOP].m_nTempUpgradeModelIndex = modelIndex;
+			m_aUpgrades[UPGRADE_ROOF_SCOOP].m_nUpgradeNumber = (modelIndex + 1) - MI_RF_SCOOP_1;
+		}
+
+		return;
+	}
+
+	// bonnet vents
+	if (modelIndex >= MI_BNT_VENT_L_1 && modelIndex <= MI_BNT_VENT_R_2_DAM) {
+		if (!m_aCarNodes[CAR_VENT_L_OK] || !m_aCarNodes[CAR_VENT_L_DAM] ||
+			!m_aCarNodes[CAR_VENT_R_OK] || !m_aCarNodes[CAR_VENT_R_DAM])
+			return;
+
+		RpAtomic* newOkLeftUpgradeAtomic = nil;
+		RpAtomic* newDamLeftUpgradeAtomic = nil;
+		RpAtomic* newOkRightUpgradeAtomic = nil;
+		RpAtomic* newDamRightUpgradeAtomic = nil;
+		if (modelIndex == MI_BNT_VENT_L_1 || modelIndex == MI_BNT_VENT_R_1) {
+			newOkLeftUpgradeAtomic = (RpAtomic*)CModelInfo::GetModelInfo(MI_BNT_VENT_L_1)->CreateInstance();
+			newDamLeftUpgradeAtomic = (RpAtomic*)CModelInfo::GetModelInfo(MI_BNT_VENT_L_1_DAM)->CreateInstance();
+			newOkRightUpgradeAtomic = (RpAtomic*)CModelInfo::GetModelInfo(MI_BNT_VENT_R_1)->CreateInstance();
+			newDamRightUpgradeAtomic = (RpAtomic*)CModelInfo::GetModelInfo(MI_BNT_VENT_R_1_DAM)->CreateInstance();
+		} else if (modelIndex == MI_BNT_VENT_L_2 || modelIndex == MI_BNT_VENT_R_2) {
+			newOkLeftUpgradeAtomic = (RpAtomic*)CModelInfo::GetModelInfo(MI_BNT_VENT_L_2)->CreateInstance();
+			newDamLeftUpgradeAtomic = (RpAtomic*)CModelInfo::GetModelInfo(MI_BNT_VENT_L_2_DAM)->CreateInstance();
+			newOkRightUpgradeAtomic = (RpAtomic*)CModelInfo::GetModelInfo(MI_BNT_VENT_R_2)->CreateInstance();
+			newDamRightUpgradeAtomic = (RpAtomic*)CModelInfo::GetModelInfo(MI_BNT_VENT_R_2_DAM)->CreateInstance();
+		}
+
+		if (!newOkLeftUpgradeAtomic || !newDamLeftUpgradeAtomic || !newOkRightUpgradeAtomic || !newDamRightUpgradeAtomic)
+			return;
+
+		RwFrameDestroy(RpAtomicGetFrame(newOkLeftUpgradeAtomic));
+		RwFrameDestroy(RpAtomicGetFrame(newDamLeftUpgradeAtomic));
+		RwFrameDestroy(RpAtomicGetFrame(newOkRightUpgradeAtomic));
+		RwFrameDestroy(RpAtomicGetFrame(newDamRightUpgradeAtomic));
+
+		// ok upgrade
+		RpAtomic* currentOkLeftUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_L_OK]);
+		RpAtomic* currentOkRightUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_R_OK]);
+		if (currentOkLeftUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentOkLeftUpgradeAtomic);
+			RpAtomicDestroy(currentOkLeftUpgradeAtomic);
+		}
+		if (currentOkRightUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentOkRightUpgradeAtomic);
+			RpAtomicDestroy(currentOkRightUpgradeAtomic);
+		}
+
+		RpAtomicSetFrame(newOkLeftUpgradeAtomic, m_aCarNodes[CAR_VENT_L_OK]);
+		RpClumpAddAtomic(GetClump(), newOkLeftUpgradeAtomic);
+		RpAtomicSetFrame(newOkRightUpgradeAtomic, m_aCarNodes[CAR_VENT_R_OK]);
+		RpClumpAddAtomic(GetClump(), newOkRightUpgradeAtomic);
+
+		CVehicleModelInfo::SetEnvironmentMapCB(newOkLeftUpgradeAtomic, nil);
+		CVehicleModelInfo::SetEnvironmentMapCB(newOkRightUpgradeAtomic, nil);
+
+		mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_VENT_L_OK]));
+		mat.UpdateRW();
+		mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_VENT_R_OK]));
+		mat.UpdateRW();
+
+		CVisibilityPlugins::SetAtomicFlag(newOkLeftUpgradeAtomic, ATOMIC_FLAG_OK);
+		if (Damage.GetDoorStatus(DOOR_BONNET) == DOOR_STATUS_SMASHED)
+			RpAtomicSetFlags(newOkLeftUpgradeAtomic, 0);
+		CVisibilityPlugins::SetAtomicFlag(newOkRightUpgradeAtomic, ATOMIC_FLAG_OK);
+		if (Damage.GetDoorStatus(DOOR_BONNET) == DOOR_STATUS_SMASHED)
+			RpAtomicSetFlags(newOkRightUpgradeAtomic, 0);
+
+		// dam upgrade
+		RpAtomic* currentDamLeftUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_L_DAM]);
+		RpAtomic* currentDamRightUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_R_DAM]);
+		if (currentDamLeftUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentDamLeftUpgradeAtomic);
+			RpAtomicDestroy(currentDamLeftUpgradeAtomic);
+		}
+		if (currentDamRightUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentDamRightUpgradeAtomic);
+			RpAtomicDestroy(currentDamRightUpgradeAtomic);
+		}
+
+		RpAtomicSetFrame(newDamLeftUpgradeAtomic, m_aCarNodes[CAR_VENT_L_DAM]);
+		RpClumpAddAtomic(GetClump(), newDamLeftUpgradeAtomic);
+		RpAtomicSetFrame(newDamRightUpgradeAtomic, m_aCarNodes[CAR_VENT_R_DAM]);
+		RpClumpAddAtomic(GetClump(), newDamRightUpgradeAtomic);
+
+		CVehicleModelInfo::SetEnvironmentMapCB(newDamLeftUpgradeAtomic, nil);
+		CVehicleModelInfo::SetEnvironmentMapCB(newDamRightUpgradeAtomic, nil);
+
+		mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_VENT_L_DAM]));
+		mat.UpdateRW();
+		mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_VENT_R_DAM]));
+		mat.UpdateRW();
+		
+		CVisibilityPlugins::SetAtomicFlag(newDamLeftUpgradeAtomic, ATOMIC_FLAG_DAM);
+		if (Damage.GetDoorStatus(DOOR_BONNET) == DOOR_STATUS_OK)
+			RpAtomicSetFlags(newDamLeftUpgradeAtomic, 0);
+		CVisibilityPlugins::SetAtomicFlag(newDamRightUpgradeAtomic, ATOMIC_FLAG_DAM);
+		if (Damage.GetDoorStatus(DOOR_BONNET) == DOOR_STATUS_OK)
+			RpAtomicSetFlags(newDamRightUpgradeAtomic, 0);
+
+		if (!temporary) {
+			m_aUpgrades[UPGRADE_VENTS].m_nUpgradeModelIndex = modelIndex;
+			m_aUpgrades[UPGRADE_VENTS].m_nTempUpgradeModelIndex = modelIndex;
+
+			if (modelIndex == MI_BNT_VENT_L_1 || modelIndex == MI_BNT_VENT_R_1)
+				m_aUpgrades[UPGRADE_VENTS].m_nUpgradeNumber = 1;
+
+			if (modelIndex == MI_BNT_VENT_L_2 || modelIndex == MI_BNT_VENT_R_2)
+				m_aUpgrades[UPGRADE_VENTS].m_nUpgradeNumber = 2;
+		}
+
+		return;
+	}
+
+	// superchargers
+	if (modelIndex >= MI_SC_SABRE_BONNET_OK && modelIndex <= MI_SC_SABRE_BONNET_DAM) {
+		if (!m_aCarNodes[CAR_SUPERCHARGER])
+			return;
+
+		RpAtomic* newOkUpgradeAtomic = nil;
+		RpAtomic* newDamUpgradeAtomic = nil;
+
+		if (modelIndex == MI_SC_SABRE_BONNET_OK || modelIndex == MI_SC_SABRE_BONNET_DAM) {
+			newOkUpgradeAtomic = (RpAtomic*)CModelInfo::GetModelInfo(MI_SC_SABRE_BONNET_OK)->CreateInstance();
+			newDamUpgradeAtomic = (RpAtomic*)CModelInfo::GetModelInfo(MI_SC_SABRE_BONNET_DAM)->CreateInstance();
+		}
+
+		if (!newOkUpgradeAtomic || !newDamUpgradeAtomic)
+			return;
+
+		RwFrameDestroy(RpAtomicGetFrame(newOkUpgradeAtomic));
+		RwFrameDestroy(RpAtomicGetFrame(newDamUpgradeAtomic));
+
+		// ok uprgrade
+		RpAtomic* currentOkUpgradeAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_BONNET], GetOkAtomicObjectCB, &currentOkUpgradeAtomic);
+
+		if (!currentOkUpgradeAtomic)
+			return;
+
+		m_aDefaultBonnetOkAtomic = RpAtomicClone(currentOkUpgradeAtomic);
+		//RwFrameDestroy(RpAtomicGetFrame(m_aDefaultBonnetOkAtomic));
+
+		RpClumpRemoveAtomic(GetClump(), currentOkUpgradeAtomic);
+		RpAtomicDestroy(currentOkUpgradeAtomic);
+
+		RpAtomicSetFrame(newOkUpgradeAtomic, m_aCarNodes[CAR_BONNET]);
+		RpClumpAddAtomic(GetClump(), newOkUpgradeAtomic);
+
+		CVisibilityPlugins::SetAtomicFlag(newOkUpgradeAtomic, ATOMIC_FLAG_OK);
+		CVisibilityPlugins::SetAtomicRenderCallback(newOkUpgradeAtomic, CVisibilityPlugins::RenderVehicleHiDetailCB);
+		if (Damage.GetDoorStatus(DOOR_BONNET) == DOOR_STATUS_SMASHED)
+			RpAtomicSetFlags(newOkUpgradeAtomic, 0);
+
+		// dam upgrade
+		RpAtomic* currentDamUpgradeAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_BONNET], GetDamAtomicObjectCB, &currentDamUpgradeAtomic);
+
+		if (!currentDamUpgradeAtomic)
+			return;
+
+		m_aDefaultBonnetDamAtomic = RpAtomicClone(currentDamUpgradeAtomic);
+		//RwFrameDestroy(RpAtomicGetFrame(m_aDefaultBonnetDamAtomic));
+
+		RpClumpRemoveAtomic(GetClump(), currentDamUpgradeAtomic);
+		RpAtomicDestroy(currentDamUpgradeAtomic);
+
+		RpAtomicSetFrame(newDamUpgradeAtomic, m_aCarNodes[CAR_BONNET]);
+		RpClumpAddAtomic(GetClump(), newDamUpgradeAtomic);
+
+		CVisibilityPlugins::SetAtomicFlag(newDamUpgradeAtomic, ATOMIC_FLAG_DAM);
+		CVisibilityPlugins::SetAtomicRenderCallback(newDamUpgradeAtomic, CVisibilityPlugins::RenderVehicleHiDetailCB);
+		if (Damage.GetDoorStatus(DOOR_BONNET) == DOOR_STATUS_OK)
+			RpAtomicSetFlags(newDamUpgradeAtomic, 0);
+
+		RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SUPERCHARGER]->child), rpATOMICRENDER); // supercharger
+		RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SUPERCHARGER]->child->child->child), rpATOMICRENDER); // carb
+		RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SUPERCHARGER]->child->child->next->child), rpATOMICRENDER); // flywheel
+
+		if (!temporary) {
+			m_aUpgrades[UPGRADE_SUPERCHARGER].m_nUpgradeModelIndex = modelIndex;
+			m_aUpgrades[UPGRADE_SUPERCHARGER].m_nTempUpgradeModelIndex = modelIndex;
+			m_aUpgrades[UPGRADE_SUPERCHARGER].m_nUpgradeNumber = 1;
+		}
+
+		return;
+	}
+}
+
+void CAutomobile::RemoveUpgrade(eUpgradeTypes upgradeType, bool temporary)
+{
+	if (upgradeType == UPGRADE_SPOILER) {
+		if (!m_aCarNodes[CAR_SPOILER_OK] && !m_aCarNodes[CAR_SPOILER_DAM])
+			return;
+
+		RpAtomic* currentOkUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SPOILER_OK]);
+		if (currentOkUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentOkUpgradeAtomic);
+			RpAtomicDestroy(currentOkUpgradeAtomic);
+		}
+
+		if (m_aCarNodes[CAR_SPOILER_DAM]) {
+			RpAtomic* currentDamUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SPOILER_DAM]);
+			if (currentDamUpgradeAtomic) {
+				RpClumpRemoveAtomic(GetClump(), currentDamUpgradeAtomic);
+				RpAtomicDestroy(currentDamUpgradeAtomic);
+			}
+		}
+
+		if (!temporary) {
+			m_aUpgrades[UPGRADE_SPOILER].m_nUpgradeModelIndex = 0;
+			m_aUpgrades[UPGRADE_SPOILER].m_nTempUpgradeModelIndex = 0;
+			m_aUpgrades[UPGRADE_SPOILER].m_nUpgradeNumber = 0;
+		}
+	} else if (upgradeType == UPGRADE_SKIRTS) {
+		if (!m_aCarNodes[CAR_SKIRT_L] || !m_aCarNodes[CAR_SKIRT_R])
+			return;
+
+		RpAtomic* currentLeftUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SKIRT_L]);
+		RpAtomic* currentRightUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SKIRT_R]);
+		if (currentLeftUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentLeftUpgradeAtomic);
+			RpAtomicDestroy(currentLeftUpgradeAtomic);
+		}
+		if (currentRightUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentRightUpgradeAtomic);
+			RpAtomicDestroy(currentRightUpgradeAtomic);
+		}
+
+		if (!temporary) {
+			m_aUpgrades[UPGRADE_SKIRTS].m_nUpgradeModelIndex = 0;
+			m_aUpgrades[UPGRADE_SKIRTS].m_nTempUpgradeModelIndex = 0;
+			m_aUpgrades[UPGRADE_SKIRTS].m_nUpgradeNumber = 0;
+		}
+	} else if (upgradeType == UPGRADE_ROOF_SCOOP) {
+		if (!m_aCarNodes[CAR_RF_SCOOP])
+			return;
+
+		RpAtomic* currentUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_RF_SCOOP]);
+		if (currentUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentUpgradeAtomic);
+			RpAtomicDestroy(currentUpgradeAtomic);
+		}
+
+		if (!temporary) {
+			m_aUpgrades[UPGRADE_ROOF_SCOOP].m_nUpgradeModelIndex = 0;
+			m_aUpgrades[UPGRADE_ROOF_SCOOP].m_nTempUpgradeModelIndex = 0;
+			m_aUpgrades[UPGRADE_ROOF_SCOOP].m_nUpgradeNumber = 0;
+		}
+	} else if (upgradeType == UPGRADE_BONNET_SCOOP) {
+		if (!m_aCarNodes[CAR_BNT_SCOOP_OK] || !m_aCarNodes[CAR_BNT_SCOOP_DAM])
+			return;
+
+		RpAtomic* currentOkUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_BNT_SCOOP_OK]);
+		RpAtomic* currentDamUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_BNT_SCOOP_DAM]);
+		if (currentOkUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentOkUpgradeAtomic);
+			RpAtomicDestroy(currentOkUpgradeAtomic);
+		}
+		if (currentDamUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentDamUpgradeAtomic);
+			RpAtomicDestroy(currentDamUpgradeAtomic);
+		}
+
+		if (!temporary) {
+			m_aUpgrades[UPGRADE_BONNET_SCOOP].m_nUpgradeModelIndex = 0;
+			m_aUpgrades[UPGRADE_BONNET_SCOOP].m_nTempUpgradeModelIndex = 0;
+			m_aUpgrades[UPGRADE_BONNET_SCOOP].m_nUpgradeNumber = 0;
+		}
+	} else if (upgradeType == UPGRADE_VENTS) {
+		if (!m_aCarNodes[CAR_VENT_L_OK] || !m_aCarNodes[CAR_VENT_L_DAM] ||
+			!m_aCarNodes[CAR_VENT_R_OK] || !m_aCarNodes[CAR_VENT_R_DAM])
+			return;
+
+		RpAtomic* currentOkLeftUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_L_OK]);
+		RpAtomic* currentDamLeftUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_L_DAM]);
+		RpAtomic* currentOkRightUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_R_OK]);
+		RpAtomic* currentDamRightUpgradeAtomic = (RpAtomic*)GetFirstObject(m_aCarNodes[CAR_VENT_R_DAM]);
+		if (currentOkLeftUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentOkLeftUpgradeAtomic);
+			RpAtomicDestroy(currentOkLeftUpgradeAtomic);
+		}
+		if (currentDamLeftUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentDamLeftUpgradeAtomic);
+			RpAtomicDestroy(currentDamLeftUpgradeAtomic);
+		}
+		if (currentOkRightUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentOkRightUpgradeAtomic);
+			RpAtomicDestroy(currentOkRightUpgradeAtomic);
+		}
+		if (currentDamRightUpgradeAtomic) {
+			RpClumpRemoveAtomic(GetClump(), currentDamRightUpgradeAtomic);
+			RpAtomicDestroy(currentDamRightUpgradeAtomic);
+		}
+
+		if (!temporary) {
+			m_aUpgrades[UPGRADE_VENTS].m_nUpgradeModelIndex = 0;
+			m_aUpgrades[UPGRADE_VENTS].m_nTempUpgradeModelIndex = 0;
+			m_aUpgrades[UPGRADE_VENTS].m_nUpgradeNumber = 0;
+		}
+	} else if (upgradeType == UPGRADE_SUPERCHARGER) {
+		if (!m_aCarNodes[CAR_SUPERCHARGER])
+			return;
+
+		// ok uprgrade
+		RpAtomic* currentOkUpgradeAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_BONNET], GetOkAtomicObjectCB, &currentOkUpgradeAtomic);
+
+		if (!currentOkUpgradeAtomic)
+			return;
+
+		RpClumpRemoveAtomic(GetClump(), currentOkUpgradeAtomic);
+		RpAtomicDestroy(currentOkUpgradeAtomic);
+
+		RpAtomicSetFrame(m_aDefaultBonnetOkAtomic, m_aCarNodes[CAR_BONNET]);
+		RpClumpAddAtomic(GetClump(), m_aDefaultBonnetOkAtomic);
+
+		CVisibilityPlugins::SetAtomicFlag(m_aDefaultBonnetOkAtomic, ATOMIC_FLAG_OK);
+		CVisibilityPlugins::SetAtomicRenderCallback(m_aDefaultBonnetOkAtomic, CVisibilityPlugins::RenderVehicleHiDetailCB);
+		if (Damage.GetDoorStatus(DOOR_BONNET) == DOOR_STATUS_SMASHED)
+			RpAtomicSetFlags(m_aDefaultBonnetOkAtomic, 0);
+
+		// dam upgrade
+		RpAtomic* currentDamUpgradeAtomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_BONNET], GetDamAtomicObjectCB, &currentDamUpgradeAtomic);
+
+		if (!currentDamUpgradeAtomic)
+			return;
+
+		RpClumpRemoveAtomic(GetClump(), currentDamUpgradeAtomic);
+		RpAtomicDestroy(currentDamUpgradeAtomic);
+
+		RpAtomicSetFrame(m_aDefaultBonnetDamAtomic, m_aCarNodes[CAR_BONNET]);
+		RpClumpAddAtomic(GetClump(), m_aDefaultBonnetDamAtomic);
+
+		CVisibilityPlugins::SetAtomicFlag(m_aDefaultBonnetDamAtomic, ATOMIC_FLAG_DAM);
+		CVisibilityPlugins::SetAtomicRenderCallback(m_aDefaultBonnetDamAtomic, CVisibilityPlugins::RenderVehicleHiDetailCB);
+		if (Damage.GetDoorStatus(DOOR_BONNET) == DOOR_STATUS_OK)
+			RpAtomicSetFlags(m_aDefaultBonnetDamAtomic, 0);
+
+		RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SUPERCHARGER]->child), 0); // supercharger
+		RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SUPERCHARGER]->child->child->child), 0); // carb
+		RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SUPERCHARGER]->child->child->next->child), 0); // flywheel
+
+		if (!temporary) {
+			m_aUpgrades[UPGRADE_SUPERCHARGER].m_nUpgradeModelIndex = 0;
+			m_aUpgrades[UPGRADE_SUPERCHARGER].m_nTempUpgradeModelIndex = 0;
+			m_aUpgrades[UPGRADE_SUPERCHARGER].m_nUpgradeNumber = 0;
+		}
+	}
+}
+#endif
 
 void
 CAutomobile::SetAllTaxiLights(bool set)

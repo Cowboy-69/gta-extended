@@ -41,6 +41,9 @@
 #include "Stats.h"
 #include "CarCtrl.h"
 #include "TrafficLights.h"
+#ifdef IMPROVED_VEHICLES
+#include "Bike.h"
+#endif
 
 #ifdef GTA_PS2
 #include "eetypes.h"
@@ -292,11 +295,29 @@ void HealthCheat()
 	FindPlayerPed()->m_fHealth = CWorld::Players[0].m_nMaxHealth;
 	if (FindPlayerVehicle()) {
 		FindPlayerVehicle()->m_fHealth = 1000.0f;
+#ifdef IMPROVED_VEHICLES // health cheat
+		if (FindPlayerVehicle()->m_vehType == VEHICLE_TYPE_CAR) {
+			((CAutomobile*)FindPlayerVehicle())->Fix();
+			((CAutomobile*)FindPlayerVehicle())->Damage.SetEngineStatus(0);
+			for (int32 i = 0; i < 4; i++)
+				((CAutomobile*)FindPlayerVehicle())->Damage.SetWheelStatus(i, WHEEL_STATUS_OK);
+
+			//for (int32 frameID = CAR_HEADLIGHT_L; frameID < NUM_CAR_NODES; frameID++)
+				//((CAutomobile*)FindPlayerVehicle())->SetFrameLightStatus((eCarNodes)frameID, LIGHT_STATUS_OK);
+
+		} else if (FindPlayerVehicle()->m_vehType == VEHICLE_TYPE_BIKE) {
+			((CBike*)FindPlayerVehicle())->Fix();
+
+			//for (int32 frameID = BIKE_HEADLIGHT_L; frameID < BIKE_NUM_NODES; frameID++)
+				//((CBike*)FindPlayerVehicle())->SetFrameLightStatus((eBikeNodes)frameID, LIGHT_STATUS_OK);
+		}
+#else
 		if (FindPlayerVehicle()->m_vehType == VEHICLE_TYPE_CAR) {
 			((CAutomobile*)FindPlayerVehicle())->Damage.SetEngineStatus(0);
 			for (int32 i = 0; i < 4; i++)
 				((CAutomobile*)FindPlayerVehicle())->Damage.SetWheelStatus(i, WHEEL_STATUS_OK);
 		}
+#endif
 	}
 }
 
@@ -2403,12 +2424,10 @@ int16 CPad::GetCarGunUpDown(void)
 #ifdef IMPROVED_MENU_AND_INPUT
 	int16 axis = NewState.RightStickY;
 
-	if (Abs(axis) > FrontEndMenuManager.m_PrefsDeadzone) {
-		return (axis > 0.f ? axis - FrontEndMenuManager.m_PrefsDeadzone : axis + FrontEndMenuManager.m_PrefsDeadzone);
-	}
-	else {
+	if (Abs(axis) > FrontEndMenuManager.m_PrefsRightStickDeadzone)
+		return (axis > 0.f ? axis - FrontEndMenuManager.m_PrefsRightStickDeadzone : axis + FrontEndMenuManager.m_PrefsRightStickDeadzone);
+	else
 		return 0;
-	}
 #else
 	switch (CURMODE)
 	{
@@ -2441,12 +2460,10 @@ int16 CPad::GetCarGunLeftRight(void)
 #ifdef IMPROVED_MENU_AND_INPUT
 	int16 axis = NewState.RightStickX;
 
-	if (Abs(axis) > FrontEndMenuManager.m_PrefsDeadzone) {
-		return (axis > 0.f ? axis - FrontEndMenuManager.m_PrefsDeadzone : axis + FrontEndMenuManager.m_PrefsDeadzone);
-	}
-	else {
+	if (Abs(axis) > FrontEndMenuManager.m_PrefsRightStickDeadzone)
+		return (axis > 0.f ? axis - FrontEndMenuManager.m_PrefsRightStickDeadzone : axis + FrontEndMenuManager.m_PrefsRightStickDeadzone);
+	else
 		return 0;
-	}
 #else
 	switch (CURMODE)
 	{
@@ -2484,10 +2501,21 @@ int16 CPad::GetPedWalkLeftRight(void)
 			int16 axis = NewState.LeftStickX;
 			int16 dpad = (NewState.DPadRight - NewState.DPadLeft) / 2;
 
+#ifdef IMPROVED_MENU_AND_INPUT
+			if (Abs(axis) > Abs(dpad)) {
+				if (Abs(axis) > FrontEndMenuManager.m_PrefsLeftStickDeadzone)
+					return axis;
+				else
+					return 0;
+			} else {
+				return dpad;
+			}
+#else
 			if ( Abs(axis) > Abs(dpad) )
 				return axis;
 			else
 				return dpad;
+#endif
 
 			break;
 		}
@@ -2495,7 +2523,15 @@ int16 CPad::GetPedWalkLeftRight(void)
 		case 1:
 		case 3:
 		{
+#ifdef IMPROVED_MENU_AND_INPUT
+			int16 axis = NewState.LeftStickX;
+			if (Abs(axis) > FrontEndMenuManager.m_PrefsLeftStickDeadzone)
+				return axis;
+			else
+				return 0;
+#else
 			return NewState.LeftStickX;
+#endif
 
 			break;
 		}
@@ -2517,10 +2553,21 @@ int16 CPad::GetPedWalkUpDown(void)
 			int16 axis = NewState.LeftStickY;
 			int16 dpad = (NewState.DPadDown - NewState.DPadUp) / 2;
 
+#ifdef IMPROVED_MENU_AND_INPUT
+			if (Abs(axis) > Abs(dpad)) {
+				if (Abs(axis) > FrontEndMenuManager.m_PrefsLeftStickDeadzone)
+					return axis;
+				else
+					return 0;
+			} else {
+				return dpad;
+			}
+#else
 			if ( Abs(axis) > Abs(dpad) )
 				return axis;
 			else
 				return dpad;
+#endif
 
 			break;
 		}
@@ -2528,7 +2575,15 @@ int16 CPad::GetPedWalkUpDown(void)
 		case 1:
 		case 3:
 		{
+#ifdef IMPROVED_MENU_AND_INPUT
+			int16 axis = NewState.LeftStickY;
+			if (Abs(axis) > FrontEndMenuManager.m_PrefsLeftStickDeadzone)
+				return axis;
+			else
+				return 0;
+#else
 			return NewState.LeftStickY;
+#endif
 
 			break;
 		}
@@ -3931,11 +3986,10 @@ int16 CPad::SniperModeLookLeftRight(void)
 #ifdef IMPROVED_MENU_AND_INPUT
 	int16 axis = NewState.RightStickX;
 
-		if (Abs(axis) > FrontEndMenuManager.m_PrefsDeadzone) {
-			return (axis > 0.f ? axis - FrontEndMenuManager.m_PrefsDeadzone : axis + FrontEndMenuManager.m_PrefsDeadzone);
-		} else {
-			return 0;
-		}
+	if (Abs(axis) > FrontEndMenuManager.m_PrefsRightStickDeadzone)
+		return (axis > 0.f ? axis - FrontEndMenuManager.m_PrefsRightStickDeadzone : axis + FrontEndMenuManager.m_PrefsRightStickDeadzone);
+	else
+		return 0;
 #else
 	int16 axis = NewState.LeftStickX;
 	int16 dpad = (NewState.DPadRight - NewState.DPadLeft) / 2;
@@ -3958,11 +4012,10 @@ int16 CPad::SniperModeLookUpDown(void)
 
 	axis = -axis;
 
-	if (Abs(axis) > FrontEndMenuManager.m_PrefsDeadzone) {
-		return (axis > 0.f ? axis - FrontEndMenuManager.m_PrefsDeadzone : axis + FrontEndMenuManager.m_PrefsDeadzone);
-	} else {
+	if (Abs(axis) > FrontEndMenuManager.m_PrefsRightStickDeadzone)
+		return (axis > 0.f ? axis - FrontEndMenuManager.m_PrefsRightStickDeadzone : axis + FrontEndMenuManager.m_PrefsRightStickDeadzone);
+	else
 		return 0;
-	}
 #else
 	int16 axis = NewState.LeftStickY;
 	int16 dpad;
@@ -3993,8 +4046,8 @@ int16 CPad::LookAroundLeftRight(void)
 	float axis = GetPad(0)->NewState.RightStickX;
 
 #ifdef IMPROVED_MENU_AND_INPUT
-	if (Abs(axis) > FrontEndMenuManager.m_PrefsDeadzone && !GetLookBehindForPed())
-		return (int16)((axis + ((axis > 0) ? -FrontEndMenuManager.m_PrefsDeadzone : FrontEndMenuManager.m_PrefsDeadzone)));
+	if (Abs(axis) > FrontEndMenuManager.m_PrefsRightStickDeadzone && !GetLookBehindForPed())
+		return (int16)((axis + ((axis > 0) ? -FrontEndMenuManager.m_PrefsRightStickDeadzone : FrontEndMenuManager.m_PrefsRightStickDeadzone)));
 #else
 	if ( Abs(axis) > 85 && !GetLookBehindForPed() )
 		return (int16) ( (axis + ( ( axis > 0 ) ? -85 : 85) )
@@ -4017,8 +4070,8 @@ int16 CPad::LookAroundUpDown(void)
 		axis = -axis;
 
 #ifdef IMPROVED_MENU_AND_INPUT
-	if (Abs(axis) > FrontEndMenuManager.m_PrefsDeadzone && !GetLookBehindForPed())
-		return (int16)((axis + ((axis > 0) ? -FrontEndMenuManager.m_PrefsDeadzone : FrontEndMenuManager.m_PrefsDeadzone)));
+	if (Abs(axis) > FrontEndMenuManager.m_PrefsRightStickDeadzone && !GetLookBehindForPed())
+		return (int16)((axis + ((axis > 0) ? -FrontEndMenuManager.m_PrefsRightStickDeadzone : FrontEndMenuManager.m_PrefsRightStickDeadzone)));
 #else
 	if ( Abs(axis) > 85 && !GetLookBehindForPed() )
 		return (int16) ( (axis + ( ( axis > 0 ) ? -85 : 85) )

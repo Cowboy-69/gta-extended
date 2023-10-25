@@ -805,6 +805,13 @@ CStreaming::RequestModel(int32 id, int32 flags)
 		ms_aInfoForModel[id].m_loadState = STREAMSTATE_INQUEUE;
 		ms_aInfoForModel[id].m_flags = flags;
 	}
+
+#ifdef FIRING_AND_AIMING // fixing the game crash when near the Ammunntion
+	// alternative solution: put the modified player animation files with weapons 
+	// to gta3.img (instead of ViceEx.img)
+	if (id >= MI_BRASS_KNUCKLES && id <= MI_MINIGUN2)
+		LoadAllRequestedModels(false);
+#endif
 }
 
 #define BIGBUILDINGFLAGS STREAMFLAGS_DONT_REMOVE
@@ -1400,6 +1407,13 @@ CStreaming::RemoveAllUnusedModels(void)
 		RemoveLoadedVehicle();
 
 	for(i = NUM_DEFAULT_MODELS; i < MODELINFOSIZE; i++){
+#ifdef VEHICLE_MODS // for new wheels and vehicle mods
+		if (i >= MI_FIRST_NEW_WHEEL && i <= NUM_NEW_WHEEL_MODELS)
+			continue;
+
+		if (i >= MI_FIRST_VEH_MOD && i <= NUM_VEH_MODS)
+			continue;
+#endif
 		if(ms_aInfoForModel[i].m_loadState == STREAMSTATE_LOADED &&
 		    CModelInfo::GetModelInfo(i)->GetNumRefs() == 0) {
 			RemoveModel(i);

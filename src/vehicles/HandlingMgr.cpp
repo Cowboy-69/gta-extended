@@ -91,11 +91,21 @@ const char VehicleNames[NUMHANDLINGS][14] = {
 	"LOVEFIST",
 	"BLOODRA",
 	"BLOODRB",
+#ifdef NEW_VEHICLES // cars handling
+	"PEREN2",
+	"TRASH2",
+	"HELLENBACH",
+	"PREMIER",
+#endif
 	"BIKE",
 	"MOPED",
 	"DIRTBIKE",
 	"ANGEL",
 	"FREEWAY",
+#ifdef NEW_VEHICLES // bikes handling
+	"STREETFI",
+	"MANCHEZ",
+#endif
 	"PREDATOR",
 	"SPEEDER",
 	"REEFER",
@@ -380,7 +390,11 @@ cHandlingDataMgr::ConvertDataToGameUnits(tHandlingData *handling)
 	if(handling->nIdentifier == HANDLING_RCBANDIT){
 		handling->Transmission.fMaxCruiseVelocity = handling->Transmission.fMaxVelocity;
 		handling->Transmission.fMaxReverseVelocity = -handling->Transmission.fMaxVelocity;
+#ifdef NEW_VEHICLES // for bikes
+	}else if(handling->nIdentifier >= HANDLING_BIKE && handling->nIdentifier <= HANDLING_MANCHEZ){
+#else
 	}else if(handling->nIdentifier >= HANDLING_BIKE && handling->nIdentifier <= HANDLING_FREEWAY){
+#endif
 		handling->Transmission.fMaxCruiseVelocity = velocity;
 		handling->Transmission.fMaxVelocity = velocity * 1.2f;
 		handling->Transmission.fMaxReverseVelocity = -0.05f;

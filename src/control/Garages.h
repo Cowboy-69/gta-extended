@@ -3,6 +3,9 @@
 #include "Camera.h"
 #include "config.h"
 #include "Lists.h"
+#ifdef VEHICLE_MODS // Save/Load
+#include "Automobile.h"
+#endif
 
 class CVehicle;
 
@@ -51,7 +54,10 @@ enum eGarageType
 	GARAGE_HIDEOUT_NINE,
 	GARAGE_HIDEOUT_TEN,
 	GARAGE_HIDEOUT_ELEVEN,
-	GARAGE_HIDEOUT_TWELVE
+	GARAGE_HIDEOUT_TWELVE,
+#ifdef VEHICLE_MODS // mod garage
+	GARAGE_MOD,
+#endif
 };
 
 enum
@@ -69,6 +75,10 @@ class CStoredCar
 		FLAG_EXPLOSIONPROOF = 0x4,
 		FLAG_COLLISIONPROOF = 0x8,
 		FLAG_MELEEPROOF = 0x10,
+#ifdef VEHICLE_MODS // Save/Load
+		FLAG_BULLETPROOFTYRES = 0x20,
+		FLAG_HYDRAULICS = 0x40,
+#endif
 	};
 	int32 m_nModelIndex;
 	CVector m_vecPos;
@@ -80,6 +90,16 @@ class CStoredCar
 	int8 m_nVariationA;
 	int8 m_nVariationB;
 	int8 m_nCarBombType;
+#ifdef VEHICLE_MODS // Save/Load
+	uint8 m_nWindowTintLevel;
+	uint8 m_nAddSuspensionForceLevel;
+	uint16 m_nUpgradeModelIndex[NUM_UPGRADES];
+	uint8 m_nRimsColor;
+	uint8 m_nSpoilerColor;
+	float m_fAddEngineAcceleration;
+	float m_fAddBrakeDeceleration;
+	int m_nArmorLevel;
+#endif
 public:
 	void Init() { m_nModelIndex = 0; }
 	void Clear() { m_nModelIndex = 0; }
@@ -222,6 +242,10 @@ public:
 	static CGarage aGarages[NUM_GARAGES];
 	static CStoredCar aCarsInSafeHouses[TOTAL_HIDEOUT_GARAGES][NUM_GARAGE_STORED_CARS];
 	static bool bCamShouldBeOutisde;
+#ifdef VEHICLE_MODS // mod garage
+	static bool bPlayerInModGarage;
+	static bool bPlayerShouldBeLeaveModGarage;
+#endif
 
 	static void Init(void);
 #ifndef PS2
@@ -265,6 +289,13 @@ public:
 	static void SetMaxNumStoredCarsForGarage(int16 garage, uint8 num) { aGarages[garage].m_nMaxStoredCars = num; }
 
 	static bool IsCarSprayable(CVehicle*);
+#ifdef VEHICLE_MODS // mod garage
+	static void ActivateModGarage();
+	static void LeaveModGarage();
+	static bool IsCarModifiable(CVehicle* pVehicle);
+	static bool IsCarTintable(CVehicle* pVehicle);
+	static void TryChangeCameraInModGarage(const char* menuName);
+#endif
 	static float FindDoorHeightForMI(int32);
 	static void CloseHideOutGaragesBeforeSave(void);
 	static int32 CountCarsInHideoutGarage(uint8);

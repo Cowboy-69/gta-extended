@@ -149,7 +149,6 @@ CClouds::Render(void)
 	if ((int)moonfadeout > 0.0f && (int)moonfadeout < 340) {
 		float coverage = Max(CWeather::Foggyness, CWeather::CloudCoverage);
 		int brightness = (1.0f - coverage) * ((int)moonfadeout);
-		//re3_debug("%f, %f", CWeather::Foggyness, CWeather::CloudCoverage);
 		CVector sunCoors = CTimeCycle::GetSunDirection();
 		sunCoors *= 150.0f;
 		RwV3d pos = -sunCoors;

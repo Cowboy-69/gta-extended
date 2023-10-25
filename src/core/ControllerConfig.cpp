@@ -207,6 +207,10 @@ void CControllerConfigManager::InitDefaultControlConfiguration()
 																		          
 	SetControllerKeyAssociatedWithAction    (VEHICLE_BRAKE,                       rsDOWN,     KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (VEHICLE_BRAKE,                       'S',        OPTIONAL_EXTRA);
+
+#ifdef IMPROVED_MENU_AND_INPUT
+	SetControllerKeyAssociatedWithAction    (VEHICLE_LOOKBEHIND,                  'C',		  KEYBOARD);
+#endif
 																		          
 	SetControllerKeyAssociatedWithAction    (TOGGLE_SUBMISSIONS,                  rsPLUS,     KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (TOGGLE_SUBMISSIONS,                  rsCAPSLK,   OPTIONAL_EXTRA);
@@ -225,20 +229,36 @@ void CControllerConfigManager::InitDefaultControlConfiguration()
 
 	SetControllerKeyAssociatedWithAction    (NETWORK_TALK,                        'T',        KEYBOARD);
 																		          
+#ifdef IMPROVED_MENU_AND_INPUT
+	SetControllerKeyAssociatedWithAction    (PED_LOOKBEHIND,                      'C', KEYBOARD);
+#else
 	SetControllerKeyAssociatedWithAction    (PED_LOOKBEHIND,                      rsPADEND,   KEYBOARD);
+#endif
 	SetControllerKeyAssociatedWithAction    (PED_LOOKBEHIND,                      rsCAPSLK,   OPTIONAL_EXTRA);
 
+#ifdef IMPROVED_MENU_AND_INPUT
+	SetControllerKeyAssociatedWithAction    (PED_DUCK,                            rsLCTRL,        KEYBOARD);
+#else
 	SetControllerKeyAssociatedWithAction    (PED_DUCK,                            'C',        KEYBOARD);
-																		          
+#endif
+					
 	SetControllerKeyAssociatedWithAction    (PED_FIREWEAPON,                      rsPADINS,   KEYBOARD);
+#ifndef IMPROVED_MENU_AND_INPUT
 	SetControllerKeyAssociatedWithAction    (PED_FIREWEAPON,                      rsLCTRL,    OPTIONAL_EXTRA);
+#endif
 #ifdef BIND_VEHICLE_FIREWEAPON
 	SetControllerKeyAssociatedWithAction    (VEHICLE_FIREWEAPON,                  rsPADINS,   KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (VEHICLE_FIREWEAPON,                  rsLCTRL,    OPTIONAL_EXTRA);
 #endif
+#ifdef IMPROVED_MENU_AND_INPUT
+	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_LEFT,               'Q', KEYBOARD);
+
+	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_RIGHT,              'E', OPTIONAL_EXTRA); // BUG: must be KEYBOARD ?
+#else
 	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_LEFT,               rsPADDEL,   KEYBOARD);
 
 	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_RIGHT,              rsPADENTER, OPTIONAL_EXTRA); // BUG: must be KEYBOARD ?
+#endif
 																		          
 	SetControllerKeyAssociatedWithAction    (PED_LOCK_TARGET,                     rsDEL,      KEYBOARD);
 																		          

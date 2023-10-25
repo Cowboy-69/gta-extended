@@ -41,6 +41,54 @@ enum eCarNodes
 	CAR_BONNET,
 	CAR_BOOT,
 	CAR_WINDSCREEN,
+#ifdef IMPROVED_VEHICLES_2 // car nodes
+	CAR_STEERINGWHEEL,
+	CAR_HEADLIGHT_L,
+	CAR_HEADLIGHT_R,
+	CAR_HEADLIGHT_WING_L,
+	CAR_HEADLIGHT_WING_R,
+	CAR_HEADLIGHT_BUMP_L,
+	CAR_HEADLIGHT_BUMP_R,
+	CAR_TAILLIGHT_L,
+	CAR_TAILLIGHT_R,
+	CAR_REVERSINGLIGHT_L,
+	CAR_REVERSINGLIGHT_R,
+	CAR_REVERSINGLIGHT_BUMP_L,
+	CAR_REVERSINGLIGHT_BUMP_R,
+	CAR_BRAKELIGHT_L,
+	CAR_BRAKELIGHT_R,
+	CAR_BRAKELIGHT_BUMP_L,
+	CAR_BRAKELIGHT_BUMP_R,
+	CAR_INDICATOR_LF,
+	CAR_INDICATOR_RF,
+	CAR_INDICATOR_2_LF,
+	CAR_INDICATOR_2_RF,
+	CAR_INDICATOR_LR,
+	CAR_INDICATOR_RR,
+	CAR_INDICATOR_2_LR,
+	CAR_INDICATOR_2_RR,
+	CAR_INDICATOR_WING_LF,
+	CAR_INDICATOR_WING_RF,
+	CAR_INDICATOR_2_WING_LF,
+	CAR_INDICATOR_2_WING_RF,
+	CAR_WINDOW_L_MISC,
+	CAR_WINDOW_R_MISC,
+	CAR_WINDOW_REAR,
+#endif
+#ifdef VEHICLE_MODS // car nodes
+	CAR_SPOILER_OK,
+	CAR_SPOILER_DAM,
+	CAR_SKIRT_L,
+	CAR_SKIRT_R,
+	CAR_RF_SCOOP,
+	CAR_BNT_SCOOP_OK,
+	CAR_BNT_SCOOP_DAM,
+	CAR_VENT_L_OK,
+	CAR_VENT_L_DAM,
+	CAR_VENT_R_OK,
+	CAR_VENT_R_DAM,
+	CAR_SUPERCHARGER,
+#endif
 	NUM_CAR_NODES,
 };
 
@@ -101,6 +149,14 @@ enum eLights
 	VEHLIGHT_REAR_LEFT,
 	VEHLIGHT_REAR_RIGHT,
 };
+
+#ifdef IMPROVED_VEHICLES_2 // indicators
+enum eIndicators
+{
+	INDICATORS_LEFT,
+	INDICATORS_RIGHT,
+};
+#endif
 
 enum
 {
@@ -277,6 +333,12 @@ public:
 	CStoredCollPoly m_aCollPolys[2];     // poly which is under front/rear part of car
 	float m_fSteerInput;
 	eVehicleType m_vehType;
+#ifdef VEHICLE_MODS
+	int m_nTempColor1;
+	int m_nTempColor2;
+	int m_nArmorLevel;
+	float m_fAddEngineAcceleration;
+#endif
 
 	static void *operator new(size_t) throw();
 	static void *operator new(size_t sz, int slot) throw();

@@ -22,6 +22,11 @@
 	#define IMPROVED_TECH_PART
 	#define WANTED_PATHS
 
+	#define VEHICLE_MODS
+	#define IMPROVED_VEHICLES
+	#define NEW_VEHICLES
+	//#define IMPROVED_VEHICLES_2 // not ready yet
+
 	#define NEW_CHEATS
 
 	#define UTILS
@@ -34,7 +39,12 @@ enum Config {
 	MAX_CDIMAGES = 8, // additional cdimages
 	MAX_CDCHANNELS = 5,
 
+#ifdef VICE_EXTENDED
+	MAXWHEELMODELS = 12,
+	MODELINFOSIZE = 6700,
+#else
 	MODELINFOSIZE = 6500,	// 4900 on PS2
+#endif
 	TXDSTORESIZE = 1385,
 	COLSTORESIZE = 31,
 	EXTRADIRSIZE = 256,
@@ -45,7 +55,11 @@ enum Config {
 	CLUMPMODELSIZE = 5,
 	WEAPONMODELSIZE = 37,
 	PEDMODELSIZE = 130,
+#ifdef NEW_VEHICLES
+	VEHICLEMODELSIZE = 130,
+#else
 	VEHICLEMODELSIZE = 110,
+#endif
 	TWODFXSIZE = 1210,
 
 	MAXVEHICLESLOADED = 50, // 70 on mobile
@@ -56,7 +70,11 @@ enum Config {
 	NUMPTRNODES = 50000,
 	NUMENTRYINFOS = 3200,
 	NUMPEDS = 140,
+#ifdef NEW_VEHICLES
+	NUMVEHICLES = 130,
+#else
 	NUMVEHICLES = 110,
+#endif
 	NUMBUILDINGS = 7000,
 	NUMTREADABLES = 1,
 	NUMOBJECTS = 460,
@@ -138,7 +156,11 @@ enum Config {
 
 	NUM_ACCIDENTS = 20,
 	NUM_FIRES = 40,
+#ifdef VEHICLE_MODS // mod garage
+	NUM_GARAGES = 33,
+#else
 	NUM_GARAGES = 32,
+#endif
 	NUM_PROJECTILES = 32,
 
 	NUM_GLASSPANES = 45,
@@ -310,7 +332,7 @@ enum Config {
 #define FIX_BUGS		// fixes bugs that we've came across during reversing. You can undefine this only on release builds.
 #define MORE_LANGUAGES		// Add more translations to the game
 #define COMPATIBLE_SAVES // this allows changing structs while keeping saves compatible, and keeps saves compatible between platforms
-#define FIX_INCOMPATIBLE_SAVES // try to fix incompatible saves, requires COMPATIBLE_SAVES
+//#define FIX_INCOMPATIBLE_SAVES // try to fix incompatible saves, requires COMPATIBLE_SAVES
 #define LOAD_INI_SETTINGS // as the name suggests. fundamental for CUSTOM_FRONTEND_OPTIONS
 
 #define NO_MOVIES	// add option to disable intro videos

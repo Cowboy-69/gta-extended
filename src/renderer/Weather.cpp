@@ -20,6 +20,9 @@
 #include "ZoneCull.h"
 #include "SpecialFX.h"
 #include "Replay.h"
+#ifdef VEHICLE_MODS
+#include "Garages.h"
+#endif
 
 int32 CWeather::SoundHandle = -1;
 
@@ -437,6 +440,12 @@ void CWeather::AddRain()
 {
 	if (CCullZones::CamNoRain() || CCullZones::PlayerNoRain())
 		return;
+#ifdef VEHICLE_MODS // it's not raining in the mod garage
+	if (CGarages::bPlayerInModGarage) {
+		Rain = 0.0f;
+		return;
+	}
+#endif
 	if (TheCamera.GetLookingLRBFirstPerson()) {
 		CVehicle* pVehicle = FindPlayerVehicle();
 		if (pVehicle && pVehicle->CarHasRoof()) {

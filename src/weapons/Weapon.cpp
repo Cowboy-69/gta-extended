@@ -1071,7 +1071,7 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 
 		CVector bulletPos;
 #ifdef IMPROVED_TECH_PART // damage
-		if ( CHeli::TestBulletCollision(&source, &target, &bulletPos, info->m_nDamage / 5) )
+		if ( CHeli::TestBulletCollision(&source, &target, &bulletPos, info->m_nDamage / 4) )
 #else
 		if ( CHeli::TestBulletCollision(&source, &target, &bulletPos, 4) )
 #endif
@@ -1116,7 +1116,7 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 
 			CVector bulletPos;
 #ifdef IMPROVED_TECH_PART // damage
-			if (CHeli::TestBulletCollision(fireSource, &target, &bulletPos, info->m_nDamage / 5))
+			if (CHeli::TestBulletCollision(fireSource, &target, &bulletPos, info->m_nDamage / 4))
 #else
 			if (CHeli::TestBulletCollision(fireSource, &target, &bulletPos, 4))
 #endif
@@ -1153,7 +1153,7 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 
 			CVector bulletPos;
 #ifdef IMPROVED_TECH_PART // damage
-			if (CHeli::TestBulletCollision(fireSource, &target, &bulletPos, info->m_nDamage / 5))
+			if (CHeli::TestBulletCollision(fireSource, &target, &bulletPos, info->m_nDamage / 4))
 #else
 			if (CHeli::TestBulletCollision(fireSource, &target, &bulletPos, 4))
 #endif
@@ -1163,6 +1163,13 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 			}
 		}
 	}
+
+#ifdef IMPROVED_VEHICLES_2 // check for shooting vehicle lights and petrolcap
+	if (victim) {
+		CheckForShootingVehicleLights(victim, point);
+		CheckForShootingVehiclePetrolCap(shooter, victim, point);
+	}
+#endif
 
 	if ( shooter->IsPed() && victim)
 	{
@@ -2029,6 +2036,11 @@ CWeapon::FireShotgun(CEntity *shooter, CVector *fireSource)
 				{
 					case ENTITY_TYPE_VEHICLE:
 					{
+#ifdef IMPROVED_VEHICLES_2 // check for shooting vehicle lights and petrolcap
+						CheckForShootingVehicleLights(victim, point);
+						CheckForShootingVehiclePetrolCap(shooter, victim, point);
+#endif
+
 						if (point.pieceB >= CAR_PIECE_WHEEL_LF && point.pieceB <= CAR_PIECE_WHEEL_RR) {
 							((CVehicle*)victim)->BurstTyre(point.pieceB, true);
 
@@ -3093,10 +3105,22 @@ CWeapon::Update(int32 audioEntity, CPed *pedToAdjustSound)
 				CAnimBlendAssociation *reloadAssoc = nil;
 				if (pedToAdjustSound) {
 					if (CPed::GetReloadAnim(info) && (!CWorld::Players[CWorld::PlayerInFocus].m_bFastReload || !pedToAdjustSound->IsPlayer())) {
+#ifdef FIRING_AND_AIMING // shotgun sound
+						if (m_eWeaponType == WEAPONTYPE_SHOTGUN) {
+							reloadAssoc = RpAnimBlendClumpGetAssociation(pedToAdjustSound->GetClump(), ANIM_WEAPON_FIRE);
+							if (!reloadAssoc)
+								reloadAssoc = RpAnimBlendClumpGetAssociation(pedToAdjustSound->GetClump(), ANIM_WEAPON_CROUCHFIRE);
+						} else {
+							reloadAssoc = RpAnimBlendClumpGetAssociation(pedToAdjustSound->GetClump(), CPed::GetReloadAnim(info));
+							if (!reloadAssoc)
+								reloadAssoc = RpAnimBlendClumpGetAssociation(pedToAdjustSound->GetClump(), CPed::GetCrouchReloadAnim(info));
+						}
+#else
 						reloadAssoc = RpAnimBlendClumpGetAssociation(pedToAdjustSound->GetClump(), CPed::GetReloadAnim(info));
 						if (!reloadAssoc) {
 							reloadAssoc = RpAnimBlendClumpGetAssociation(pedToAdjustSound->GetClump(), CPed::GetCrouchReloadAnim(info));
 						}
+#endif
 					}
 				}
 				if (reloadAssoc && reloadAssoc->IsRunning() && reloadAssoc->blendAmount > 0.2f) {
@@ -3483,6 +3507,76 @@ CWeapon::CheckForShootingVehicleOccupant(CEntity **victim, CColPoint *point, eWe
 		*point = origPoint;
 	}
 }
+
+#ifdef IMPROVED_VEHICLES_2 // check for shooting vehicle lights and petrolcap
+void CWeapon::CheckForShootingVehicleLights(CEntity* victim, CColPoint point)
+{
+	if (!victim->IsVehicle())
+		return;
+
+	CVehicle* vehicle = (CVehicle*)victim;
+
+	if (!vehicle)
+		return;
+
+	if (!vehicle->IsCar() && !vehicle->IsBike())
+		return;
+
+	if (vehicle->IsCar()) {
+		CAutomobile* automobile = (CAutomobile*)vehicle;
+		for (int frameID = CAR_HEADLIGHT_L; frameID < NUM_CAR_NODES; frameID++) {
+			RwFrame* lightFrame = automobile->m_aCarNodes[frameID];
+			if (!lightFrame)
+				continue;
+
+			if (automobile->GetFrameLightStatus((eCarNodes)frameID) == LIGHT_STATUS_BROKEN)
+				continue;
+
+			float radius = 0.035f;
+			float distanceSqr = (point.point - lightFrame->getLTM()->pos).MagnitudeSqr();
+			if (distanceSqr > radius || point.normal.z > 0.9f)
+				continue;
+
+			automobile->SetFrameLightStatus((eCarNodes)frameID, LIGHT_STATUS_BROKEN);
+			DMAudio.PlayOneShot(automobile->m_audioEntityId, SOUND_CAR_LIGHT_BREAK, 1.0f);
+
+			break;
+		}
+	}
+}
+void CWeapon::CheckForShootingVehiclePetrolCap(CEntity *shooter, CEntity* victim, CColPoint point)
+{
+	if (!victim->IsVehicle())
+		return;
+
+	CVehicle* vehicle = (CVehicle*)victim;
+
+	if (!vehicle)
+		return;
+
+	if (vehicle->bRenderScorched)
+		return;
+
+	if (vehicle == FindPlayerVehicle())
+		return;
+
+	if (!vehicle->IsCar() && !vehicle->IsBike())
+		return;
+
+	CVehicleModelInfo* mi = (CVehicleModelInfo*)CModelInfo::GetModelInfo(vehicle->GetModelIndex());
+
+	CAutomobile* automobile = (CAutomobile*)vehicle;
+	CVector petrolCapPos = mi->m_positions[CAR_POS_PETROLCAP];
+	petrolCapPos = vehicle->GetMatrix() * petrolCapPos;
+
+	float radius = 0.03f;
+	float distanceSqr = (point.point - petrolCapPos).MagnitudeSqr();
+	if (distanceSqr > radius)
+		return;
+
+	vehicle->BlowUpCar(shooter);
+}
+#endif
 
 #ifdef COMPATIBLE_SAVES
 #define CopyFromBuf(buf, data) memcpy(&data, buf, sizeof(data)); SkipSaveBuf(buf, sizeof(data));

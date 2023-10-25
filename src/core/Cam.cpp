@@ -5962,8 +5962,12 @@ CCam::Process_FollowCar_SA(const CVector& CameraTarget, float TargetOrientation,
 #endif
 
 	bool correctAlpha = true;
+#ifdef VEHICLE_MODS // hydraulics
+	if (!isCar || !((CAutomobile*)car)->bHasHydraulics) {
+#else
 	//	if (SA checks if we aren't in work car, why?) {
 	if (!isCar || car->GetModelIndex() != MI_VOODOO) {
+#endif
 		correctAlpha = false;
 	}
 	else {

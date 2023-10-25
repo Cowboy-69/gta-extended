@@ -15,6 +15,11 @@ public:
 	void ReplaceWithNewModel(int32 id);
 
 	virtual bool GetIsATreadable(void) { return false; }
+
+#ifdef IMPROVED_TECH_PART
+	//bool SetupLighting(void);
+	//void RemoveLighting(bool reset);
+#endif
 };
 
 bool IsBuildingPointerValid(CBuilding*);

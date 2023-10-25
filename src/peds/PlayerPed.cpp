@@ -547,7 +547,7 @@ bool CPlayerPed::CanUseDriveBy(void)
 	CVehicle* vehicle = FindPlayerVehicle();
 
 	bool bSuitableVehicle = !vehicle->IsRealHeli() && !vehicle->IsRealPlane() &&
-		GetModelIndex() != MI_RHINO && GetModelIndex() != MI_FIRETRUCK;
+		vehicle->GetModelIndex() != MI_RHINO && vehicle->GetModelIndex() != MI_FIRETRUCK;
 
 	CCam currentCam = TheCamera.Cams[TheCamera.ActiveCam];
 	bool bSuitableCamera = currentCam.DirectionWasLooking == LOOKING_FORWARD &&
@@ -1117,6 +1117,11 @@ CPlayerPed::PlayerControlSniper(CPad *padUsed)
 		firePos = GetMatrix() * firePos;
 		GetWeapon()->Fire(this, &firePos);
 		m_nPadDownPressedInMilliseconds = CTimer::GetTimeInMilliseconds();
+
+#ifdef FIRING_AND_AIMING // sniper rifle echo
+		if (GetWeapon()->m_nAmmoTotal > 0)
+			DMAudio.PlayOneShot(m_audioEntityId, SOUND_WEAPON_AK47_BULLET_ECHO, GetWeapon()->m_eWeaponType);
+#endif
 	} else if (CTimer::GetTimeInMilliseconds() > m_nPadDownPressedInMilliseconds + firingRate &&
 		CTimer::GetTimeInMilliseconds() - CTimer::GetTimeStepInMilliseconds() < m_nPadDownPressedInMilliseconds + firingRate && padUsed->GetWeapon()) {
 		
@@ -1845,12 +1850,20 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 				bIsPlayerAiming = true;
 			} else if ((!padUsed->GetTarget() || IsDoomMode()) && bIsPlayerAiming) {
 				bIsPlayerAiming = false;
-				ClearWeaponTarget();
+
+				if (GetWeapon()->m_eWeaponState != WEAPONSTATE_RELOADING)
+					ClearWeaponTarget();
 
 				StopAimingAnims();
 
-				if (bIsDucking)
+				if (bIsDucking) {
 					TheCamera.Cams[TheCamera.ActiveCam].m_fTargetCameraPosZ = 0.55f;
+				} else if (weapon != WEAPONTYPE_COLT45 && weapon != WEAPONTYPE_TEC9 && weapon != WEAPONTYPE_SILENCED_INGRAM) {
+					if (m_fMoveSpeed > 0.0f)
+						CAnimManager::BlendAnimation(GetClump(), m_animGroup, ANIM_STD_RUN, 4.0f);
+					else
+						CAnimManager::BlendAnimation(GetClump(), m_animGroup, ANIM_STD_IDLE, 4.0f);
+				}
 			}
 
 			if (weapon == WEAPONTYPE_CAMERA || (weapon == WEAPONTYPE_LASERSCOPE && bIsPlayerAiming))
@@ -1864,7 +1877,7 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 				else
 					TheCamera.Cams[TheCamera.ActiveCam].AimingFOV = 55.0f;
 			}
-		} else if (IsDoomMode()) {
+		} else {
 			bIsPlayerAiming = false;
 
 			StopAimingAnims();
@@ -2048,7 +2061,10 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 		return;
 	else {
 		if (CPad::GetPad(0)->GetTarget()) {
-			if (CPad::GetPad(0)->NewState.LeftShoulder2 < 128 && !bIsAutoAiming || GetWeaponSlot(GetWeapon()->m_eWeaponType) == WEAPONSLOT_SNIPER || InVehicle())
+			bool bCantAim = CPad::GetPad(0)->NewState.RightShoulder1 == 0 && CPad::GetPad(0)->Mode == 2 ||
+							CPad::GetPad(0)->NewState.LeftShoulder2 < 128 && CPad::GetPad(0)->Mode == 1;
+
+			if (bCantAim && !bIsAutoAiming || GetWeaponSlot(GetWeapon()->m_eWeaponType) == WEAPONSLOT_SNIPER || InVehicle())
 				return;
 		}
 	}
@@ -2186,6 +2202,11 @@ CPlayerPed::PlayerControlZelda(CPad *padUsed)
 			m_fRotationDest = neededTurn;
 		}
 
+#ifdef IMPROVED_MENU_AND_INPUT // walking on the ALT key
+		if (CPad::GetPad(0)->GetLeftAlt()) {
+			m_fMoveSpeed /= 2;
+		}
+#endif
 		float maxAcc = 0.07f * CTimer::GetTimeStep();
 		m_fMoveSpeed = Min(padMoveInGameUnit, m_fMoveSpeed + maxAcc);
 
@@ -2218,7 +2239,7 @@ CPlayerPed::PlayerControlZelda(CPad *padUsed)
 	if (!CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType)->IsFlagSet(WEAPONFLAG_HEAVY) && padUsed->GetSprint()) {
 #endif
 #if defined CROUCH && defined SWIMMING && defined FIRING_AND_AIMING
-		if ((!m_pCurrentPhysSurface || (!m_pCurrentPhysSurface->bInfiniteMass || m_pCurrentPhysSurface->m_phy_flagA08)) && !bIsPlayerAiming &&
+		if ((!m_pCurrentPhysSurface || (!m_pCurrentPhysSurface->bInfiniteMass || m_pCurrentPhysSurface->m_phy_flagA08)) && !bIsPlayerAiming && !RpAnimBlendClumpGetAssociation(GetClump(), ANIM_WEAPON_FIRE) &&
 			!bIsDucking && !RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_IDLE) && !RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_FORWARD) && !bIsSwimming ||
 			bIsSwimming && !RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_SWIM_TREAD))
 			m_nMoveState = PEDMOVE_SPRINT;
@@ -2357,7 +2378,7 @@ CPlayerPed::ProcessControl(void)
 {
 #if defined WANTED_PATHS && defined DEBUG
 	CPad* pad = CPad::GetPad(0);
-	if (pad->GetCharJustDown(0x31)) {
+	if (pad->GetCharJustDown(0x31)) { // 1
 		if (bIsPathRecording) {
 			re3_debug("stop recording");
 
@@ -2375,7 +2396,7 @@ CPlayerPed::ProcessControl(void)
 		}
 
 		bIsPathRecording = !bIsPathRecording;
-	} else if (pad->GetCharJustDown(0x32)) {
+	} else if (pad->GetCharJustDown(0x32)) { // 2
 		if (bIsPathRecording) {
 			char pos[100];
 			int a = 0;
@@ -2574,6 +2595,7 @@ CPlayerPed::ProcessControl(void)
 
 #if defined FIRING_AND_AIMING && defined FIRST_PERSON
 	if (IsDoomMode() && (!IsPedInControl() || m_nPedState == PED_ANSWER_MOBILE || m_nPedState == PED_SEEK_CAR || m_nPedState == PED_SEEK_IN_BOAT)) {
+	//if (m_nPedState != PED_ROLL && (IsDoomMode() || !IsPedInControl() || m_nPedState == PED_ANSWER_MOBILE || m_nPedState == PED_SEEK_CAR || m_nPedState == PED_SEEK_IN_BOAT)) {
 		bIsPlayerAiming = false;
 		ClearWeaponTarget();
 

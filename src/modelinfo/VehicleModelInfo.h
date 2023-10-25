@@ -3,8 +3,13 @@
 #include "ClumpModelInfo.h"
 
 enum {
+#ifdef NEW_VEHICLES // more materials
+	NUM_FIRST_MATERIALS = 50,
+	NUM_SECOND_MATERIALS = 50,
+#else
 	NUM_FIRST_MATERIALS = 24,
 	NUM_SECOND_MATERIALS = 20,
+#endif
 	NUM_VEHICLE_COLOURS = 8,
 };
 
@@ -22,6 +27,9 @@ enum {
 	ATOMIC_FLAG_REARDOOR	= 0x200,
 	ATOMIC_FLAG_FRONTDOOR	= 0x400,
 	ATOMIC_FLAG_NOCULL	= 0x800,
+#ifdef IMPROVED_VEHICLES_2
+	ATOMIC_FLAG_DOORWINDOW	= 0x1000,
+#endif
 };
 
 enum eVehicleType {
@@ -40,7 +48,28 @@ enum eCarPositions
 	CAR_POS_TAILLIGHTS,
 	CAR_POS_FRONTSEAT,
 	CAR_POS_BACKSEAT,
-	CAR_POS_EXHAUST
+	CAR_POS_EXHAUST,
+#ifdef IMPROVED_VEHICLES_2 // dummy positions
+	CAR_POS_HEADLIGHTS_2,
+	CAR_POS_TAILLIGHTS_2,
+	CAR_POS_HEADLIGHTS_WING,
+	CAR_POS_HEADLIGHTS_BUMP,
+	CAR_POS_HEADLIGHTS_2_BUMP,
+	CAR_POS_REVERSINGLIGHTS,
+	CAR_POS_REVERSINGLIGHTS_BUMP,
+	CAR_POS_BRAKELIGHTS,
+	CAR_POS_BRAKELIGHTS_2,
+	CAR_POS_BRAKELIGHTS_BUMP,
+	CAR_POS_INDICATORS_F,
+	CAR_POS_INDICATORS_R,
+	CAR_POS_INDICATORS_WING_F,
+	CAR_POS_INDICATORS_2_WING_F,
+	CAR_POS_ENGINE,
+	CAR_POS_OVERHEAT,
+	CAR_POS_OVERHEAT_2,
+	CAR_POS_PETROLCAP,
+	NUM_VEHICLE_POSITIONS,
+#endif
 };
 
 enum eBoatPositions
@@ -64,9 +93,11 @@ enum ePlanePositions
 	PLANE_POS_LIGHT_TAIL,
 };
 
+#ifndef IMPROVED_VEHICLES_2
 enum {
 	NUM_VEHICLE_POSITIONS = 5
 };
+#endif
 
 class CVehicleModelInfo : public CClumpModelInfo
 {
@@ -103,6 +134,15 @@ public:
 		int32 m_animFileIndex;
 		char *m_animFileName;
 	};
+
+#ifdef IMPROVED_VEHICLES_2
+	RwTexture* lightsOffTexture;
+	RwTexture* lightsOnTexture;
+#endif
+
+#ifdef VEHICLE_MODS
+	CRGBA m_nDefaultWindowMaterialColor;
+#endif
 
 	static int8 ms_compsToUse[2];
 	static int8 ms_compsUsed[2];

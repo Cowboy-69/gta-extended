@@ -1900,6 +1900,9 @@ int8 CRunningScript::ProcessCommands900To999(int32 command)
 				case MI_BLOODRA:
 				case MI_BLOODRB:
 				case MI_VICECHEE:
+#ifdef NEW_VEHICLES // COMMAND_CREATE_RANDOM_CAR_FOR_CAR_PARK
+				case MI_TRASH2:
+#endif
 					model = -1;
 					break;
 				case MI_IDAHO:
@@ -1930,6 +1933,13 @@ int8 CRunningScript::ProcessCommands900To999(int32 command)
 				case MI_REGINA:
 				case MI_VIRGO:
 				case MI_GREENWOO:
+#ifdef NEW_VEHICLES // COMMAND_CREATE_RANDOM_CAR_FOR_CAR_PARK
+				case MI_STREETFI:
+				case MI_PEREN2:
+				case MI_HELLENBACH:
+				case MI_PREMIER:
+				case MI_MANCHEZ:
+#endif
 					break;
 				default:
 					printf("CREATE_RANDOM_CAR_FOR_CAR_PARK - Unknown car model %d\n", CStreaming::ms_vehiclesLoaded[index]);

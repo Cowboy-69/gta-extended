@@ -39,6 +39,9 @@
 #ifdef WANTED_PATHS
 #include "CopPed.h"
 #endif
+#ifdef IMPROVED_TECH_PART
+#include "Darkel.h"
+#endif
 
 #ifdef IMPROVED_TECH_PART // increased spawn range
 #define DISTANCE_TO_SPAWN_ROADBLOCK_PEDS (100.0f)
@@ -85,10 +88,10 @@
 #define PROBABILITY_OF_PASSENGER_IN_VEHICLE (0.125f)
 
 #ifdef IMPROVED_TECH_PART // increased spawn range
-#define ONSCREEN_DESPAWN_RANGE (CGame::IsInInterior() || CCutsceneMgr::IsRunning() ? 120.0f : 350.0f)
-#define MINIMAL_DISTANCE_TO_SPAWN_ONSCREEN (CGame::IsInInterior() || CCutsceneMgr::IsRunning() ? 100.0f : 150.0f)
+#define ONSCREEN_DESPAWN_RANGE (CGame::IsInInterior() || CCutsceneMgr::IsRunning() || CDarkel::FrenzyOnGoing() ? 120.0f : 350.0f)
+#define MINIMAL_DISTANCE_TO_SPAWN_ONSCREEN (CGame::IsInInterior() || CCutsceneMgr::IsRunning() || CDarkel::FrenzyOnGoing() ? 100.0f : 150.0f)
 #define REQUEST_ONSCREEN_DISTANCE ((ONSCREEN_DESPAWN_RANGE + MINIMAL_DISTANCE_TO_SPAWN_ONSCREEN) / 2)
-#define OFFSCREEN_DESPAWN_RANGE (CGame::IsInInterior() || CCutsceneMgr::IsRunning() ? 40.0f : 100.0f)
+#define OFFSCREEN_DESPAWN_RANGE (CGame::IsInInterior() || CCutsceneMgr::IsRunning() || CDarkel::FrenzyOnGoing() ? 40.0f : 100.0f)
 #define EXTENDED_RANGE_DESPAWN_MULTIPLIER (1.5f)
 #else
 #define ONSCREEN_DESPAWN_RANGE (120.0f)
@@ -368,6 +371,12 @@ CCarCtrl::GenerateOneRandomCar()
 	pVehicle->AutoPilot.m_nPrevRouteNode = 0;
 	pVehicle->AutoPilot.m_nCurrentRouteNode = curNodeId;
 	pVehicle->AutoPilot.m_nNextRouteNode = nextNodeId;
+
+#ifdef VEHICLE_MODS // TrySetRandomCarMod for vehicle in traffic
+	if (pVehicle->IsCar())
+		((CAutomobile*)pVehicle)->TrySetRandomCarMod();
+#endif
+
 	switch (carClass) {
 	case COPS:
 		pVehicle->AutoPilot.m_nTempAction = TEMPACT_NONE;
@@ -394,7 +403,7 @@ CCarCtrl::GenerateOneRandomCar()
 		pVehicle->AutoPilot.m_fMaxTrafficSpeed = pVehicle->AutoPilot.m_nCruiseSpeed;
 #ifdef IMPROVED_TECH_PART // wanted system
 		if (FindPlayerPed() && FindPlayerPed()->m_pWanted->IsPlayerHides())
-			pVehicle->AutoPilot.m_nCarMission == MISSION_BLOCKPLAYER_FARAWAY;
+			pVehicle->AutoPilot.m_nCarMission = MISSION_BLOCKPLAYER_FARAWAY;
 		else
 			pVehicle->AutoPilot.m_nCarMission = CCarAI::FindPoliceBoatMissionForWantedLevel();
 #else
@@ -607,7 +616,11 @@ CCarCtrl::GenerateOneRandomCar()
 		pVehicle->SetStatus(STATUS_PHYSICS);
 		break;
 	default:
+#ifdef NEW_CHEATS // AIRWAYS
+		pVehicle->bAirWaysCheat || bBoatGenerated ? pVehicle->SetStatus(STATUS_PHYSICS) : pVehicle->SetStatus(STATUS_SIMPLE);
+#else
 		bBoatGenerated ? pVehicle->SetStatus(STATUS_PHYSICS) : pVehicle->SetStatus(STATUS_SIMPLE);
+#endif
 		break;
 	}
 	CVisibilityPlugins::SetClumpAlpha(pVehicle->GetClump(), 0);

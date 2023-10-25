@@ -134,9 +134,15 @@ EnvMapRender(void)
 	EnvMapCam->getFrame()->transform(&EnvMapCam->getFrame()->matrix, rw::COMBINEREPLACE);
 
 	rw::RGBA skycol;
+#ifdef IMPROVED_VEHICLES
+	skycol.red = CTimeCycle::GetSkyTopRed();
+	skycol.green = CTimeCycle::GetSkyTopGreen();
+	skycol.blue = CTimeCycle::GetSkyTopBlue();
+#else
 	skycol.red = CTimeCycle::GetSkyBottomRed();
 	skycol.green = CTimeCycle::GetSkyBottomGreen();
 	skycol.blue = CTimeCycle::GetSkyBottomBlue();
+#endif
 	skycol.alpha = 255;
 	EnvMapCam->clear(&skycol, rwCAMERACLEARZ|rwCAMERACLEARIMAGE);
 	RwCameraBeginUpdate(EnvMapCam);

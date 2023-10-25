@@ -523,7 +523,7 @@ CPed::ClearAttack(void)
 		return;
 
 #ifdef FIRING_AND_AIMING
-	if (FindPlayerPed() == this)
+	if (FindPlayerPed() == this && !FindPlayerPed()->bIsPlayerAiming)
 		FindPlayerPed()->StopAimingAnims();
 #endif
 
@@ -1075,11 +1075,27 @@ CPed::Attack(void)
 		if (GetWeapon()->m_eWeaponState == WEAPONSTATE_RELOADING) {
 			if (GetReloadAnim(ourWeapon) && !reloadAnimAssoc) {
 				if (!CWorld::Players[CWorld::PlayerInFocus].m_bFastReload) {
+#ifdef FIRING_AND_AIMING // shotgun sound
+					if (GetWeapon()->m_eWeaponType == WEAPONTYPE_SHOTGUN) {
+						CAnimBlendAssociation* newReloadAssoc = CAnimManager::BlendAnimation(
+							GetClump(), ourWeapon->m_AnimToPlay,
+							bIsDucking ? ANIM_WEAPON_CROUCHFIRE : ANIM_WEAPON_FIRE,
+							8.0f);
+						newReloadAssoc->SetFinishCallback(FinishedReloadCB, this);
+					} else {
+						CAnimBlendAssociation* newReloadAssoc = CAnimManager::BlendAnimation(
+							GetClump(), ourWeapon->m_AnimToPlay,
+							bIsDucking && GetCrouchReloadAnim(ourWeapon) ? GetCrouchReloadAnim(ourWeapon) : GetReloadAnim(ourWeapon),
+							8.0f);
+						newReloadAssoc->SetFinishCallback(FinishedReloadCB, this);
+					}
+#else
 					CAnimBlendAssociation *newReloadAssoc = CAnimManager::BlendAnimation(
 						GetClump(), ourWeapon->m_AnimToPlay,
 						bIsDucking && GetCrouchReloadAnim(ourWeapon) ? GetCrouchReloadAnim(ourWeapon) : GetReloadAnim(ourWeapon),
 						8.0f);
 					newReloadAssoc->SetFinishCallback(FinishedReloadCB, this);
+#endif
 				}
 				ClearLookFlag();
 				ClearAimFlag();
@@ -1124,6 +1140,10 @@ CPed::Attack(void)
 			}
 #ifdef FIRING_AND_AIMING
 		} else if (IsPlayer() && (m_pPointGunAt || FindPlayerPed()->bIsPlayerAiming) && bIsAimingGun && GetWeapon()->m_eWeaponState != WEAPONSTATE_RELOADING) {
+			if (IsPlayer() && FindPlayerPed()->bIsPlayerAiming) {
+				if (weaponAnimAssoc->currentTime - weaponAnimAssoc->timeStep < animLoopEnd)
+					DMAudio.PlayOneShot(m_audioEntityId, SOUND_WEAPON_AK47_BULLET_ECHO, GetWeapon()->m_eWeaponType);
+			}
 #else
 		} else if (IsPlayer() && m_pPointGunAt && bIsAimingGun && GetWeapon()->m_eWeaponState != WEAPONSTATE_RELOADING) {
 #endif
@@ -4128,7 +4148,7 @@ CPed::DriveVehicle(void)
 					}
 				} else if (!walkbackAssoc || walkbackAssoc->blendAmount < 1.0f && walkbackAssoc->blendDelta <= 0.0f) {
 #ifdef FIRING_AND_AIMING
-					if (!IsPlayer() || FindPlayerPed()->bIsPlayerAiming && TheCamera.Cams[TheCamera.ActiveCam].Mode != CCam::MODE_REAL_1ST_PERSON && !CPad::GetPad(0)->GetTarget())
+					if (!IsPlayer() || (!FindPlayerPed()->bIsPlayerAiming && TheCamera.Cams[TheCamera.ActiveCam].Mode != CCam::MODE_REAL_1ST_PERSON))
 						walkbackAssoc = CAnimManager::BlendAnimation(GetClump(), bike->m_bikeAnimType, ANIM_BIKE_WALKBACK, 4.0f);
 #else
 					walkbackAssoc = CAnimManager::BlendAnimation(GetClump(), bike->m_bikeAnimType, ANIM_BIKE_WALKBACK, 4.0f);

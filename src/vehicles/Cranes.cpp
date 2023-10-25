@@ -449,7 +449,12 @@ bool CCrane::DoesCranePickUpThisCarType(uint32 mi)
 			mi != MI_SECURICA &&
 			mi != MI_BUS &&
 			mi != MI_DODO &&
+#ifdef NEW_VEHICLES // DoesCranePickUpThisCarType
+			mi != MI_RHINO &&
+			mi != MI_TRASH2;
+#else
 			mi != MI_RHINO;
+#endif
 	}
 	if (m_bIsMilitaryCrane) {
 		return mi == MI_FIRETRUCK ||

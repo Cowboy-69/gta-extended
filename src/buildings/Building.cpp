@@ -3,6 +3,10 @@
 #include "Building.h"
 #include "Streaming.h"
 #include "Pools.h"
+#ifdef IMPROVED_TECH_PART
+#include "Lights.h"
+#include "PointLights.h"
+#endif
 
 void *CBuilding::operator new(size_t sz) throw() { return CPools::GetBuildingPool()->New();  }
 void CBuilding::operator delete(void *p, size_t sz) throw() { CPools::GetBuildingPool()->Delete((CBuilding*)p); }
@@ -20,6 +24,24 @@ CBuilding::ReplaceWithNewModel(int32 id)
 		if(m_level == LEVEL_GENERIC || m_level == CGame::currLevel)
 			CStreaming::RequestModel(id, STREAMFLAGS_DONT_REMOVE);
 }
+
+#ifdef IMPROVED_TECH_PART
+/*bool CBuilding::SetupLighting(void)
+{
+	ActivateDirectional();
+	SetAmbientColoursForPedsCarsAndObjects();
+	//SetAmbientAndDirectionalColours(0.5f);
+	return true;
+}
+
+void CBuilding::RemoveLighting(bool reset)
+{
+	if (reset) {
+		SetAmbientColours();
+		DeActivateDirectional();
+	}
+}*/
+#endif
 
 bool
 IsBuildingPointerValid(CBuilding* pBuilding)

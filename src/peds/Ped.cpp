@@ -40,6 +40,9 @@
 #include "Clock.h"
 #include "Wanted.h"
 #include "SaveBuf.h"
+#ifdef FIRING_AND_AIMING
+#include "Darkel.h"
+#endif
 
 CPed *gapTempPedList[50];
 uint16 gnNumTempPedList;
@@ -1530,14 +1533,16 @@ CPed::CalculateNewVelocity(void)
 		}
 
 #if defined IMPROVED_TECH_PART && defined SWIMMING && defined CROUCH && defined FIRST_PERSON
-		if (bIsSwimming)
-			headAmount *= 0.3f;
-		else if (bIsDucking)
-			headAmount *= 0.5f;
-		else if (IsPlayer() && TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON && m_nMoveState == PEDMOVE_SPRINT)
-			headAmount *= Abs(CPad::GetPad(0)->GetPedWalkLeftRight()) / 250.0f;
-		else
-			headAmount *= 0.7f;
+		if (IsPlayer()) {
+			if (bIsSwimming)
+				headAmount *= 0.3f;
+			else if (bIsDucking)
+				headAmount *= 0.5f;
+			else if (TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON && m_nMoveState == PEDMOVE_SPRINT)
+				headAmount *= Abs(CPad::GetPad(0)->GetPedWalkLeftRight()) / 250.0f;
+			else
+				headAmount *= 0.7f;
+		}
 #endif
 
 		float neededTurn = limitedRotDest - m_fRotationCur;
@@ -5190,7 +5195,7 @@ void
 CPed::RemoveWeaponWhenEnteringVehicle(void)
 {
 #ifdef FIRING_AND_AIMING
-	if (IsPlayer() && ((CPlayerPed*)this)->GetPlayerInfoForThisPlayerPed()->m_bDriveByAllowed) {
+	if (IsPlayer() && !CDarkel::FrenzyOnGoing() && ((CPlayerPed*)this)->GetPlayerInfoForThisPlayerPed()->m_bDriveByAllowed) {
 		if (HasWeaponSlot(3) && GetWeapon(3).m_nAmmoTotal > 0 && (GetWeapon()->m_eWeaponType == WEAPONTYPE_COLT45 || GetWeapon(5).m_nAmmoTotal <= 0)) {
 			if (m_storedWeapon == WEAPONTYPE_UNIDENTIFIED)
 				m_storedWeapon = GetWeapon()->m_eWeaponType;
@@ -10276,18 +10281,15 @@ CPed::Say(uint16 audio, int32 time)
 #ifdef CLIMBING
 bool CPed::CanPedClimbingThis(CColPoint& hitForwardPoint, CColPoint& hitBackwardPoint, CColPoint& hitJumpBPoint)
 {
-	if (!IsPlayer() && !bClimbingPeds) {
+	if (!IsPlayer() && !bClimbingPeds)
 		return false;
-	}
 
-	if (CGame::IsInInterior() && !bClimbingInInteriors) {
+	if (CGame::IsInInterior() && !bClimbingInInteriors)
 		return false;
-	}
 
 	if (CheckObjectFrontPlayer(hitForwardPoint) && !CheckObjectAbovePlayer(hitForwardPoint)) {
-		if (CheckPotentialClimbingPlaceFind(hitForwardPoint, hitBackwardPoint)) {
+		if (CheckPotentialClimbingPlaceFind(hitForwardPoint, hitBackwardPoint))
 			return CheckClimbingPlaceFree(hitBackwardPoint) && hitBackwardPoint.normal.z >= 0.8f;
-		}
 
 		return CheckClimbingTheFence(hitForwardPoint, hitBackwardPoint, hitJumpBPoint);
 	} else {
@@ -10305,44 +10307,44 @@ bool CPed::CheckObjectFrontPlayer(CColPoint& hitForwardPoint)
 	if (CWorld::ProcessLineOfSight(startPosition, startPosition + forward, hitForwardPoint, hitEntity, true, bClimbingOnVehicles, false, true, false, false)) {
 		hitForwardPoint.point.z = startPosition.z;
 
-		return true;
+		return hitEntity->HasClimbable();
 	}
 
 	if (CWorld::ProcessLineOfSight(startPosition + CVector(0.0f, 0.0f, 1.45f), startPosition + forward + CVector(0.0f, 0.0f, 1.45f), hitForwardPoint, hitEntity, true, bClimbingOnVehicles, false, true, false, false)) {
 		hitForwardPoint.point.z = startPosition.z;
 
-		return true;
+		return hitEntity->HasClimbable();
 	}
 	if (CWorld::ProcessLineOfSight(startPosition + CVector(0.0f, 0.0f, 1.55f), startPosition + forward + CVector(0.0f, 0.0f, 1.55f), hitForwardPoint, hitEntity, true, bClimbingOnVehicles, false, true, false, false)) {
 		hitForwardPoint.point.z = startPosition.z;
 
-		return true;
+		return hitEntity->HasClimbable();
 	}
 	if (CWorld::ProcessLineOfSight(startPosition + CVector(0.0f, 0.0f, 1.65f), startPosition + forward + CVector(0.0f, 0.0f, 1.65f), hitForwardPoint, hitEntity, true, bClimbingOnVehicles, false, true, false, false)) {
 		hitForwardPoint.point.z = startPosition.z;
 
-		return true;
+		return hitEntity->HasClimbable();
 	}
 
 	if (CWorld::ProcessLineOfSight(startPosition + CVector(0.0f, 0.0f, 3.0f), startPosition + forward * 0.25, hitForwardPoint, hitEntity, true, bClimbingOnVehicles, false, true, false, false)) {
 		hitForwardPoint.point.z = startPosition.z;
 
-		return true;
+		return hitEntity->HasClimbable();
 	}
 	if (CWorld::ProcessLineOfSight(startPosition + CVector(0.0f, 0.0f, 3.0f), startPosition + forward * 0.5, hitForwardPoint, hitEntity, true, bClimbingOnVehicles, false, true, false, false)) {
 		hitForwardPoint.point.z = startPosition.z;
 
-		return true;
+		return hitEntity->HasClimbable();
 	}
 	if (CWorld::ProcessLineOfSight(startPosition + CVector(0.0f, 0.0f, 3.0f), startPosition + forward * 0.75, hitForwardPoint, hitEntity, true, bClimbingOnVehicles, false, true, false, false)) {
 		hitForwardPoint.point.z = startPosition.z;
 
-		return true;
+		return hitEntity->HasClimbable();
 	}
 	if (CWorld::ProcessLineOfSight(startPosition + CVector(0.0f, 0.0f, 3.0f), startPosition + forward, hitForwardPoint, hitEntity, true, bClimbingOnVehicles, false, true, false, false)) {
 		hitForwardPoint.point.z = startPosition.z;
 
-		return true;
+		return hitEntity->HasClimbable();
 	}
 
 	return false;
@@ -10367,8 +10369,12 @@ bool CPed::CheckPotentialClimbingPlaceFind(CColPoint hitForwardPoint, CColPoint&
 {
 	CEntity* hitEntity;
 
-	CVector distance = -hitForwardPoint.normal * 0.25;
-	return CWorld::ProcessLineOfSight(hitForwardPoint.point + distance + CVector(0.0f, 0.0f, maxPossibleClimbingHeight), hitForwardPoint.point + distance, hitBackwardPoint, hitEntity, true, bClimbingOnVehicles, false, true, false, false);
+	CVector distance = -hitForwardPoint.normal * 0.25f;
+	CWorld::ProcessLineOfSight(hitForwardPoint.point + distance + CVector(0.0f, 0.0f, maxPossibleClimbingHeight), hitForwardPoint.point + distance, hitBackwardPoint, hitEntity, true, bClimbingOnVehicles, false, true, false, false);
+	
+	return hitEntity && hitEntity->HasClimbable();
+
+	//return CWorld::ProcessLineOfSight(hitForwardPoint.point + distance + CVector(0.0f, 0.0f, maxPossibleClimbingHeight), hitForwardPoint.point + distance, hitBackwardPoint, hitEntity, true, bClimbingOnVehicles, false, true, false, false);
 }
 
 bool CPed::CheckClimbingPlaceFree(CColPoint hitBackwardPoint)
@@ -10380,14 +10386,30 @@ bool CPed::CheckClimbingPlaceFree(CColPoint hitBackwardPoint)
 
 	CEntity* hitEntityAtBackwardPoint5 = CWorld::TestSphereAgainstWorld(hitBackwardPoint.point + GetForward() * 0.25f + CVector(0.0f, 0.0f, 0.5f), 0.1f, this, true, true, true, true, false, false);
 
-	return !hitEntityAtBackwardPoint1 && !hitEntityAtBackwardPoint2 && !hitEntityAtBackwardPoint3 && !hitEntityAtBackwardPoint4 && !hitEntityAtBackwardPoint5;
+	//return !hitEntityAtBackwardPoint1 && !hitEntityAtBackwardPoint2 && !hitEntityAtBackwardPoint3 && !hitEntityAtBackwardPoint4 && !hitEntityAtBackwardPoint5;
+
+	if (hitEntityAtBackwardPoint1 && hitEntityAtBackwardPoint1->HasClimbable())
+		return false;
+
+	if (hitEntityAtBackwardPoint2 && hitEntityAtBackwardPoint2->HasClimbable())
+		return false;
+
+	if (hitEntityAtBackwardPoint3 && hitEntityAtBackwardPoint3->HasClimbable())
+		return false;
+
+	if (hitEntityAtBackwardPoint4 && hitEntityAtBackwardPoint4->HasClimbable())
+		return false;
+
+	if (hitEntityAtBackwardPoint5 && hitEntityAtBackwardPoint5->HasClimbable())
+		return false;
+
+	return true;
 }
 
 bool CPed::CheckClimbingTheFence(CColPoint& hitForwardPoint, CColPoint& hitBackwardPoint, CColPoint& hitJumpBPoint)
 {
-	if (IsNeedFixFenceSideNormal(hitForwardPoint)) {
+	if (IsNeedFixFenceSideNormal(hitForwardPoint))
 		hitForwardPoint.normal = -hitForwardPoint.normal;
-	}
 
 	if (CheckPotentialClimbingTheFencePlaceFind(hitForwardPoint, hitBackwardPoint, hitJumpBPoint)) {
 		if (Distance(hitForwardPoint.point, hitJumpBPoint.point) < 0.25f) {
@@ -10398,14 +10420,12 @@ bool CPed::CheckClimbingTheFence(CColPoint& hitForwardPoint, CColPoint& hitBackw
 			m_vecMoveSpeed = CVector(0.0f, 0.0f, 0.0f);
 
 			return true;
-		}
-		else {
+		} else {
 			bIsClimbingHighJump = false;
 
 			return false;
 		}
-	}
-	else {
+	} else {
 		bIsClimbingHighJump = false;
 
 		bIsClimbingJumpB = false;
@@ -10437,8 +10457,17 @@ bool CPed::CheckPotentialClimbingTheFencePlaceFind(CColPoint& hitForwardPoint, C
 			isSideFenceFind = CWorld::ProcessLineOfSight(hitForwardPoint.point + hitForwardPoint.normal * 2.0f + valueAddition, hitForwardPoint.point + valueAddition, hitJumpBPoint, hitEntity, true, false, false, true, false, false);
 		}
 
+		if (hitEntity && !hitEntity->HasClimbable())
+			continue;
+
 		CEntity* hitEntityFrontFence = CWorld::TestSphereAgainstWorld(hitForwardPoint.point - hitForwardPoint.normal + CVector(0.0f, 0.0f, 0.25f), 0.5f, this, true, true, true, true, true, false);
 		CEntity* hitEntityAboveFence = CWorld::TestSphereAgainstWorld(hitForwardPoint.point + CVector(0.0f, 0.0f, 0.525f), 0.5f, this, true, true, true, true, true, false);
+
+		if (hitEntityFrontFence && !hitEntityFrontFence->HasClimbable())
+			continue;
+
+		if (hitEntityAboveFence && !hitEntityAboveFence->HasClimbable())
+			continue;
 
 		valueAddition += CVector(0.0f, 0.0f, 0.01f);
 
@@ -10466,9 +10495,8 @@ bool CPed::CheckPotentialClimbingTheFencePlaceFind(CColPoint& hitForwardPoint, C
 
 void CPed::StartClimbing(CColPoint& hitForwardPoint, CColPoint& hitBackwardPoint, CColPoint& hitJumpBPoint)
 {
-	if (currentJumpGlideAnim) {
+	if (currentJumpGlideAnim)
 		currentJumpGlideAnim->blendDelta = -1000.0f;
-	}
 
 	bIsInTheAir = false;
 	bIsStanding = true;

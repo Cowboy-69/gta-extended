@@ -389,7 +389,7 @@ CCopPed::CopAI(void)
 		ClearPursuit();
 	}
 #ifdef IMPROVED_TECH_PART // wanted system
-	if (wantedLevel > 0 && CWanted::WorkOutPolicePresence(FindPlayerCoors(), 150.0f) > 0) {
+	if (wantedLevel > 0 && !wanted->IsPlayerLost()) {
 #else
 	if (wantedLevel > 0) {
 #endif
@@ -779,9 +779,6 @@ CCopPed::ProcessControl(void)
 				break;
 		} */
 	} else if (InVehicle()) {
-#ifdef IMPROVED_TECH_PART // wanted system
-		FindPlayerPed()->m_pWanted->WorkOutPolicePresence(FindPlayerCoors(), 90.0f);
-#endif
 		if (m_pMyVehicle->pDriver == this && m_pMyVehicle->AutoPilot.m_nCarMission == MISSION_NONE &&
 			CanPedDriveOff() && m_pMyVehicle->VehicleCreatedBy != MISSION_VEHICLE) {
 

@@ -557,7 +557,8 @@ CMenuManager::CMenuManager()
 	m_PrefsPadAimSensX = 1.0f / 1600.0f;
 	m_PrefsPadLookSensY = 1.0f / 800.0f;
 	m_PrefsPadAimSensY = 1.0f / 1600.0f;
-	m_PrefsDeadzone = 15;
+	m_PrefsLeftStickDeadzone = 15;
+	m_PrefsRightStickDeadzone = 15;
 	m_PrefsVibrationForce = 0.5f;
 
 	m_PrefsMouseLookSensX = 1.0f / 400.0f;
@@ -790,10 +791,16 @@ CMenuManager::CheckSliderMovement(int value)
 #endif
 		break;
 #ifdef IMPROVED_MENU_AND_INPUT
-	case MENUACTION_DEADZONE:
-		m_PrefsDeadzone += value * (80 / MENUSLIDER_LOGICAL_BARS);
+	case MENUACTION_LEFTDEADZONE:
+		m_PrefsLeftStickDeadzone += value * (80 / MENUSLIDER_LOGICAL_BARS);
 
-		m_PrefsDeadzone = Clamp(m_PrefsDeadzone, 0, 80);
+		m_PrefsLeftStickDeadzone = Clamp(m_PrefsLeftStickDeadzone, 0, 80);
+
+		break;
+	case MENUACTION_RIGHTDEADZONE:
+		m_PrefsRightStickDeadzone += value * (80 / MENUSLIDER_LOGICAL_BARS);
+
+		m_PrefsRightStickDeadzone = Clamp(m_PrefsRightStickDeadzone, 0, 80);
 
 		break;
 	case MENUACTION_VIBRATIONFORCE:
@@ -1561,7 +1568,7 @@ CMenuManager::DrawStandardMenus(bool activeScreen)
 					if (rightText || action == MENUACTION_DRAWDIST || action == MENUACTION_BRIGHTNESS || action == MENUACTION_MUSICVOLUME ||
 						action == MENUACTION_SFXVOLUME || action == MENUACTION_MP3VOLUMEBOOST || action == MENUACTION_MOUSESENS ||
 #ifdef IMPROVED_MENU_AND_INPUT
-						action == MENUACTION_DEADZONE ||
+						action == MENUACTION_LEFTDEADZONE || action == MENUACTION_RIGHTDEADZONE ||
 						action == MENUACTION_VIBRATIONFORCE ||
 						action == MENUACTION_MOUSELOOKSENSX || action == MENUACTION_MOUSEAIMSENSX ||
 						action == MENUACTION_PADLOOKSENSX || action == MENUACTION_PADAIMSENSX ||
@@ -1732,8 +1739,11 @@ CMenuManager::DrawStandardMenus(bool activeScreen)
 								ProcessSlider(m_PrefsMP3BoostVolume / 64.f, SLIDER_Y(128.0f), HOVEROPTION_INCREASE_MP3BOOST, HOVEROPTION_DECREASE_MP3BOOST, SCREEN_WIDTH, true);
 							break;
 #ifdef IMPROVED_MENU_AND_INPUT
-						case MENUACTION_DEADZONE:
-							ProcessSlider(m_PrefsDeadzone / 80.0f, SLIDER_Y(70.0f), HOVEROPTION_INCREASE_DEADZONE, HOVEROPTION_DECREASE_DEADZONE, SCREEN_WIDTH, false);
+						case MENUACTION_LEFTDEADZONE:
+							ProcessSlider(m_PrefsLeftStickDeadzone / 80.0f, SLIDER_Y(70.0f), HOVEROPTION_INCREASE_LEFTDEADZONE, HOVEROPTION_DECREASE_LEFTDEADZONE, SCREEN_WIDTH, false);
+							break;
+						case MENUACTION_RIGHTDEADZONE:
+							ProcessSlider(m_PrefsRightStickDeadzone / 80.0f, SLIDER_Y(70.0f), HOVEROPTION_INCREASE_RIGHTDEADZONE, HOVEROPTION_DECREASE_RIGHTDEADZONE, SCREEN_WIDTH, false);
 							break;
 						case MENUACTION_VIBRATIONFORCE:
 							ProcessSlider(m_PrefsVibrationForce / 1.0f, SLIDER_Y(70.0f), HOVEROPTION_INCREASE_VIBRATIONFORCE, HOVEROPTION_DECREASE_VIBRATIONFORCE, SCREEN_WIDTH, false);
@@ -3688,8 +3698,10 @@ CMenuManager::Process(void)
 	ProcessDialogTimer();
 #endif
 
+#ifndef IMPROVED_TECH_PART // possible to pause the game during screen fading
 	if (TheCamera.GetScreenFadeStatus() != FADE_0)
 		return;
+#endif
 
 	InitialiseChangedLanguageSettings();
 
@@ -4513,7 +4525,7 @@ CMenuManager::UserInput(void)
 				&& action != MENUACTION_CFO_SLIDER
 #endif
 #ifdef IMPROVED_MENU_AND_INPUT
-				&& action != MENUACTION_DEADZONE
+				&& action != MENUACTION_LEFTDEADZONE && action != MENUACTION_RIGHTDEADZONE
 				&& action != MENUACTION_VIBRATIONFORCE
 				&& action != MENUACTION_MOUSELOOKSENSX && action != MENUACTION_MOUSEAIMSENSX
 				&& action != MENUACTION_PADLOOKSENSX && action != MENUACTION_PADAIMSENSX
@@ -4612,7 +4624,8 @@ CMenuManager::UserInput(void)
 			case HOVEROPTION_INCREASE_MOUSELOOKSENSY:
 			case HOVEROPTION_INCREASE_MOUSEAIMSENSY:
 
-			case HOVEROPTION_INCREASE_DEADZONE:
+			case HOVEROPTION_INCREASE_LEFTDEADZONE:
+			case HOVEROPTION_INCREASE_RIGHTDEADZONE:
 			case HOVEROPTION_INCREASE_VIBRATIONFORCE:
 			case HOVEROPTION_INCREASE_PADLOOKSENSX:
 			case HOVEROPTION_INCREASE_PADAIMSENSX:
@@ -4639,7 +4652,8 @@ CMenuManager::UserInput(void)
 			case HOVEROPTION_DECREASE_MOUSELOOKSENSY:
 			case HOVEROPTION_DECREASE_MOUSEAIMSENSY:
 
-			case HOVEROPTION_DECREASE_DEADZONE:
+			case HOVEROPTION_DECREASE_LEFTDEADZONE:
+			case HOVEROPTION_DECREASE_RIGHTDEADZONE:
 			case HOVEROPTION_DECREASE_VIBRATIONFORCE:
 			case HOVEROPTION_DECREASE_PADLOOKSENSX:
 			case HOVEROPTION_DECREASE_PADAIMSENSX:
@@ -4728,7 +4742,7 @@ CMenuManager::UserInput(void)
 				|| curAction == MENUACTION_CFO_SLIDER
 #endif
 #ifdef IMPROVED_MENU_AND_INPUT
-				|| curAction == MENUACTION_DEADZONE
+				|| curAction == MENUACTION_LEFTDEADZONE || curAction == MENUACTION_RIGHTDEADZONE
 				|| curAction == MENUACTION_VIBRATIONFORCE
 				|| curAction == MENUACTION_MOUSELOOKSENSX || curAction == MENUACTION_MOUSEAIMSENSX
 				|| curAction == MENUACTION_PADLOOKSENSX || curAction == MENUACTION_PADAIMSENSX
@@ -4754,7 +4768,7 @@ CMenuManager::UserInput(void)
 				|| curAction == MENUACTION_CFO_SLIDER
 #endif
 #ifdef IMPROVED_MENU_AND_INPUT
-				|| curAction == MENUACTION_DEADZONE
+				|| curAction == MENUACTION_LEFTDEADZONE || curAction == MENUACTION_RIGHTDEADZONE
 				|| curAction == MENUACTION_VIBRATIONFORCE
 				|| curAction == MENUACTION_MOUSELOOKSENSX || curAction == MENUACTION_MOUSEAIMSENSX
 				|| curAction == MENUACTION_PADLOOKSENSX || curAction == MENUACTION_PADAIMSENSX
@@ -4808,7 +4822,8 @@ CMenuManager::UserInput(void)
 			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_MOUSESENS
 			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_MP3VOLUMEBOOST
 #ifdef IMPROVED_MENU_AND_INPUT
-			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_DEADZONE 
+			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_LEFTDEADZONE 
+			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_RIGHTDEADZONE 
 			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_VIBRATIONFORCE
 			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_MOUSELOOKSENSX
 			&& aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_MOUSEAIMSENSX
@@ -5216,7 +5231,8 @@ CMenuManager::ProcessUserInput(uint8 goDown, uint8 goUp, uint8 optionSelected, u
 					m_PrefsPadAimSensX = 1.0f / 1600.0f;
 					m_PrefsPadLookSensY = 1.0f / 800.0f;
 					m_PrefsPadAimSensY = 1.0f / 1600.0f;
-					m_PrefsDeadzone = 15;
+					m_PrefsLeftStickDeadzone = 15;
+					m_PrefsRightStickDeadzone = 15;
 					m_PrefsVibrationForce = 0.5f;
 					m_PrefsMouseLookSensX = 1.0f / 400.0f;
 					m_PrefsMouseAimSensX = 1.0f / 600.0f;

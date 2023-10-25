@@ -2372,6 +2372,10 @@ int8 CRunningScript::ProcessCommands100To199(int32 command)
 			car->bHasBeenOwnedByPlayer = true;
 			if (m_bIsMissionScript)
 				car->bIsStaticWaitingForCollision = true;
+#ifdef VEHICLE_MODS // TrySetRandomCarMod for racing vehicles
+			if (missionRetryScriptIndex == 82 && car->IsCar())
+				((CAutomobile*)car)->TrySetRandomCarMod(true);
+#endif
 			CWorld::Add(car);
 			handle = CPools::GetVehiclePool()->GetIndex(car);
 		}
