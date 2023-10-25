@@ -80,9 +80,6 @@ public:
 	static int16 m_ItemToFlash;
 	static bool m_HideRadar;
 	static int32 m_ClockState;
-#ifdef IMPROVED_TECH_PART // GPS
-	static bool m_bDrawRadar;
-#endif
 
 	// These aren't really in CHud
 	static float BigMessageInUse[6];

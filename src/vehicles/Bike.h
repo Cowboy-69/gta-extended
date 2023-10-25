@@ -13,14 +13,6 @@ enum eBikeNodes {
 	BIKE_WHEEL_REAR,
 	BIKE_MUDGUARD,
 	BIKE_HANDLEBARS,
-#ifdef IMPROVED_VEHICLES_2 // bike nodes
-	BIKE_HEADLIGHT_L,
-	BIKE_TAILLIGHT_L,
-	BIKE_INDICATOR_LF,
-	BIKE_INDICATOR_RF,
-	BIKE_INDICATOR_LR,
-	BIKE_INDICATOR_RR,
-#endif
 	BIKE_NUM_NODES
 };
 
@@ -96,9 +88,6 @@ public:
 	uint8 m_nDriveWheelsOnGroundPrev;
 	float m_fGasPedalAudio;
 	tWheelState m_aWheelState[2];
-#ifdef IMPROVED_VEHICLES_2
-	bool m_bIndicatorState[2];
-#endif
 
 	CBike(int32 id, uint8 CreatedBy);
 
@@ -144,11 +133,6 @@ public:
 	void Fix(void);
 	void SetupModelNodes(void);
 	void ReduceHornCounter(void);
-#ifdef IMPROVED_VEHICLES_2
-	void DoVehicleLights(void);
-	void SetFrameLightStatus(eBikeNodes frameNode, uint32 status);
-	uint32 GetFrameLightStatus(eBikeNodes frameNode);
-#endif
 
 #ifdef COMPATIBLE_SAVES
 	virtual void Save(uint8*& buf);

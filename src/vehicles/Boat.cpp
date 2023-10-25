@@ -64,29 +64,10 @@ CBoat::CBoat(int mi, uint8 owner) : CVehicle(owner)
 	m_nPoliceShoutTimer = CTimer::GetTimeInMilliseconds();
 	SetModelIndex(mi);
 
-#ifdef NEW_VEHICLE_LOADER
-	if (GetModelIndex() >= MI_FIRST_NEW_VEHICLE) {
-		pVehicleShadowSettings = &minfo->vehicleShadowData;
-		pVehicleSample = &minfo->vehicleSampleData;
-		pBoatSoundSettings = &minfo->boatSoundData;
-		pHandling = &minfo->handlingData;
-		pFlyingHandling = &minfo->flyingHandlingData;
-		pBoatHandling = &minfo->boatHandlingData;
-	} else {
-		pHandling = mod_HandlingManager.GetHandlingData((tVehicleType)minfo->m_handlingId);
-		pFlyingHandling = mod_HandlingManager.GetFlyingPointer((tVehicleType)minfo->m_handlingId);
-		pBoatHandling = mod_HandlingManager.GetBoatPointer((tVehicleType)minfo->m_handlingId);
-	}
-#else
 	pHandling = mod_HandlingManager.GetHandlingData((tVehicleType)minfo->m_handlingId);
 	pFlyingHandling = mod_HandlingManager.GetFlyingPointer((tVehicleType)minfo->m_handlingId);
 	pBoatHandling = mod_HandlingManager.GetBoatPointer((tVehicleType)minfo->m_handlingId);
-#endif
-#ifdef IMPROVED_VEHICLES // More colors
-	minfo->ChooseVehicleColour(m_currentColour1, m_currentColour2, m_currentColour3, m_currentColour4);
-#else
 	minfo->ChooseVehicleColour(m_currentColour1, m_currentColour2);
-#endif
 
 	m_fMass = pHandling->fMass;
 	m_fTurnMass = pHandling->fTurnMass / 2.0f;
@@ -153,15 +134,10 @@ CBoat::ProcessControl(void)
 	if(bRenderScorched)
 		m_fBuoyancy *= 0.99f;
 
-#ifdef IMPROVED_TECH_PART // wanted system
-	if (FindPlayerPed() && FindPlayerPed()->m_pWanted->GetWantedLevel() > 0 && GetModelIndex() == MI_PREDATOR && pDriver && IsPolicePedModel(pDriver->GetModelIndex()) && 
-		!FindPlayerPed()->m_pWanted->IsPlayerHides()) {
-#else
 #ifdef FIX_BUGS
 	if(FindPlayerPed() && FindPlayerPed()->m_pWanted->GetWantedLevel() > 0 && GetModelIndex() == MI_PREDATOR && pDriver && IsPolicePedModel(pDriver->GetModelIndex())) {
 #else
 	if(FindPlayerPed()->m_pWanted->GetWantedLevel() > 0 && GetModelIndex() == MI_PREDATOR){
-#endif
 #endif
 		CVehicle *playerVeh = FindPlayerVehicle();
 		if(playerVeh && playerVeh->GetVehicleAppearance() == VEHICLE_APPEARANCE_BOAT &&
@@ -1129,11 +1105,7 @@ RwImVertexIndex KeepWaterOutIndices[6];
 void
 CBoat::Render()
 {
-#ifdef IMPROVED_VEHICLES // More colors
-	((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->SetVehicleColour(m_currentColour1, m_currentColour2, m_currentColour3, m_currentColour4);
-#else
 	((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->SetVehicleColour(m_currentColour1, m_currentColour2);
-#endif
 	m_nSetPieceExtendedRangeTime = CTimer::GetTimeInMilliseconds() + 3000;
 	if (!CVehicle::bWheelsOnlyCheat)
 		CEntity::Render();
@@ -1446,20 +1418,8 @@ CBoat::DoDriveByShootings(void)
 		return;
 
 	CWeapon *weapon = pDriver->GetWeapon();
-#ifdef FIRING_AND_AIMING
-	if (CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->m_nWeaponSlot != WEAPONSLOT_SUBMACHINEGUN &&
-		CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->m_nWeaponSlot != WEAPONSLOT_HANDGUN)
-#else
-	if (CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->m_nWeaponSlot != 5)
-#endif
+	if(CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->m_nWeaponSlot != 5)
 		return;
-
-#ifdef FIRING_AND_AIMING // turn on/off driveby
-	if (CPad::GetPad(0)->GetTarget() && !FindPlayerPed()->bIsPlayerAiming && FindPlayerPed()->CanUseDriveBy())
-		FindPlayerPed()->SetPointGunAt(nil);
-	else if (!CPad::GetPad(0)->GetTarget() && FindPlayerPed()->bIsPlayerAiming || !FindPlayerPed()->CanUseDriveBy())
-		FindPlayerPed()->ClearWeaponTarget();
-#endif
 
 	weapon->Update(pDriver->m_audioEntityId, nil);
 
@@ -1477,22 +1437,6 @@ CBoat::DoDriveByShootings(void)
 		if(TheCamera.Cams[TheCamera.ActiveCam].LookingRight)
 			lookingRight = true;
 	}
-
-#ifdef FIRING_AND_AIMING // hide/show weapon in vehicle
-	if ((lookingLeft || lookingRight) || FindPlayerPed()->bIsPlayerAiming)
-		pDriver->AddWeaponModel(weapon->GetInfo()->m_nModelId);
-	else if (!FindPlayerPed()->bIsPlayerAiming)
-		pDriver->RemoveWeaponModel(weapon->GetInfo()->m_nModelId);
-#endif
-
-#if defined FIRING_AND_AIMING && defined FIRST_PERSON // reloading weapon during driveby/first person/use pistol
-	if (FindPlayerPed()->bIsPlayerAiming || TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON ||
-		(CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->m_nWeaponSlot == WEAPONSLOT_HANDGUN && !FindPlayerPed()->bIsPlayerAiming)) {
-
-		weapon->Reload();
-		return;
-	}
-#endif
 
 	if(lookingLeft || lookingRight){
 		if(lookingLeft){

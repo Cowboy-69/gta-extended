@@ -1,9 +1,6 @@
 #pragma once
 
 #include "Ped.h"
-#ifdef WANTED_PATHS
-#include "FileMgr.h"
-#endif
 
 class CPad;
 class CCopPed;
@@ -54,41 +51,9 @@ public:
 	CVector m_cachedCamUp;
 #endif
 
-#ifdef FEATURES_INI // HealthRegenerationUpToHalf 
-	int m_nHealthRegenerationTime;
-#endif
-
-#ifdef IMPROVED_TECH_PART // skip a phone call
-	bool m_bSkipPhoneCall;
-#endif
-
 	static bool bDontAllowWeaponChange;
 #ifndef MASTER
 	static bool bDebugPlayerInfo;
-#endif
-
-#ifdef FIRING_AND_AIMING
-	bool bIsPlayerAiming;
-#endif
-
-#if defined WANTED_PATHS && defined DEBUG
-	int countRecords = 0;
-	int folderRecord;
-	bool bIsPathRecording = false;
-#endif
-
-#ifdef SWIMMING
-	bool bIsTiredSwimmingFast;
-#endif
-
-#ifdef IMPROVED_MENU_AND_INPUT
-	bool bIsAutoAiming;
-#endif
-
-#ifdef EX_PED_VARIATIONS // Player
-	//uint8 currentVariation;
-	//uint8 storedVariation;
-	//char storedModelName[MAX_MODEL_NAME];
 #endif
 
 	CPlayerPed();
@@ -139,20 +104,6 @@ public:
 	void FindNewAttackPoints(void);
 	void SetNearbyPedsToInteractWithPlayer(void);
 	void UpdateMeleeAttackers(void);
-#ifdef CROUCH
-	void ProcessCrouch(void);
-
-	static void FinishRollCB(CAnimBlendAssociation* assoc, void* arg);
-#endif
-#ifdef SWIMMING
-	void ProcessSwimming(void);
-#endif
-#if defined FIRING_AND_AIMING && defined FIRST_PERSON
-	void ProcessAiming(void);
-	void StopAimingAnims(void);
-	bool CanUseDriveBy(void);
-	bool IsDoomMode(void);
-#endif
 
 	static void SetupPlayerPed(int32);
 	static void DeactivatePlayerPed(int32);
@@ -161,12 +112,6 @@ public:
 #ifdef COMPATIBLE_SAVES
 	virtual void Save(uint8*& buf);
 	virtual void Load(uint8*& buf);
-#endif
-
-#ifdef NEW_CHEATS // init
-	static bool bInvincibleCheat;
-	static bool bNoWantedCheat;
-	static bool bRCRocketCheat;
 #endif
 
 	static const uint32 nSaveStructSize;

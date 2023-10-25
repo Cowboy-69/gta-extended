@@ -3,14 +3,7 @@
 #include "Game.h"
 #include "PCSave.h"
 
-#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
-#define SLOT_COUNT (9)
-
-extern bool bAutoSave;
-extern bool bSaveAnywhere;
-#else
 #define SLOT_COUNT (8)
-#endif
 
 void InitRadioStationPositionList();
 int32 GetSavedRadioStationPosition(int32 station);
@@ -31,9 +24,6 @@ wchar *GetNameOfSavedGame(int32 slot);
 bool CheckDataNotCorrupt(int32 slot, char *name);
 bool RestoreForStartLoad();
 int align4bytes(int32 size);
-#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
-void DoAutoSave();
-#endif
 
 #ifdef FIX_INCOMPATIBLE_SAVES
 uint8 GetSaveType(char *savename);

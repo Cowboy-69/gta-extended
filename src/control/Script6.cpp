@@ -37,9 +37,6 @@
 #include "CarAI.h"
 #include "Pickups.h"
 #include "Fluff.h"
-#ifdef IMPROVED_TECH_PART // skiped phone calls
-#include "RpAnimBlend.h"
-#endif
 
 #ifdef USE_DEBUG_SCRIPT_LOADER
 extern const char* scriptfile;

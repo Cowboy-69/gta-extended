@@ -92,7 +92,7 @@ OggOpusFile *fpSampleDataHandle;
 #else
 FILE *fpSampleDataHandle;
 #endif
-bool8  bSampleBankLoaded            [MAX_SFX_BANKS];
+int8  gBankLoaded                  [MAX_SFX_BANKS];
 int32 nSampleBankDiscStartOffset   [MAX_SFX_BANKS];
 int32 nSampleBankSize              [MAX_SFX_BANKS];
 uintptr nSampleBankMemoryStartAddress[MAX_SFX_BANKS];
@@ -101,6 +101,11 @@ int32 _nSampleDataEndOffset;
 int32 nPedSlotSfx    [MAX_PEDSFX];
 int32 nPedSlotSfxAddr[MAX_PEDSFX];
 uint8 nCurrentPedSlot;
+
+#ifdef FIX_BUGS
+uint32 gPlayerTalkSfx = UINT32_MAX;
+void *gPlayerTalkData = 0;
+#endif
 
 CChannel aChannel[NUM_CHANNELS];
 uint8 nChannelVolume[NUM_CHANNELS];
@@ -807,7 +812,7 @@ cSampleManager::Initialise(void)
 		
 		for ( int32 i = 0; i < MAX_SFX_BANKS; i++ )
 		{
-			bSampleBankLoaded[i]             = FALSE;
+			gBankLoaded[i]                   = LOADING_STATUS_NOT_LOADED;
 			nSampleBankDiscStartOffset[i]    = 0;
 			nSampleBankSize[i]               = 0;
 			nSampleBankMemoryStartAddress[i] = 0;
@@ -963,7 +968,17 @@ cSampleManager::Initialise(void)
 		
 		nSampleBankMemoryStartAddress[SFX_BANK_PED_COMMENTS] = (uintptr)malloc(PED_BLOCKSIZE*MAX_PEDSFX);
 		ASSERT(nSampleBankMemoryStartAddress[SFX_BANK_PED_COMMENTS] != 0);
-	
+
+#ifdef FIX_BUGS
+		// Find biggest player comment
+		uint32 nMaxPedSize = 0;
+		for (uint32 i = PLAYER_COMMENTS_START; i <= PLAYER_COMMENTS_END; i++)
+			nMaxPedSize = Max(nMaxPedSize, m_aSamples[i].nSize);
+
+		gPlayerTalkData = malloc(nMaxPedSize);
+		ASSERT(gPlayerTalkData != 0);
+#endif
+
 		LoadSampleBank(SFX_BANK_0);
 	}
 	
@@ -1123,6 +1138,14 @@ cSampleManager::Terminate(void)
 		free((void *)nSampleBankMemoryStartAddress[SFX_BANK_PED_COMMENTS]);
 		nSampleBankMemoryStartAddress[SFX_BANK_PED_COMMENTS] = 0;
 	}
+
+#ifdef FIX_BUGS
+	if ( gPlayerTalkData != 0 )
+	{
+		free(gPlayerTalkData);
+		gPlayerTalkData = 0;
+	}
+#endif
 	
 	_bSampmanInitialised = FALSE;
 }
@@ -1227,7 +1250,7 @@ cSampleManager::LoadSampleBank(uint8 nBank)
 	if ( fread((void *)nSampleBankMemoryStartAddress[nBank], 1, nSampleBankSize[nBank], fpSampleDataHandle) != nSampleBankSize[nBank] )
 		return FALSE;
 #endif
-	bSampleBankLoaded[nBank] = TRUE;
+	gBankLoaded[nBank] = LOADING_STATUS_LOADED;
 	
 	return TRUE;
 }
@@ -1237,18 +1260,45 @@ cSampleManager::UnloadSampleBank(uint8 nBank)
 {
 	ASSERT( nBank < MAX_SFX_BANKS);
 	
-	bSampleBankLoaded[nBank] = FALSE;
+	gBankLoaded[nBank] = LOADING_STATUS_NOT_LOADED;
 }
 
-bool8
+int8
 cSampleManager::IsSampleBankLoaded(uint8 nBank)
 {
 	ASSERT( nBank < MAX_SFX_BANKS);
 	
-	return bSampleBankLoaded[nBank];
+	return gBankLoaded[nBank];
+}
+
+#ifdef FIX_BUGS
+uint8
+cSampleManager::IsMissionAudioLoaded(uint8 nSlot, uint32 nSample)
+{
+	ASSERT(nSlot == MISSION_AUDIO_PLAYER_COMMENT); // only MISSION_AUDIO_PLAYER_COMMENT is supported on PC
+	
+	return nSample == gPlayerTalkSfx ? LOADING_STATUS_LOADED : LOADING_STATUS_NOT_LOADED;
 }
 
 bool8
+cSampleManager::LoadMissionAudio(uint8 nSlot, uint32 nSample)
+{
+	ASSERT(nSlot == MISSION_AUDIO_PLAYER_COMMENT); // only MISSION_AUDIO_PLAYER_COMMENT is supported on PC
+	ASSERT(nSample < TOTAL_AUDIO_SAMPLES);
+	
+	if (fseek(fpSampleDataHandle, m_aSamples[nSample].nOffset, SEEK_SET) != 0)
+		return FALSE;
+
+	if (fread(gPlayerTalkData, 1, m_aSamples[nSample].nSize, fpSampleDataHandle) != m_aSamples[nSample].nSize)
+		return FALSE;
+
+	gPlayerTalkSfx = nSample;
+
+	return TRUE;
+}
+#endif
+
+uint8
 cSampleManager::IsPedCommentLoaded(uint32 nComment)
 {
 	ASSERT( nComment < TOTAL_AUDIO_SAMPLES );
@@ -1263,10 +1313,10 @@ cSampleManager::IsPedCommentLoaded(uint32 nComment)
 		uint8 slot = nCurrentPedSlot - i - 1;
 #endif
 		if ( nComment == nPedSlotSfx[slot] )
-			return TRUE;
+			return LOADING_STATUS_LOADED;
 	}
 	
-	return FALSE;
+	return LOADING_STATUS_NOT_LOADED;
 }
 
 
@@ -1482,13 +1532,34 @@ cSampleManager::InitialiseChannel(uint32 nChannel, uint32 nSfx, uint8 nBank)
 		
 		addr = nSampleBankMemoryStartAddress[nBank] + m_aSamples[nSfx].nOffset - m_aSamples[BankStartOffset[nBank]].nOffset;
 	}
+#ifdef FIX_BUGS
+	else if ( nSfx >= PLAYER_COMMENTS_START && nSfx <= PLAYER_COMMENTS_END )
+	{
+		if ( !IsMissionAudioLoaded(MISSION_AUDIO_PLAYER_COMMENT, nSfx) )
+			return FALSE;
+
+		addr = (uintptr)gPlayerTalkData;
+	}
+#endif
 	else
 	{
-		if ( !IsPedCommentLoaded(nSfx) )
+		int32 i;
+		for ( i = 0; i < _TODOCONST(3); i++ )
+		{
+			int32 slot = nCurrentPedSlot - i - 1;
+#ifdef FIX_BUGS
+			if (slot < 0)
+				slot += ARRAY_SIZE(nPedSlotSfx);
+#endif
+			if ( nSfx == nPedSlotSfx[slot] )
+			{
+				addr = (nSampleBankMemoryStartAddress[SFX_BANK_PED_COMMENTS] + PED_BLOCKSIZE * slot);
+				break;
+			}
+		}
+
+		if (i == _TODOCONST(3))
 			return FALSE;
-		
-		int32 slot = _GetPedCommentSlot(nSfx);
-		addr = (nSampleBankMemoryStartAddress[SFX_BANK_PED_COMMENTS] + PED_BLOCKSIZE * slot);
 	}
 	
 	if ( GetChannelUsedFlag(nChannel) )
@@ -1984,7 +2055,7 @@ cSampleManager::InitialiseSampleBanks(void)
 	fclose(fpSampleDescHandle);
 	fpSampleDescHandle = NULL;
 	
-	for ( int32 i = 0; i < TOTAL_AUDIO_SAMPLES; i++ )
+	for ( uint32 i = 0; i < TOTAL_AUDIO_SAMPLES; i++ )
 	{
 #ifdef FIX_BUGS
 		if (nBank >= MAX_SFX_BANKS) break;

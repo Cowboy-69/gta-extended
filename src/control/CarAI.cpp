@@ -19,9 +19,6 @@
 #include "Vehicle.h"
 #include "World.h"
 #include "ZoneCull.h"
-#ifdef WANTED_PATHS
-#include "CopPed.h"
-#endif
 
 #define DISTANCE_TO_SWITCH_DISTANCE_GOTO 20.0f
 
@@ -55,57 +52,14 @@ void CCarAI::BackToCruisingIfNoWantedLevel(CVehicle* pVehicle)
 	}
 }
 
-#ifdef IMPROVED_TECH_PART // wanted system
-void CCarAI::BackToCruisingIfPlayerLost(CVehicle* pVehicle)
-{
-	if (pVehicle->bIsLawEnforcer && FindPlayerPed()->m_pWanted->GetWantedLevel() > 0 && FindPlayerPed()->m_pWanted->IsPlayerLost()) {
-		CCarCtrl::JoinCarWithRoadSystem(pVehicle);
-		pVehicle->AutoPilot.m_nCarMission = MISSION_CRUISE;
-		pVehicle->AutoPilot.m_nDrivingStyle = DRIVINGSTYLE_AVOID_CARS;
-	}
-}
-#endif
-
 void CCarAI::UpdateCarAI(CVehicle* pVehicle)
 {
 	if (pVehicle->bIsLawEnforcer){
-#ifdef WANTED_PATHS
-		CWanted* wanted = FindPlayerPed()->m_pWanted;
-
-		if (!pVehicle->AutoPilot.m_bMovesToWantedPathNode && wanted->GetWantedLevel() > 0 && pVehicle->GetModelIndex() != MI_RHINO &&
-			(wanted->IsPlayerHides() || ThePaths.FindNodeClosestToCoors(wanted->m_vecLastSeenPosPlayer, PATH_CAR, 50.0f) == -1)) {
-
-			CWantedPaths closestWantedPaths = ThePaths.FindClosestWantedPathsToCoors(wanted->m_vecLastSeenPosPlayer);
-			pVehicle->AutoPilot.m_aCurrentSeekWantedPaths = closestWantedPaths;
-			CWantedPathNode firstNode = closestWantedPaths.wantedPathNode[0];
-
-			CCopPed* copPed = (CCopPed*)pVehicle->pDriver;
-
-			if (Distance(pVehicle->GetPosition(), firstNode.pos) < 25.0f && !copPed->m_bLookingForPlayer) {
-				pVehicle->AutoPilot.m_vecDestinationCoors.x = firstNode.pos.x;
-				pVehicle->AutoPilot.m_vecDestinationCoors.y = firstNode.pos.y;
-
-				pVehicle->AutoPilot.m_aCurrentWantedPathNodeID = 0;
-				pVehicle->AutoPilot.m_aCurrentSeekWantedPathNodePosition = closestWantedPaths.wantedPathNode[0].pos;
-
-				pVehicle->AutoPilot.m_bMovesToWantedPathNode = true;
-			}
-		} else if (pVehicle->AutoPilot.m_bMovesToWantedPathNode) {
-			TellCarToSeekWantedPaths(pVehicle);
-
-			pVehicle->AutoPilot.m_nCruiseSpeed = pVehicle->AutoPilot.m_aCurrentWantedPathNodeID == 0 ? 15 : 30;
-		} else if (pVehicle->AutoPilot.m_nCarMission == MISSION_BLOCKCAR_FARAWAY ||
-			pVehicle->AutoPilot.m_nCarMission == MISSION_RAMPLAYER_FARAWAY ||
-			pVehicle->AutoPilot.m_nCarMission == MISSION_BLOCKPLAYER_CLOSE ||
-			pVehicle->AutoPilot.m_nCarMission == MISSION_RAMPLAYER_CLOSE)
-			pVehicle->AutoPilot.m_nCruiseSpeed = FindPoliceCarSpeedForWantedLevel(pVehicle);
-#else
 		if (pVehicle->AutoPilot.m_nCarMission == MISSION_BLOCKCAR_FARAWAY ||
 			pVehicle->AutoPilot.m_nCarMission == MISSION_RAMPLAYER_FARAWAY ||
 			pVehicle->AutoPilot.m_nCarMission == MISSION_BLOCKPLAYER_CLOSE ||
 			pVehicle->AutoPilot.m_nCarMission == MISSION_RAMPLAYER_CLOSE)
 			pVehicle->AutoPilot.m_nCruiseSpeed = FindPoliceCarSpeedForWantedLevel(pVehicle);
-#endif
 	}
 	switch (pVehicle->GetStatus()){
 	case STATUS_PLAYER:
@@ -121,21 +75,13 @@ void CCarAI::UpdateCarAI(CVehicle* pVehicle)
 	case STATUS_PHYSICS:
 		switch (pVehicle->AutoPilot.m_nCarMission) {
 		case MISSION_RAMPLAYER_FARAWAY:
-#ifdef WANTED_PATHS
-			if (!FindPlayerPed()->m_pWanted->IsPlayerHides() && (FindSwitchDistanceClose(pVehicle) > (FindPlayerCoors() - pVehicle->GetPosition()).Magnitude2D() ||
-				pVehicle->AutoPilot.m_bIgnorePathfinding)) {
-#else
 			if (FindSwitchDistanceClose(pVehicle) > (FindPlayerCoors() - pVehicle->GetPosition()).Magnitude2D() ||
 				pVehicle->AutoPilot.m_bIgnorePathfinding) {
-#endif
 				pVehicle->AutoPilot.m_nCarMission = MISSION_RAMPLAYER_CLOSE;
 				if (pVehicle->UsesSiren())
 					pVehicle->m_bSirenOrAlarm = true;
 			}
 			BackToCruisingIfNoWantedLevel(pVehicle);
-#ifdef IMPROVED_TECH_PART // wanted system
-			BackToCruisingIfPlayerLost(pVehicle);
-#endif
 			break;
 		case MISSION_RAMPLAYER_CLOSE:
 			if (FindSwitchDistanceFar(pVehicle) >= (FindPlayerCoors() - pVehicle->GetPosition()).Magnitude2D() ||
@@ -163,11 +109,7 @@ void CCarAI::UpdateCarAI(CVehicle* pVehicle)
 				else
 					pVehicle->m_nTimeBlocked = 0;
 				if (!FindPlayerVehicle() || FindPlayerVehicle()->IsUpsideDown() ||
-#ifdef IMPROVED_TECH_PART // wanted system
-					FindPlayerVehicle()->GetMoveSpeed().Magnitude() < 0.05f && pVehicle->m_nTimeBlocked > TIME_COPS_WAIT_TO_EXIT_AFTER_STOPPING && !FindPlayerPed()->m_pWanted->IsPlayerLost()) {
-#else
 					FindPlayerVehicle()->GetMoveSpeed().Magnitude() < 0.05f && pVehicle->m_nTimeBlocked > TIME_COPS_WAIT_TO_EXIT_AFTER_STOPPING) {
-#endif
 					if (pVehicle->bIsLawEnforcer &&
 						(pVehicle->GetModelIndex() != MI_RHINO || pVehicle->m_randomSeed > 10000) &&
 						(FindPlayerCoors() - pVehicle->GetPosition()).Magnitude2D() < 10.0f) {
@@ -187,39 +129,19 @@ void CCarAI::UpdateCarAI(CVehicle* pVehicle)
 			if (pVehicle->bIsLawEnforcer)
 				MellowOutChaseSpeed(pVehicle);
 			BackToCruisingIfNoWantedLevel(pVehicle);
-#ifdef IMPROVED_TECH_PART // wanted system
-			BackToCruisingIfPlayerLost(pVehicle);
-#endif
 			break;
 		case MISSION_BLOCKPLAYER_FARAWAY:
-#ifdef IMPROVED_TECH_PART // wanted system
-			if (pVehicle->GetVehicleAppearance() == VEHICLE_APPEARANCE_BOAT && !FindPlayerPed()->m_pWanted->IsPlayerHides())
-				pVehicle->AutoPilot.m_nCarMission = MISSION_ATTACKPLAYER;
-#endif
-#ifdef WANTED_PATHS
-			if (!FindPlayerPed()->m_pWanted->IsPlayerHides() && (FindSwitchDistanceClose(pVehicle) > (FindPlayerCoors() - pVehicle->GetPosition()).Magnitude2D() ||
-				pVehicle->AutoPilot.m_bIgnorePathfinding)) {
-#else
 			if (FindSwitchDistanceClose(pVehicle) > (FindPlayerCoors() - pVehicle->GetPosition()).Magnitude2D() ||
 				pVehicle->AutoPilot.m_bIgnorePathfinding) {
-#endif
 				pVehicle->AutoPilot.m_nCarMission = MISSION_BLOCKPLAYER_CLOSE;
 				if (pVehicle->UsesSiren())
 					pVehicle->m_bSirenOrAlarm = true;
 			}
 			BackToCruisingIfNoWantedLevel(pVehicle);
-#ifdef IMPROVED_TECH_PART // wanted system
-			BackToCruisingIfPlayerLost(pVehicle);
-#endif
 			break;
 		case MISSION_BLOCKPLAYER_CLOSE:
-#ifdef IMPROVED_TECH_PART // wanted system
-			if ((FindSwitchDistanceFar(pVehicle) >= (FindPlayerCoors() - pVehicle->GetPosition()).Magnitude2D() ||
-				pVehicle->AutoPilot.m_bIgnorePathfinding) && !FindPlayerPed()->m_pWanted->IsPlayerLost()) {
-#else
 			if (FindSwitchDistanceFar(pVehicle) >= (FindPlayerCoors() - pVehicle->GetPosition()).Magnitude2D() ||
 				pVehicle->AutoPilot.m_bIgnorePathfinding) {
-#endif
 				if (FindPlayerVehicle() && FindPlayerVehicle()->GetMoveSpeed().Magnitude() < 0.04f)
 #ifdef FIX_BUGS
 					pVehicle->m_nTimeBlocked += CTimer::GetTimeStepInMilliseconds();
@@ -248,9 +170,6 @@ void CCarAI::UpdateCarAI(CVehicle* pVehicle)
 			if (pVehicle->bIsLawEnforcer)
 				MellowOutChaseSpeed(pVehicle);
 			BackToCruisingIfNoWantedLevel(pVehicle);
-#ifdef IMPROVED_TECH_PART // wanted system
-			BackToCruisingIfPlayerLost(pVehicle);
-#endif
 			break;
 		case MISSION_GOTOCOORDS:
 			if ((pVehicle->AutoPilot.m_vecDestinationCoors - pVehicle->GetPosition()).Magnitude2D() < FindSwitchDistanceClose(pVehicle) ||
@@ -397,17 +316,11 @@ void CCarAI::UpdateCarAI(CVehicle* pVehicle)
 			if (pVehicle->bIsLawEnforcer)
 				MellowOutChaseSpeedBoat(pVehicle);
 			BackToCruisingIfNoWantedLevel(pVehicle);
-#ifdef IMPROVED_TECH_PART // wanted system
-			BackToCruisingIfPlayerLost(pVehicle);
-#endif
 			break;
 		case MISSION_SLOWLY_DRIVE_TOWARDS_PLAYER_1:
 			if (((CVector2D)(pVehicle->AutoPilot.m_vecDestinationCoors) - pVehicle->GetPosition()).Magnitude() < 1.5f)
 				pVehicle->AutoPilot.m_nCarMission = MISSION_SLOWLY_DRIVE_TOWARDS_PLAYER_2;
 			BackToCruisingIfNoWantedLevel(pVehicle);
-#ifdef IMPROVED_TECH_PART // wanted system
-			BackToCruisingIfPlayerLost(pVehicle);
-#endif
 			break;
 		case MISSION_SLOWLY_DRIVE_TOWARDS_PLAYER_2:
 		{
@@ -432,39 +345,19 @@ void CCarAI::UpdateCarAI(CVehicle* pVehicle)
 			if (!FindPlayerVehicle() || DotProduct2D(CVector2D(diff.x / distance, diff.y / distance), FindPlayerSpeed()) > 0.05f)
 				pVehicle->AutoPilot.m_nCarMission = MISSION_BLOCKPLAYER_CLOSE;
 			BackToCruisingIfNoWantedLevel(pVehicle);
-#ifdef IMPROVED_TECH_PART // wanted system
-			BackToCruisingIfPlayerLost(pVehicle);
-#endif
 			break;
 		}
 		default:
-#ifdef WANTED_PATHS
-			if (pVehicle->bIsLawEnforcer && FindPlayerPed()->m_pWanted->GetWantedLevel() > 0 && !CCullZones::NoPolice() && pVehicle->AutoPilot.m_nCarMission != MISSION_STOP_FOREVER){
-#else
 			if (pVehicle->bIsLawEnforcer && FindPlayerPed()->m_pWanted->GetWantedLevel() > 0 && !CCullZones::NoPolice()){
-#endif
 				if (ABS(FindPlayerCoors().x - pVehicle->GetPosition().x) > 10.0f ||
 				  ABS(FindPlayerCoors().y - pVehicle->GetPosition().y) > 10.0f){
 					pVehicle->AutoPilot.m_nCruiseSpeed = FindPoliceCarSpeedForWantedLevel(pVehicle);
 					pVehicle->SetStatus(STATUS_PHYSICS);
-#ifdef IMPROVED_TECH_PART // wanted system
-					if (pVehicle->GetVehicleAppearance() == VEHICLE_APPEARANCE_BOAT && FindPlayerPed()->m_pWanted->IsPlayerHides())
-						pVehicle->AutoPilot.m_nCarMission = MISSION_BLOCKPLAYER_FARAWAY;
-					else {
-						pVehicle->AutoPilot.m_nCarMission =
-							pVehicle->GetVehicleAppearance() == VEHICLE_APPEARANCE_BOAT ? FindPoliceBoatMissionForWantedLevel() : FindPoliceCarMissionForWantedLevel();
-					}
-#else
 					pVehicle->AutoPilot.m_nCarMission = 
 						pVehicle->GetVehicleAppearance() == VEHICLE_APPEARANCE_BOAT ? FindPoliceBoatMissionForWantedLevel() : FindPoliceCarMissionForWantedLevel();
-#endif
 					pVehicle->AutoPilot.m_nTempAction = TEMPACT_NONE;
 					pVehicle->AutoPilot.m_nDrivingStyle = DRIVINGSTYLE_AVOID_CARS;
-#ifdef IMPROVED_TECH_PART // wanted system
-				}else if (pVehicle->AutoPilot.m_nCarMission == MISSION_CRUISE && !FindPlayerPed()->m_pWanted->IsPlayerLost()){
-#else
 				}else if (pVehicle->AutoPilot.m_nCarMission == MISSION_CRUISE){
-#endif
 					pVehicle->SetStatus(STATUS_PHYSICS);
 					TellOccupantsToLeaveCar(pVehicle);
 					pVehicle->AutoPilot.m_nCruiseSpeed = 0;
@@ -543,7 +436,6 @@ void CCarAI::UpdateCarAI(CVehicle* pVehicle)
 		pVehicle->AutoPilot.m_nTempAction = TEMPACT_WAIT;
 		pVehicle->AutoPilot.m_nTimeTempAction = CTimer::GetTimeInMilliseconds() + 1000;
 	}
-#ifndef WANTED_PATHS
 	if (pVehicle->AutoPilot.m_nTempAction == TEMPACT_NONE){
 		switch (pVehicle->AutoPilot.m_nCarMission){
 		case MISSION_RAMPLAYER_FARAWAY:
@@ -568,7 +460,6 @@ void CCarAI::UpdateCarAI(CVehicle* pVehicle)
 		default: break;
 		}
 	}
-#endif
 	if (pVehicle->pDriver && pVehicle->pDriver->m_objective == OBJECTIVE_KILL_CHAR_ANY_MEANS){
 		if ((pVehicle->GetPosition() - FindPlayerCoors()).Magnitude() < 15.0f){
 			if (!FindPlayerVehicle() || pVehicle->GetHasCollidedWith(FindPlayerVehicle())){
@@ -761,63 +652,6 @@ void CCarAI::TellCarToBlockOtherCar(CVehicle* pVehicle, CVehicle* pTarget)
 	pVehicle->AutoPilot.m_nCruiseSpeed = Max(6, pVehicle->AutoPilot.m_nCruiseSpeed);
 }
 
-#ifdef WANTED_PATHS
-void CCarAI::TellCarToSeekWantedPaths(CVehicle* pVehicle)
-{
-	if ((!FindPlayerPed()->m_pWanted->IsPlayerHides() && Distance2D(pVehicle->GetPosition(), FindPlayerCoors()) < 80.0f) || FindPlayerPed()->m_pWanted->GetWantedLevel() == 0)
-		TellOccupantsToLeaveCarImmediately(pVehicle);
-
-	CWantedPaths wantedPaths = pVehicle->AutoPilot.m_aCurrentSeekWantedPaths;
-
-	pVehicle->AutoPilot.m_nCarMission = MISSION_GOTO_COORDS_STRAIGHT_ACCURATE;
-
-	if (Distance(pVehicle->GetPosition(), pVehicle->AutoPilot.m_aCurrentSeekWantedPathNodePosition) < 10.0f) {
-		pVehicle->AutoPilot.m_aCurrentWantedPathNodeID++;
-		if (wantedPaths.wantedPathNode[pVehicle->AutoPilot.m_aCurrentWantedPathNodeID].pos.IsZero()) {
-			TellOccupantsToLeaveCarImmediately(pVehicle);
-		} else {
-			pVehicle->AutoPilot.m_aCurrentSeekWantedPathNodePosition = wantedPaths.wantedPathNode[pVehicle->AutoPilot.m_aCurrentWantedPathNodeID].pos;
-
-			pVehicle->AutoPilot.m_vecDestinationCoors.x = pVehicle->AutoPilot.m_aCurrentSeekWantedPathNodePosition.x;
-			pVehicle->AutoPilot.m_vecDestinationCoors.y = pVehicle->AutoPilot.m_aCurrentSeekWantedPathNodePosition.y;
-		}
-	}
-}
-
-void CCarAI::TellOccupantsToLeaveCarImmediately(CVehicle* pVehicle)
-{
-	TellOccupantsToLeaveCar(pVehicle);
-
-	CCopPed* copPed = (CCopPed*)pVehicle->pDriver;
-	if (copPed) {
-		copPed->m_bLookingForPlayer = true;
-		copPed->FindPotentialPlayerPos();
-	}
-
-	for (int i = 0; i < pVehicle->m_nNumMaxPassengers - 1; i++) {
-		CCopPed* copPed = (CCopPed*)pVehicle->pPassengers[i];
-		if (copPed) {
-			copPed->m_bLookingForPlayer = true;
-			copPed->FindPotentialPlayerPos();
-		}
-	}
-
-	pVehicle->AutoPilot.m_nCarMission = MISSION_STOP_FOREVER;
-
-	int RandNumber = CGeneral::GetRandomNumberInRange(1, 3);
-	if (RandNumber == 1)
-		pVehicle->AutoPilot.m_nTempAction = TEMPACT_HANDBRAKETURNRIGHT;
-	else if (RandNumber == 2)
-		pVehicle->AutoPilot.m_nTempAction = TEMPACT_HANDBRAKETURNLEFT;
-	else
-		pVehicle->AutoPilot.m_nTempAction = TEMPACT_HANDBRAKESTRAIGHT;
-
-	pVehicle->AutoPilot.m_nTimeTempAction = CTimer::GetTimeInMilliseconds() + 1500;
-
-	pVehicle->AutoPilot.m_bMovesToWantedPathNode = false;
-}
-#endif
-
 uint8 CCarAI::FindPoliceCarMissionForWantedLevel()
 {
 	switch (CWorld::Players[CWorld::PlayerInFocus].m_pPed->m_pWanted->GetWantedLevel()){
@@ -848,10 +682,6 @@ uint8 CCarAI::FindPoliceBoatMissionForWantedLevel()
 
 int32 CCarAI::FindPoliceCarSpeedForWantedLevel(CVehicle* pVehicle)
 {
-#ifdef IMPROVED_TECH_PART // wanted system
-	if (FindPlayerPed()->m_pWanted->GetWantedLevel() > 0 && FindPlayerPed()->m_pWanted->IsPlayerHides())
-		return 34;
-#endif
 	switch (CWorld::Players[CWorld::PlayerInFocus].m_pPed->m_pWanted->GetWantedLevel()) {
 	case 0: return CGeneral::GetRandomNumberInRange(12, 16);
 	case 1: return 25;

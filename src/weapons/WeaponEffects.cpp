@@ -106,23 +106,17 @@ CWeaponEffects::Render(void)
 		{
 			PUSH_RENDERGROUP("CWeaponEffects::Render");
 
-#ifndef IMPROVED_MENU_AND_INPUT
 			float recipz = 1.0f / pos.z;
 			CSprite::RenderOneXLUSprite_Rotate_Aspect(pos.x, pos.y, pos.z,
 				w, h,
 				255, 88, 100, 158,
 				recipz, gCrossHair.m_fRotation, gCrossHair.m_nAlpha);
-#endif
 				
 			float recipz2 = 1.0f / pos.z;
 			
 			CSprite::RenderOneXLUSprite_Rotate_Aspect(pos.x, pos.y, pos.z,
 				size*w, size*h,
-#ifdef IMPROVED_MENU_AND_INPUT
-				255, 88, 100, 255,
-#else
 				107, 134, 247, 158,
-#endif
 				recipz2, TWOPI - gCrossHair.m_fRotation, gCrossHair.m_nAlpha);
 						
 			gCrossHair.m_fRotation += 0.02f;

@@ -14,9 +14,6 @@
 #include "Zones.h"
 #include "sampman.h"
 #include "Wanted.h"
-#ifdef IMPROVED_TECH_PART
-#include "General.h"
-#endif
 
 struct tPoliceRadioZone {
 	char m_aName[8];
@@ -138,16 +135,6 @@ cAudioManager::ServicePoliceRadio()
 			wantedLevel = playerPed->m_pWanted->GetWantedLevel();
 			if (!crimeReport) {
 				if (wantedLevel != 0) {
-#ifdef IMPROVED_TECH_PART // wanted system
-					if (!FindPlayerPed()->m_pWanted->IsPlayerHides())
-						if (nLastSeen != 0)
-							nLastSeen -= CTimer::GetLogicalFramesPassed();
-						else {
-							nLastSeen = m_anRandomTable[1] % 1000 + 500;
-							FindPlayerPed()->m_pWanted->m_bNextReportIsLastSeen ? PlaySuspectLastSeen(FindPlayerCoors().x, FindPlayerCoors().y, FindPlayerCoors().z) : SetupSuspectLastSeenReport();
-							FindPlayerPed()->m_pWanted->m_bNextReportIsLastSeen = !FindPlayerPed()->m_pWanted->m_bNextReportIsLastSeen;
-						}
-#else
 					if (nLastSeen != 0)
 #ifdef FIX_BUGS
 						nLastSeen -= CTimer::GetLogicalFramesPassed();
@@ -158,7 +145,6 @@ cAudioManager::ServicePoliceRadio()
 						nLastSeen = m_anRandomTable[1] % 1000 + 2000;
 						SetupSuspectLastSeenReport();
 					}
-#endif
 				}
 			}
 		}
@@ -350,9 +336,6 @@ cAudioManager::SetupCrimeReport()
 				m_sPoliceRadioQueue.Add(sampleIndex);
 				m_sPoliceRadioQueue.Add(SFX_POLICE_RADIO_MESSAGE_NOISE_1);
 				m_sPoliceRadioQueue.Add(NO_SAMPLE);
-#ifdef IMPROVED_TECH_PART // wanted system
-				FindPlayerPed()->m_pWanted->m_bNextReportIsLastSeen = false;
-#endif
 				break;
 			}
 		}
@@ -463,7 +446,7 @@ Const uint32 gCarColourTable[][3] = {
 void
 cAudioManager::SetupSuspectLastSeenReport()
 {
-	CVehicle *veh = nullptr;
+	CVehicle *veh;
 	uint8 color1;
 	uint32 main_color;
 	uint32 sample;
@@ -482,11 +465,6 @@ cAudioManager::SetupSuspectLastSeenReport()
 					main_color = gCarColourTable[color1][1];
 					color_pre_modifier = gCarColourTable[color1][0];
 					color_post_modifier = gCarColourTable[color1][2];
-#ifdef NEW_VEHICLE_LOADER
-					if (veh->GetModelIndex() >= MI_FIRST_NEW_VEHICLE) {
-						sample = veh->GetModelInfo()->m_policeRadioIndex;
-					} else
-#endif
 					switch (veh->GetModelIndex()) {
 					case MI_LANDSTAL:
 					case MI_PATRIOT:
@@ -717,10 +695,6 @@ cAudioManager::PlaySuspectLastSeen(float x, float y, float z)
 	CVector vec = CVector(x, y, z);
 
 	if (!m_bIsInitialised) return;
-
-#ifdef IMPROVED_TECH_PART // wanted system
-	if (FindPlayerPed()->m_pWanted->IsPlayerHides()) return;
-#endif
 
 	if (MusicManager.m_nMusicMode != MUSICMODE_CUTSCENE && POLICE_RADIO_QUEUE_MAX_SAMPLES - m_sPoliceRadioQueue.m_nSamplesInQueue > 9) {
 		audioZone = CTheZones::FindAudioZone(&vec);

@@ -95,9 +95,6 @@ CPlayerInfo::Clear(void)
 	m_fMediaAttention = 0.0f;
 	m_nCurrentBustedAudio = 1;
 	m_nBustedAudioStatus = BUSTEDAUDIO_NONE;
-#ifdef IMPROVED_TECH_PART // Vehicles are muted when the exit button is held down
-	m_nTimeVehicleEngineOff = 0;
-#endif
 }
 
 void
@@ -318,11 +315,7 @@ CPlayerInfo::Process(void)
 				if (!surfaceBelowVeh || !CBridge::ThisIsABridgeObjectMovingUp(surfaceBelowVeh->GetModelIndex())) {
 					CVehicle *veh = m_pPed->m_pMyVehicle;
 					if (!veh->IsBoat() || veh->m_nDoorLock == CARLOCK_LOCKED_PLAYER_INSIDE) {
-#ifdef NEW_CHEATS // INVINCIBLE
-						if ((veh->GetStatus() != STATUS_WRECKED || m_pPed->bInvincibleCheat) && veh->GetStatus() != STATUS_TRAIN_MOVING && veh->m_nDoorLock != CARLOCK_LOCKED_PLAYER_INSIDE) {
-#else
 						if (veh->GetStatus() != STATUS_WRECKED && veh->GetStatus() != STATUS_TRAIN_MOVING && veh->m_nDoorLock != CARLOCK_LOCKED_PLAYER_INSIDE) {
-#endif
 							bool canJumpOff = false;
 							if (veh->m_vehType == VEHICLE_TYPE_BIKE) {
 								canJumpOff = veh->CanPedJumpOffBike();
@@ -331,9 +324,7 @@ CPlayerInfo::Process(void)
 							}
 
 							if (canJumpOff || veh->m_vecMoveSpeed.Magnitude() < 0.1f) {
-#ifndef SWIMMING
 								if (!veh->bIsInWater)
-#endif
 									m_pPed->SetObjective(OBJECTIVE_LEAVE_CAR, veh);
 
 							} else if (veh->GetStatus() != STATUS_PLAYER && veh != CGameLogic::pShortCutTaxi) {
@@ -400,11 +391,6 @@ CPlayerInfo::Process(void)
 							m_pPed->m_vehDoor = 0;
 							m_pPed->SetEnterCar(carBelow, m_pPed->m_vehDoor);
 						}
-#ifdef SWIMMING
-					} else if (m_pPed->bIsSwimming && carBelow->GetModelIndex() == MI_SEASPAR) {
-						m_pPed->SetObjective(OBJECTIVE_ENTER_CAR_AS_DRIVER, carBelow);
-						m_pPed->WarpPedIntoCar(carBelow);
-#endif
 					} else {
 						m_pPed->SetObjective(OBJECTIVE_ENTER_CAR_AS_DRIVER, carBelow);
 					}
@@ -439,11 +425,7 @@ CPlayerInfo::Process(void)
 			}
 		}
 	}
-#ifdef FEATURES_INI // VehiclesDontCatchFireWhenTurningOver
-	if (!bVehiclesDontCatchFireWhenTurningOver && !(CTimer::GetFrameCounter() & 31)) {
-#else
 	if (!(CTimer::GetFrameCounter() & 31)) {
-#endif
 		CVehicle *veh = FindPlayerVehicle();
 		if (veh && m_pPed->bInVehicle && veh->GetUp().z < 0.0f
 			&& veh->m_vecMoveSpeed.Magnitude() < 0.05f && (veh->IsCar() || veh->IsBoat()) && !veh->bIsInWater) {
@@ -543,15 +525,6 @@ CPlayerInfo::Process(void)
 	CStats::HighestChaseValue = Max(m_fMediaAttention, CStats::HighestChaseValue);
 	m_nMoney = Min(999999999, m_nMoney);
 	m_nVisibleMoney = Min(999999999, m_nVisibleMoney);
-
-#ifdef IMPROVED_TECH_PART // Vehicles are muted when the exit button is held down
-	if (m_pPed->InVehicle()) {
-		if (CPad::GetPad(0)->GetExitVehicle() && m_nTimeVehicleEngineOff < CTimer::GetTimeInMilliseconds())
-			m_nTimeVehicleEngineOff = CTimer::GetTimeInMilliseconds() + 500;
-		else if (!CPad::GetPad(0)->GetExitVehicle())
-			m_nTimeVehicleEngineOff = 0;
-	}
-#endif
 }
 
 bool
@@ -771,39 +744,6 @@ FindPlayerHeading(void)
 	if(FindPlayerVehicle()) return FindPlayerVehicle()->GetForward().Heading();
 	return FindPlayerPed()->GetForward().Heading();
 }
-
-#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
-bool PlayerCanMakeQuickSave()
-{
-	CPlayerPed* player = (CPlayerPed*)FindPlayerPed();
-
-	if (player->DyingOrDead() || player->bIsInTheAir)
-		return false;
-
-	if (FindPlayerSpeed().Magnitude() > 0.1f)
-		return false;
-
-	if (player->m_pWanted->GetWantedLevel() > 0)
-		return false;
-
-	if (CTheScripts::IsPlayerOnAMission())
-		return false;
-
-	if (!player->InVehicle() && !player->IsPedInControl())
-		return false;
-
-	if (!player->InVehicle() && TheCamera.Cams[0].Mode != CCam::MODE_FOLLOWPED && TheCamera.Cams[0].Mode != CCam::MODE_REAL_1ST_PERSON)
-		return false;
-
-	if (player->InVehicle() && TheCamera.Cams[0].Mode == CCam::MODE_FIXED)
-		return false;
-
-	if (TheCamera.m_bFading)
-		return false;
-
-	return true;
-}
-#endif
 
 bool
 CPlayerInfo::IsRestartingAfterDeath()

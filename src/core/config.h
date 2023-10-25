@@ -1,51 +1,3 @@
-//!7??7YY555PBGBBB#BBBBBB#BBGBBBBGGGPPPGPP5PPPPGGGPPGP5555555YYJYPY5P5P55P55YPY55JP555PY55YYYJY?7^~^:.
-//7???JYJ5P5PBBGBBBB##BBBBBBGGGGGGPGPP5PPG55P555GPPGP55PP5YY555PYY55555P5YYPP555YPYPPPP5Y5PJJYJJ7!~^..
-//!7J?JYYPPGBBBBBB#B##BBBBBBGBGGBGGPPGP5PP555PP55PPPG55Y55PY5YY55YY55YYP55PYP5PP55P5P5PG55PPYY??7~^...
-//~!!5JYP5GGBB#B#B#B#B##B#BBGBGGPPPPPPYP5P55YP5555P55555YY5Y55JJ5555J55555PP5YPPP55P5GGPPPYPYYJY?~^...
-//~~!JJ5PPGBB##B##B#B#BBBBBGGPPPPP5GP5Y5555PYP5Y5P55YYJPY5Y?YJJPJ55Y5YYP5PPPGPPBGGGGGGBGGPPP5YJY7~:...
-//^^7??YP5GBGBBBBBBBGBGBPGBPGG55PPYPPJ55JJJ?Y5YY5YY5555YYYYYY?JJJJY55JYPPPG5GPGGBBBBB#BGGGPGPYJ7!^....
-//:!!7?JJY55PBGBPGBGBBBBGGGGGGPPG5P5P5JJ7???JJPJYYY5555YY?JJ7~!??7?JJJYY5PPPGGPGBGGGGGPGPP5YJ77~::....
-//^^!!~~!J?YP5YPGPBGGGBBGPPGPP555Y????!^~^^~~77?JJJJJJJ?7!~^^..::^^^~^77??YYP555P5PPGG5G5YYY7!^.......
-//:^^^..^?5Y5Y5PGGBBBB#BGGGPYY!^::.::..........~7J?JY?7~:....:............^!JYPYGBGBBPGPYJ??77~.......
-//^:....::~~77JY55GPBP5Y?7?!~!~~^...............!JJJJ?7:.................... ..::^~~:^::..............
-//....... ....:^~~^::.... ......................:?YYY??:......:.................... ................ .
-//:.......................:.....................~JJPGYY7^.............................................
-//::.:^^::........... ....................:^^^:~YPGGGGP5!:..:......::....:...........^.........:......
-//^:^75PPPP7~^::... .... ...  ...::!!^~J5Y5YJ77J5PGPP5YYJ^:.~J5?!!!!^.............::::..::.^!~JJ?7^...
-//~~!YGB#BBBBBBGJ7!~!!!!!!7!!~~~~~!JJ5GPPPGY?7?J5P55GGYJ?^:^~J55P5J?~:^!~!7!~~~^::^:::!JYP5GBPGP5YJ!..
-//77?Y5GGBGBB####B#########BB#BGGPYY555Y55YJ?~~?J5PPPP5YJ!^:^!??Y5555Y55GGGBBBBB#GBBBG#BBBBB#BGGPYJ7~:
-//!7JY5Y5555PB5GGPGBBBGGGGGGBGGBPP55PP55J5J7!~!?YP5PP55Y?~^:^!YYJ5PPP5GGGPBGGBBBGBBBBBBGBBGGGP5YYJYJ!~
-//??YYYYP5J???JJYJYY55YP5Y55P55PP5Y5555P5YJJ~!?JJP5P55YY?!~~^!JY55555PPGGPGPGPPP5PPP5GPYPPYYYYYYYJ7?7~
-//YYYY?YY5YJYYJJJYY5YY5Y55Y5JYYYJYJJYYYJPY?!~!!JY5PPPP55?~~::~!Y5YY555Y5PY5Y5Y55YYP5P5YPYYY?YYJYJJ?7!^
-//???JYYJ55Y5PYPPY555Y5Y5J55J5JY?J?YJJYY5?7~~~~7YP55YY5Y7~::..^7?JJJ?J7YYYJJJY5Y55Y55P5PJ55P5JYJ??7!:.
-//!~!77JYYPY5PP5PP55GY55YJYJ????J7!7!?JJY~^::.^!?5YPY5Y?!^:....:~??!7~~^~~~7?7??Y5J5YYJYYYYJYJ?7!7^:..
-//.:^~!7?JY5555Y5555PYY?Y7?7!!77!!^7~~JJ7!^...:!??Y55JY!~:......^^^^^:^:.::~~!77?7J??J????J!!~::::....
-//....^~77J?JJYYJYJJJJ7!!~~^:::::.:^~7?77!!^.^^7?JJP5YJ!!^.:.....^~^:.......:::^:^~!7~^~~^^:..........
-//.....::^~!!77!77!~~^^^::......:.:^!?J7!~^^:::!!7?7!!~^^........^!^..............::^:................
-//........::^^:::::::..............~!?!^..........:..........:.....^:.....................:...........
-//...........................:....:.:^................................................................
-//...............:.........................:................................:...............:.........
-//.......................................................:............................................
-//.................................::.................................................................
-//..............................:~7~~~^:.:..^!~~:.............................................. ......
-//............................^!JJJY5Y5YY5PGGBGG57^....~~!~~^.........................:...............
-//...........:.......... .. .~!JJ55PGBB#GBGBG#BBBP5?!!?YJJYY5JJJ7~^^::. .............:................
-//......................:...~??J?5JYYJJJJP5PPGGBBGPP5PYJ5?JYJ5P55J?7!~!^...........:.............:....
-//.........................~!~~~^^::^^~!!J?YYY??????7!7!!77??!J?JJJ7!!7!^.....:...................:...
-//.......................::^::.......:^:~!~~^:.............^:!?J7~~^::.:..................:...........
-//...............:......:^............:..:............. .......:^:.................:........:.........
-//.....................:::..............:....................................................:........
-//.....................:..:..............::..^!!?!:.^J77^:............................................
-//....................:~7JYJ!.~7~:....::.^~:.^^!?7~:JY?!^:.:............:~^.......................:...
-//....................^7JJYJJ~.~???~......:...::.^::^::.................7J~^........:...... ..........
-//..........:.........:~J7??7~:..:~~~:.....:..:...:.......:..... .::^..:!~~!:...:....:................
-//.....................!JJ?7!^~:....:::^:^:...... .............:^~^.:..:^:~^~........................:
-//...:..............:..~7J7~!::^::.......::^~!!?77!~!!!!~^^^::.::.........::^^...............:........
-//...... ..............^!7!~7^^.:::............^~~~^~~:::....................:......................:.
-//......................~~~!!!!:^::.........................................::...........:........:...
-//......................:^~!!!!!~!^~^^:...............................................................
-//...:..................:^^^!J!!~7!7!J7!~~::..:......:...........:.................:... ..............
-
 #pragma once
 
 // disables (most) stuff that wasn't in original gta-vc.exe
@@ -53,188 +5,6 @@
 #define VANILLA_DEFINES
 #endif
 
-#define NDEBUG
-
-#define VICE_EXTENDED
-#ifdef VICE_EXTENDED
-	// These macros are used to navigation; Disabling them individually is not recommended
-
-	#define CLIMBING // also in clump.cpp, Clump::destroy
-	#define CROUCH
-	#define FIRING_AND_AIMING
-	#define SWIMMING
-	#define FIRST_PERSON
-
-	#define IMPROVED_MENU_AND_INPUT
-	//#define NEW_MENU
-	#define EX_RADIO_ICONS
-
-	#define IMPROVED_TECH_PART
-	#define WANTED_PATHS
-
-	#define FEATURES_INI
-	#ifdef FEATURES_INI
-		#define EX_DISTANT_LIGHTS // thank https://github.com/ThirteenAG/III.VC.SA.IV.Project2DFX/releases/tag/gtavc
-	#endif
-
-	#define AUTOSAVE_AND_SAVE_ANYWHERE
-
-	#define VEHICLE_MODS
-	#define IMPROVED_VEHICLES
-	#define IMPROVED_VEHICLES_2
-	#define NEW_VEHICLE_LOADER
-
-	#define EX_PED_VARIATIONS
-	#define EX_PARTICLES
-
-	#define NEW_CHEATS
-
-	#define UTILS
-
-	//#define VICE_CRY
-
-enum Config {
-	NUMPLAYERS = 1,
-
-	NUMCDIMAGES = 6, // gta3.img duplicates (not used on PC)
-	MAX_CDIMAGES = 16, // additional cdimages
-	MAX_CDCHANNELS = 5,
-
-#ifdef VICE_CRY
-	MODELINFOSIZE = 8000,
-#else
-	MODELINFOSIZE = 6700,
-#endif
-	TXDSTORESIZE = 1485,
-	COLSTORESIZE = 31,
-	EXTRADIRSIZE = 256,
-	CUTSCENEDIRSIZE = 512,
-
-#ifdef VICE_CRY
-	SIMPLEMODELSIZE = 6000,
-#else
-	SIMPLEMODELSIZE = 3985,
-#endif
-	TIMEMODELSIZE = 485,
-	CLUMPMODELSIZE = 5,
-	WEAPONMODELSIZE = 37,
-	PEDMODELSIZE = 130,
-	VEHICLEMODELSIZE = 210,
-	TWODFXSIZE = 1310,
-
-	MAXVEHICLESLOADED = 50, // 70 on mobile
-
-	NUMOBJECTINFO = 210,
-
-	NUMCUTSCENEOBJECTS = 50,	// not a pool in VC
-
-	NUMANIMBLOCKS = 35,
-	NUMANIMATIONS = 470,
-
-	NUMTEMPOBJECTS = 40,
-
-	// Path data
-	NUM_PATHNODES = 9650,
-	NUM_CARPATHLINKS = 3500,
-	NUM_MAPOBJECTS = 1250,
-	NUM_PATHCONNECTIONS = 20400,
-	NUM_WANTEDPATHNODES = 20,
-	NUM_WANTEDPATHS = 100,
-
-	// Link list lengths
-	NUMALPHALIST = 20,
-	NUMBOATALPHALIST = 20,
-	NUMALPHAENTITYLIST = 200,
-	NUMALPHAUNTERWATERENTITYLIST = 30,
-	NUMCOLCACHELINKS = 50,
-	NUMREFERENCES = 800,
-
-	// Zones
-	NUMAUDIOZONES = 14,
-	NUMINFOZONES = 169,
-	NUMMAPZONES = 39,
-	NUMNAVIGZONES = 20,
-
-	// Cull zones
-	NUMATTRIBZONES = 704,
-
-	NUMOCCLUSIONVOLUMES = 350,
-	NUMACTIVEOCCLUDERS = 48,
-
-	PATHNODESIZE = 4500,
-
-	NUMWEATHERS = 7,
-	NUMHOURS = 24,
-
-	NUMEXTRADIRECTIONALS = 4,
-	NUMANTENNAS = 8,
-	NUMCORONAS = 2000,
-	NUMPOINTLIGHTS = 32,
-	NUM3DMARKERS = 32,
-	NUMBRIGHTLIGHTS = 32,
-	NUMSHINYTEXTS = 32,
-	NUMMONEYMESSAGES = 16,
-	NUMPICKUPMESSAGES = 16,
-	NUMBULLETTRACES = 16,
-	NUMMBLURSTREAKS = 4,
-	NUMSKIDMARKS = 32,
-
-	NUMONSCREENCLOCKS = 1,
-	NUMONSCREENCOUNTERS = 3,
-	NUMRADARBLIPS = 150,
-	NUMGENERALPICKUPS = 320,
-	NUMSCRIPTEDPICKUPS = 16,
-	NUMPICKUPS = NUMGENERALPICKUPS + NUMSCRIPTEDPICKUPS,
-	NUMCOLLECTEDPICKUPS = 20,
-	NUMPACMANPICKUPS = 256,
-	NUMEVENTS = 64,
-
-	NUM_CARGENS = 185,
-
-	NUM_PATH_NODES_IN_AUTOPILOT = 8,
-
-	NUM_ACCIDENTS = 20,
-	NUM_FIRES = 40,
-	NUM_GARAGES = 35,
-	NUM_PROJECTILES = 32,
-
-	NUM_GLASSPANES = 45,
-	NUM_GLASSENTITIES = 32,
-	NUM_WATERCANNONS = 3,
-
-	NUMPEDROUTES = 200,
-	NUMPHONES = 50,
-	NUMPEDGROUPS = 67,
-	NUMMODELSPERPEDGROUP = 16,
-	MAXZONEPEDSLOADED = 8,
-	NUMSHOTINFOS = 100,
-
-	NUMROADBLOCKS = 300,
-	NUM_SCRIPT_ROADBLOCKS = 16,
-
-	NUMVISIBLEENTITIES = 2000,
-	NUMINVISIBLEENTITIES = 150,
-
-	NUM_AUDIOENTITY_EVENTS = 4,
-	NUM_PED_COMMENTS_SLOTS = 20,
-
-	NUM_SOUND_QUEUES = 2,
-	NUM_AUDIOENTITIES = 250,
-
-	NUM_SCRIPT_MAX_ENTITIES = 40,
-
-	NUM_GARAGE_STORED_CARS = 4,
-
-	NUM_CRANES = 8,
-	NUM_ESCALATORS = 22,
-	NUM_WATER_CREATURES = 8,
-
-	NUM_EXPLOSIONS = 48,
-
-	NUM_SETPIECES = 96,
-	NUM_SHORTCUT_START_POINTS = 16
-};
-#else
 enum Config {
 	NUMPLAYERS = 1,
 
@@ -377,7 +147,6 @@ enum Config {
 	NUM_SETPIECES = 96,
 	NUM_SHORTCUT_START_POINTS = 16
 };
-#endif
 
 // We don't expect to compile for PS2 or Xbox
 // but it might be interesting for documentation purposes
@@ -510,8 +279,8 @@ enum Config {
 
 #define FIX_BUGS		// fixes bugs that we've came across during reversing. You can undefine this only on release builds.
 #define MORE_LANGUAGES		// Add more translations to the game
-//#define COMPATIBLE_SAVES // this allows changing structs while keeping saves compatible, and keeps saves compatible between platforms
-//#define FIX_INCOMPATIBLE_SAVES // try to fix incompatible saves, requires COMPATIBLE_SAVES
+#define COMPATIBLE_SAVES // this allows changing structs while keeping saves compatible, and keeps saves compatible between platforms
+#define FIX_INCOMPATIBLE_SAVES // try to fix incompatible saves, requires COMPATIBLE_SAVES
 #define LOAD_INI_SETTINGS // as the name suggests. fundamental for CUSTOM_FRONTEND_OPTIONS
 
 #define NO_MOVIES	// add option to disable intro videos
@@ -595,8 +364,8 @@ enum Config {
 #	if defined(XINPUT) || defined(GTA_HANDHELD)
 #		define GAMEPAD_MENU		// Add gamepad menu
 #	endif
-//#	define TRIANGLE_BACK_BUTTON
-#	define CIRCLE_BACK_BUTTON
+#	define TRIANGLE_BACK_BUTTON
+//#	define CIRCLE_BACK_BUTTON
 #define LEGACY_MENU_OPTIONS			// i.e. frame sync(vsync)
 #define MUCH_SHORTER_OUTRO_SCREEN
 // #define XBOX_MESSAGE_SCREEN			// Blue background, no "saved successfully press OK" screen etc.
@@ -607,7 +376,7 @@ enum Config {
 #		define NO_ISLAND_LOADING  // disable loadscreen between islands via loading all island data at once, consumes more memory and CPU
 #		define CUTSCENE_BORDERS_SWITCH
 #		define MULTISAMPLING		// adds MSAA option
-//#		define INVERT_LOOK_FOR_PAD // enable the hidden option
+#		define INVERT_LOOK_FOR_PAD // enable the hidden option
 #		define PED_CAR_DENSITY_SLIDERS
 #	endif
 #endif

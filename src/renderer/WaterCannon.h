@@ -17,17 +17,10 @@ public:
 	CVector m_avecPos[NUM_SEGMENTPOINTS];
 	CVector m_avecVelocity[NUM_SEGMENTPOINTS];
 	bool m_abUsed[NUM_SEGMENTPOINTS];
-#ifdef IMPROVED_TECH_PART
-	bool m_bPlayerUsesCannon;
-#endif
 	
 	void Init(void);
 	void Update_OncePerFrame(int16 index);
-#ifdef IMPROVED_TECH_PART
-	void Update_NewInput(CVector *pos, CVector *dir, bool playerUsesCannon);
-#else
 	void Update_NewInput(CVector *pos, CVector *dir);
-#endif
 	void Render(void);
 	void PushPeds(void);
 };
@@ -40,11 +33,7 @@ public:
 	static CWaterCannon aCannons[NUM_WATERCANNONS];
 	
 	static void Init(void);
-#ifdef IMPROVED_TECH_PART
-	static void UpdateOne(uint32 id, CVector* pos, CVector* dir, bool playerUsesCannon);
-#else
-	static void UpdateOne(uint32 id, CVector* pos, CVector* dir);
-#endif
+	static void UpdateOne(uint32 id, CVector *pos, CVector *dir);
 	static void Update();
 	static void Render(void);
 };

@@ -1,8 +1,5 @@
 #pragma once
 #include "Ped.h"
-#ifdef IMPROVED_TECH_PART // wanted system
-#include "PlayerPed.h"
-#endif
 
 enum eCopType
 {
@@ -37,16 +34,6 @@ public:
 	int32 field_624;
 	int8 field_628;
 
-#ifdef IMPROVED_TECH_PART // wanted system
-	CVector m_vecLastPosPlayerBeforeHiding;
-	CVector m_vecPotentialPlayerSearchCoordinates;
-	bool m_bLookingForPlayer;
-	bool m_bMovesToLastPlayerPosition;
-
-	bool m_bThrowingTeargas;
-	bool m_bUsedTeargas;
-#endif
-
 	CCopPed(eCopType, int32 modifier = 0);
 	~CCopPed();
 
@@ -59,11 +46,6 @@ public:
 	void CopAI(void);
 	void ProcessHeliSwat(void);
 	void ProcessStingerCop(void);
-#ifdef IMPROVED_TECH_PART // wanted system
-	void ProcessSearchPlayer(CPlayerPed* playerPed);
-	void FindPotentialPlayerPos(void);
-	bool CheckIfPositionIsUnderWater(CVector checkPos, bool bCheckMiddlePos);
-#endif
 };
 
 VALIDATE_SIZE(CCopPed, 0x62C);

@@ -96,12 +96,7 @@ enum eRadarSprite
 #ifdef MAP_ENHANCEMENTS
 	RADAR_SPRITE_WAYPOINT,
 #endif
-#ifdef IMPROVED_TECH_PART // New blips
-	RADAR_SPRITE_HOUSE_FOR_SALE,
-	RADAR_SPRITE_BOMB_SHOP,
-	RADAR_SPRITE_RACE,
-	RADAR_SPRITE_PHARMACY,
-#endif
+
 	RADAR_SPRITE_COUNT
 };
 
@@ -232,12 +227,6 @@ public:
 	static CSprite2d RadioEspantosoSprite;
 	static CSprite2d RadioEmotionSprite;
 	static CSprite2d RadioWaveSprite;
-#ifdef IMPROVED_TECH_PART // New blips
-	static CSprite2d HouseForSaleSprite;
-	static CSprite2d BombShopSprite;
-	static CSprite2d RaceSprite;
-	static CSprite2d PharmacySprite;
-#endif
 	static CSprite2d *RadarSprites[RADAR_SPRITE_COUNT];
 	static float cachedCos;
 	static float cachedSin;
@@ -245,9 +234,6 @@ public:
 	static CRGBA ArrowBlipColour2;
 	static int16 MapLegendList[NUM_MAP_LEGENDS];
 	static int16 MapLegendCounter;
-#ifdef IMPROVED_MENU_AND_INPUT
-	static int32 RadarZoomOutTimer;
-#endif
 
 #ifdef MAP_ENHANCEMENTS
 	static CSprite2d WaypointSprite;
@@ -277,11 +263,6 @@ public:
 	static void DrawRadarSection(int32 x, int32 y);
 	static void DrawRadarSprite(uint16 sprite, float x, float y, uint8 alpha);
 	static void DrawRotatingRadarSprite(CSprite2d* sprite, float x, float y, float angle, int32 alpha);
-#ifdef IMPROVED_TECH_PART // GPS and property
-	static void DrawGPS();
-	static void Setup2dVertex(RwIm2DVertex& vertex, float x, float y, CRGBA color);
-	static void DrawPropertyBlips();
-#endif
 	static int32 GetActualBlipArrayIndex(int32 i);
 	static int32 GetNewUniqueBlipIndex(int32 i);
 	static uint32 GetRadarTraceColour(uint32 color, bool bright);

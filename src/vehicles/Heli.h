@@ -61,10 +61,6 @@ public:
 	uint32 m_nPoliceShoutTimer;
 	float m_fTargetOffset;
 	bool m_bTestRight;
-#ifdef IMPROVED_TECH_PART // wanted system
-	int32 m_nLookingForPlayerTimer;
-	CVector m_vPotentialPlayerPosOffset;
-#endif
 
 	static CHeli *pHelis[NUM_HELIS];
 	static int16 NumRandomHelis;

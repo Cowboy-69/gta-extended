@@ -11,9 +11,6 @@ public:
 	static float FindSwitchDistanceFarNormalVehicle(CVehicle*);
 	static float FindSwitchDistanceFar(CVehicle*);
 	static void BackToCruisingIfNoWantedLevel(CVehicle*);
-#ifdef IMPROVED_TECH_PART // wanted system
-	static void BackToCruisingIfPlayerLost(CVehicle*);
-#endif
 	static void UpdateCarAI(CVehicle*);
 	static void CarHasReasonToStop(CVehicle*);
 	static float GetCarToGoToCoors(CVehicle*, CVector*);
@@ -25,10 +22,6 @@ public:
 	static void TellOccupantsToFleeCar(CVehicle*);
 	static void TellCarToRamOtherCar(CVehicle*, CVehicle*);
 	static void TellCarToBlockOtherCar(CVehicle*, CVehicle*);
-#ifdef WANTED_PATHS // wanted system
-	static void TellCarToSeekWantedPaths(CVehicle*);
-	static void TellOccupantsToLeaveCarImmediately(CVehicle*);
-#endif
 	static uint8 FindPoliceCarMissionForWantedLevel();
 	static uint8 FindPoliceBoatMissionForWantedLevel();
 	static int32 FindPoliceCarSpeedForWantedLevel(CVehicle*);

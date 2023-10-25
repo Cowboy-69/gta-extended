@@ -421,11 +421,7 @@ CPickup::Update(CPlayerPed *player, CVehicle *vehicle, int playerId)
 		// if we didn't then we've got nothing to do
 		if (isPickupTouched && CanBePickedUp(player, playerId)) {
 			if (m_pObject->GetModelIndex() != MI_PICKUP_PROPERTY && m_pObject->GetModelIndex() != MI_PICKUP_PROPERTY_FORSALE)
-#ifdef IMPROVED_MENU_AND_INPUT
-				CPad::GetPad(0)->StartShake(120, 0, 100);
-#else
 				CPad::GetPad(0)->StartShake(120, 100);
-#endif
 
 			eWeaponType weaponType = CPickups::WeaponForModel(m_pObject->GetModelIndex());
 			switch (m_eType)
@@ -443,13 +439,7 @@ CPickup::Update(CPlayerPed *player, CVehicle *vehicle, int playerId)
 						DMAudio.PlayFrontEndSound(SOUND_PICKUP_WEAPON_BOUGHT, m_pObject->GetModelIndex() - MI_GRENADE);
 					}
 					result = true;
-#ifdef IMPROVED_TECH_PART // Fixing paid pickups, which should appear after a period of time after picking them
-					m_nTimer = CTimer::GetTimeInMilliseconds() + 5000;
-					GetRidOfObjects();
-					m_bRemoved = true;
-#else
 					Remove();
-#endif
 				}
 				break;
 			case PICKUP_ON_STREET:

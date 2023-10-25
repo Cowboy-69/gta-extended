@@ -23,9 +23,6 @@ public:
 	bool m_bAddRotOffset;
 	
 	static bool bPhotographHasBeenTaken;
-#ifdef IMPROVED_TECH_PART // Saving a screenshot after taking a photo
-	static bool bTakePhoto;
-#endif
 	
 	CWeapon() {
 		m_bAddRotOffset = false;
@@ -82,10 +79,6 @@ public:
 	static bool ProcessLineOfSight(CVector const &point1, CVector const &point2, CColPoint &point, CEntity *&entity, eWeaponType type, CEntity *shooter, bool checkBuildings, bool checkVehicles, bool checkPeds, bool checkObjects, bool checkDummies, bool ignoreSeeThrough, bool ignoreSomeObjects);
 
 	static void CheckForShootingVehicleOccupant(CEntity **victim, CColPoint *point, eWeaponType weapon, CVector const& source, CVector const& target);
-#ifdef IMPROVED_VEHICLES_2
-	static void CheckForShootingVehicleLights(CEntity *victim, CColPoint point);
-	static void CheckForShootingVehiclePetrolCap(CEntity *shooter, CEntity *victim, CColPoint point);
-#endif
 
 #ifdef COMPATIBLE_SAVES
 	void Save(uint8*& buf);

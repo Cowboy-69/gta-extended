@@ -31,17 +31,6 @@ enum eAreaName {
 	AREA_PRINT_WORKS
 };
 
-#ifdef VICE_EXTENDED // Vice Extended version
-enum eViceExtendedVersion {
-	VICEEX_VER_1_0,
-	VICEEX_VER_1_5,
-	VICEEX_VER_2_0_1,
-	VICEEX_VER_2_1,
-	VICEEX_VER_2_5,
-	VICEEX_VER_3_0,
-};
-#endif
-
 class CGame
 {
 public:
@@ -62,10 +51,6 @@ public:
 #ifndef MASTER
 	static CVector PlayerCoords;
 	static bool8 VarUpdatePlayerCoords;
-#endif
-
-#ifdef VICE_EXTENDED // Vice Extended version
-	static uint8 viceExtendedVersion; // eViceExtendedVersion
 #endif
 
 	static bool InitialiseOnceBeforeRW(void);

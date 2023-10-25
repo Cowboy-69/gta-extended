@@ -55,13 +55,8 @@ cTransmission::CalculateGearForSimpleCar(float speed, uint8 &gear)
 	}
 }
 
-#ifdef VEHICLE_MODS // additional engine acceleration
 float
-cTransmission::CalculateDriveAcceleration(const float &gasPedal, uint8 &gear, float &time, const float &velocity, bool cheat, float additionalAccel)
-#else
-float
-cTransmission::CalculateDriveAcceleration(const float& gasPedal, uint8& gear, float& time, const float& velocity, bool cheat)
-#endif
+cTransmission::CalculateDriveAcceleration(const float &gasPedal, uint8 &gear, float &time, const float &velocity, bool cheat)
 {
 	static float fAcceleration = 0.0f;
 	static float fVelocity;
@@ -126,11 +121,7 @@ cTransmission::CalculateDriveAcceleration(const float& gasPedal, uint8& gear, fl
 	else
 		fCheat = 1.0f;
 	float targetVelocity = Gears[gear].fMaxVelocity*speedMul*fCheat;
-#ifdef VEHICLE_MODS // engine acceleration
-	float accel = (targetVelocity - fVelocity) * ((fEngineAcceleration + additionalAccel) * accelMul) / Abs(targetVelocity);
-#else
 	float accel = (targetVelocity - fVelocity) * (fEngineAcceleration*accelMul) / Abs(targetVelocity);
-#endif
 	if(Abs(fVelocity) < Abs(Gears[gear].fMaxVelocity*fCheat))
 		fAcceleration = gasPedal * accel * CTimer::GetTimeStep();
 	else

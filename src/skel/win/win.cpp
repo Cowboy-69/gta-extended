@@ -876,9 +876,6 @@ void _psSelectScreenVM(RwInt32 videoMode)
 {
 	RwTexDictionarySetCurrent( nil );
 	
-#ifdef EX_RADIO_ICONS
-	FrontEndMenuManager.UnloadRadioTextures();
-#endif
 	FrontEndMenuManager.UnloadTextures();
 	
 	if ( !_psSetVideoMode(RwEngineGetCurrentSubSystem(), videoMode) )
@@ -1619,27 +1616,13 @@ psSelectDevice()
 		rect.left = rect.top = 0;
 		rect.right = FrontEndMenuManager.m_nPrefsWidth;
 		rect.bottom = FrontEndMenuManager.m_nPrefsHeight;
-#ifdef IMPROVED_MENU_AND_INPUT // Borderless window
-		if (FrontEndMenuManager.m_nPrefsWindowed == 1)
-			AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
-		else // 2, borderless
-			AdjustWindowRect(&rect, WS_VISIBLE, FALSE);
-#else
 		AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
-#endif
 
 		// center it
 		int spaceX = GetSystemMetrics(SM_CXSCREEN) - (rect.right-rect.left);
 		int spaceY = GetSystemMetrics(SM_CYSCREEN) - (rect.bottom-rect.top);
 
-#ifdef IMPROVED_MENU_AND_INPUT // Borderless window
-		if (FrontEndMenuManager.m_nPrefsWindowed == 1)
-			SetWindowLong(PSGLOBAL(window), GWL_STYLE, WS_VISIBLE | WS_OVERLAPPEDWINDOW);
-		else // 2, borderless
-			SetWindowLong(PSGLOBAL(window), GWL_STYLE, WS_VISIBLE);
-#else
 		SetWindowLong(PSGLOBAL(window), GWL_STYLE, WS_VISIBLE | WS_OVERLAPPEDWINDOW);
-#endif
 		SetWindowPos(PSGLOBAL(window), HWND_NOTOPMOST, spaceX/2, spaceY/2,
 			(rect.right - rect.left),
 			(rect.bottom - rect.top), 0);
@@ -2296,41 +2279,6 @@ WinMain(HINSTANCE instance,
 #else
 						gGameState = GS_INIT_LOGO_MPEG;
 #endif
-
-#ifdef IMPROVED_TECH_PART // New screenshot folder and numbering (thanks to Shagg_E)
-						WIN32_FIND_DATA findData;
-						HANDLE handle = FindFirstFile("userfiles\\Gallery\\*.*", &findData);
-						if (handle != INVALID_HANDLE_VALUE)
-						{
-							int32 currentScreenNumber = 0;
-							int32 highestScreenNumber = 0;
-							HANDLE handle2 = FindFirstFile("userfiles\\Gallery\\*.png", &findData);
-							for (int i = 1; handle2 != INVALID_HANDLE_VALUE && i; i = FindNextFile(handle2, &findData)) {
-								int32 number = 0;
-								unsigned int nameLength = (unsigned)strlen(findData.cFileName);
-								nameLength -= 4;
-								int8 oneDigit;
-								for (int i = 0; i < nameLength; i++) {
-									if (findData.cFileName[i] > 47 && findData.cFileName[i] < 58) {
-										oneDigit = findData.cFileName[i] - 48;
-										number = number * 10 + oneDigit;
-									}
-								}
-								currentScreenNumber = number;
-
-								if (currentScreenNumber > highestScreenNumber)
-									highestScreenNumber = currentScreenNumber;
-							}
-							FindClose(handle2);
-							if (highestScreenNumber != 0) {
-								highestScreenNumber++;
-								newScreenNumber = highestScreenNumber;
-							}
-						} else {
-							_psCreateFolder("userfiles\\Gallery");
-						}
-						FindClose(handle);
-#endif
 						TRACE("gGameState = GS_INIT_LOGO_MPEG");
 						break;
 					}
@@ -2567,17 +2515,12 @@ WinMain(HINSTANCE instance,
 		RwInitialised = FALSE;
 		
 		FrontEndMenuManager.UnloadTextures();
-
 #ifdef PS2_MENU	
 		if ( !(FrontEndMenuManager.m_bWantToRestart || TheMemoryCard.b_FoundRecentSavedGameWantToLoad))
 			break;
 #else
-		if ( !FrontEndMenuManager.m_bWantToRestart ) {
-#ifdef EX_RADIO_ICONS
-			FrontEndMenuManager.UnloadRadioTextures();
-#endif
+		if ( !FrontEndMenuManager.m_bWantToRestart )
 			break;
-		}
 #endif
 		
 		CPad::ResetCheats();

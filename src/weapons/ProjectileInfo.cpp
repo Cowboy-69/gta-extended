@@ -12,9 +12,6 @@
 #include "Explosion.h"
 #include "Weapon.h"
 #include "World.h"
-#ifdef NEW_CHEATS // RCROCKET
-#include "PlayerPed.h"
-#endif
 
 #ifdef SQUEEZE_PERFORMANCE
 uint32 projectileInUse;
@@ -78,12 +75,6 @@ CProjectileInfo::AddProjectile(CEntity *entity, eWeaponType weapon, CVector pos,
 		{
 			float vy = 0.35f;
 			time = CTimer::GetTimeInMilliseconds() + 2000;
-#ifdef NEW_CHEATS // RCROCKET
-			if (weapon == WEAPONTYPE_ROCKET && FindPlayerPed()->bRCRocketCheat) {
-				vy += 1.65f;
-				time += 18000;
-			}
-#endif
 			if (entity->GetModelIndex() == MI_SPARROW || entity->GetModelIndex() == MI_HUNTER || entity->GetModelIndex() == MI_SENTINEL) {
 				matrix = ped->GetMatrix();
 				matrix.GetPosition() = pos;
@@ -213,18 +204,6 @@ CProjectileInfo::AddProjectile(CEntity *entity, eWeaponType weapon, CVector pos,
 	gaProjectileInfo[i].m_bInUse = true;
 	CWorld::Add(ms_apProjectile[i]);
 
-#ifdef NEW_CHEATS // RCROCKET
-	if (weapon == WEAPONTYPE_ROCKET && FindPlayerPed()->bRCRocketCheat) {
-		CVector pos = ms_apProjectile[i]->GetPosition();
-		pos.z += 0.5f;
-		ms_apProjectile[i]->SetPosition(pos);
-
-		TheCamera.Cams[TheCamera.ActiveCam].CamTargetEntity = ms_apProjectile[i];
-		TheCamera.m_bLookingAtPlayer = false;
-		TheCamera.Cams[TheCamera.ActiveCam].Mode = CCam::MODE_FOLLOWPROJECTILE;
-	}
-#endif
-
 	gaProjectileInfo[i].m_vecPos = ms_apProjectile[i]->GetPosition();
 
 	if (entity && entity->IsPed() && !ped->m_pCollidingEntity) {
@@ -315,14 +294,9 @@ CProjectileInfo::Update()
         	continue;
 		}
 		if ( gaProjectileInfo[i].m_eWeaponType == WEAPONTYPE_TEARGAS && CTimer::GetTimeInMilliseconds() > gaProjectileInfo[i].m_nExplosionTime - 19500 ) {
-#ifdef IMPROVED_TECH_PART // particles
-			CParticle::AddParticle(PARTICLE_TEARGAS, projectilePos, CVector(0.1f, tearGasOffset, 0.0f), 0, 0.0f, 0, 0, 0, 0);
-			CParticle::AddParticle(PARTICLE_TEARGAS, projectilePos, CVector(-0.1f, tearGasOffset, 0.0f), 0, 0.0f, 0, 0, 0, 0);
-#else
 			CParticle::AddParticle(PARTICLE_TEARGAS, projectilePos, CVector(0.2f, tearGasOffset, 0.0f), 0, 0.0f, 0, 0, 0, 0);
 			CParticle::AddParticle(PARTICLE_TEARGAS, projectilePos, CVector(-0.2f, tearGasOffset, 0.0f), 0, 0.0f, 0, 0, 0, 0);
 			CParticle::AddParticle(PARTICLE_TEARGAS, projectilePos, CVector(tearGasOffset, tearGasOffset, 0.0f), 0, 0.0f, 0, 0, 0, 0);
-#endif
 
 			if ( CTimer::GetTimeInMilliseconds() & 0x200 )
 				CWorld::SetPedsChoking(projectilePos.x, projectilePos.y, projectilePos.z, 6.0f, gaProjectileInfo[i].m_pSource);
@@ -342,11 +316,6 @@ CProjectileInfo::Update()
 					RemoveProjectile(&gaProjectileInfo[i], ms_apProjectile[i]);
 				}
 				CWorld::pIgnoreEntity = nil;
-#ifdef NEW_CHEATS // RCROCKET
-				if (gaProjectileInfo[i].m_eWeaponType == WEAPONTYPE_ROCKET && FindPlayerPed()->bRCRocketCheat)
-					ms_apProjectile[i]->m_vecMoveSpeed = TheCamera.Cams[TheCamera.ActiveCam].Front;
-				else
-#endif
 				ms_apProjectile[i]->m_vecMoveSpeed *= 1.07f;
 
 			} else if (gaProjectileInfo[i].m_eWeaponType == WEAPONTYPE_MOLOTOV) {
@@ -420,16 +389,6 @@ CProjectileInfo::RemoveDetonatorProjectiles()
 		}
 	}
 }
-
-#ifdef IMPROVED_TECH_PART // When a projectile is fired, the projectile explodes (Detonator projectile)
-void CProjectileInfo::RemoveDetonatorProjectile(int projectileID)
-{
-	CExplosion::AddExplosion(nil, gaProjectileInfo[projectileID].m_pSource, EXPLOSION_GRENADE, gaProjectileInfo[projectileID].m_vecPos, 0);
-	gaProjectileInfo[projectileID].m_bInUse = false;
-	CWorld::Remove(ms_apProjectile[projectileID]);
-	delete ms_apProjectile[projectileID];
-}
-#endif
 
 void
 CProjectileInfo::RemoveAllProjectiles()

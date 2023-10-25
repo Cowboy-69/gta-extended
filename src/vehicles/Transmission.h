@@ -24,9 +24,5 @@ public:
 
 	void InitGearRatios(void);
 	void CalculateGearForSimpleCar(float speed, uint8 &gear);
-#ifdef VEHICLE_MODS // additional engine acceleration
-	float CalculateDriveAcceleration(const float &gasPedal, uint8 &gear, float &time, const float &velocity, bool cheat, float additionalAccel = 0.0f);
-#else
 	float CalculateDriveAcceleration(const float &gasPedal, uint8 &gear, float &time, const float &velocity, bool cheat);
-#endif
 };

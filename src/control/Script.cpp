@@ -98,9 +98,6 @@ bool CTheScripts::bPlayerIsInTheStatium;
 int16 CTheScripts::CardStack[CARDS_IN_DECK * MAX_DECKS];
 int16 CTheScripts::CardStackPosition;
 #endif
-#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
-bool CTheScripts::bMissionWasPassed;
-#endif
 
 #ifdef MISSION_REPLAY
 
@@ -831,9 +828,6 @@ void CTheScripts::Init()
 #ifdef USE_MISSION_REPLAY_OVERRIDE_FOR_NON_MOBILE_SCRIPT
 	UsingMobileScript = false;
 	AlreadySavedGame = false;
-#endif
-#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
-	bMissionWasPassed = false;
 #endif
 }
 
@@ -1566,12 +1560,6 @@ int8 CRunningScript::ProcessCommands0To99(int32 command)
 			// I am fairly sure they forgot to set return value here
 		}
 #endif
-
-#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
-		if (CTheScripts::bMissionWasPassed) 
-			DoAutoSave();
-#endif
-
 		return 1;
 	case COMMAND_START_NEW_SCRIPT:
 	{
@@ -2384,10 +2372,6 @@ int8 CRunningScript::ProcessCommands100To199(int32 command)
 			car->bHasBeenOwnedByPlayer = true;
 			if (m_bIsMissionScript)
 				car->bIsStaticWaitingForCollision = true;
-#ifdef VEHICLE_MODS // TrySetRandomCarMod for racing vehicles
-			if (missionRetryScriptIndex == 82 && car->IsCar())
-				((CAutomobile*)car)->TrySetRandomCarMod(true);
-#endif
 			CWorld::Add(car);
 			handle = CPools::GetVehiclePool()->GetIndex(car);
 		}

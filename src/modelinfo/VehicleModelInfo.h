@@ -1,22 +1,11 @@
 #pragma once
 
 #include "ClumpModelInfo.h"
-#ifdef NEW_VEHICLE_LOADER
-#include "HandlingMgr.h"
-#endif
 
 enum {
-#ifdef IMPROVED_VEHICLES // More materials and colors
-	NUM_FIRST_MATERIALS = 50,
-	NUM_SECOND_MATERIALS = 50,
-	NUM_THIRD_MATERIALS = 50,
-	NUM_FOURTH_MATERIALS = 50,
-	NUM_VEHICLE_COLOURS = 16,
-#else
 	NUM_FIRST_MATERIALS = 24,
 	NUM_SECOND_MATERIALS = 20,
 	NUM_VEHICLE_COLOURS = 8,
-#endif
 };
 
 enum {
@@ -33,9 +22,6 @@ enum {
 	ATOMIC_FLAG_REARDOOR	= 0x200,
 	ATOMIC_FLAG_FRONTDOOR	= 0x400,
 	ATOMIC_FLAG_NOCULL	= 0x800,
-#ifdef IMPROVED_VEHICLES_2
-	ATOMIC_FLAG_DOORWINDOW	= 0x1000,
-#endif
 };
 
 enum eVehicleType {
@@ -54,24 +40,7 @@ enum eCarPositions
 	CAR_POS_TAILLIGHTS,
 	CAR_POS_FRONTSEAT,
 	CAR_POS_BACKSEAT,
-	CAR_POS_EXHAUST,
-#ifdef IMPROVED_VEHICLES_2 // dummy positions
-	CAR_POS_HEADLIGHTS_2,
-	CAR_POS_TAILLIGHTS_2,
-	CAR_POS_REVERSINGLIGHTS,
-	CAR_POS_REVERSINGLIGHTS_2,
-	CAR_POS_BRAKELIGHTS,
-	CAR_POS_BRAKELIGHTS_2,
-	CAR_POS_INDICATORS_F,
-	CAR_POS_INDICATORS_R,
-	CAR_POS_INDICATORS_2_F,
-	CAR_POS_INDICATORS_2_R,
-	CAR_POS_ENGINE,
-	CAR_POS_OVERHEAT,
-	CAR_POS_OVERHEAT_2,
-	CAR_POS_PETROLCAP,
-	NUM_VEHICLE_POSITIONS,
-#endif
+	CAR_POS_EXHAUST
 };
 
 enum eBoatPositions
@@ -95,64 +64,15 @@ enum ePlanePositions
 	PLANE_POS_LIGHT_TAIL,
 };
 
-#ifndef IMPROVED_VEHICLES_2
 enum {
 	NUM_VEHICLE_POSITIONS = 5
 };
-#endif
-
-#ifdef NEW_VEHICLE_LOADER
-struct tAnotherVehicleSampleData {
-	int16 m_nAccelerationSampleIndex;
-	uint8 m_nBank;
-	int16 m_nHornSample;
-	int32 m_nHornFrequency;
-	uint8 m_nSirenOrAlarmSample;
-	int32 m_nSirenOrAlarmFrequency;
-	uint8 m_bDoorType;
-};
-
-struct tVehicleShadowSettingData {
-	float fHeightMultiplier;
-	float fWidthMultiplier;
-	float fSizeMultiplier;
-};
-
-struct tBoatSoundSettingData {
-	uint8 volume;
-	float volumeModificator;
-	uint32 frequency;
-	float frequencyModificator;
-	bool8 bEngineType;
-};
-#endif
-
-#ifdef IMPROVED_VEHICLES_2
-struct tNewLightsData {
-	bool bBumperHeadlights;
-	bool bBumperForwardIndicators1;
-	bool bBumperForwardIndicators2;
-	bool bWingHeadlights;
-	bool bWingIndicators1;
-	bool bWingIndicators2;
-	bool bBumperRearIndicators1;
-	bool bBumperRearIndicators2;
-	bool bBumperTaillights;
-	bool bBumperReversinglights;
-	bool bBumperBrakelights;
-};
-#endif
 
 class CVehicleModelInfo : public CClumpModelInfo
 {
 public:
 	uint8 m_lastColour1;
 	uint8 m_lastColour2;
-#ifdef IMPROVED_VEHICLES // More colors
-	uint8 m_lastColour3;
-	uint8 m_lastColour4;
-	bool bHasManyColors;
-#endif
 	char m_gameName[10];
 	int32 m_vehicleType;
 	float m_wheelScale;
@@ -173,14 +93,6 @@ public:
 	RpMaterial *m_materials2[NUM_SECOND_MATERIALS];
 	uint8 m_colours1[NUM_VEHICLE_COLOURS];
 	uint8 m_colours2[NUM_VEHICLE_COLOURS];
-#ifdef IMPROVED_VEHICLES // More colors
-	RpMaterial* m_materials3[NUM_THIRD_MATERIALS];
-	RpMaterial* m_materials4[NUM_FOURTH_MATERIALS];
-	uint8 m_colours3[NUM_VEHICLE_COLOURS];
-	uint8 m_colours4[NUM_VEHICLE_COLOURS];
-	uint8 m_currentColour3;
-	uint8 m_currentColour4;
-#endif
 	uint8 m_numColours;
 	uint8 m_lastColorVariation;
 	uint8 m_currentColour1;
@@ -191,30 +103,6 @@ public:
 		int32 m_animFileIndex;
 		char *m_animFileName;
 	};
-
-#ifdef IMPROVED_VEHICLES_2
-	RwTexture* lightsOffTexture;
-	RwTexture* lightsOnTexture;
-	bool bNewLights;
-	tNewLightsData newLightsData;
-#endif
-
-#ifdef VEHICLE_MODS
-	CRGBA m_nDefaultWindowMaterialColor;
-#endif
-
-#ifdef NEW_VEHICLE_LOADER
-	tAnotherVehicleSampleData vehicleSampleData;
-	uint16 m_policeRadioIndex;
-	tHandlingData handlingData;
-	tBikeHandlingData bikeHandlingData;
-	tBoatHandlingData boatHandlingData;
-	tFlyingHandlingData flyingHandlingData;
-	char m_anotherAnimFileName[6];
-	tVehicleShadowSettingData vehicleShadowData;
-	tBoatSoundSettingData boatSoundData;
-	wchar m_fullGameName[32];
-#endif
 
 	static int8 ms_compsToUse[2];
 	static int8 ms_compsUsed[2];
@@ -257,15 +145,9 @@ public:
 	static RpMaterial *GetEditableMaterialListCB(RpMaterial *material, void *data);
 	static RpAtomic *GetEditableMaterialListCB(RpAtomic *atomic, void *data);
 	void FindEditableMaterialList(void);
-#ifdef IMPROVED_VEHICLES // More colors
-	void SetVehicleColour(uint8 c1, uint8 c2, uint8 c3 = 0, uint8 c4 = 0);
-	void ChooseVehicleColour(uint8& col1, uint8& col2, uint8& col3, uint8& col4);
-	void AvoidSameVehicleColour(uint8* col1, uint8* col2, uint8* col3, uint8* col4);
-#else
 	void SetVehicleColour(uint8 c1, uint8 c2);
-	void ChooseVehicleColour(uint8& col1, uint8& col2);
-	void AvoidSameVehicleColour(uint8* col1, uint8* col2);
-#endif
+	void ChooseVehicleColour(uint8 &col1, uint8 &col2);
+	void AvoidSameVehicleColour(uint8 *col1, uint8 *col2);
 	static void LoadVehicleColours(void);
 	static void DeleteVehicleColourTextures(void);
 

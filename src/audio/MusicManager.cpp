@@ -20,9 +20,6 @@
 #include "Weather.h"
 #include "DMAudio.h"
 #include "GenericGameStorage.h"
-#ifdef EX_RADIO_ICONS
-#include "Frontend.h"
-#endif
 
 #if !defined FIX_BUGS && (defined RADIO_SCROLL_TO_PREV_STATION || defined RADIO_OFF_TEXT)
 static_assert(false, "R*'s radio implementation is quite buggy, RADIO_SCROLL_TO_PREV_STATION and RADIO_OFF_TEXT won't work without FIX_BUGS");
@@ -536,11 +533,7 @@ cMusicManager::ServiceGameMode()
 		gRetuneCounter = 0;
 		m_bSetNextStation = FALSE;
 	} else if (ped) {
-#ifdef FIRING_AND_AIMING // can't change radio during driveby
-		if(!ped->DyingOrDead() && vehicle && !FindPlayerPed()->bIsPlayerAiming) {
-#else
 		if(!ped->DyingOrDead() && vehicle) {
-#endif
 #ifdef GTA_PC
 			if (SampleManager.IsMP3RadioChannelAvailable()
 				&& vehicle->m_nRadioStation < USERTRACK
@@ -559,12 +552,7 @@ cMusicManager::ServiceGameMode()
 				}
 			}
 #endif
-#ifdef IMPROVED_MENU_AND_INPUT
-			if (CPad::GetPad(0)->NextStationJustDown() && 
-				(CPad::GetPad(0)->IsAffectedByController || !CPad::GetPad(0)->IsAffectedByController && TheCamera.Cams[TheCamera.ActiveCam].Mode != CCam::MODE_HELICANNON_1STPERSON))
-#else
 			if (CPad::GetPad(0)->ChangeStationJustDown())
-#endif
 			{
 				if (!UsesPoliceRadio(vehicle) && !UsesTaxiRadio(vehicle)) {
 					gNumRetunePresses++;
@@ -573,21 +561,13 @@ cMusicManager::ServiceGameMode()
 				}
 			}
 #ifdef RADIO_SCROLL_TO_PREV_STATION
-#ifdef IMPROVED_MENU_AND_INPUT
-			else if(!CPad::GetPad(0)->ArePlayerControlsDisabled() && (CPad::GetPad(0)->GetMouseWheelDownJustDown() || CPad::GetPad(0)->GetMouseWheelUpJustDown() || CPad::GetPad(0)->PrevStationJustDown())) {
-#else
 			else if(!CPad::GetPad(0)->ArePlayerControlsDisabled() && (CPad::GetPad(0)->GetMouseWheelDownJustDown() || CPad::GetPad(0)->GetMouseWheelUpJustDown())) {
-#endif
 				if(!UsesPoliceRadio(vehicle) && !UsesTaxiRadio(vehicle)) {
 					int scrollNext = ControlsManager.GetControllerKeyAssociatedWithAction(VEHICLE_CHANGE_RADIO_STATION, MOUSE);
 					int scrollPrev = scrollNext == rsMOUSEWHEELUPBUTTON ? rsMOUSEWHEELDOWNBUTTON
 																		: scrollNext == rsMOUSEWHEELDOWNBUTTON ? rsMOUSEWHEELUPBUTTON : -1;
 
-#ifdef IMPROVED_MENU_AND_INPUT
-					if(scrollPrev != -1 && !ControlsManager.IsAnyVehicleActionAssignedToMouseKey(scrollPrev) || (CPad::GetPad(0)->IsAffectedByController && CPad::GetPad(0)->PrevStationJustDown())) {
-#else
 					if(scrollPrev != -1 && !ControlsManager.IsAnyVehicleActionAssignedToMouseKey(scrollPrev)) {
-#endif
 						gNumRetunePresses--;
 						gRetuneCounter = 20;
 						RadioStaticCounter = 0;
@@ -1376,11 +1356,6 @@ cMusicManager::DisplayRadioStationName()
 #endif
 			}
 
-#ifdef EX_RADIO_ICONS
-			FrontEndMenuManager.m_aFrontEndRadioSprites[track].Draw(CRect(SCREEN_WIDTH / 2 - SCREEN_SCALE_X(22.0f) + SCREEN_SCALE_X(15.0f) - SCREEN_STRETCH_Y(32.0f), SCREEN_SCALE_Y(22.0f) + SCREEN_SCALE_Y(15.0f) - SCREEN_STRETCH_Y(32.0f),
-																		  SCREEN_WIDTH / 2 - SCREEN_SCALE_X(22.0f) + SCREEN_SCALE_X(15.0f) + SCREEN_STRETCH_Y(32.0f), SCREEN_SCALE_Y(22.0f) + SCREEN_SCALE_Y(15.0f) + SCREEN_STRETCH_Y(32.0f)),
-																		  CRGBA(255, 255, 255, 255));
-#else
 			CFont::SetJustifyOff();
 			CFont::SetBackgroundOff();
 			CFont::SetScale(SCREEN_SCALE_X(0.8f), SCREEN_SCALE_Y(1.35f));
@@ -1398,7 +1373,6 @@ cMusicManager::DisplayRadioStationName()
 
 			CFont::PrintString(SCREEN_WIDTH / 2, SCREEN_SCALE_Y(22.0f), pCurrentStation);
 			CFont::DrawFonts();
-#endif
 		}
 	}
 	// Always show station text after entering car. Same behaviour as III and SA.

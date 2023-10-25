@@ -128,12 +128,6 @@ void CCarGenerator::DoInternalProcessing()
 	pVehicle->SetOrientation(0.0f, 0.0f, DEGTORAD(m_fAngle));
 	pVehicle->SetStatus(STATUS_ABANDONED);
 	pVehicle->m_nDoorLock = CARLOCK_UNLOCKED;
-
-#ifdef VEHICLE_MODS // TrySetRandomCarMod for parked vehicles
-	if (pVehicle->IsCar())
-		((CAutomobile*)pVehicle)->TrySetRandomCarMod();
-#endif
-
 	CWorld::Add(pVehicle);
 	if (CGeneral::GetRandomNumberInRange(0, 100) < m_nAlarm)
 		pVehicle->m_nAlarmState = -1;
@@ -224,11 +218,7 @@ bool CCarGenerator::CheckIfWithinRangeOfAnyPlayers()
 {
 	CVector2D direction = FindPlayerCentreOfWorld(CWorld::PlayerInFocus) - m_vecPos;
 	float distance = direction.Magnitude();
-#ifdef IMPROVED_TECH_PART // increased spawn range
-	float farclip = 250.0f * TheCamera.GenerationDistMultiplier;
-#else
 	float farclip = 110.0f * TheCamera.GenerationDistMultiplier;
-#endif
 	float nearclip = farclip - 20.0f;
 	bool canBeRemoved = (m_nModelIndex > 0 && CModelInfo::IsBoatModel(m_nModelIndex) && 165.0f * TheCamera.GenerationDistMultiplier > distance &&
 		TheCamera.IsSphereVisible(m_vecPos, 0.0f) && !COcclusion::IsPositionOccluded(m_vecPos, 0.0f)); 

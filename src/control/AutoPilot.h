@@ -1,8 +1,5 @@
 #pragma once
 #include "Timer.h"
-#ifdef WANTED_PATHS
-#include "PathFind.h"
-#endif
 
 class CVehicle;
 struct CPathNode;
@@ -97,13 +94,6 @@ public:
 	CPathNode *m_aPathFindNodesInfo[NUM_PATH_NODES_IN_AUTOPILOT];
 	int16 m_nPathFindNodesCount;
 	CVehicle *m_pTargetCar;
-#ifdef WANTED_PATHS
-	CWantedPaths m_aCurrentSeekWantedPaths;
-	CVector m_aCurrentSeekWantedPathNodePosition;
-	int m_aCurrentWantedPathNodeID;
-	bool m_bMovesToWantedPathNode;
-	bool m_bStopAfterMovingToWantedPathNode;
-#endif
 
 	CAutoPilot(void) {
 		m_nPrevRouteNode = 0;
@@ -131,12 +121,6 @@ public:
 		m_bStayInFastLane = false;
 		m_nCruiseSpeedMultiplierType = 0;
 		m_fCruiseSpeedMultiplier = 1.0f;
-#ifdef WANTED_PATHS
-		m_aCurrentSeekWantedPathNodePosition = { 0.0f, 0.0f, 0.0f };
-		int m_aCurrentWantedPathNodeID = 0;
-		m_bMovesToWantedPathNode = false;
-		m_bStopAfterMovingToWantedPathNode = false;
-#endif
 	}
 
 	void ModifySpeed(float);

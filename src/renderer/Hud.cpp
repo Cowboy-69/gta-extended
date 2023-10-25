@@ -25,9 +25,6 @@
 #include "main.h"
 #include "General.h"
 #include "VarConsole.h"
-#ifdef VEHICLE_MODS
-#include "Garages.h"
-#endif
 
 #if defined(FIX_BUGS)
 	#define SCREEN_SCALE_X_FIX(a) SCREEN_SCALE_X(a)
@@ -96,9 +93,6 @@ wchar CHud::m_BigMessage[6][128];
 int16 CHud::m_ItemToFlash;
 bool CHud::m_HideRadar;
 int32 CHud::m_ClockState;
-#ifdef IMPROVED_TECH_PART // GPS
-bool CHud::m_bDrawRadar;
-#endif
 
 // These aren't really in CHud
 float CHud::BigMessageInUse[6];
@@ -235,11 +229,6 @@ void CHud::Draw()
 	if (CReplay::IsPlayingBack())
 		return;
 
-#ifdef IMPROVED_TECH_PART // Saving a screenshot after taking a photo
-	if (CWeapon::bTakePhoto)
-		return;
-#endif
-
 	if (m_Wants_To_Draw_Hud && !TheCamera.m_WideScreenOn) {
 		// unused statics in here
 		bool DrawCrossHair = false;
@@ -254,17 +243,9 @@ void CHud::Draw()
 			&& playerPed && !playerPed->GetWeapon()->IsTypeMelee())
 			DrawCrossHair = true;
 
-#ifdef FIRING_AND_AIMING
-		if (playerPed->bIsPlayerAiming && (Mode == CCam::MODE_M16_1STPERSON_RUNABOUT || Mode == CCam::MODE_ROCKETLAUNCHER_RUNABOUT || Mode == CCam::MODE_SNIPER_RUNABOUT))
-#else
 		if (Mode == CCam::MODE_M16_1STPERSON_RUNABOUT || Mode == CCam::MODE_ROCKETLAUNCHER_RUNABOUT || Mode == CCam::MODE_SNIPER_RUNABOUT)
-#endif
 			DrawCrossHairPC = true;
-#if defined FIRING_AND_AIMING && defined IMPROVED_MENU_AND_INPUT
-		if (playerPed->bIsPlayerAiming && !playerPed->bIsAutoAiming
-#else
 		if (TheCamera.Cams[TheCamera.ActiveCam].Using3rdPersonMouseCam() && (!CPad::GetPad(0)->GetLookBehindForPed() || TheCamera.m_bPlayerIsInGarage)
-#endif
 			|| Mode == CCam::MODE_1STPERSON_RUNABOUT) {
 			if (playerPed) {
 				if (playerPed->m_nPedState != PED_ENTER_CAR && playerPed->m_nPedState != PED_CARJACK) {
@@ -288,11 +269,7 @@ void CHud::Draw()
 			float fStep = Sin((CTimer::GetTimeInMilliseconds() & 1023)/1024.0f * 6.28f);
 			float fMultBright = SpriteBrightness * 0.03f * (0.25f * fStep + 0.75f);
 			CRect rect;
-#ifdef IMPROVED_MENU_AND_INPUT
-			if (DrawCrossHairPC && !playerPed->bIsAutoAiming) {
-#else
 			if (DrawCrossHairPC && TheCamera.Cams[TheCamera.ActiveCam].Using3rdPersonMouseCam()) {
-#endif
 				float f3rdX = SCREEN_WIDTH * TheCamera.m_f3rdPersonCHairMultX;
 				float f3rdY = SCREEN_HEIGHT * TheCamera.m_f3rdPersonCHairMultY;
 #ifdef ASPECT_RATIO_SCALE
@@ -443,11 +420,6 @@ void CHud::Draw()
 			m_LastDisplayScore = CWorld::Players[CWorld::PlayerInFocus].m_nVisibleMoney;
 		}
 		if (m_DisplayScoreState != FADED_OUT) {
-#ifdef FEATURES_INI // RemoveMoneyZerosInTheHud
-			if (bRemoveMoneyZerosInTheHud)
-				sprintf(sTemp, "$%01d", CWorld::Players[CWorld::PlayerInFocus].m_nVisibleMoney);
-			else
-#endif
 			sprintf(sTemp, "$%08d", CWorld::Players[CWorld::PlayerInFocus].m_nVisibleMoney);
 			AsciiToUnicode(sTemp, sPrint);
 
@@ -466,11 +438,7 @@ void CHud::Draw()
 			CFont::SetColor(MONEY_COLOR);
 
 			if (FrontEndMenuManager.m_PrefsShowHud) {
-#ifdef VEHICLE_MODS // HUD in mod garage
-				CFont::PrintString(SCREEN_SCALE_FROM_RIGHT(110.0f), SCREEN_SCALE_Y(CGarages::bPlayerInModGarage ? 10.0f : 43.0f), sPrint);
-#else
 				CFont::PrintString(SCREEN_SCALE_FROM_RIGHT(110.0f), SCREEN_SCALE_Y(43.0f), sPrint);
-#endif
 			}
 		}
 
@@ -483,11 +451,7 @@ void CHud::Draw()
 			alpha = CHud::DrawFadeState(HUD_WEAPON_FADING, 1);
 			m_LastWeapon = playerPed->GetWeapon()->m_eWeaponType;
 		}
-#ifdef VEHICLE_MODS // hide some hud elements when a player in the mod garage
-		if (m_WeaponState != FADED_OUT && !CGarages::bPlayerInModGarage) {
-#else
 		if (m_WeaponState != FADED_OUT) {
-#endif
 			CWeapon *weapon = playerPed->GetWeapon();
 			int32 AmmoAmount = CWeaponInfo::GetWeaponInfo((eWeaponType)WeaponType)->m_nAmountofAmmunition;
 			int32 AmmoInClip = weapon->m_nAmmoInClip;
@@ -589,11 +553,7 @@ void CHud::Draw()
 			m_LastTimeEnergyLost = CWorld::Players[CWorld::PlayerInFocus].m_nTimeLastHealthLoss;
 		}
 
-#ifdef VEHICLE_MODS // hide some hud elements when a player in the mod garage
-		if (m_EnergyLostState != FADED_OUT && !CGarages::bPlayerInModGarage) {
-#else
 		if (m_EnergyLostState != FADED_OUT) {
-#endif
 			CFont::SetBackgroundOff();
 			CFont::SetScale(SCREEN_SCALE_X(HUD_TEXT_SCALE_X), SCREEN_SCALE_Y(HUD_TEXT_SCALE_Y));
 			CFont::SetJustifyOff();
@@ -635,11 +595,7 @@ void CHud::Draw()
 			/*
 				DrawArmour
 			*/
-#ifdef VEHICLE_MODS // hide some hud elements when a player in the mod garage
-			if (!CGarages::bPlayerInModGarage && (m_ItemToFlash == ITEM_ARMOUR && FRAMECOUNTER & 8 || m_ItemToFlash != ITEM_ARMOUR)) {
-#else
 			if (m_ItemToFlash == ITEM_ARMOUR && FRAMECOUNTER & 8 || m_ItemToFlash != ITEM_ARMOUR) {
-#endif
 				CFont::SetScale(SCREEN_SCALE_X(HUD_TEXT_SCALE_X), SCREEN_SCALE_Y(HUD_TEXT_SCALE_Y));
 				if (playerPed->m_fArmour > 1.0f) {
 					AsciiToUnicode("<", sPrintIcon);
@@ -674,12 +630,7 @@ void CHud::Draw()
 			m_LastWanted = playerPed->m_pWanted->GetWantedLevel();
 		}
 
-#ifdef FEATURES_INI // WantedStarsHideOnScreenWhenThereIsNoSearch
-		if (bWantedStarsHideOnScreenWhenThereIsNoSearch && m_LastWanted > 0 && m_WantedState != FADED_OUT || 
-			!bWantedStarsHideOnScreenWhenThereIsNoSearch && m_WantedState != FADED_OUT) {
-#else
 		if (m_WantedState != FADED_OUT) {
-#endif
 			CFont::SetBackgroundOff();
 			CFont::SetScale(SCREEN_SCALE_X(HUD_TEXT_SCALE_X), SCREEN_SCALE_Y(HUD_TEXT_SCALE_Y));
 			CFont::SetJustifyOff();
@@ -696,40 +647,19 @@ void CHud::Draw()
 						&& (CTimer::GetTimeInMilliseconds() > playerPed->m_pWanted->m_nLastWantedLevelChange
 							+ 2000 || FRAMECOUNTER & 4)) {
 
-#ifdef WANTED_PATHS
-						if (playerPed->m_pWanted->IsPlayerHides())
-						{
-							WANTED_COLOR_FLASH.a = alpha;
-							CFont::SetColor(WANTED_COLOR_FLASH);
-						} else {
-							WANTED_COLOR.a = alpha;
-							CFont::SetColor(WANTED_COLOR);
-						}
-#else
 						WANTED_COLOR.a = alpha;
 						CFont::SetColor(WANTED_COLOR);
-#endif
-#ifdef VEHICLE_MODS // HUD in mod garage
-						CFont::PrintString(SCREEN_SCALE_FROM_RIGHT(110.0f + 23.0f * i), SCREEN_SCALE_Y(CGarages::bPlayerInModGarage ? 35.0f : 87.0f), sPrintIcon);
-#else
 						CFont::PrintString(SCREEN_SCALE_FROM_RIGHT(110.0f + 23.0f * i), SCREEN_SCALE_Y(87.0f), sPrintIcon);
-#endif
+
 					} else if (playerPed->m_pWanted->m_nMinWantedLevel > i && FRAMECOUNTER & 4) {
 						WANTED_COLOR_FLASH.a = alpha;
 						CFont::SetColor(WANTED_COLOR_FLASH);
-#ifdef VEHICLE_MODS // HUD in mod garage
-						CFont::PrintString(SCREEN_SCALE_FROM_RIGHT(110.0f + 23.0f * i), SCREEN_SCALE_Y(CGarages::bPlayerInModGarage ? 35.0f : 87.0f), sPrintIcon);
-#else
 						CFont::PrintString(SCREEN_SCALE_FROM_RIGHT(110.0f + 23.0f * i), SCREEN_SCALE_Y(87.0f), sPrintIcon);
-#endif
+
 					} else if (playerPed->m_pWanted->GetWantedLevel() <= i) {
 						NOTWANTED_COLOR.a = alpha;
 						CFont::SetColor(NOTWANTED_COLOR);
-#ifdef VEHICLE_MODS // HUD in mod garage
-						CFont::PrintString(SCREEN_SCALE_FROM_RIGHT(110.0f + 23.0f * i), SCREEN_SCALE_Y(CGarages::bPlayerInModGarage ? 35.0f : 87.0f), sPrintIcon);
-#else
 						CFont::PrintString(SCREEN_SCALE_FROM_RIGHT(110.0f + 23.0f * i), SCREEN_SCALE_Y(87.0f), sPrintIcon);
-#endif
 					}
 				}
 			}
@@ -990,11 +920,7 @@ void CHud::Draw()
 		/*
 			DrawClock
 		*/
-#ifdef VEHICLE_MODS // hide some hud elements when a player in the mod garage
-		if (m_ClockState && !CGarages::bPlayerInModGarage) {
-#else
 		if (m_ClockState) {
-#endif
 			CFont::SetJustifyOff();
 			CFont::SetCentreOff();
 			CFont::SetBackgroundOff();
@@ -1133,13 +1059,8 @@ void CHud::Draw()
 		/*
 			DrawRadar
 		*/
-#ifdef VEHICLE_MODS // HUD in mod garage
-		if (!CGarages::bPlayerInModGarage && FrontEndMenuManager.m_PrefsRadarMode != 2 &&
-			!m_HideRadar && (m_ItemToFlash == ITEM_RADAR && FRAMECOUNTER & 8 || m_ItemToFlash != ITEM_RADAR)) {
-#else
 		if (FrontEndMenuManager.m_PrefsRadarMode != 2 &&
 			!m_HideRadar && (m_ItemToFlash == ITEM_RADAR && FRAMECOUNTER & 8 || m_ItemToFlash != ITEM_RADAR)) {
-#endif
 
 			RwRenderStateSet(rwRENDERSTATETEXTUREFILTER, (void*)rwFILTERNEAREST);
 			CRadar::DrawMap();
@@ -1158,12 +1079,6 @@ void CHud::Draw()
 				rect.Translate(SCREEN_SCALE_X_FIX(0.0f), SCREEN_SCALE_Y_FIX(-2.0f));
 				Sprites[HUD_RADARDISC].Draw(rect, RADARDISC_COLOR);
 			}
-#ifdef IMPROVED_TECH_PART // GPS
-			m_bDrawRadar = true;
-			CRadar::DrawGPS();
-			m_bDrawRadar = false;
-			//CRadar::DrawPropertyBlips();
-#endif
 			CRadar::DrawBlips();
 		}
 	}

@@ -17,14 +17,10 @@ struct CStoredCollPoly
 };
 
 // If you spawn many tanks at once, you will see that collisions of two entity exceeds 32.
-#ifdef VICE_CRY
-#define MAX_COLLISION_POINTS 128
-#else
 #if defined(FIX_BUGS) && !defined(SQUEEZE_PERFORMANCE)
 #define MAX_COLLISION_POINTS 64
 #else
 #define MAX_COLLISION_POINTS 32
-#endif
 #endif
 
 class CCollision
@@ -54,7 +50,7 @@ public:
 	static bool TestLineSphere(const CColLine &line, const CColSphere &sph);
 	static bool TestSphereTriangle(const CColSphere &sphere, const CompressedVector *verts, const CColTriangle &tri, const CColTrianglePlane &plane);
 	static bool TestLineOfSight(const CColLine &line, const CMatrix &matrix, CColModel &model, bool ignoreSeeThrough, bool ignoreShootThrough);
-	
+
 	static bool ProcessSphereSphere(const CColSphere &s1, const CColSphere &s2, CColPoint &point, float &mindistsq);
 	static bool ProcessSphereBox(const CColSphere &sph, const CColBox &box, CColPoint &point, float &mindistsq);
 	static bool ProcessLineBox(const CColLine &line, const CColBox &box, CColPoint &point, float &mindist);

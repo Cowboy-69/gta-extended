@@ -69,17 +69,7 @@ CPlane::CPlane(int32 id, uint8 CreatedBy)
 {
 	CVehicleModelInfo *mi = (CVehicleModelInfo*)CModelInfo::GetModelInfo(id);
 	m_vehType = VEHICLE_TYPE_PLANE;
-#ifdef NEW_VEHICLE_LOADER
-	if (GetModelIndex() >= MI_FIRST_NEW_VEHICLE) {
-		pVehicleShadowSettings = &mi->vehicleShadowData;
-		pVehicleSample = &mi->vehicleSampleData;
-		pHandling = &mi->handlingData;
-	} else {
-		pHandling = mod_HandlingManager.GetHandlingData((tVehicleType)mi->m_handlingId);
-	}
-#else
 	pHandling = mod_HandlingManager.GetHandlingData((tVehicleType)mi->m_handlingId);
-#endif
 	SetModelIndex(id);
 
 	m_fMass = 100000000.0f;

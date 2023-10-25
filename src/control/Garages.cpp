@@ -25,9 +25,6 @@
 #include "World.h"
 #include "VarConsole.h"
 #include "SaveBuf.h"
-#ifdef VEHICLE_MODS // mod garage
-#include "debugmenu.h"
-#endif
 
 #define ROTATED_DOOR_OPEN_SPEED (0.015f)
 #define ROTATED_DOOR_CLOSE_SPEED (0.02f)
@@ -61,9 +58,6 @@
 #define TIME_TO_SETUP_BOMB (2000)
 #define TIME_TO_CRUSH_CAR (3000)
 #define TIME_TO_PROCESS_KEEPCAR_GARAGE (2000)
-#ifdef VEHICLE_MODS // mod garage
-#define TIME_TO_ENTER_EXIT_INTO_MOD_GARAGE (1500)
-#endif
 
 // Respray stuff
 #define FREE_RESPRAY_HEALTH_THRESHOLD (970.0f)
@@ -127,13 +121,6 @@ CStoredCar CGarages::aCarsInSafeHouses[TOTAL_HIDEOUT_GARAGES][NUM_GARAGE_STORED_
 int32 hGarages = AEHANDLE_NONE;
 CGarage CGarages::aGarages[NUM_GARAGES];
 bool CGarages::bCamShouldBeOutisde;
-#ifdef VEHICLE_MODS // mod garage
-bool CGarages::bPlayerInModGarage;
-bool CGarages::bPlayerShouldBeLeaveModGarage;
-
-void DebugMenuPopulate(void);
-void VehicleModMenuPopulate(void);
-#endif
 
 #ifndef MASTER
 bool bPrintNearestObject;
@@ -166,35 +153,6 @@ void CGarages::Init(void)
 	hGarages = DMAudio.CreateEntity(AUDIOTYPE_GARAGE, (void*)1);
 	if (hGarages >= 0)
 		DMAudio.SetEntityStatus(hGarages, TRUE);
-
-#ifdef VEHICLE_MODS // mod garage
-	if (bPlayerInModGarage) {
-		DebugMenuShutdown();
-		DebugMenuPopulate();
-	}
-	bPlayerInModGarage = false;
-	bPlayerShouldBeLeaveModGarage = false;
-
-	/*AddOne(-7.55f, -1268.164f, 9.322f,
-		   -7.55f, -1276.632f, // depth
-		   2.64f, -1268.164f, 14.4f,
-		   GARAGE_MOD, 0);
-
-	AddOne(-879.02f, -102.29f, 9.992f,
-		   -875.38f, -95.03f, // depth
-		   -869.66f, -107.04f, 15.58f,
-		   GARAGE_MOD, 0);
-
-	AddOne(-901.501f, -1268.791f, 10.542f,
-		   -891.122f, -1265.274f, // depth
-		   -897.072f, -1258.488f, 17.467f,
-		   GARAGE_MOD, 0);
-
-	AddOne(328.419f, 441.153f, 10.014f,
-		   325.326f, 450.675f, // depth
-		   318.205f, 444.41f, 16.657f,
-		   GARAGE_MOD, 0);*/
-#endif
 }
 
 void CGarages::Shutdown(void)
@@ -240,11 +198,6 @@ void CGarages::Update(void)
 		aGarages[GarageToBeTidied].TidyUpGarageClose();
 	else
 		aGarages[GarageToBeTidied].TidyUpGarage();
-
-#ifdef VEHICLE_MODS
-	if (bPlayerInModGarage && (FindPlayerPed()->DyingOrDead() || FindPlayerPed()->m_pArrestingCop))
-		bPlayerShouldBeLeaveModGarage = true;
-#endif
 }
 
 int16 CGarages::AddOne(float X1, float Y1, float Z1, float X2, float Y2, float X3, float Y3, float Z2, uint8 type, int32 targetId)
@@ -331,9 +284,6 @@ int16 CGarages::AddOne(float X1, float Y1, float Z1, float X2, float Y2, float X
 	case GARAGE_BOMBSHOP2:
 	case GARAGE_BOMBSHOP3:
 	case GARAGE_RESPRAY:
-#ifdef VEHICLE_MODS // mod garage
-	case GARAGE_MOD:
-#endif
 		pGarage->m_eGarageState = GS_OPENED;
 		pGarage->m_fDoorPos = pGarage->m_fDoorHeight;
 		break;
@@ -512,19 +462,8 @@ void CGarage::Update()
 					if (FindPlayerVehicle()->IsCar()) {
 						((CAutomobile*)(FindPlayerVehicle()))->m_fFireBlowUpTimer = 0.0f;
 						((CAutomobile*)(FindPlayerVehicle()))->Fix();
-#ifdef VEHICLE_MODS // when mod garage is fully closed, fix lights
-						for (int32 i = 0; i < 4; i++)
-							((CAutomobile*)FindPlayerVehicle())->Damage.SetWheelStatus(i, WHEEL_STATUS_OK);
-
-						//for (int32 frameID = CAR_HEADLIGHT_L; frameID < NUM_CAR_NODES; frameID++)
-							//((CAutomobile*)FindPlayerVehicle())->SetFrameLightStatus((eCarNodes)frameID, LIGHT_STATUS_OK);
-#endif
 					}
 					else {
-#ifdef VEHICLE_MODS // when mod garage is fully closed, fix lights
-						for (int32 frameID = BIKE_HEADLIGHT_L; frameID < BIKE_NUM_NODES; frameID++)
-							((CBike*)FindPlayerVehicle())->SetFrameLightStatus((eBikeNodes)frameID, LIGHT_STATUS_OK);
-#endif
 						((CBike*)(FindPlayerVehicle()))->m_fFireBlowUpTimer = 0.0f;
 						((CBike*)(FindPlayerVehicle()))->Fix();
 					}
@@ -540,24 +479,6 @@ void CGarage::Update()
 #else
 					if (!((CAutomobile*)(FindPlayerVehicle()))->bFixedColour) {
 #endif
-#ifdef IMPROVED_VEHICLES // More colors
-						uint8 colour1, colour2, colour3, colour4;
-						uint16 attempt;
-						FindPlayerVehicle()->GetModelInfo()->ChooseVehicleColour(colour1, colour2, colour3, colour4);
-						for (attempt = 0; attempt < 10; attempt++) {
-							if (colour1 != FindPlayerVehicle()->m_currentColour1 || colour2 != FindPlayerVehicle()->m_currentColour2 ||
-								colour3 != FindPlayerVehicle()->m_currentColour3 || colour4 != FindPlayerVehicle()->m_currentColour4) {
-
-								break;
-							}
-							FindPlayerVehicle()->GetModelInfo()->ChooseVehicleColour(colour1, colour2, colour3, colour4);
-						}
-						bChangedColour = (attempt < 10);
-						FindPlayerVehicle()->m_currentColour1 = colour1;
-						FindPlayerVehicle()->m_currentColour2 = colour2;
-						FindPlayerVehicle()->m_currentColour3 = colour3;
-						FindPlayerVehicle()->m_currentColour4 = colour4;
-#else
 						uint8 colour1, colour2;
 						uint16 attempt;
 						FindPlayerVehicle()->GetModelInfo()->ChooseVehicleColour(colour1, colour2);
@@ -569,13 +490,6 @@ void CGarage::Update()
 						bChangedColour = (attempt < 10);
 						FindPlayerVehicle()->m_currentColour1 = colour1;
 						FindPlayerVehicle()->m_currentColour2 = colour2;
-#endif
-#ifdef VEHICLE_MODS // Repainting also paints the spoiler
-						if (FindPlayerVehicle()->IsCar()) {
-							((CAutomobile*)FindPlayerVehicle())->m_nSpoilerColor = colour1;
-							((CAutomobile*)FindPlayerVehicle())->m_nTempSpoilerColor = colour1;
-						}
-#endif
 						if (bChangedColour) {
 							for (int i = 0; i < NUM_PARTICLES_IN_RESPRAY; i++) {
 								CVector pos;
@@ -1174,133 +1088,6 @@ void CGarage::Update()
 			break;
 		}
 		break;
-#ifdef VEHICLE_MODS // mod garage
-	case GARAGE_MOD:
-		switch (m_eGarageState) {
-		case GS_OPENED:
-			if (IsStaticPlayerCarEntirelyInside()) {
-				if (CountCarsWithCenterPointWithinGarage(FindPlayerVehicle()) > 0) {
-					CGarages::TriggerMessage("GA_22", -1, 4000, -1); // Just one car!
-					m_eGarageState = GS_OPENEDCONTAINSCAR;
-					DMAudio.PlayFrontEndSound(SOUND_GARAGE_BAD_VEHICLE, 1);
-				} else if (CGarages::IsCarModifiable(FindPlayerVehicle())) {
-					if (CWorld::Players[CWorld::PlayerInFocus].m_nMoney >= RESPRAY_PRICE || CGarages::RespraysAreFree) {
-						m_eGarageState = GS_CLOSING;
-						CPad::GetPad(0)->SetDisablePlayerControls(PLAYERCONTROL_GARAGE);
-						FindPlayerPed()->m_pWanted->m_bIgnoredByCops = true;
-					} else {
-						CGarages::TriggerMessage("GA_3", -1, 4000, -1); // No more freebies. $100 to respray!
-						m_eGarageState = GS_OPENEDCONTAINSCAR;
-						DMAudio.PlayFrontEndSound(SOUND_GARAGE_NO_MONEY, 1);
-					}
-				} else {
-					CGarages::TriggerMessage("GA_1", -1, 4000, -1); // Whoa! I don't touch nothing THAT hot!
-					m_eGarageState = GS_OPENEDCONTAINSCAR;
-					DMAudio.PlayFrontEndSound(SOUND_GARAGE_BAD_VEHICLE, 1);
-				}
-			}
-			if (FindPlayerVehicle()) {
-				if (CalcDistToGarageRectangleSquared(FindPlayerVehicle()->GetPosition().x, FindPlayerVehicle()->GetPosition().y) < SQR(DISTANCE_TO_ACTIVATE_GARAGE))
-					CWorld::CallOffChaseForArea(
-						m_fInfX - DISTANCE_TO_CALL_OFF_CHASE,
-						m_fInfY - DISTANCE_TO_CALL_OFF_CHASE,
-						m_fSupX + DISTANCE_TO_CALL_OFF_CHASE,
-						m_fSupY + DISTANCE_TO_CALL_OFF_CHASE);
-			}
-			break;
-		case GS_CLOSING:
-			if (FindPlayerVehicle())
-				ThrowCarsNearDoorOutOfGarage(FindPlayerVehicle());
-			m_fDoorPos = Max(0.0f, m_fDoorPos - (m_bRotatedDoor ? ROTATED_DOOR_CLOSE_SPEED : DEFAULT_DOOR_CLOSE_SPEED) * CTimer::GetTimeStep());
-			if (m_fDoorPos == 0.0f) {
-				m_eGarageState = GS_FULLYCLOSED;
-				m_nTimeToStartAction = CTimer::GetTimeInMilliseconds() + TIME_TO_ENTER_EXIT_INTO_MOD_GARAGE;
-				DMAudio.PlayOneShot(hGarages, SOUND_GARAGE_DOOR_CLOSED, 1.0f);
-				TheCamera.SetFadeColour(0, 0, 0);
-				TheCamera.Fade(1.0f, 0);
-				CStats::CheckPointReachedSuccessfully();
-			}
-			UpdateDoorsHeight();
-			if (FindPlayerVehicle() && FindPlayerVehicle()->IsCar())
-				((CAutomobile*)(FindPlayerVehicle()))->m_fFireBlowUpTimer = 0.0f;
-			CWorld::CallOffChaseForArea(
-				m_fInfX - DISTANCE_TO_CALL_OFF_CHASE,
-				m_fInfY - DISTANCE_TO_CALL_OFF_CHASE,
-				m_fSupX + DISTANCE_TO_CALL_OFF_CHASE,
-				m_fSupY + DISTANCE_TO_CALL_OFF_CHASE);
-
-			break;
-		case GS_FULLYCLOSED: 
-		{
-			if (CTimer::GetTimeInMilliseconds() > m_nTimeToStartAction && !CGarages::bPlayerInModGarage && !CGarages::bPlayerShouldBeLeaveModGarage) {
-				TheCamera.Fade(1.0f, 1);
-
-				CVehicle* veh = FindPlayerVehicle();
-
-				if (veh->m_fHealth < 1000.0f)
-					CWorld::Players[CWorld::PlayerInFocus].m_nMoney = Max(0, CWorld::Players[CWorld::PlayerInFocus].m_nMoney - 100);
-
-				veh->m_fHealth = 1000.0f;
-				if (veh->IsCar()) {
-					((CAutomobile*)(veh))->m_fFireBlowUpTimer = 0.0f;
-					((CAutomobile*)(veh))->Fix();
-
-					for (int32 i = 0; i < 4; i++)
-						((CAutomobile*)veh)->Damage.SetWheelStatus(i, WHEEL_STATUS_OK);
-
-					//for (int32 frameID = CAR_HEADLIGHT_L; frameID < NUM_CAR_NODES; frameID++)
-						//((CAutomobile*)veh)->SetFrameLightStatus((eCarNodes)frameID, LIGHT_STATUS_OK);
-				} else {
-					for (int32 frameID = BIKE_HEADLIGHT_L; frameID < BIKE_NUM_NODES; frameID++)
-						((CBike*)veh)->SetFrameLightStatus((eBikeNodes)frameID, LIGHT_STATUS_OK);
-
-					((CBike*)(veh))->m_fFireBlowUpTimer = 0.0f;
-					((CBike*)(veh))->Fix();
-				}
-
-				if (veh && (veh->IsCar() || veh->IsBike())) {
-					veh->SetHeading(m_pDoor1->GetRight().Heading() + DEGTORAD(180.0f));
-					CVector vehPos = m_pDoor1->GetPosition() + m_pDoor1->GetRight() * 5.0f;
-					veh->SetPosition(vehPos.x, vehPos.y, veh->GetPosition().z);
-				}
-
-				CVector camPos = FindPlayerVehicle()->GetPosition();
-				CVector camOffset = FindPlayerVehicle()->GetForward() * 4.0f + FindPlayerVehicle()->GetRight() * 3.0f + FindPlayerVehicle()->GetUp() * 1.0f;
-				TheCamera.SetCamPositionForFixedMode(camPos + camOffset, CVector(0.0f, 0.0f, 0.0f));
-				TheCamera.TakeControl(FindPlayerVehicle(), CCam::MODE_FIXED, JUMP_CUT, CAMCONTROL_SCRIPT);
-
-				CGarages::ActivateModGarage();
-			}
-
-			if (CGarages::bPlayerShouldBeLeaveModGarage) {
-				m_eGarageState = GS_OPENING;
-				CGarages::LeaveModGarage();
-			}
-
-			CWorld::CallOffChaseForArea(
-				m_fInfX - DISTANCE_TO_CALL_OFF_CHASE,
-				m_fInfY - DISTANCE_TO_CALL_OFF_CHASE,
-				m_fSupX + DISTANCE_TO_CALL_OFF_CHASE,
-				m_fSupY + DISTANCE_TO_CALL_OFF_CHASE);
-			break;
-		}
-		case GS_OPENING:
-			m_fDoorPos = Min(m_fDoorHeight, m_fDoorPos + (m_bRotatedDoor ? ROTATED_DOOR_OPEN_SPEED : DEFAULT_DOOR_OPEN_SPEED) * CTimer::GetTimeStep());
-			if (m_fDoorPos == m_fDoorHeight) {
-				m_eGarageState = GS_OPENEDCONTAINSCAR;
-				DMAudio.PlayOneShot(hGarages, SOUND_GARAGE_DOOR_OPENED, 1.0f);
-			}
-			UpdateDoorsHeight();
-			break;
-		case GS_OPENEDCONTAINSCAR:
-			if (IsPlayerOutsideGarage())
-				m_eGarageState = GS_OPENED;
-			break;
-		default:
-			break;
-		}
-		break;
-#endif
 	//case GARAGE_COLLECTORSITEMS:
 	//case GARAGE_60SECONDS:
 	case GARAGE_FOR_SCRIPT_TO_OPEN_FOR_CAR:
@@ -1661,111 +1448,6 @@ bool CGarages::IsCarSprayable(CVehicle * pVehicle)
 	return true;
 }
 
-#ifdef VEHICLE_MODS // mod garage
-bool CGarages::IsCarModifiable(CVehicle* pVehicle)
-{
-	if (pVehicle->IsRealHeli() || pVehicle->IsBoat())
-		return false;
-
-	switch (pVehicle->GetModelIndex()) {
-		case MI_FIRETRUCK:
-		case MI_AMBULAN:
-		case MI_POLICE:
-		case MI_ENFORCER:
-		case MI_BUS:
-		case MI_RHINO:
-		case MI_BARRACKS:
-		case MI_DODO:
-		case MI_COACH:
-		case MI_FBIRANCH:
-			return false;
-	}
-	return true;
-}
-
-bool CGarages::IsCarTintable(CVehicle* pVehicle)
-{
-	if (!IsCarModifiable(pVehicle))
-		return false;
-
-	switch (pVehicle->GetModelIndex()) {
-		case MI_CABBIE:
-		case MI_TOPFUN:
-		case MI_PONY:
-		case MI_GANGBUR:
-		case MI_MRWHOOP:
-		case MI_RUMPO:
-		case MI_SECURICA:
-		case MI_BENSON:
-		case MI_BOXVILLE:
-		case MI_MULE:
-		case MI_SPAND:
-		case MI_KAUFMAN:
-		case MI_BLOODRA:
-		case MI_BLOODRB:
-		case MI_HOTRINA:
-		case MI_HOTRINB:
-		case MI_HOTRING:
-		case MI_SANDKING:
-			return false;
-	}
-	return true;
-}
-
-void CGarages::TryChangeCameraInModGarage(const char* menuName)
-{
-	if (FindPlayerVehicle()->IsBike())
-		return;
-
-	if (strstr(menuName, "Window tint") || strstr(menuName, "Supercharger") || strstr(menuName, "Suspension") || strstr(menuName, "Paint") || strstr(menuName, "Exit")) {
-		CVector camPos = FindPlayerVehicle()->GetPosition();
-		CVector camOffset = FindPlayerVehicle()->GetForward() * 4.0f + FindPlayerVehicle()->GetRight() * 3.0f + FindPlayerVehicle()->GetUp() * 1.0f;
-		TheCamera.SetCamPositionForFixedMode(camPos + camOffset, CVector(0.0f, 0.0f, 0.0f));
-		TheCamera.TakeControl(FindPlayerVehicle(), CCam::MODE_FIXED, JUMP_CUT, CAMCONTROL_SCRIPT);
-	} else if (strstr(menuName, "Spoiler")) {
-		CVector camPos = FindPlayerVehicle()->GetPosition();
-		CVector camOffset = -FindPlayerVehicle()->GetRight() * 4.0f + FindPlayerVehicle()->GetUp() * 2.0f;
-		TheCamera.SetCamPositionForFixedMode(camPos + camOffset, CVector(0.0f, 0.0f, 0.0f));
-		TheCamera.TakeControl(FindPlayerVehicle(), CCam::MODE_FIXED, JUMP_CUT, CAMCONTROL_SCRIPT);
-	} else if (strstr(menuName, "Side skirts") || strstr(menuName, "Wheels")) {
-		CVector camPos = FindPlayerVehicle()->GetPosition();
-		CVector camOffset = FindPlayerVehicle()->GetForward() * 2.0f - FindPlayerVehicle()->GetRight() * 3.5f;
-		TheCamera.SetCamPositionForFixedMode(camPos + camOffset, CVector(0.0f, 0.0f, 0.0f));
-		TheCamera.TakeControl(FindPlayerVehicle(), CCam::MODE_FIXED, JUMP_CUT, CAMCONTROL_SCRIPT);
-	} else if (strstr(menuName, "Scoop") || strstr(menuName, "Vents")) {
-		CVector camPos = FindPlayerVehicle()->GetPosition();
-		CVector camOffset = FindPlayerVehicle()->GetForward() * 4.0f + FindPlayerVehicle()->GetUp() * 1.5f;
-		TheCamera.SetCamPositionForFixedMode(camPos + camOffset, CVector(0.0f, 0.0f, 0.0f));
-		TheCamera.TakeControl(FindPlayerVehicle(), CCam::MODE_FIXED, JUMP_CUT, CAMCONTROL_SCRIPT);
-	}
-}
-
-void CGarages::ActivateModGarage()
-{
-	CGarages::bPlayerInModGarage = true;
-
-	DebugMenuShutdown();
-	VehicleModMenuPopulate();
-	DebugMenuInit();
-}
-
-void CGarages::LeaveModGarage()
-{
-	CGarages::bPlayerInModGarage = false;
-	CGarages::bPlayerShouldBeLeaveModGarage = false;
-
-	CPad::GetPad(0)->SetEnablePlayerControls(PLAYERCONTROL_GARAGE);
-	FindPlayerPed()->m_pWanted->m_bIgnoredByCops = false;
-	FindPlayerVehicle()->m_nDoorLock = CARLOCK_UNLOCKED;
-
-	TheCamera.Restore();
-
-	DebugMenuShutdown();
-	DebugMenuPopulate();
-	DebugMenuInit();
-}
-#endif
-
 void CGarage::UpdateDoorsHeight()
 {
 	RefreshDoorPointers(false);
@@ -1808,12 +1490,6 @@ void CGarage::BuildRotatedDoorMatrix(CEntity * pDoor, float fPosition)
 void CGarage::UpdateCrusherAngle()
 {
 	RefreshDoorPointers(false);
-
-#ifdef VEHICLE_MODS // fix for crash while loading a save
-	if (!m_pDoor2)
-		return;
-#endif
-
 	m_pDoor2->GetMatrix().SetRotateXOnly(TWOPI - m_fDoorPos);
 	m_pDoor2->GetMatrix().UpdateRW();
 	m_pDoor2->UpdateRwFrame();
@@ -2158,36 +1834,15 @@ void CStoredCar::StoreCar(CVehicle* pVehicle)
 	m_vecAngle = pVehicle->GetForward();
 	m_nPrimaryColor = pVehicle->m_currentColour1;
 	m_nSecondaryColor = pVehicle->m_currentColour2;
-#ifdef IMPROVED_VEHICLES // More colors
-	m_nTertiaryColor = pVehicle->m_currentColour3;
-	m_nQuaternaryColor = pVehicle->m_currentColour4;
-#endif
 	m_nRadioStation = pVehicle->m_nRadioStation;
 	m_nVariationA = pVehicle->m_aExtras[0];
 	m_nVariationB = pVehicle->m_aExtras[1];
-#ifdef VEHICLE_MODS // Save/Load
-	m_nArmorLevel = pVehicle->m_nArmorLevel;
-	m_fAddEngineAcceleration = pVehicle->m_fAddEngineAcceleration;
-	if (pVehicle->IsCar()) {
-		m_nWindowTintLevel = ((CAutomobile*)pVehicle)->m_nWindowTintLevel;
-		m_nAddSuspensionForceLevel = ((CAutomobile*)pVehicle)->m_nAddSuspensionForceLevel;
-		m_nRimsColor = ((CAutomobile*)pVehicle)->m_nRimsColor;
-		m_nSpoilerColor = ((CAutomobile*)pVehicle)->m_nSpoilerColor;
-		m_fAddBrakeDeceleration = ((CAutomobile*)pVehicle)->m_fAddBrakeDeceleration;
-		for (int upgradeID = 0; upgradeID < NUM_UPGRADES; upgradeID++)
-			m_nUpgradeModelIndex[upgradeID] = ((CAutomobile*)pVehicle)->m_aUpgrades[upgradeID].m_nUpgradeModelIndex;
-	}
-#endif
 	m_nFlags = 0;
 	if (pVehicle->bBulletProof) m_nFlags |= FLAG_BULLETPROOF;
 	if (pVehicle->bFireProof) m_nFlags |= FLAG_FIREPROOF;
 	if (pVehicle->bExplosionProof) m_nFlags |= FLAG_EXPLOSIONPROOF;
 	if (pVehicle->bCollisionProof) m_nFlags |= FLAG_COLLISIONPROOF;
 	if (pVehicle->bMeleeProof) m_nFlags |= FLAG_MELEEPROOF;
-#ifdef VEHICLE_MODS // Save/Load
-	if (pVehicle->bTyresDontBurst) m_nFlags |= FLAG_BULLETPROOFTYRES;
-	if (pVehicle->IsCar() && ((CAutomobile*)pVehicle)->bHasHydraulics) m_nFlags |= FLAG_HYDRAULICS;
-#endif
 	if (pVehicle->IsCar() || pVehicle->IsBike())
 		m_nCarBombType = ((CAutomobile*)pVehicle)->m_bombType; // NB: cast to CAutomobile is original behaviour
 }
@@ -2224,38 +1879,7 @@ CVehicle* CStoredCar::RestoreCar()
 	pVehicle->pDriver = nil;
 	pVehicle->m_currentColour1 = m_nPrimaryColor;
 	pVehicle->m_currentColour2 = m_nSecondaryColor;
-#ifdef IMPROVED_VEHICLES // More colors
-	pVehicle->m_currentColour3 = m_nTertiaryColor;
-	pVehicle->m_currentColour4 = m_nQuaternaryColor;
-#endif
 	pVehicle->m_nRadioStation = m_nRadioStation;
-#if defined VEHICLE_MODS && defined IMPROVED_VEHICLES // Save/Load
-	pVehicle->m_nTempColor1 = m_nPrimaryColor;
-	pVehicle->m_nTempColor2 = m_nSecondaryColor;
-	pVehicle->m_nTempColor3 = m_nTertiaryColor;
-	pVehicle->m_nTempColor4 = m_nQuaternaryColor;
-	pVehicle->m_nArmorLevel = m_nArmorLevel;
-	pVehicle->m_fAddEngineAcceleration = m_fAddEngineAcceleration;
-	if (pVehicle->IsCar()) {
-		((CAutomobile*)pVehicle)->m_nWindowTintLevel = m_nWindowTintLevel;
-		((CAutomobile*)pVehicle)->m_nTempWindowTintLevel = m_nWindowTintLevel;
-		((CAutomobile*)pVehicle)->m_nAddSuspensionForceLevel = m_nAddSuspensionForceLevel;
-		((CAutomobile*)pVehicle)->m_nTempAddSuspensionForceLevel = m_nAddSuspensionForceLevel;
-		((CAutomobile*)pVehicle)->m_nRimsColor = m_nRimsColor;
-		((CAutomobile*)pVehicle)->m_nTempRimsColor = m_nRimsColor;
-		((CAutomobile*)pVehicle)->m_nSpoilerColor = m_nSpoilerColor;
-		((CAutomobile*)pVehicle)->m_nTempSpoilerColor = m_nSpoilerColor;
-		((CAutomobile*)pVehicle)->m_fAddBrakeDeceleration = m_fAddBrakeDeceleration;
-		for (int upgradeID = 0; upgradeID < NUM_UPGRADES; upgradeID++) {
-			((CAutomobile*)pVehicle)->m_aUpgrades[upgradeID].m_nUpgradeModelIndex = m_nUpgradeModelIndex[upgradeID];
-			((CAutomobile*)pVehicle)->m_aUpgrades[upgradeID].m_nTempUpgradeModelIndex = m_nUpgradeModelIndex[upgradeID];
-			if (upgradeID == UPGRADE_WHEELS)
-				((CAutomobile*)pVehicle)->SetWheels(m_nUpgradeModelIndex[upgradeID]);
-			else
-				((CAutomobile*)pVehicle)->SetUpgrade(m_nUpgradeModelIndex[upgradeID], false);
-		}
-	}
-#endif
 	pVehicle->bFreebies = false;
 	if (pVehicle->IsCar())
 	{
@@ -2272,10 +1896,6 @@ CVehicle* CStoredCar::RestoreCar()
 	if (m_nFlags & FLAG_EXPLOSIONPROOF) pVehicle->bExplosionProof = true;
 	if (m_nFlags & FLAG_COLLISIONPROOF) pVehicle->bCollisionProof = true;
 	if (m_nFlags & FLAG_MELEEPROOF) pVehicle->bMeleeProof = true;
-#ifdef VEHICLE_MODS // Save/Load
-	if (m_nFlags & FLAG_BULLETPROOFTYRES) pVehicle->bTyresDontBurst = true;
-	if (pVehicle->IsCar() && m_nFlags & FLAG_HYDRAULICS) ((CAutomobile*)pVehicle)->bHasHydraulics = true;
-#endif
 	return pVehicle;
 }
 
@@ -2482,9 +2102,6 @@ void CGarage::PlayerArrestedOrDied()
 	case GARAGE_BOMBSHOP3:
 	case GARAGE_RESPRAY:
 	case GARAGE_CRUSHER:
-#ifdef VEHICLE_MODS // mod garage
-	case GARAGE_MOD:
-#endif
 		switch (m_eGarageState) {
 		case GS_FULLYCLOSED:
 		case GS_CLOSING:
@@ -2640,12 +2257,8 @@ void CGarages::SetAllDoorsBackToOriginalHeight()
 void CGarages::Save(uint8 * buf, uint32 * size)
 {
 //INITSAVEBUF
-#ifdef VEHICLE_MODS // Save/Load
-	*size = (6 * sizeof(uint32) + TOTAL_COLLECTCARS_GARAGES * sizeof(*CarTypesCollected) + sizeof(uint32) + TOTAL_HIDEOUT_GARAGES * NUM_GARAGE_STORED_CARS * sizeof(CStoredCar) + NUM_GARAGES * sizeof(CGarage));
-#else
 	*size = 7876; // for some reason it's not actual size again
 	//*size = (6 * sizeof(uint32) + TOTAL_COLLECTCARS_GARAGES * sizeof(*CarTypesCollected) + sizeof(uint32) + TOTAL_HIDEOUT_GARAGES * NUM_GARAGE_STORED_CARS * sizeof(CStoredCar) + NUM_GARAGES * sizeof(CGarage));
-#endif
 #if !defined THIS_IS_STUPID && defined COMPATIBLE_SAVES
 	memset(buf + 7340, 0, *size - 7340); // garbage data is written otherwise
 #endif
@@ -2722,37 +2335,18 @@ const CStoredCar &CStoredCar::operator=(const CStoredCar & other)
 	m_nFlags = other.m_nFlags;
 	m_nPrimaryColor = other.m_nPrimaryColor;
 	m_nSecondaryColor = other.m_nSecondaryColor;
-#ifdef IMPROVED_VEHICLES // More colors
-	m_nTertiaryColor = other.m_nTertiaryColor;
-	m_nQuaternaryColor = other.m_nQuaternaryColor;
-#endif
 	m_nRadioStation = other.m_nRadioStation;
 	m_nVariationA = other.m_nVariationA;
 	m_nVariationB = other.m_nVariationB;
 	m_nCarBombType = other.m_nCarBombType;
-#ifdef VEHICLE_MODS // Save/Load
-	m_nWindowTintLevel = other.m_nWindowTintLevel;
-	m_nAddSuspensionForceLevel = other.m_nAddSuspensionForceLevel;
-	m_nRimsColor = other.m_nRimsColor;
-	m_nSpoilerColor = other.m_nSpoilerColor;
-	m_fAddEngineAcceleration = other.m_fAddEngineAcceleration;
-	m_fAddBrakeDeceleration = other.m_fAddBrakeDeceleration;
-	m_nArmorLevel = other.m_nArmorLevel;
-	for (int upgradeID = 0; upgradeID < NUM_UPGRADES; upgradeID++)
-		m_nUpgradeModelIndex[upgradeID] = other.m_nUpgradeModelIndex[upgradeID];
-#endif
 	return *this;
 }
 
 void CGarages::Load(uint8* buf, uint32 size)
 {
 //INITSAVEBUF
-#ifdef VEHICLE_MODS // Save/Load
-	assert(size == (6 * sizeof(uint32) + TOTAL_COLLECTCARS_GARAGES * sizeof(*CarTypesCollected) + sizeof(uint32) + TOTAL_HIDEOUT_GARAGES * NUM_GARAGE_STORED_CARS * sizeof(CStoredCar) + NUM_GARAGES * sizeof(CGarage)));
-#else
 	assert(size == 7876);
 	//assert(size == (6 * sizeof(uint32) + TOTAL_COLLECTCARS_GARAGES * sizeof(*CarTypesCollected) + sizeof(uint32) + TOTAL_HIDEOUT_GARAGES * NUM_GARAGE_STORED_CARS * sizeof(CStoredCar) + NUM_GARAGES * sizeof(CGarage)));
-#endif
 	CloseHideOutGaragesBeforeSave();
 	ReadSaveBuf(&NumGarages, buf);
 	int32 tempInt;

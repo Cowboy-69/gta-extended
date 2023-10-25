@@ -8,9 +8,6 @@
 #include "re3_inttypes.h"
 #include "debugmenu.h"
 #include <new>
-#ifdef VEHICLE_MODS // mod garage
-#include "Garages.h"
-#endif
 
 #ifdef _WIN32
 #define snprintf _snprintf
@@ -78,71 +75,23 @@ createMenuFont(void)
 {
 	OpenCharsetSafe();
 
-#ifdef VEHICLE_MODS // mod garage
-	RwRGBA fg_normal;
-	RwRGBA bg_normal;
-	if (CGarages::bPlayerInModGarage) {
-		fg_normal = { 255, 200, 255, 255 };
-		bg_normal = { 0, 0, 0, 125 };
-	} else {
-		fg_normal = { 255, 255, 255, 255 };
-		bg_normal = { 255, 255, 255, 0 };
-	}
-#else
 	RwRGBA fg_normal = { 255, 255, 255, 255 };
 	RwRGBA bg_normal = { 255, 255, 255, 0 };
-#endif
 	fontStyles[MENUFONT_NORMAL] = RtCharsetCreate(&fg_normal, &bg_normal);
 	assert(fontStyles[MENUFONT_NORMAL]);
 
-#ifdef VEHICLE_MODS // mod garage
-	RwRGBA fg_sel_active;
-	RwRGBA bg_sel_active;
-	if (CGarages::bPlayerInModGarage) {
-		fg_sel_active = { 255, 150, 255, 255 };
-		bg_sel_active = { 0, 125, 0, 255 };
-	} else {
-		fg_sel_active = { 200, 200, 200, 255 };
-		bg_sel_active = { 132, 132, 132, 255 };
-	}
-#else
 	RwRGBA fg_sel_active = { 200, 200, 200, 255 };
 	RwRGBA bg_sel_active = { 132, 132, 132, 255 };
-#endif
 	fontStyles[MENUFONT_SEL_ACTIVE] = RtCharsetCreate(&fg_sel_active, &bg_sel_active);
 	assert(fontStyles[MENUFONT_SEL_ACTIVE]);
 
-#ifdef VEHICLE_MODS // mod garage
-	RwRGBA fg_sel_inactive;
-	RwRGBA bg_sel_inactive;
-	if (CGarages::bPlayerInModGarage) {
-		fg_sel_inactive = { 255, 150, 255, 255 };
-		bg_sel_inactive = { 0, 75, 0, 255 };
-	} else {
-		fg_sel_inactive = { 200, 200, 200, 255 };
-		bg_sel_inactive = { 200, 200, 200, 0 };
-	}
-#else
 	RwRGBA fg_sel_inactive = { 200, 200, 200, 255 };
 	RwRGBA bg_sel_inactive = { 200, 200, 200, 0 };
-#endif
 	fontStyles[MENUFONT_SEL_INACTIVE] = RtCharsetCreate(&fg_sel_inactive, &bg_sel_inactive);
 	assert(fontStyles[MENUFONT_SEL_INACTIVE]);
 
-#ifdef VEHICLE_MODS // mod garage
-	RwRGBA fg_mouse;
-	RwRGBA bg_mouse;
-	if (CGarages::bPlayerInModGarage) {
-		fg_mouse = { 255, 200, 255, 255 };
-		bg_mouse = { 0, 100, 0, 255 };
-	} else {
-		fg_mouse = { 255, 255, 255, 255 };
-		bg_mouse = { 132, 132, 132, 255 };
-	}
-#else
 	RwRGBA fg_mouse = { 255, 255, 255, 255 };
 	RwRGBA bg_mouse = { 132, 132, 132, 255 };
-#endif
 	fontStyles[MENUFONT_MOUSE] = RtCharsetCreate(&fg_mouse, &bg_mouse);
 	assert(fontStyles[MENUFONT_MOUSE]);
 
@@ -429,12 +378,12 @@ MenuEntry_##NAME::processInput(bool mouseOver, bool selected)				     \
 	v = *this->variable;					     \
 	oldv = v;						     \
 								     \
-	if((selected && (leftjustdown || CPad::GetPad(0)->GetDPadLeftJustDown())) || (mouseOver && button3justdown)){					     \
+	if((selected && leftjustdown) || (mouseOver && button3justdown)){					     \
 		v -= this->step;				     \
 		if(v > oldv)					     \
 			underflow = 1;				     \
 	}							     \
-	if((selected && (rightjustdown || CPad::GetPad(0)->GetDPadRightJustDown())) || (mouseOver && button1justdown)){					     \
+	if((selected && rightjustdown) || (mouseOver && button1justdown)){					     \
 		v += this->step;				     \
 		if(v < oldv)					     \
 			overflow = 1;				     \
@@ -520,12 +469,12 @@ MenuEntry_##NAME::processInput(bool mouseOver, bool selected)													     \
 	v = *this->variable;														     \
 	oldv = v;															     \
 																	     \
-	if((selected && (leftjustdown || CPad::GetPad(0)->GetDPadLeftJustDown())) || (mouseOver && button3justdown)){					     \
+	if((selected && leftjustdown) || (mouseOver && button3justdown)){					     \
 		v -= this->step;				     \
 		if(v > oldv)					     \
 			underflow = 1;				     \
 	}							     \
-	if((selected && (rightjustdown || CPad::GetPad(0)->GetDPadRightJustDown())) || (mouseOver && button1justdown)){					     \
+	if((selected && rightjustdown) || (mouseOver && button1justdown)){					     \
 		v += this->step;				     \
 		if(v < oldv)					     \
 			overflow = 1;				     \
@@ -555,15 +504,9 @@ FLOATTYPES
 void
 MenuEntry_Cmd::processInput(bool mouseOver, bool selected)
 {
-#ifdef VEHICLE_MODS // mod garage
-	CPad* pad = CPad::GetPad(0);
-	if (this->triggerFunc && (selected && (pad->IsAffectedByController && pad->GetCrossJustUp()) || pad->GetReturnJustUp() || (mouseOver && button1justdown)))
-		this->triggerFunc();
-#else
 	// Don't execute on button3
 	if(this->triggerFunc && (selected && (leftjustdown || rightjustdown) || (mouseOver && button1justdown)))
 		this->triggerFunc();
-#endif
 }
 
 void
@@ -811,12 +754,8 @@ findMenu(const char *name)
 			Menu *submenu = new Menu();
 			submenu->parent = m;
 			MenuEntry *me = new MenuEntry_Sub(curname, submenu);
-#ifdef VEHICLE_MODS // don't sort entries when a player is in the mod garage
-			if (m == &toplevel && !CGarages::bPlayerInModGarage)
-#else
 			// Don't sort submenus outside the toplevel menu
 			if(m == &toplevel)
-#endif
 				m->insertEntrySorted(me);
 			else
 				m->appendEntry(me);
@@ -991,18 +930,10 @@ processInput(void)
 		activeMenu->scroll(shift ? -5 : -1);
 	if(pgdnjustdown)
 		activeMenu->scroll(shift ? 5 : 1);
-#ifdef VEHICLE_MODS // mod garage
-	CPad* pad = CPad::GetPad(0);
-	if (downjustdown || (pad->IsAffectedByController && pad->GetDPadDownJustDown()))
-		activeMenu->changeSelection(activeMenu->selection + (shift ? 5 : 1));
-	if (upjustdown || (pad->IsAffectedByController && pad->GetDPadUpJustDown()))
-		activeMenu->changeSelection(activeMenu->selection - (shift ? 5 : 1));
-#else
 	if(downjustdown)
 		activeMenu->changeSelection(activeMenu->selection + (shift ? 5 : 1));
 	if(upjustdown)
 		activeMenu->changeSelection(activeMenu->selection - (shift ? 5 : 1));
-#endif
 
 	if(CPad::NewMouseControllerState.WHEELUP){
 		if(mouseOverMenu)
@@ -1028,42 +959,11 @@ processInput(void)
 		}
 	}
 
-#ifdef VEHICLE_MODS // mod garage
-	if((button1justdown || button3justdown) && mouseOverEntry){
-		if (CGarages::bPlayerInModGarage && activeMenu->selectedEntry->type == MENUSUB)
-			CGarages::TryChangeCameraInModGarage(activeMenu->selectedEntry->name);
-
-		activeMenu = mouseOverEntry->menu;
-		activeMenu->changeSelection(mouseOverEntry);
-	}
-
-	if(pad->IsAffectedByController && pad->GetCrossJustUp() || pad->GetReturnJustUp()){
-		if (CGarages::bPlayerInModGarage && activeMenu->selectedEntry->type == MENUSUB)
-			CGarages::TryChangeCameraInModGarage(activeMenu->selectedEntry->name);
-
-		if (activeMenu->selectedEntry && activeMenu->selectedEntry->type == MENUVAR &&
-			mouseOverEntry != activeMenu->selectedEntry)
-			((MenuEntry_Var*)activeMenu->selectedEntry)->processInput(false, true);
-
-		if(activeMenu->selectedEntry && activeMenu->selectedEntry->type == MENUSUB)
-			activeMenu = ((MenuEntry_Sub*)activeMenu->selectedEntry)->submenu;
-	}else if(pad->IsAffectedByController && pad->GetCircleJustDown() || KEYJUSTDOWN(rsBACKSP)){
-		if(activeMenu->parent)
-			activeMenu = activeMenu->parent;
-	}else{
-		if (mouseOverEntry && mouseOverEntry->type == MENUVAR)
-			((MenuEntry_Var*)mouseOverEntry)->processInput(true, mouseOverEntry == activeMenu->selectedEntry);
-		if (activeMenu->selectedEntry && activeMenu->selectedEntry->type == MENUVAR &&
-			mouseOverEntry != activeMenu->selectedEntry)
-			((MenuEntry_Var*)activeMenu->selectedEntry)->processInput(false, true);
-	}
-#else
 	// Have to call this before processInput below because menu entry can change
-	if ((button1justdown || button3justdown) && mouseOverEntry) {
+	if((button1justdown || button3justdown) && mouseOverEntry){
 		activeMenu = mouseOverEntry->menu;
 		activeMenu->changeSelection(mouseOverEntry);
 	}
-
 	if(KEYJUSTDOWN(rsENTER)){
 		if(activeMenu->selectedEntry && activeMenu->selectedEntry->type == MENUSUB)
 			activeMenu = ((MenuEntry_Sub*)activeMenu->selectedEntry)->submenu;
@@ -1077,7 +977,6 @@ processInput(void)
 		   mouseOverEntry != activeMenu->selectedEntry)
 			((MenuEntry_Var*)activeMenu->selectedEntry)->processInput(false, true);
 	}
-#endif
 }
 
 void
@@ -1116,15 +1015,7 @@ DebugMenuProcess(void)
 	// We only process some input here
 
 	CPad *pad = CPad::GetPad(0);
-#ifdef VEHICLE_MODS // mod garage
-	if (!menuOn && CGarages::bPlayerInModGarage)
-		menuOn = true;
-	else if (menuOn && CGarages::bPlayerShouldBeLeaveModGarage) {
-		menuOn = false;
-	} else if (CTRLJUSTDOWN('M') && !CGarages::bPlayerInModGarage)
-#else
 	if(CTRLJUSTDOWN('M'))
-#endif
 		menuOn = !menuOn;
 	if(!menuOn)
 		return;
@@ -1140,11 +1031,7 @@ DebugMenuProcess(void)
 void
 DebugMenuRender(void)
 {
-#ifdef VEHICLE_MODS // mod garage
-	if(!menuOn || CGarages::bPlayerShouldBeLeaveModGarage)
-#else
 	if(!menuOn)
-#endif
 		return;
 
 	RwRenderStateSet(rwRENDERSTATEZTESTENABLE, 0);
@@ -1165,11 +1052,7 @@ DebugMenuRender(void)
 		fontscale = 1;
 
 	Pt sz;
-#ifdef VEHICLE_MODS // mod garage
-	sz = fontPrint(CGarages::bPlayerInModGarage ? "Vice City Customs" : "Debug Menu", firstBorder*fontscale+30, topBorder, 0);
-#else
 	sz = fontPrint("Debug Menu", firstBorder*fontscale+30, topBorder, 0);
-#endif
 
 	toplevel.r.x = firstBorder*fontscale;
 	toplevel.r.y = topBorder + sz.y + 10;

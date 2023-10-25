@@ -6,16 +6,8 @@
 #include "Ped.h"
 #include "General.h"
 #include "RwHelper.h"
-#ifdef FIRING_AND_AIMING
-#include "PlayerPed.h"
-#include "Automobile.h"
-#endif
 
-#ifdef FIRING_AND_AIMING
-LimbMovementInfo CPedIK::ms_torsoInfo = { DEGTORAD(50.0f), DEGTORAD(-50.0f), DEGTORAD(8.0f), DEGTORAD(65.0f), DEGTORAD(-45.0f), DEGTORAD(5.0f) };
-#else
 LimbMovementInfo CPedIK::ms_torsoInfo = { DEGTORAD(50.0f), DEGTORAD(-50.0f), DEGTORAD(8.0f), DEGTORAD(45.0f), DEGTORAD(-45.0f), DEGTORAD(5.0f) };
-#endif
 LimbMovementInfo CPedIK::ms_headInfo = { DEGTORAD(90.0f), DEGTORAD(-90.0f), DEGTORAD(15.0f), DEGTORAD(45.0f), DEGTORAD(-45.0f), DEGTORAD(8.0f) };
 LimbMovementInfo CPedIK::ms_headRestoreInfo = { DEGTORAD(90.0f), DEGTORAD(-90.0f), DEGTORAD(10.0f), DEGTORAD(45.0f), DEGTORAD(-45.0f), DEGTORAD(5.0f) };
 LimbMovementInfo CPedIK::ms_upperArmInfo = { DEGTORAD(5.0f), DEGTORAD(-120.0f), DEGTORAD(20.0f), DEGTORAD(70.0f), DEGTORAD(-70.0f), DEGTORAD(20.0f) };
@@ -186,34 +178,12 @@ CPedIK::PointGunInDirection(float targetYaw, float targetPitch)
 	m_flags &= ~GUN_POINTED_SUCCESSFULLY;
 	m_flags |= LOOKAROUND_HEAD_ONLY;
 	if (m_flags & AIMS_WITH_ARM) {
-#ifdef FIRING_AND_AIMING // change hand position while aiming relative to the vehicle
-		if (m_ped->InVehicle() && m_ped->IsPlayer())
-			targetPitch += DotProduct(m_ped->m_pMyVehicle->GetRight(), TheCamera.Cams[TheCamera.ActiveCam].Front) * m_ped->m_pMyVehicle->GetRight().z;
-#endif
 		armPointedToGun = PointGunInDirectionUsingArm(targetYaw, targetPitch);
 		targetYaw = CGeneral::LimitRadianAngle(targetYaw - (m_upperArmOrient.yaw + m_lowerArmOrient.yaw));
 	}
-#if defined FIRST_PERSON && defined FIRING_AND_AIMING // change hand position while aiming
-	if (armPointedToGun || (m_ped->IsPlayer() && m_ped->InVehicle() && TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON)) {
-		if (m_ped->IsPlayer()) {
-			if (m_ped->InVehicle()) {
-				if (TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON) {
-					ms_upperArmInfo.maxYaw = DEGTORAD(140.0f);
-					ms_upperArmInfo.minYaw = DEGTORAD(-140.0f);
-				}
-			} else {
-				ms_upperArmInfo.maxYaw = DEGTORAD(5.0f);
-				ms_upperArmInfo.minYaw = DEGTORAD(-120.0f);
-			}
-		}
-
-		if (m_flags & AIMS_WITH_ARM && m_torsoOrient.yaw * m_upperArmOrient.yaw < 0.0f)
-			MoveLimb(m_torsoOrient, 0.0f, m_torsoOrient.pitch, ms_torsoInfo);
-#else
 	if (armPointedToGun) {
 		if (m_flags & AIMS_WITH_ARM && m_torsoOrient.yaw * m_upperArmOrient.yaw < 0.0f)
 			MoveLimb(m_torsoOrient, 0.0f, m_torsoOrient.pitch, ms_torsoInfo);
-#endif
 	} else {
 		// Unused code
 		RwMatrix *matrix;
@@ -229,42 +199,11 @@ CPedIK::PointGunInDirection(float targetYaw, float targetPitch)
 			else
 				targetPitch = Min(targetPitch + Abs(targetYaw), 0.0f);
 		}
-#if defined FIRST_PERSON && defined FIRING_AND_AIMING // change hand position while aiming
-		if (m_ped->IsPlayer()) {
-			if (TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON && m_ped->InVehicle() && ((CPlayerPed*)m_ped)->bIsPlayerAiming) {
-				m_torsoOrient.pitch = targetPitch;
-				m_torsoOrient.yaw = targetYaw;
-			}
-
-			if (m_ped->InVehicle()) {
-				if (TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON) {
-					ms_upperArmInfo.maxYaw = DEGTORAD(140.0f);
-					ms_upperArmInfo.minYaw = DEGTORAD(-140.0f);
-				}
-				else if (((CPlayerPed*)m_ped)->bIsPlayerAiming) {
-					ms_upperArmInfo.maxYaw = DEGTORAD(5.0f);
-					ms_upperArmInfo.minYaw = DEGTORAD(-180.0f);
-				}
-			}
-			else {
-				ms_upperArmInfo.maxYaw = DEGTORAD(5.0f);
-				ms_upperArmInfo.minYaw = DEGTORAD(-120.0f);
-			}
-		}
-
-		LimbMoveStatus status = MoveLimb(m_torsoOrient, targetYaw, targetPitch, ms_torsoInfo);
-		if (m_ped->IsPlayer() && m_ped->InVehicle() || status == ANGLES_SET_EXACTLY)
-			m_flags |= GUN_POINTED_SUCCESSFULLY;
-		else if (status == ANGLES_SET_TO_MAX)
-			result = false;
-#else
 		LimbMoveStatus status = MoveLimb(m_torsoOrient, targetYaw, targetPitch, ms_torsoInfo);
 		if (status == ANGLES_SET_TO_MAX)
 			result = false;
-		else if (status == ANGLES_SET_EXACTLY) {
+		else if (status == ANGLES_SET_EXACTLY)
 			m_flags |= GUN_POINTED_SUCCESSFULLY;
-		}
-#endif
 	}
 
 	// Game uses index 2 directly, which happens to be identical to BONE_spine
@@ -307,13 +246,6 @@ CPedIK::PointGunInDirectionUsingArm(float targetYaw, float targetPitch)
 	uaYaw = CGeneral::LimitRadianAngle(targetYaw - yaw - DEGTORAD(15.0f));
 	uaPitch = CGeneral::LimitRadianAngle(targetPitch - pitch + DEGTORAD(10.0f));
 	LimbMoveStatus uaStatus = MoveLimb(m_upperArmOrient, uaYaw, uaPitch, ms_upperArmInfo);
-#ifdef FIRING_AND_AIMING // correct hand position when aiming a MP5/UZI in vehicle
-	if (m_ped->InVehicle() && (m_ped->GetWeapon()->m_eWeaponType == WEAPONTYPE_MP5 || m_ped->GetWeapon()->m_eWeaponType == WEAPONTYPE_UZI)) {
-		m_upperArmOrient.yaw += DEGTORAD(5.0f);
-		m_upperArmOrient.pitch += DEGTORAD(7.0f);
-	}
-#endif
-
 	if (uaStatus == ANGLES_SET_EXACTLY) {
 		m_flags |= GUN_POINTED_SUCCESSFULLY;
 		result = true;

@@ -13,11 +13,7 @@ class CAutomobile;
 
 enum{
 	MAX_CARS_TO_KEEP = 2,
-#ifdef NEW_VEHICLE_LOADER
-	MAX_CAR_MODELS_IN_ARRAY = 50,
-#else
 	MAX_CAR_MODELS_IN_ARRAY = 25,
-#endif
 };
 
 #ifdef FIX_BUGS

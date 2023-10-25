@@ -41,42 +41,6 @@ enum eCarNodes
 	CAR_BONNET,
 	CAR_BOOT,
 	CAR_WINDSCREEN,
-#ifdef IMPROVED_VEHICLES_2 // car nodes
-	CAR_STEERINGWHEEL,
-	CAR_HEADLIGHT_L,
-	CAR_HEADLIGHT_R,
-	CAR_TAILLIGHT_L,
-	CAR_TAILLIGHT_R,
-	CAR_REVERSINGLIGHT_L,
-	CAR_REVERSINGLIGHT_R,
-	CAR_BRAKELIGHT_L,
-	CAR_BRAKELIGHT_R,
-	CAR_INDICATOR_LF,
-	CAR_INDICATOR_RF,
-	CAR_INDICATOR_2_LF,
-	CAR_INDICATOR_2_RF,
-	CAR_INDICATOR_LR,
-	CAR_INDICATOR_RR,
-	CAR_INDICATOR_2_LR,
-	CAR_INDICATOR_2_RR,
-	CAR_WINDOW_L_MISC,
-	CAR_WINDOW_R_MISC,
-	CAR_WINDOW_REAR,
-#endif
-#ifdef VEHICLE_MODS // car nodes
-	CAR_SPOILER_OK,
-	CAR_SPOILER_DAM,
-	CAR_SKIRT_L,
-	CAR_SKIRT_R,
-	CAR_RF_SCOOP,
-	CAR_BNT_SCOOP_OK,
-	CAR_BNT_SCOOP_DAM,
-	CAR_VENT_L_OK,
-	CAR_VENT_L_DAM,
-	CAR_VENT_R_OK,
-	CAR_VENT_R_DAM,
-	CAR_SUPERCHARGER,
-#endif
 	NUM_CAR_NODES,
 };
 
@@ -137,14 +101,6 @@ enum eLights
 	VEHLIGHT_REAR_LEFT,
 	VEHLIGHT_REAR_RIGHT,
 };
-
-#ifdef IMPROVED_VEHICLES_2 // indicators
-enum eIndicators
-{
-	INDICATORS_LEFT,
-	INDICATORS_RIGHT,
-};
-#endif
 
 enum
 {
@@ -220,18 +176,9 @@ class CVehicle : public CPhysical
 public:
 	tHandlingData *pHandling;
 	tFlyingHandlingData *pFlyingHandling;
-#ifdef NEW_VEHICLE_LOADER
-	tAnotherVehicleSampleData *pVehicleSample;
-	tVehicleShadowSettingData *pVehicleShadowSettings;
-	tBoatSoundSettingData *pBoatSoundSettings;
-#endif
 	CAutoPilot AutoPilot;
 	uint8 m_currentColour1;
 	uint8 m_currentColour2;
-#ifdef IMPROVED_VEHICLES // More colors
-	uint8 m_currentColour3;
-	uint8 m_currentColour4;
-#endif
 	int8 m_aExtras[2];
 	int16 m_nAlarmState;
 	int16 m_nRouteSeed;
@@ -330,14 +277,6 @@ public:
 	CStoredCollPoly m_aCollPolys[2];     // poly which is under front/rear part of car
 	float m_fSteerInput;
 	eVehicleType m_vehType;
-#if defined VEHICLE_MODS && defined IMPROVED_VEHICLES
-	int m_nTempColor1;
-	int m_nTempColor2;
-	int m_nTempColor3;
-	int m_nTempColor4;
-	int m_nArmorLevel;
-	float m_fAddEngineAcceleration;
-#endif
 
 	static void *operator new(size_t) throw();
 	static void *operator new(size_t sz, int slot) throw();
@@ -436,12 +375,6 @@ public:
 	void ActivateBomb(void);
 	void ActivateBombWhenEntered(void);
 	void KillPedsInVehicle(void);
-#ifdef IMPROVED_TECH_PART
-	bool IsHighVehicle(void);
-#endif
-#ifdef FIRST_PERSON
-	bool IsOpenTopVehicle(void);
-#endif
 
 	void SetComponentAtomicAlpha(RpAtomic *atomic, int32 alpha);
 	void UpdateClumpAlpha(void);
@@ -465,9 +398,6 @@ public:
 	static bool bCheat9;
 	static bool bCheat10;
 	static bool bHoverCheat;
-#ifdef NEW_CHEATS // init
-	static bool bAirWaysCheat;
-#endif
 	static bool bAllTaxisHaveNitro;
 	static bool m_bDisableMouseSteering;
 	static bool bDisableRemoteDetonation;

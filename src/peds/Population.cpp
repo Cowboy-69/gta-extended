@@ -29,13 +29,8 @@
 #include "Clock.h"
 #include "WaterLevel.h"
 
-#ifdef IMPROVED_TECH_PART // increased spawn range
-#define MIN_CREATION_DIST		(CGame::IsInInterior() || CCutsceneMgr::IsRunning() || CDarkel::FrenzyOnGoing() ? 40.0f : 90.0f)
-#define CREATION_RANGE			(CGame::IsInInterior() || CCutsceneMgr::IsRunning() || CDarkel::FrenzyOnGoing() ? 10.0f : 40.0f)
-#else
 #define MIN_CREATION_DIST		40.0f // not for start of the game (look at the GeneratePedsAtStartOfGame)
 #define CREATION_RANGE			10.0f // added over the MIN_CREATION_DIST.
-#endif
 #define OFFSCREEN_CREATION_MULT	0.5f
 #define PED_REMOVE_DIST			(MIN_CREATION_DIST + CREATION_RANGE + 1.0f)
 #define PED_REMOVE_DIST_SPECIAL	(MIN_CREATION_DIST + CREATION_RANGE + 15.0f) // for peds with bCullExtraFarAway flag
@@ -403,14 +398,9 @@ CPopulation::GeneratePedsAtStartOfGame()
 			+ ms_nTotalGangPeds + ms_nNumCivFemale + ms_nNumCivMale;
 		ms_nTotalPeds -= ms_nTotalCarPassengerPeds;
 
-#ifdef IMPROVED_TECH_PART
-		AddToPopulation(10.0f, PedCreationDistMultiplier() * (40.0f + 10.0f),
-			10.0f, PedCreationDistMultiplier() * (40.0f + 10.0f));
-#else
 		// Min dist is 10.0f only for start of the game (naturally)
 		AddToPopulation(10.0f, PedCreationDistMultiplier() * (MIN_CREATION_DIST + CREATION_RANGE),
 			10.0f, PedCreationDistMultiplier() * (MIN_CREATION_DIST + CREATION_RANGE));
-#endif
 	}
 }
 
@@ -418,17 +408,12 @@ CPopulation::GeneratePedsAtStartOfGame()
 float
 CPopulation::PedCreationDistMultiplier()
 {
-#ifdef IMPROVED_TECH_PART
-	CVehicle* veh = FindPlayerVehicle();
-	return veh ? 1.0f : 0.9f;
-#else
 	CVehicle *veh = FindPlayerVehicle();
 	if (!veh)
 		return 1.0f;
 
 	float vehSpeed = veh->m_vecMoveSpeed.Magnitude2D();
 	return Clamp(vehSpeed - 0.1f + 1.0f, 1.0f, 1.5f);
-#endif
 }
 
 CPed*
@@ -580,11 +565,7 @@ CPopulation::AddToPopulation(float minDist, float maxDist, float minDistOffScree
 
 	// Yeah, float
 	float maxPossiblePedsForArea = (zoneInfo.pedDensity + zoneInfo.carDensity) * playerInfo->m_fRoadDensity * PedDensityMultiplier
-#ifdef IMPROVED_TECH_PART // rampage (frenzy)
-		* (CDarkel::FrenzyOnGoing() ? 1.2f : CIniFile::PedNumberMultiplier) * missionAndWeatherMult;
-#else
 		* (CDarkel::FrenzyOnGoing() ? 1.f : CIniFile::PedNumberMultiplier) * missionAndWeatherMult;
-#endif
 	maxPossiblePedsForArea = Min(maxPossiblePedsForArea, selectedMaxPeds);
 
 	if (ms_nTotalPeds < maxPossiblePedsForArea || addCop) {
@@ -913,11 +894,7 @@ CPopulation::AddPedInCar(CVehicle* car, bool isDriver)
 
 	CPed *newPed = CPopulation::AddPed((ePedType)pedType, preferredModel, car->GetPosition(), miamiViceIndex);
 	newPed->bUsesCollision = false;
-#ifdef IMPROVED_TECH_PART // wanted system
-	CCopPed* copPed = (CCopPed*)newPed;
-	if (copPed)
-		copPed->m_vecLastPosPlayerBeforeHiding = FindPlayerPed()->m_pWanted->m_vecLastSeenPosPlayer;
-#endif
+
 	if (newPed->GetWeapon()->m_eWeaponType != WEAPONTYPE_UNARMED) {
 		newPed->RemoveWeaponModel(CWeaponInfo::GetWeaponInfo(newPed->GetWeapon()->m_eWeaponType)->m_nModelId);
 	}

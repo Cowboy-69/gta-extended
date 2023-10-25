@@ -40,27 +40,15 @@
 #include "Zones.h"
 #include "Timecycle.h"
 #include "Fluff.h"
-#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
-#include "Frontend.h"
-#endif
 
 #define BLOCK_COUNT 22
-#ifdef VICE_EXTENDED // Save/Load
-#define SIZE_OF_SIMPLEVARS 0xEC
-#else
 #define SIZE_OF_SIMPLEVARS 0xE4
-#endif
 
 const uint32 SIZE_OF_ONE_GAME_IN_BYTES = 201729;
 
 #ifdef MISSION_REPLAY
 int8 IsQuickSave;
 const int PAUSE_SAVE_SLOT = SLOT_COUNT;
-#endif
-
-#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
-bool bAutoSave;
-bool bSaveAnywhere;
 #endif
 
 char DefaultPCSaveFileName[260];
@@ -225,13 +213,6 @@ GenericSave(int file)
 	WriteDataToBufferPointer(buf, CTimeCycle::m_ExtraColourInter);
 	PopulateRadioStationPositionList();
 	WriteDataToBufferPointer(buf, RadioStationPosition);
-#ifdef VICE_EXTENDED // Vice Extended version
-	CGame::viceExtendedVersion = VICEEX_VER_3_0;
-	WriteDataToBufferPointer(buf, CGame::viceExtendedVersion);
-#endif
-#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
-	WriteDataToBufferPointer(buf, bSaveAnywhere);
-#endif
 	assert(buf - work_buff == SIZE_OF_SIMPLEVARS);
 
 	// Save scripts, block is nested within the same block as simple vars for some reason
@@ -378,15 +359,6 @@ GenericLoad()
 	ReadDataFromBufferPointer(buf, CTimeCycle::m_bExtraColourOn);
 	ReadDataFromBufferPointer(buf, CTimeCycle::m_ExtraColourInter);
 	ReadDataFromBufferPointer(buf, RadioStationPosition);
-#ifdef VICE_EXTENDED // Vice Extended version
-	ReadDataFromBufferPointer(buf, CGame::viceExtendedVersion);
-
-	if (CGame::viceExtendedVersion <= VICEEX_VER_2_5)
-		USERERROR("This save is not supported for this version!");
-#endif
-#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
-	ReadDataFromBufferPointer(buf, bSaveAnywhere);
-#endif
 	assert(buf - work_buff == SIZE_OF_SIMPLEVARS);
 #ifdef MISSION_REPLAY
 	WaitForSave = 0;
@@ -500,40 +472,6 @@ CloseFile(int32 file)
 void
 DoGameSpecificStuffAfterSucessLoad()
 {
-#ifdef AUTOSAVE_AND_SAVE_ANYWHERE // Move the player to the desired location after loading autosave
-	if (FrontEndMenuManager.m_nCurrSaveSlot == 8) {
-		int32* bTommysMansion = CTheScripts::GetPointerToScriptVariable(1001 * 4); // var $1001 in main.scm
-		if (*bTommysMansion) {
-			int32* bInMansion = CTheScripts::GetPointerToScriptVariable(991 * 4); // var $991 in main.scm
-			*bInMansion = true;
-			CGame::currArea = AREA_MANSION;
-
-			FindPlayerPed()->m_fRotationDest = DEGTORAD(0.0f);
-			FindPlayerPed()->m_fRotationCur = DEGTORAD(0.0f);
-			FindPlayerPed()->SetHeading(DEGTORAD(0.0f));
-
-			CVector spawnPos = CVector(-378.5, -589.1, 24.6);
-			spawnPos.z += FindPlayerPed()->GetDistanceFromCentreOfMassToBaseOfModel();;
-			FindPlayerPed()->SetPosition(spawnPos);
-		} else {
-			int32* bInHotel = CTheScripts::GetPointerToScriptVariable(1088 * 4); // var $1088 in main.scm
-			*bInHotel = true;
-			CGame::currArea = AREA_HOTEL;
-
-			CVector spawnPos = CVector(223.1, -1276.7, 12.0);
-			spawnPos.z += FindPlayerPed()->GetDistanceFromCentreOfMassToBaseOfModel();;
-			FindPlayerPed()->SetPosition(spawnPos);
-
-			FindPlayerPed()->m_fRotationDest = DEGTORAD(258.0f);
-			FindPlayerPed()->m_fRotationCur = DEGTORAD(258.0f);
-			FindPlayerPed()->SetHeading(DEGTORAD(258.0f));
-		}
-
-		CWorld::ClearExcitingStuffFromArea(FindPlayerPed()->GetPosition(), 1.0f, true);
-		TheCamera.SetCameraDirectlyBehindForFollowPed_CamOnAString();
-	}
-#endif
-
 	CCollision::SortOutCollisionAfterLoad();
 	CStreaming::LoadSceneCollision(TheCamera.GetPosition());
 	CStreaming::LoadScene(TheCamera.GetPosition());
@@ -698,31 +636,6 @@ RestoreForStartLoad()
 		}
 	}
 }
-
-#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
-void DoAutoSave()
-{
-	CTheScripts::bMissionWasPassed = false;
-
-	if (!FrontEndMenuManager.m_PrefsAutosave)
-		return;
-
-	if (!CStats::LastMissionPassedName[0])
-		return;
-	
-	if (CTheScripts::IsPlayerOnAMission())
-		return;
-
-	IsQuickSave = false;
-	bSaveAnywhere = false;
-	bAutoSave = true;
-	
-	int8 SaveSlot = PcSaveHelper.SaveSlot(8);
-	PcSaveHelper.PopulateSlotInfo();
-
-	re3_debug("DoAutoSave");
-}
-#endif
 
 int
 align4bytes(int32 size)

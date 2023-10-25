@@ -188,9 +188,6 @@ struct tHandlingData
 	int32 nMonetaryValue;
 	int8 FrontLights;
 	int8 RearLights;
-#ifdef NEW_VEHICLE_LOADER
-	int8 bBike;
-#endif
 };
 
 struct tBikeHandlingData
@@ -276,12 +273,7 @@ public:
 	tBikeHandlingData *GetBikePointer(uint8 id) { return &BikeHandlingData[id-HANDLING_BIKE]; }
 	tFlyingHandlingData *GetFlyingPointer(uint8 id);
 	tBoatHandlingData *GetBoatPointer(uint8 id);
-#ifdef NEW_VEHICLE_LOADER
-	bool HasRearWheelDrive(tHandlingData *handling) { return handling->Transmission.nDriveType != 'F'; }
-	bool HasFrontWheelDrive(tHandlingData* handling) { return handling->Transmission.nDriveType != 'R'; }
-#else
 	bool HasRearWheelDrive(tVehicleType id) { return HandlingData[id].Transmission.nDriveType != 'F'; }
 	bool HasFrontWheelDrive(tVehicleType id) { return HandlingData[id].Transmission.nDriveType != 'R'; }
-#endif
 };
 extern cHandlingDataMgr mod_HandlingManager;

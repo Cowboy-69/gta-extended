@@ -177,10 +177,6 @@ CModelInfo::AddVehicleModel(int id)
 	modelinfo->m_wheelId = -1;
 	modelinfo->m_materials1[0] = nil;
 	modelinfo->m_materials2[0] = nil;
-#ifdef IMPROVED_VEHICLES // More colors
-	modelinfo->m_materials3[0] = nil;
-	modelinfo->m_materials4[0] = nil;
-#endif
 	modelinfo->m_bikeSteerAngle = 999.99f;
 	return modelinfo;
 }
@@ -214,17 +210,6 @@ CModelInfo::GetModelInfo(const char *name, int minIndex, int maxIndex)
 	}
 	return nil;
 }
-
-#ifdef NEW_VEHICLE_LOADER
-int CModelInfo::GetFreeModelID()
-{
-	for (int i = 0; i < MODELINFOSIZE; i++) {
-		if (!CModelInfo::ms_modelInfoPtrs[i])
-			return i;
-	}
-	return -1;
-}
-#endif
 
 bool
 CModelInfo::IsBoatModel(int32 id)

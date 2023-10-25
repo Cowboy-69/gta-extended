@@ -154,17 +154,6 @@ CSprite::RenderOneXLUSprite_Rotate_Aspect(float x, float y, float z, float w, fl
 	float vs[4];
 	int i;
 
-#ifdef IMPROVED_TECH_PART // sprites, fade out when too near
-	if (z < 0.5f) {
-		if (z < 0.1f)
-			return;
-		int f = (z - 0.1f) / (0.5f - 0.1f) * 255;
-		r = f * r >> 8;
-		g = f * g >> 8;
-		b = f * b >> 8;
-		intens = f * intens >> 8;
-	}
-#else
 	// Fade out when too near
 	// why not in buffered version?
 	if(z < 2.3f){
@@ -176,7 +165,6 @@ CSprite::RenderOneXLUSprite_Rotate_Aspect(float x, float y, float z, float w, fl
 		b = f*b >> 8;
 		intens = f*intens >> 8;
 	}
-#endif
 
 	xs[0] = x + w*(-c-s);	us[0] = 0.0f;
 	xs[1] = x + w*(-c+s);	us[1] = 0.0f;

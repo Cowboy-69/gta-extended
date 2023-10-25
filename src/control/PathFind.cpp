@@ -420,39 +420,6 @@ CPathFind::StoreDetachedNodeInfoCar(int32 node, int8 type, int32 next, float x, 
 	}
 }
 
-#ifdef WANTED_PATHS
-void CPathFind::StoreWantedNode(int pathID, int pathNode, float x, float y, float z)
-{
-	m_wantedPaths[pathID].wantedPathNode[pathNode].pos = { x, y, z };
-}
-
-CWantedPaths CPathFind::FindClosestWantedPathsToCoors(CVector coors)
-{
-	CWantedPaths wantedPaths;
-	float minDistance = 150.0f;
-	float currentDistance = 0.0f;
-
-	for (int i = 0; i < NUM_WANTEDPATHS; i++) {
-		for (int k = NUM_WANTEDPATHNODES - 1; k > 0; k--) {
-			CVector node = m_wantedPaths[i].wantedPathNode[k].GetPosition();
-
-			if (node.IsZero())
-				continue;
-
-			currentDistance = Distance(node, coors);
-
-			if (currentDistance < minDistance)
-			{
-				minDistance = currentDistance;
-				wantedPaths = m_wantedPaths[i];
-			}
-		}
-	}
-
-	return wantedPaths;
-}
-#endif
-
 void
 CPathFind::CalcNodeCoors(float x, float y, float z, int id, CVector *out)
 {
@@ -1799,12 +1766,6 @@ CPathFind::TestCoorsCloseness(CVector target, uint8 type, CVector start)
 		DoPathSearch(type, start, -1, target, pNodeList, &DummyResult, 32, nil, &dist, 999999.88f, -1);
 	else
 		DoPathSearch(type, start, -1, target, nil, &DummyResult2, 0, nil, &dist, 50.0f, -1);
-#ifdef IMPROVED_TECH_PART // increased spawn range
-	if (type == PATH_CAR)
-		return dist < 500.0f * TheCamera.GenerationDistMultiplier;
-	else
-		return dist < 400.0f * TheCamera.GenerationDistMultiplier;
-#else
 #ifdef FIX_BUGS
 	// dist has GenerationDistMultiplier as a factor, so our reference dist should have it too
 	if(type == PATH_CAR)
@@ -1816,7 +1777,6 @@ CPathFind::TestCoorsCloseness(CVector target, uint8 type, CVector start)
 		return dist < 150.0f;
 	else
 		return dist < 100.0f;
-#endif
 #endif
 }
 
@@ -1875,21 +1835,6 @@ CPathFind::DisplayPathData(void)
 	// Draw 50 units around camera
 	CVector pos = TheCamera.GetPosition();
 	const float maxDist = 50.0f;
-
-#ifdef WANTED_PATHS
-	if(gbShowCarPaths)
-	for(i = 0; i < NUM_WANTEDPATHS; i++){
-		for (k = NUM_WANTEDPATHNODES - 1; k > 0; k--) {
-			CVector node1 = m_wantedPaths[i].wantedPathNode[k].GetPosition();
-			CVector node2 = m_wantedPaths[i].wantedPathNode[k - 1].GetPosition();
-
-			if (node2.IsZero() || Distance(node1, pos) > maxDist * 2.5f)
-				continue;
-
-			CLines::RenderLineWithClipping(node1.x, node1.y, node1.z, node2.x, node2.y, node2.z, 0x00FF0000, 0x00FF0000);
-		}
-	}
-#endif
 
 	// Render car path nodes
 	if(gbShowCarPaths)

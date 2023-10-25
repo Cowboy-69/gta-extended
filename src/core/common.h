@@ -336,40 +336,6 @@ void re3_debug(const char *format, ...);
 void re3_trace(const char *filename, unsigned int lineno, const char *func, const char *format, ...);
 void re3_assert(const char *expr, const char *filename, unsigned int lineno, const char *func);
 void re3_usererror(const char *format, ...);
-#ifdef UTILS
-float InterpFloat(float currentValue, float newValue, float interpSpeed);
-CVector InterpVector(CVector currentValue, CVector newValue, float interpSpeed);
-#endif
-#ifdef VICE_EXTENDED // Game limits
-extern uint16 NUMPTRNODES;
-extern uint16 NUMENTRYINFOS;
-extern uint16 NUMPEDS;
-extern uint16 NUMVEHICLES;
-extern uint16 NUMBUILDINGS;
-extern uint16 NUMTREADABLES;
-extern uint16 NUMOBJECTS;
-extern uint16 NUMDUMMIES;
-extern uint16 NUMAUDIOSCRIPTOBJECTS;
-extern uint16 NUMCOLMODELS;
-extern uint16 MAXWHEELMODELS;
-#endif
-
-#ifdef FEATURES_INI
-extern bool bVehiclesDontCatchFireWhenTurningOver;
-extern bool bHealthRegenerationUpToHalf;
-extern bool bWantedStarsHideOnScreenWhenThereIsNoSearch;
-extern bool bRemoveMoneyZerosInTheHud;
-extern bool bPlayerDoesntBounceAwayFromMovingCar;
-extern bool bStandardCarsUseTurnSignals;
-extern bool bCameraShakeInVehicleAtHighSpeed;
-extern bool bMilitaryFiringFromTankAtPlayer;
-extern bool bDisableBulletTraces;
-extern CRGBA WaypointColor;
-#ifdef EX_DISTANT_LIGHTS
-extern bool bEnableDistantLights;
-#endif
-extern bool bRecoilWhenFiring;
-#endif
 
 #define DEBUGBREAK() __debugbreak();
 
