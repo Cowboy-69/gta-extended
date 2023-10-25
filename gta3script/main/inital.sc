@@ -450,6 +450,14 @@ ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD 319.0 441.3 12.0 RADAR_SPRITE_SPRAY spray_
 ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD -903.0 -1261.1 12.0 RADAR_SPRITE_SPRAY spray_shop3 //Docks
 ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD -876.2 -105.5 12.0 RADAR_SPRITE_SPRAY spray_shop5 //Main road haiti
 
+// ViceEx, pharmacy blips, bomb shop blip and stadium blip
+ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD -1167.607 -1400.143 10.831 42 bomb_shop_blip
+ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD -1110.331 1331.096 20.1119 43 stadium_blip
+ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD 381.365 755.785 11.744 44 pharmacy_shop1
+ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD -853.876 -81.226 11.556 44 pharmacy_shop2
+ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD -832.925 743.542 11.288 44 pharmacy_shop3
+// ViceEx, pharmacy blips, bomb shop blip and stadium blip
+
 	//CHANGE_BLIP_DISPLAY hotel_contact_blip BLIP_ONLY
 
 
@@ -1845,6 +1853,16 @@ SWITCH_CAR_GENERATOR gen_car110 0
 CREATE_CAR_GENERATOR -614.0 804.0 30.0 0.0 polmav -1 -1 0 0 0 0 10000 police_chopper //at south beach
 SWITCH_CAR_GENERATOR police_chopper 101
 
+// ViceEx, Car generators
+VAR_INT gen_car_viceex1 gen_car_viceex2
+
+CREATE_CAR_GENERATOR -869.5828 -482.0855 11.2744 268.029 ambulan -1 -1 0 15 20 0 10000 gen_car_viceex1 // West Haven
+SWITCH_CAR_GENERATOR gen_car_viceex1 101
+
+CREATE_CAR_GENERATOR -61.0944 -1255.179 10.0266 179.1 stretch -1 -1 0 25 40 0 10000 gen_car_viceex2 // Hotel
+SWITCH_CAR_GENERATOR gen_car_viceex2 101
+// ViceEx, Car generators
+
 // ***************************************************PICKUPS********************************************************
 /*
 X runs from -2400 to 1600
@@ -1906,7 +1924,13 @@ CREATE_PICKUP_WITH_AMMO python PICKUP_ON_STREET_SLOW 12 -1182.7 -61.1 11.4 gun_m
 CREATE_PICKUP_WITH_AMMO buddyshot PICKUP_ON_STREET_SLOW 10 -1305.2 177.1 11.4 gun_main13 //Behind large hanger from junkyard   
 CREATE_PICKUP_WITH_AMMO laser PICKUP_ON_STREET_SLOW 14 -1114.3 -602.0 26.0 gun_main14 //Next to Kaufmann cabs sign in Lttle Havana (close to cuban cafe)   
 
-
+// ViceEx, Weapon pickups
+VAR_INT gun_camera1 gun_camera2 gun_camera3, gun_teargas
+CREATE_PICKUP_WITH_AMMO camera PICKUP_ON_STREET_SLOW 14 199.214 -1287.185 12.0 gun_camera1
+CREATE_PICKUP_WITH_AMMO camera PICKUP_ON_STREET_SLOW 14 -2.075 987.245 11.0 gun_camera2
+CREATE_PICKUP_WITH_AMMO camera PICKUP_ON_STREET_SLOW 14 -1338.252 -801.643 14.8 gun_camera3
+CREATE_PICKUP_WITH_AMMO teargas PICKUP_ON_STREET_SLOW 4 376.042 -511.493 12.3 gun_teargas
+// ViceEx, Camera pickups
 
 
 //HEALTH********************************************************************************

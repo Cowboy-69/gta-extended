@@ -2108,6 +2108,9 @@ ENDIF
 timera = 0
 timerb = 0
  
+LVAR_INT flag_skip_office_scene // ViceEx, skip intro office scene
+flag_skip_office_scene = 0 // ViceEx, skip intro office scene
+
 WHILE NOT play_audio_intro = 8
 OR NOT car_in_position_intro = 4 
 	
@@ -2116,7 +2119,18 @@ OR NOT car_in_position_intro = 4
 	IF IS_CAR_DEAD intro_car
 
 	ELSE
-		 
+		// ViceEx, skip intro office scene
+		IF IS_BUTTON_PRESSED PAD1 CROSS
+		OR IS_BUTTON_PRESSED PAD1 CIRCLE
+		OR IS_BUTTON_PRESSED PAD1 SQUARE
+		OR IS_BUTTON_PRESSED PAD1 TRIANGLE
+		OR IS_BUTTON_PRESSED PAD1 RIGHTSHOULDER1
+		OR IS_BUTTON_PRESSED PAD1 LEFTSHOCK
+			flag_skip_office_scene = 1
+			GOTO skip_office_scene
+		ENDIF
+		// ViceEx, skip intro office scene
+
 		IF car_in_position_intro = 1
 			
 			IF timerb >= 30000
@@ -2387,6 +2401,30 @@ WHILE timerb < 1350
 	ENDIF
 
 ENDWHILE
+
+// ViceEx, skip intro office scene
+skip_office_scene:
+
+IF flag_skip_office_scene = 1
+	WAIT 150
+
+	CLEAR_PRINTS
+
+	SET_CAR_COORDINATES intro_car 136.0 -819.0 9.446
+	SET_CAR_HEADING intro_car -140.0
+
+	IF NOT IS_CHAR_IN_ANY_CAR scplayer
+		SET_CHAR_COORDINATES scplayer 136.457 -817.37 9.44
+		SET_CHAR_HEADING scplayer 225.495
+	ELSE
+		WARP_CHAR_FROM_CAR_TO_COORD scplayer 136.457 -817.37 9.44
+	ENDIF
+
+	IF NOT IS_CHAR_IN_ANY_CAR scplayer 
+		SET_CHAR_HEADING scplayer 225.495
+	ENDIF
+ENDIF
+// ViceEx, skip intro office scene
 
 SET_CAMERA_BEHIND_PLAYER
 RESTORE_CAMERA_JUMPCUT

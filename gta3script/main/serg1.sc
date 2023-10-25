@@ -1721,7 +1721,7 @@ IF clothes4_created = 1
 ENDIF
 
 IF clothes5_created = 1
-   CREATE_CLOTHES_PICKUP -1024.5 -433.9 10.9 5 clothes_pickup5
+   CREATE_CLOTHES_PICKUP -1025.2 -429.2 10.8 5 clothes_pickup5 // ViceEx, Haitian clothing fix
 ENDIF
 
 IF clothes6_created = 1

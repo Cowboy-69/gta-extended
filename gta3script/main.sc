@@ -490,6 +490,7 @@ VAR_INT the_bankjob_blip the_phil_blip the_porn_blip the_protection_blip the_cou
 VAR_INT the_biker_blip the_rock_blip the_cuban_blip the_haitian_blip the_assasin_blip the_taxiwar_blip
 VAR_INT weapon_shop1_blip weapon_shop2_blip weapon_shop3_blip hardware_shop1 hardware_shop2 hardware_shop3
 VAR_INT spray_shop1 spray_shop2 spray_shop3 spray_shop5	hotel_save_pickup remove_hotel_pickup
+VAR_INT pharmacy_shop1 pharmacy_shop2 pharmacy_shop3 bomb_shop_blip stadium_blip // ViceEx, pharmacy blips, bomb shop blip and stadium blip
 
 VAR_FLOAT x y z the_yacht_x the_yacht_y the_yacht_z
 VAR_INT car
@@ -931,32 +932,25 @@ CREATE_LOCKED_PROPERTY_PICKUP boatbuyX boatbuyY boatbuyZ BOAT_NO boatbuy_pickup/
 CREATE_LOCKED_PROPERTY_PICKUP strpbuyX strpbuyY strpbuyZ STRP_NO strpbuy_pickup//Press R3 to purchase the Car Showroom for $~1~ 
 
 CREATE_FORSALE_PROPERTY_PICKUP nbmnbuyX nbmnbuyY nbmnbuyZ nbmnbuy_price NBMN_L nbmnbuy_pickup//Press L1 to purchase the Mansion for $~1~
-ADD_SHORT_RANGE_SPRITE_BLIP_FOR_CONTACT_POINT nbmnbuyX nbmnbuyY nbmnbuyZ RADAR_SPRITE_PROPERTY nbmnbuy_blip 
-REMOVE_BLIP nbmnbuy_blip
+ADD_SHORT_RANGE_SPRITE_BLIP_FOR_CONTACT_POINT nbmnbuyX nbmnbuyY nbmnbuyZ 41 nbmnbuy_blip // ViceEx, property blips
 
 CREATE_FORSALE_PROPERTY_PICKUP lnkvbuyX lnkvbuyY lnkvbuyZ lnkvbuy_price LNKV_L lnkvbuy_pickup//Press L1 to purchase the Mansion for $~1~ 
-ADD_SHORT_RANGE_SPRITE_BLIP_FOR_CONTACT_POINT lnkvbuyX lnkvbuyY lnkvbuyZ RADAR_SPRITE_PROPERTY lnkvbuy_blip 
-REMOVE_BLIP lnkvbuy_blip
+ADD_SHORT_RANGE_SPRITE_BLIP_FOR_CONTACT_POINT lnkvbuyX lnkvbuyY lnkvbuyZ 41 lnkvbuy_blip // ViceEx, property blips
 
 CREATE_FORSALE_PROPERTY_PICKUP hycobuyX hycobuyY hycobuyZ hycobuy_price HYCO_L hycobuy_pickup//Press L1 to purchase the Mansion for $~1~ 
-ADD_SHORT_RANGE_SPRITE_BLIP_FOR_CONTACT_POINT hycobuyX hycobuyY hycobuyZ RADAR_SPRITE_PROPERTY hycobuy_blip 
-REMOVE_BLIP hycobuy_blip
+ADD_SHORT_RANGE_SPRITE_BLIP_FOR_CONTACT_POINT hycobuyX hycobuyY hycobuyZ 41 hycobuy_blip // ViceEx, property blips
 
 CREATE_FORSALE_PROPERTY_PICKUP ochebuyX ochebuyY ochebuyZ ochebuy_price OCHE_L ochebuy_pickup//Press L1 to purchase the Mansion for $~1~ 
-ADD_SHORT_RANGE_SPRITE_BLIP_FOR_CONTACT_POINT ochebuyX ochebuyY ochebuyZ RADAR_SPRITE_PROPERTY ochebuy_blip 
-REMOVE_BLIP ochebuy_blip
+ADD_SHORT_RANGE_SPRITE_BLIP_FOR_CONTACT_POINT ochebuyX ochebuyY ochebuyZ 41 ochebuy_blip // ViceEx, property blips
 
 CREATE_FORSALE_PROPERTY_PICKUP washbuyX washbuyY washbuyZ washbuy_price WASH_L washbuy_pickup//Press L1 to purchase the Mansion for $~1~ 
-ADD_SHORT_RANGE_SPRITE_BLIP_FOR_CONTACT_POINT washbuyX washbuyY washbuyZ RADAR_SPRITE_PROPERTY washbuy_blip 
-REMOVE_BLIP washbuy_blip
+ADD_SHORT_RANGE_SPRITE_BLIP_FOR_CONTACT_POINT washbuyX washbuyY washbuyZ 41 washbuy_blip // ViceEx, property blips
 
 CREATE_FORSALE_PROPERTY_PICKUP vcptbuyX vcptbuyY vcptbuyZ vcptbuy_price VCPT_L vcptbuy_pickup//Press L1 to purchase the Mansion for $~1~ 
-ADD_SHORT_RANGE_SPRITE_BLIP_FOR_CONTACT_POINT vcptbuyX vcptbuyY vcptbuyZ RADAR_SPRITE_PROPERTY vcptbuy_blip 
-REMOVE_BLIP vcptbuy_blip
+ADD_SHORT_RANGE_SPRITE_BLIP_FOR_CONTACT_POINT vcptbuyX vcptbuyY vcptbuyZ 41 vcptbuy_blip // ViceEx, property blips
 
 CREATE_FORSALE_PROPERTY_PICKUP skumbuyX skumbuyY skumbuyZ skumbuy_price SKUM_L skumbuy_pickup//Press L1 to purchase the Mansion for $~1~ 
-ADD_SHORT_RANGE_SPRITE_BLIP_FOR_CONTACT_POINT skumbuyX skumbuyY skumbuyZ RADAR_SPRITE_PROPERTY skumbuy_blip 
-REMOVE_BLIP skumbuy_blip
+ADD_SHORT_RANGE_SPRITE_BLIP_FOR_CONTACT_POINT skumbuyX skumbuyY skumbuyZ 41 skumbuy_blip // ViceEx, property blips
 
 
 // **********************************************GARAGES******************************************
@@ -1042,6 +1036,14 @@ SET_GARAGE (-362.12 -550.214 11.722) (-362.12 -539.484) (-353.12 -550.214) (15.1
 SET_ROTATING_GARAGE_DOOR mansion_save_garage11
 NO_SPECIAL_CAMERA_FOR_THIS_GARAGE mansion_save_garage11
 SET_MAXIMUM_NUMBER_OF_CARS_IN_GARAGE mansion_save_garage11 2
+
+// ViceEx, Mod garages
+VAR_INT mod_garage1 mod_garage2 mod_garage3 mod_garage4
+SET_GARAGE (-7.55 -1268.164 9.322) (-7.55 -1276.632) (2.64f -1268.164) (14.4) 33 mod_garage1
+SET_GARAGE (-879.02 -102.29 9.992) (-875.38 -95.03) (-869.66 -107.04) (15.58) 33 mod_garage2
+SET_GARAGE (-901.501, -1268.791 10.542) (-891.122 -1265.274) (-897.072 -1258.488) (17.467) 33 mod_garage3
+SET_GARAGE (328.419 441.153 10.014) (325.326 450.675) (318.205, 444.41) (16.657) 33 mod_garage4
+// ViceEx, Mod garages
 
 // **********************************************OTHER BLIPS**************************************
 

@@ -51,12 +51,12 @@ WAIT 0
 LOAD_MISSION_TEXT ASSIN1  
 
 REQUEST_MODEL pizzaboy
-REQUEST_MODEL HMYRI
+LOAD_SPECIAL_CHARACTER 1 burger // ViceEx, Road Kill, Pizza Delivery Man skin
 REQUEST_MODEL pizzabox
 REQUEST_MODEL cellphone
 
 WHILE NOT HAS_MODEL_LOADED pizzaboy
-	OR NOT HAS_MODEL_LOADED HMYRI
+	OR NOT HAS_SPECIAL_CHARACTER_LOADED 1 // ViceEx, Road Kill, Pizza Delivery Man skin
 	OR NOT HAS_MODEL_LOADED pizzabox
 	OR NOT HAS_MODEL_LOADED cellphone
 WAIT 0
@@ -222,7 +222,7 @@ IF mission_assin1_started = 0
 	CREATE_CAR pizzaboy delvanstartx delvanstarty delvanstartz delvan
 	SET_CAR_HEADING delvan delvanheading
 	//Put Carl inside this van
-	CREATE_CHAR_INSIDE_CAR delvan PEDTYPE_CIVMALE HMYRI carlpearson
+	CREATE_CHAR_INSIDE_CAR delvan PEDTYPE_CIVMALE 109 carlpearson // ViceEx, Road Kill, Pizza Delivery Man skin
 
 	
 	SET_CHAR_ONLY_DAMAGED_BY_PLAYER carlpearson TRUE
@@ -387,7 +387,7 @@ mission_cleanup_assin1:
 
 flag_player_on_mission = 0
 MARK_MODEL_AS_NO_LONGER_NEEDED pizzabox 
-MARK_MODEL_AS_NO_LONGER_NEEDED HMYRI
+UNLOAD_SPECIAL_CHARACTER 1 // ViceEx, Road Kill, Pizza Delivery Man skin
 MARK_MODEL_AS_NO_LONGER_NEEDED pizzaboy
 MARK_MODEL_AS_NO_LONGER_NEEDED cellphone
 CLEAR_ONSCREEN_COUNTER delivery_status
