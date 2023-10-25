@@ -20,6 +20,9 @@
 #include "Bike.h"
 #include "Pickups.h"
 #include "Physical.h"
+#ifdef IMPROVED_TECH_PART // An explosive item will explode if something hits it (other than a weapon)
+#include "Explosion.h"
+#endif
 
 #ifdef WALLCLIMB_CHEAT
 bool gGravityCheat;
@@ -683,8 +686,18 @@ CPhysical::ApplyCollision(CPhysical *B, CColPoint &colpoint, float &impulseA, fl
 						}else if((model == MI_PARKINGMETER || model == MI_PARKINGMETER2) && !Bobj->bHasBeenDamaged){
 							CPickups::CreateSomeMoney(GetPosition(), CGeneral::GetRandomNumber()%100);
 							Bobj->bHasBeenDamaged = true;
+#ifdef IMPROVED_TECH_PART // An explosive item will explode if something hits it (other than a weapon)
+						} else if (B->IsObject()) {
+							if (!Bobj->bHasBeenDamaged && impulseA > 200.0f && IsExplosiveThingModel(model)) {
+								CExplosion::AddExplosion(Bobj, A, EXPLOSION_BARREL, Bobj->GetPosition() + CVector(0.0f, 0.0f, 0.5f), 100);
+							} else {
+								Bobj->bHasBeenDamaged = true;
+							}
+						}
+#else
 						}else if(B->IsObject() && !IsExplosiveThingModel(model))
 							Bobj->bHasBeenDamaged = true;
+#endif
 					}else{
 						if(IsGlass(B->GetModelIndex()))
 							CGlass::WindowRespondsToSoftCollision(B, impulseA);

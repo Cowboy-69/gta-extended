@@ -226,6 +226,7 @@ GenericSave(int file)
 	PopulateRadioStationPositionList();
 	WriteDataToBufferPointer(buf, RadioStationPosition);
 #ifdef VICE_EXTENDED // Vice Extended version
+	CGame::viceExtendedVersion = VICEEX_VER_3_0;
 	WriteDataToBufferPointer(buf, CGame::viceExtendedVersion);
 #endif
 #ifdef AUTOSAVE_AND_SAVE_ANYWHERE
@@ -379,6 +380,9 @@ GenericLoad()
 	ReadDataFromBufferPointer(buf, RadioStationPosition);
 #ifdef VICE_EXTENDED // Vice Extended version
 	ReadDataFromBufferPointer(buf, CGame::viceExtendedVersion);
+
+	if (CGame::viceExtendedVersion <= VICEEX_VER_2_5)
+		USERERROR("This save is not supported for this version!");
 #endif
 #ifdef AUTOSAVE_AND_SAVE_ANYWHERE
 	ReadDataFromBufferPointer(buf, bSaveAnywhere);

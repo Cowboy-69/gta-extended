@@ -913,9 +913,12 @@ void CRadar::DrawRotatingRadarSprite(CSprite2d* sprite, float x, float y, float 
 #ifdef IMPROVED_TECH_PART // GPS and business blip
 void CRadar::DrawGPS()
 {
-	// thank plugin-sdk\examples\GPS
+	// thank https://github.com/DK22Pac/plugin-sdk/tree/master/examples/GPS
 
 	if (!FrontEndMenuManager.m_PrefsGPS)
+		return;
+
+	if (!FrontEndMenuManager.m_bMenuMapActive && CWorld::Players[CWorld::PlayerInFocus].m_pRemoteVehicle)
 		return;
 
 	CVehicle* vehicle = FindPlayerVehicle();

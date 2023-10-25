@@ -13,7 +13,9 @@
 #include "RwHelper.h"
 #include "Timer.h"
 #include "Game.h"
+#ifndef EX_RADIO_ICONS
 #include "DMAudio.h"
+#endif
 #include "FileMgr.h"
 #include "Streaming.h"
 #include "TxdStore.h"
@@ -170,7 +172,32 @@ const char* FrontendFilenames[][2] = {
 	{"fe_arrows3", "" },
 	{"fe_arrows4", "" },
 #endif
+#ifdef NEW_MENU
+	{"background_2", ""},
+	{"background_3", ""},
+	{"background_4", ""},
+	{"background_5", ""},
+	{"background_6", ""},
+	{"background_7", ""},
+	{"character", ""},
+#endif
 };
+
+#ifdef EX_RADIO_ICONS
+const char* FrontendRadioFilenames[][2] = {
+	{"wildstyle", "wildstyleA"},
+	{"flash", "flashA"},
+	{"kchat", "kchatA"},
+	{"fever", "feverA"},
+	{"vrock", "vrockA"},
+	{"vcpr", "vcprA"},
+	{"espantoso", "espantosoA"},
+	{"emotion", "emotionA"},
+	{"wave103", "wave103A"},
+	{"mp3", "mp3A"},
+	{"none", "noneA"},
+};
+#endif
 
 #define MENU_X_RIGHT_ALIGNED(x) SCALE_AND_CENTER_X(DEFAULT_SCREEN_WIDTH - (x))
 
@@ -1127,6 +1154,47 @@ CMenuManager::DrawStandardMenus(bool activeScreen)
 			break;
 	}
 
+#ifdef NEW_MENU // Start Game, Settings, and Quit Game buttons at the bottom
+	CFont::SetFontStyle(FONT_LOCALE(FONT_HEADING));
+	CFont::SetScale(MENU_X(BIGTEXT_X_SCALE * 1.8f), MENU_Y(BIGTEXT_Y_SCALE * 1.8f));
+	CFont::SetDropShadowPosition(2);
+	CFont::SetDropColor(CRGBA(0, 0, 0, FadeIn(255)));
+	CFont::SetColor(CRGBA(MENUOPTION_COLOR.r, MENUOPTION_COLOR.g, MENUOPTION_COLOR.b, FadeIn(255)));
+	CFont::SetCentreOn();
+	CFont::PrintString(SCREEN_STRETCH_X(MENUHEADER_POS_X + 115.0f), SCREEN_SCALE_FROM_BOTTOM(MENUHEADER_POS_Y + 33.0f), TheText.Get("FEP_STG"));
+	CFont::PrintString(SCREEN_STRETCH_X(MENUHEADER_POS_X + 315.0f), SCREEN_SCALE_FROM_BOTTOM(MENUHEADER_POS_Y + 33.0f), TheText.Get("FEP_OPT"));
+	CFont::PrintString(SCREEN_STRETCH_X(MENUHEADER_POS_X + 515.0f), SCREEN_SCALE_FROM_BOTTOM(MENUHEADER_POS_Y + 33.0f), TheText.Get("FEP_QUI"));
+
+	float OptionsOffset = 275.0f;
+	float QuitOffset = OptionsOffset + 288.0f;
+	if (m_nMousePosY > SCREEN_SCALE_FROM_BOTTOM(50.0f) && m_nMousePosY < SCREEN_SCALE_FROM_BOTTOM(0.0f) && m_nMousePosX > SCREEN_SCALE_X(0.0f) && m_nMousePosX < SCREEN_SCALE_X(340.0f)) {
+		CSprite2d::Draw2DPolygon(SCREEN_SCALE_X(60.0f), SCREEN_SCALE_FROM_BOTTOM(45.0f), SCREEN_SCALE_X(60.0f), SCREEN_SCALE_FROM_BOTTOM(5.0f),
+								 SCREEN_SCALE_X(300.0f), SCREEN_SCALE_FROM_BOTTOM(45.0f), SCREEN_SCALE_X(300.0f), SCREEN_SCALE_FROM_BOTTOM(5.0f), SELECTIONBORDER_COLOR);
+		
+		if (CPad::GetPad(0)->GetLeftMouseJustUp() && m_nCurrScreen != MENUPAGE_NEW_GAME) {
+			m_nCurrScreen = MENUPAGE_NEW_GAME;
+			ProcessUserInput(false, false, true, false, false);
+		}
+	} else if (m_nMousePosY > SCREEN_SCALE_FROM_BOTTOM(50.0f) && m_nMousePosY < SCREEN_SCALE_FROM_BOTTOM(0.0f) && m_nMousePosX > SCREEN_SCALE_X(50.0f) && m_nMousePosX < SCREEN_SCALE_X(600.0f)) {
+		CSprite2d::Draw2DPolygon(SCREEN_SCALE_X(60.0f + OptionsOffset), SCREEN_SCALE_FROM_BOTTOM(45.0f), SCREEN_SCALE_X(60.0f + OptionsOffset), SCREEN_SCALE_FROM_BOTTOM(5.0f),
+			SCREEN_SCALE_X(300.0f + OptionsOffset), SCREEN_SCALE_FROM_BOTTOM(45.0f), SCREEN_SCALE_X(300.0f + OptionsOffset), SCREEN_SCALE_FROM_BOTTOM(5.0f), SELECTIONBORDER_COLOR);
+
+		m_nCurrOption = -1;
+
+		if (CPad::GetPad(0)->GetLeftMouseJustUp() && m_nCurrScreen != MENUPAGE_OPTIONS) {
+			m_nCurrScreen = MENUPAGE_OPTIONS;
+			ProcessUserInput(false, false, true, false, false);
+		}
+	} else if (m_nMousePosY > SCREEN_SCALE_FROM_BOTTOM(50.0f) && m_nMousePosY < SCREEN_SCALE_FROM_BOTTOM(0.0f) && m_nMousePosX > SCREEN_SCALE_X(50.0f) && m_nMousePosX < SCREEN_SCALE_X(600.0f + 260.0f)) {
+		CSprite2d::Draw2DPolygon(SCREEN_SCALE_X(60.0f + QuitOffset), SCREEN_SCALE_FROM_BOTTOM(45.0f), SCREEN_SCALE_X(60.0f + QuitOffset), SCREEN_SCALE_FROM_BOTTOM(5.0f),
+			SCREEN_SCALE_X(300.0f + QuitOffset), SCREEN_SCALE_FROM_BOTTOM(45.0f), SCREEN_SCALE_X(300.0f + QuitOffset), SCREEN_SCALE_FROM_BOTTOM(5.0f), SELECTIONBORDER_COLOR);
+
+		if (CPad::GetPad(0)->GetLeftMouseJustUp() && m_nCurrScreen != MENUPAGE_EXIT) {
+			m_nCurrScreen = MENUPAGE_EXIT;
+			ProcessUserInput(false, false, true, false, false);
+		}
+	}
+#else
 	// Page name
 	if (aScreens[m_nCurrScreen].m_ScreenName[0] != '\0') {
 
@@ -1137,6 +1205,7 @@ CMenuManager::DrawStandardMenus(bool activeScreen)
 		CFont::SetColor(CRGBA(HEADER_COLOR.r, HEADER_COLOR.g, HEADER_COLOR.b, FadeIn(255)));
 		CFont::PrintString(SCREEN_STRETCH_FROM_RIGHT(MENUHEADER_POS_X), SCREEN_SCALE_Y(MENUHEADER_POS_Y), TheText.Get(aScreens[m_nCurrScreen].m_ScreenName));
 	}
+#endif
 
 	// Label
 	wchar *str;
@@ -2874,7 +2943,11 @@ CMenuManager::DrawFrontEnd()
 
 	if (m_nCurrScreen == MENUPAGE_NONE) {
 		if (m_bGameNotLoaded) {
+#ifdef NEW_MENU
+			m_nCurrScreen = MENUPAGE_NEW_GAME;
+#else
 			m_nCurrScreen = MENUPAGE_START_MENU;
+#endif
 		} else {
 			m_nCurrScreen = MENUPAGE_PAUSE_MENU;
 		}
@@ -2902,16 +2975,24 @@ CMenuManager::DrawBackground(bool transitionCall)
 		CSprite2d::DrawRect(CRect(0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT), CRGBA(0, 0, 0, 255));
 	}
 
+#ifdef NEW_MENU // Draw background stuff
+	m_aFrontEndSprites[MENUSPRITE_BACKGROUND_2].Draw(CRect(0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT), CRGBA(255, 255, 255, FadeIn(255)));
+	m_aFrontEndSprites[MENUSPRITE_BACKGROUND].Draw(CRect(SCREEN_STRETCH_X(180.0f), SCREEN_STRETCH_Y(30.0f), SCREEN_STRETCH_X(465.0f), SCREEN_STRETCH_Y(390.0f)), CRGBA(255, 255, 255, FadeIn(255)));
+	m_aFrontEndSprites[MENUSPRITE_CHARACTER].Draw(CRect(SCREEN_STRETCH_X(-20.0f), SCREEN_STRETCH_FROM_BOTTOM(450.0f), SCREEN_STRETCH_X(160.0f), SCREEN_STRETCH_FROM_BOTTOM(0.0f)), CRGBA(255, 255, 255, FadeIn(255)));
+	CSprite2d::DrawRect(CRect(SCREEN_STRETCH_X(0.0f), SCREEN_STRETCH_FROM_BOTTOM(50.0f), SCREEN_WIDTH, SCREEN_STRETCH_FROM_BOTTOM(0.0f)), CRGBA(0, 0, 0, 150));
+#endif
+
 	if (m_nMenuFadeAlpha != 0) {
-
 		if (m_nMenuFadeAlpha < 255) {
-
 			menuBg.Translate(m_nMenuFadeAlpha);
 			SetFrontEndRenderStates();
+#ifndef NEW_MENU
 			m_aFrontEndSprites[MENUSPRITE_BACKGROUND].Draw(CRect(0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT), CRGBA(255, 255, 255, FadeIn(255)));
+#endif
 			if (m_nCurrScreen == MENUPAGE_MAP)
 				PrintMap();
 
+#ifndef NEW_MENU
 			// Left border
 			CSprite2d::Draw2DPolygon(SCREEN_STRETCH_X(menuBg.bottomLeft_x), SCREEN_STRETCH_Y(menuBg.bottomLeft_y), 0.0f, SCREEN_HEIGHT,
 				SCREEN_STRETCH_X(menuBg.topLeft_x), SCREEN_STRETCH_Y(menuBg.topLeft_y), 0.0f, 0.0f, CRGBA(0, 0, 0, 255));
@@ -2927,13 +3008,17 @@ CMenuManager::DrawBackground(bool transitionCall)
 			// Right border
 			CSprite2d::Draw2DPolygon(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_STRETCH_X(menuBg.bottomRight_x), SCREEN_STRETCH_Y(menuBg.bottomRight_y),
 				SCREEN_WIDTH, 0.0f, SCREEN_STRETCH_X(menuBg.topRight_x), SCREEN_STRETCH_Y(menuBg.topRight_y), CRGBA(0, 0, 0, 255));
+#endif
 		} else {
 			m_nMenuFadeAlpha = 255;
 			m_firstStartCounter = 255;
+#ifndef NEW_MENU
 			m_aFrontEndSprites[MENUSPRITE_BACKGROUND].Draw(CRect(0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT), CRGBA(255, 255, 255, FadeIn(255)));
+#endif
 			if (m_nCurrScreen == MENUPAGE_MAP)
 				PrintMap();
 
+#ifndef NEW_MENU
 			// Left border
 			CSprite2d::Draw2DPolygon(SCREEN_STRETCH_X(menuBg.bottomLeft_x), SCREEN_STRETCH_Y(menuBg.bottomLeft_y), 0.0f, SCREEN_HEIGHT,
 				SCREEN_STRETCH_X(menuBg.topLeft_x), SCREEN_STRETCH_Y(menuBg.topLeft_y), 0.0f, 0.0f, CRGBA(0, 0, 0, 255));
@@ -2949,6 +3034,7 @@ CMenuManager::DrawBackground(bool transitionCall)
 			// Right border
 			CSprite2d::Draw2DPolygon(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_STRETCH_X(menuBg.bottomRight_x), SCREEN_STRETCH_Y(menuBg.bottomRight_y),
 				SCREEN_WIDTH, 0.0f, SCREEN_STRETCH_X(menuBg.topRight_x), SCREEN_STRETCH_Y(menuBg.topRight_y), CRGBA(0, 0, 0, 255));
+#endif
 		}
 	} else {
 		menuBg.SaveCurrentCoors();
@@ -3114,12 +3200,21 @@ CMenuManager::DrawBackground(bool transitionCall)
 	CFont::DrawFonts();
 	SetFrontEndRenderStates();
 
+#ifdef NEW_MENU // Change "Vice City" logo
+	if (m_nCurrScreen != MENUPAGE_OUTRO)
+		if (m_firstStartCounter == 255) {
+			m_aFrontEndSprites[MENUSPRITE_VCLOGO].Draw(CRect(SCREEN_STRETCH_FROM_RIGHT(147.0f), SCREEN_STRETCH_FROM_BOTTOM(138.0f), SCREEN_STRETCH_FROM_RIGHT(17.0f), SCREEN_STRETCH_FROM_BOTTOM(8.0f)), CRGBA(255, 255, 255, 255));
+		} else {
+			m_aFrontEndSprites[MENUSPRITE_VCLOGO].Draw(CRect(SCREEN_STRETCH_FROM_RIGHT(147.0f), SCREEN_STRETCH_FROM_BOTTOM(138.0f), SCREEN_STRETCH_FROM_RIGHT(17.0f), SCREEN_STRETCH_FROM_BOTTOM(8.0f)), CRGBA(255, 255, 255, FadeIn(255)));
+		}
+#else
 	if (m_nCurrScreen != MENUPAGE_OUTRO)
 		if (m_firstStartCounter == 255) {
 			m_aFrontEndSprites[MENUSPRITE_VCLOGO].Draw(CRect(SCREEN_STRETCH_X(27.0f), MENU_Y(8.0f), SCREEN_STRETCH_X(27.0f) + MENU_X(130.f), MENU_Y(138.0f)), CRGBA(255, 255, 255, 255));
 		} else {
 			m_aFrontEndSprites[MENUSPRITE_VCLOGO].Draw(CRect(SCREEN_STRETCH_X(27.0f), MENU_Y(8.0f), SCREEN_STRETCH_X(27.0f) + MENU_X(130.f), MENU_Y(138.0f)), CRGBA(255, 255, 255, FadeIn(255)));
 		}
+#endif
 
 	if (m_ShowEmptyBindingError) {
 		static uint32 lastBindingError = CTimer::GetTimeInMillisecondsPauseMode();
@@ -3656,8 +3751,39 @@ CMenuManager::LoadAllTextures()
 		m_aFrontEndSprites[i].SetAddressing(rwTEXTUREADDRESSBORDER);
 	}
 
+#ifdef NEW_MENU // LoadAllTextures
+	for (int i = MENUSPRITE_BACKGROUND_2; i <= MENUSPRITE_CHARACTER; i++) {
+		m_aFrontEndSprites[i].SetTexture(FrontendFilenames[i][0], FrontendFilenames[i][1]);
+		m_aFrontEndSprites[i].SetAddressing(rwTEXTUREADDRESSBORDER);
+	}
+#endif
+
 	CTxdStore::PopCurrentTxd();
 	CStreaming::IHaveUsedStreamingMemory();
+
+#ifdef EX_RADIO_ICONS
+	CStreaming::MakeSpaceFor(350 * CDSTREAM_SECTOR_SIZE); // twice of it in mobile
+	CStreaming::ImGonnaUseStreamingMemory();
+	CGame::TidyUpMemory(false, true);
+	CTxdStore::PushCurrentTxd();
+	int radioFrontendTxdSlot = CTxdStore::FindTxdSlot("radio");
+
+	if (radioFrontendTxdSlot == -1)
+		radioFrontendTxdSlot = CTxdStore::AddTxdSlot("radio");
+
+	printf("LOAD radio\n");
+	CTxdStore::LoadTxd(radioFrontendTxdSlot, "MODELS/RADIO.TXD");
+	CTxdStore::AddRef(radioFrontendTxdSlot);
+	CTxdStore::SetCurrentTxd(radioFrontendTxdSlot);
+
+	for (int i = 0; i < NUM_RADIOS + 1; i++) {
+		m_aFrontEndRadioSprites[i].SetTexture(FrontendRadioFilenames[i][0], FrontendRadioFilenames[i][1]);
+		m_aFrontEndRadioSprites[i].SetAddressing(rwTEXTUREADDRESSBORDER);
+	}
+
+	CTxdStore::PopCurrentTxd();
+	CStreaming::IHaveUsedStreamingMemory();
+#endif
 
 	if (!m_OnlySaveMenu) {
 		CStreaming::MakeSpaceFor(692 * CDSTREAM_SECTOR_SIZE); // twice of it in mobile
@@ -4577,6 +4703,37 @@ CMenuManager::PrintRadioSelector(void)
 	int fourth = ((m_PrefsRadioStation + 1) + rightMostStation + 1) % (rightMostStation + 1);
 	int fifth = ((m_PrefsRadioStation + 2) + rightMostStation + 1) % (rightMostStation + 1);
 
+#ifdef EX_RADIO_ICONS
+	// First one is only drawn on transition to next
+	if (m_ScrollRadioBy == 1) {
+		m_aFrontEndRadioSprites[first].Draw(m_LeftMostRadioX, MENU_Y(MENURADIO_ICON_Y), MENU_X(MENURADIO_ICON_SIZE), MENU_Y(MENURADIO_ICON_SIZE),
+			CRGBA(INACTIVE_RADIO_COLOR.r, INACTIVE_RADIO_COLOR.g, INACTIVE_RADIO_COLOR.b, FadeIn(INACTIVE_RADIO_COLOR.a)));
+	}
+
+	// Second
+	m_aFrontEndRadioSprites[second].Draw(m_LeftMostRadioX + MENU_X(MENURADIO_ICON_SIZE), MENU_Y(MENURADIO_ICON_Y), MENU_X(MENURADIO_ICON_SIZE), MENU_Y(MENURADIO_ICON_SIZE),
+		CRGBA(INACTIVE_RADIO_COLOR.r, INACTIVE_RADIO_COLOR.g, INACTIVE_RADIO_COLOR.b, FadeIn(INACTIVE_RADIO_COLOR.a)));
+
+	// Fourth
+	m_aFrontEndRadioSprites[fourth].Draw(m_LeftMostRadioX + MENU_X(MENURADIO_ICON_SIZE * 3), MENU_Y(MENURADIO_ICON_Y), MENU_X(MENURADIO_ICON_SIZE), MENU_Y(MENURADIO_ICON_SIZE),
+		CRGBA(INACTIVE_RADIO_COLOR.r, INACTIVE_RADIO_COLOR.g, INACTIVE_RADIO_COLOR.b, FadeIn(INACTIVE_RADIO_COLOR.a)));
+
+	// Fifth one is only drawn on transition to prev.
+	if (m_ScrollRadioBy == -1) {
+		m_aFrontEndRadioSprites[fifth].Draw(m_LeftMostRadioX + MENU_X(MENURADIO_ICON_SIZE * 4), MENU_Y(MENURADIO_ICON_Y), MENU_X(MENURADIO_ICON_SIZE), MENU_Y(MENURADIO_ICON_SIZE),
+			CRGBA(INACTIVE_RADIO_COLOR.r, INACTIVE_RADIO_COLOR.g, INACTIVE_RADIO_COLOR.b, FadeIn(INACTIVE_RADIO_COLOR.a)));
+	}
+
+	// Middle one(third) is colored differently depending on if it's in transition.
+	// If not in transition then this icon indicates selected radio, and should be on top of all icons. thus drawn last
+	if (m_ScrollRadioBy != 0) {
+		m_aFrontEndRadioSprites[third].Draw(m_LeftMostRadioX + MENU_X(MENURADIO_ICON_SIZE * 2), MENU_Y(MENURADIO_ICON_Y), MENU_X(MENURADIO_ICON_SIZE), MENU_Y(MENURADIO_ICON_SIZE),
+			CRGBA(INACTIVE_RADIO_COLOR.r, INACTIVE_RADIO_COLOR.g, INACTIVE_RADIO_COLOR.b, FadeIn(INACTIVE_RADIO_COLOR.a)));		
+	} else {
+		m_aFrontEndRadioSprites[third].Draw(m_LeftMostRadioX + MENU_X(MENURADIO_ICON_SIZE * 2 - 10.f), MENU_Y(MENURADIO_ICON_Y - 10.f), MENU_X(MENURADIO_ICON_SIZE) + MENU_X(20.f), MENU_Y(MENURADIO_ICON_SIZE) + MENU_Y(20.f),
+			CRGBA(255, 255, 255, FadeIn(255)));
+	}
+#else
 	// First one is only drawn on transition to next
 	if (m_ScrollRadioBy == 1) {
 		m_aFrontEndSprites[first + MENUSPRITE_WILDSTYLE].Draw(m_LeftMostRadioX, MENU_Y(MENURADIO_ICON_Y), MENU_X(MENURADIO_ICON_SIZE), MENU_Y(MENURADIO_ICON_SIZE),
@@ -4606,6 +4763,7 @@ CMenuManager::PrintRadioSelector(void)
 		m_aFrontEndSprites[third + MENUSPRITE_WILDSTYLE].Draw(m_LeftMostRadioX + MENU_X(MENURADIO_ICON_SIZE * 2 - 10.f), MENU_Y(MENURADIO_ICON_Y - 10.f), MENU_X(MENURADIO_ICON_SIZE) + MENU_X(20.f), MENU_Y(MENURADIO_ICON_SIZE) + MENU_Y(20.f),
 			CRGBA(255, 255, 255, FadeIn(255)));
 	}
+#endif
 #endif
 
 	static bool radioChangeRequested = false;
@@ -5683,32 +5841,6 @@ CMenuManager::ProcessUserInput(uint8 goDown, uint8 goUp, uint8 optionSelected, u
 					RestoreDefGraphics(FEOPTION_ACTION_SELECT);
 					RestoreDefDisplay(FEOPTION_ACTION_SELECT);
 #endif
-#ifdef IMPROVED_MENU_AND_INPUT
-					m_PrefsAutoaim = false;
-					m_PrefsPadLookSensX = 1.0f / 800.0f;
-					m_PrefsPadAimSensX = 1.0f / 1600.0f;
-					m_PrefsPadLookSensY = 1.0f / 800.0f;
-					m_PrefsPadAimSensY = 1.0f / 1600.0f;
-					m_PrefsLeftStickDeadzone = 15;
-					m_PrefsRightStickDeadzone = 15;
-					m_PrefsVibrationForce = 0.5f;
-					m_PrefsMouseLookSensX = 1.0f / 400.0f;
-					m_PrefsMouseAimSensX = 1.0f / 600.0f;
-					m_PrefsMouseLookSensY = 1.0f / 400.0f;
-					m_PrefsMouseAimSensY = 1.0f / 600.0f;
-					m_PrefsInvertVertically = false;
-					m_PrefsGPS = true;
-#endif
-#if defined FIRST_PERSON && defined FIRING_AND_AIMING
-					m_PrefsFOV_FP = 90;
-					m_PrefsAutocenterCamInVeh_FP = true;
-					m_PrefsRelativeCamInVeh_DB_FP = false;
-					m_PrefsDoomMode_FP = false;
-#endif
-#if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined IMPROVED_TECH_PART // Other settings
-					m_PrefsAutosave = true;
-					m_PrefsStoreGalleryPhotos = true;
-#endif
 					SaveSettings();
 				} else if (m_nCurrScreen == MENUPAGE_CONTROLLER_PC) {
 					ControlsManager.MakeControllerActionsBlank();
@@ -5741,11 +5873,37 @@ CMenuManager::ProcessUserInput(uint8 goDown, uint8 goUp, uint8 optionSelected, u
 #else
 					TheCamera.m_bUseMouse3rdPerson = false;
 #endif
+#ifdef IMPROVED_MENU_AND_INPUT
+					m_PrefsAutoaim = false;
+					m_PrefsPadLookSensX = 1.0f / 800.0f;
+					m_PrefsPadAimSensX = 1.0f / 1600.0f;
+					m_PrefsPadLookSensY = 1.0f / 800.0f;
+					m_PrefsPadAimSensY = 1.0f / 1600.0f;
+					m_PrefsLeftStickDeadzone = 15;
+					m_PrefsRightStickDeadzone = 15;
+					m_PrefsVibrationForce = 0.5f;
+					m_PrefsMouseLookSensX = 1.0f / 400.0f;
+					m_PrefsMouseAimSensX = 1.0f / 600.0f;
+					m_PrefsMouseLookSensY = 1.0f / 400.0f;
+					m_PrefsMouseAimSensY = 1.0f / 600.0f;
+					m_PrefsInvertVertically = false;
+					m_PrefsGPS = true;
+#endif
+#if defined FIRST_PERSON && defined FIRING_AND_AIMING
+					m_PrefsFOV_FP = 90;
+					m_PrefsAutocenterCamInVeh_FP = true;
+					m_PrefsRelativeCamInVeh_DB_FP = false;
+					m_PrefsDoomMode_FP = false;
+#endif
 					SaveSettings();
 #ifdef LOAD_INI_SETTINGS
 					SaveINIControllerSettings();
 #endif
 				}
+#if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined IMPROVED_TECH_PART // Other settings
+				m_PrefsAutosave = true;
+				m_PrefsStoreGalleryPhotos = true;
+#endif
 				SetHelperText(2);
 				break;
 			case MENUACTION_CTRLMETHOD:
@@ -6559,6 +6717,17 @@ CMenuManager::SwitchMenuOnAndOff()
 	}
 #endif
 }
+
+#ifdef EX_RADIO_ICONS
+void CMenuManager::UnloadRadioTextures()
+{
+	int radioFrontend = CTxdStore::FindTxdSlot("radio");
+	for (int i = 0; i < NUM_RADIOS + 1; ++i)
+		m_aFrontEndRadioSprites[i].Delete();
+
+	CTxdStore::RemoveTxd(radioFrontend);
+}
+#endif
 
 void
 CMenuManager::UnloadTextures()

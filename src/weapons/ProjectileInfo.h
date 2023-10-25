@@ -27,6 +27,9 @@ public:
 	static bool RemoveIfThisIsAProjectile(CObject *pObject);
 	static void RemoveAllProjectiles();
 	static void RemoveDetonatorProjectiles();
+#ifdef IMPROVED_TECH_PART // When a projectile is fired, the projectile explodes (Detonator projectile)
+	static void RemoveDetonatorProjectile(int projectileID);
+#endif
 	static void Update();
 	static bool IsProjectileInRange(float x1, float x2, float y1, float y2, float z1, float z2, bool remove);
 };

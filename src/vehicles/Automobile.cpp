@@ -1589,6 +1589,21 @@ CAutomobile::ProcessControl(void)
 #endif
 		if(GetStatus() != STATUS_PLAYER && GetStatus() != STATUS_PLAYER_REMOTE && GetStatus() != STATUS_PHYSICS){
 			if(IsRealHeli()){
+#ifdef IMPROVED_VEHICLES // Blade collision while the player is not in a helicopter
+				if (m_aWheelSpeed[1] > 0.015f && m_aCarNodes[CAR_BONNET]) {
+					CMatrix mat;
+					mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_BONNET]));
+					if (GetModelIndex() == MI_RCRAIDER || GetModelIndex() == MI_RCGOBLIN)
+						DoBladeCollision(mat.GetPosition(), GetMatrix(), ROTOR_TOP, 0.72f, 0.9f);
+					else if (GetModelIndex() == MI_SPARROW || GetModelIndex() == MI_SEASPAR)
+						DoBladeCollision(mat.GetPosition(), GetMatrix(), ROTOR_TOP, 5.15f, 0.8f);
+					else if (GetModelIndex() == MI_HUNTER)
+						DoBladeCollision(mat.GetPosition(), GetMatrix(), ROTOR_TOP, 6.15f, 0.5f);
+					else
+						DoBladeCollision(mat.GetPosition(), GetMatrix(), ROTOR_TOP, 6.15f, 1.0f);
+				}
+#endif
+
 				bEngineOn = false;
 				m_aWheelSpeed[1] = Max(m_aWheelSpeed[1]-0.0005f, 0.0f);
 				if(GetModelIndex() != MI_RCRAIDER && GetModelIndex() != MI_RCGOBLIN)
@@ -3693,7 +3708,7 @@ CAutomobile::Render(void)
 		float angle = DotProduct2D(vehicleRight, nextPathLinkForward);
 		m_bIndicatorState[INDICATORS_LEFT] = angle < -0.5f;
 		m_bIndicatorState[INDICATORS_RIGHT] = angle > 0.5f;
-	} else if (AutoPilot.m_nDrivingStyle >= DRIVINGSTYLE_AVOID_CARS || bRenderScorched) {
+	} else if (pDriver && pDriver != FindPlayerPed() && AutoPilot.m_nDrivingStyle >= DRIVINGSTYLE_AVOID_CARS || bRenderScorched) {
 		m_bIndicatorState[INDICATORS_LEFT] = false;
 		m_bIndicatorState[INDICATORS_RIGHT] = false;
 	} else if (this == FindPlayerVehicle()) {
@@ -8268,8 +8283,6 @@ void CAutomobile::DoVehicleLights()
 				if (GetFrameLightStatus(CAR_INDICATOR_RF) == LIGHT_STATUS_OK)
 					CCoronas::UpdateCoronaCoors((uintptr)this + 32, lightR, 50.0f * TheCamera.LODDistMultiplier, angle);
 			}
-
-			//return;
 		} else {
 			if (GetFrameLightStatus(CAR_INDICATOR_LF) == LIGHT_STATUS_OK)
 				CCoronas::UpdateCoronaCoors((uintptr)this + 20, lightL, 50.0f * TheCamera.LODDistMultiplier, angle);
@@ -8293,8 +8306,6 @@ void CAutomobile::DoVehicleLights()
 					if (GetFrameLightStatus(CAR_INDICATOR_2_LF) == LIGHT_STATUS_OK)
 						CCoronas::UpdateCoronaCoors((uintptr)this + 34, lightL, 50.0f * TheCamera.LODDistMultiplier, angle);
 				}
-
-				//return;
 			} else {
 				if (GetFrameLightStatus(CAR_INDICATOR_2_LF) == LIGHT_STATUS_OK)
 					CCoronas::UpdateCoronaCoors((uintptr)this + 34, lightL, 50.0f * TheCamera.LODDistMultiplier, angle);
@@ -8310,8 +8321,6 @@ void CAutomobile::DoVehicleLights()
 					if (GetFrameLightStatus(CAR_INDICATOR_2_RF) == LIGHT_STATUS_OK)
 						CCoronas::UpdateCoronaCoors((uintptr)this + 35, lightR, 50.0f * TheCamera.LODDistMultiplier, angle);
 				}
-
-				//return;
 			} else {
 				if (GetFrameLightStatus(CAR_INDICATOR_2_RF) == LIGHT_STATUS_OK)
 					CCoronas::UpdateCoronaCoors((uintptr)this + 35, lightR, 50.0f * TheCamera.LODDistMultiplier, angle);
@@ -8391,9 +8400,7 @@ void CAutomobile::DoVehicleLights()
 
 #ifdef FEATURES_INI // StandardCarsUseTurnSignals
 #endif
-		//bool bLeftFwdLightsLikeIndicators = bStandardCarsUseTurnSignals && !m_aCarNodes[CAR_INDICATOR_LF] && !m_aCarNodes[CAR_INDICATOR_WING_LF] && m_bIndicatorState[INDICATORS_LEFT] == true;
 		bool bLeftFwdLightsLikeIndicators = bStandardCarsUseTurnSignals && !m_aCarNodes[CAR_INDICATOR_LF] && !m_aCarNodes[CAR_INDICATOR_2_LF] && m_bIndicatorState[INDICATORS_LEFT] == true;
-		//bool bRightFwdLightsLikeIndicators = bStandardCarsUseTurnSignals && !m_aCarNodes[CAR_INDICATOR_RF] && !m_aCarNodes[CAR_INDICATOR_WING_RF] && m_bIndicatorState[INDICATORS_RIGHT] == true;
 		bool bRightFwdLightsLikeIndicators = bStandardCarsUseTurnSignals && !m_aCarNodes[CAR_INDICATOR_RF] && !m_aCarNodes[CAR_INDICATOR_2_RF] && m_bIndicatorState[INDICATORS_RIGHT] == true;
 		bool bLeftFwdLightsOn = bLeftFwdLightsLikeIndicators && CTimer::GetTimeInMilliseconds() & 512 || !bLeftFwdLightsLikeIndicators && bLightsOn;
 		bool bRightFwdLightsOn = bRightFwdLightsLikeIndicators && CTimer::GetTimeInMilliseconds() & 512 || !bRightFwdLightsLikeIndicators && bLightsOn;
@@ -8698,13 +8705,6 @@ void CAutomobile::SetFrameLightStatus(eCarNodes frameNode, eLightStatus status)
 		return;
 
 	RpAtomicSetFlags(lightAtomic, LIGHT_STATUS_OK ? rpATOMICRENDER : 0);
-
-	/*CMatrix mat;
-	mat.Attach(RwFrameGetMatrix(m_aCarNodes[frameNode]));
-	mat.rx = status == LIGHT_STATUS_OK ? 1.0f : 0.0f;
-	mat.fy = status == LIGHT_STATUS_OK ? 1.0f : 0.0f;
-	mat.uz = status == LIGHT_STATUS_OK ? 1.0f : 0.0f;
-	mat.UpdateRW();*/
 }
 
 eLightStatus CAutomobile::GetFrameLightStatus(eCarNodes frameNode)
@@ -8718,10 +8718,6 @@ eLightStatus CAutomobile::GetFrameLightStatus(eCarNodes frameNode)
 	if (lightAtomic)
 		if (RpAtomicGetFlags(lightAtomic) == 0)
 			status = LIGHT_STATUS_BROKEN;
-
-	/*RwMatrix mat = m_aCarNodes[frameNode]->matrix;
-	if (mat.right.x == 0.0f && mat.at.y == 0.0f && mat.up.z == 0.0f)
-		status = LIGHT_STATUS_BROKEN;*/
 
 	return status;
 }

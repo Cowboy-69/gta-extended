@@ -38,7 +38,11 @@
 #ifdef CUSTOM_FRONTEND_OPTIONS
 
 #if defined(IMPROVED_VIDEOMODE) && !defined(GTA_HANDHELD)
+#ifdef IMPROVED_MENU_AND_INPUT // Borderless window
+	#define VIDEOMODE_SELECTOR MENUACTION_CFO_SELECT, "FEM_SCF", { new CCFOSelect((int8*)&FrontEndMenuManager.m_nPrefsWindowed, "VideoMode", "Windowed", screenModes, 3, true, ScreenModeAfterChange, true) }, 0, 0, MENUALIGN_LEFT,
+#else
 	#define VIDEOMODE_SELECTOR MENUACTION_CFO_SELECT, "FEM_SCF", { new CCFOSelect((int8*)&FrontEndMenuManager.m_nPrefsWindowed, "VideoMode", "Windowed", screenModes, 2, true, ScreenModeAfterChange, true) }, 0, 0, MENUALIGN_LEFT,
+#endif
 #else
 	#define VIDEOMODE_SELECTOR
 #endif
@@ -288,7 +292,11 @@ wchar* MultiSamplingDraw(bool *disabled, bool userHovering) {
 #endif
 
 #ifdef IMPROVED_VIDEOMODE
+#ifdef IMPROVED_MENU_AND_INPUT // Borderless window
+const char* screenModes[] = { "FED_FLS", "FED_WND", "FED_BRL"};
+#else
 const char* screenModes[] = { "FED_FLS", "FED_WND" };
+#endif
 void ScreenModeAfterChange(int8 before, int8 after)
 {
 	_psSelectScreenVM(FrontEndMenuManager.m_nPrefsVideoMode); // apply same resolution
@@ -410,7 +418,9 @@ CMenuScreenCustom aScreens[] = {
 		MENUACTION_CHANGEMENU, "FES_NGA", {nil, SAVESLOT_NONE, MENUPAGE_NEW_GAME_RELOAD}, 320, 155, MENUALIGN_CENTER,
 		MENUACTION_CHANGEMENU, "FES_LOA",  {nil, SAVESLOT_NONE, MENUPAGE_CHOOSE_LOAD_SLOT}, 0, 0, MENUALIGN_CENTER,
 		MENUACTION_CHANGEMENU, "FES_DEL", {nil, SAVESLOT_NONE, MENUPAGE_CHOOSE_DELETE_SLOT}, 0, 0, MENUALIGN_CENTER,
+#ifndef NEW_MENU
 		MENUACTION_GOBACK, "FEDS_TB", {nil, SAVESLOT_NONE, 0}, 0, 0, MENUALIGN_CENTER,
+#endif
 	},
 
 	// MENUPAGE_BRIEFS = 2

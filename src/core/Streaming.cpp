@@ -806,7 +806,7 @@ CStreaming::RequestModel(int32 id, int32 flags)
 		ms_aInfoForModel[id].m_flags = flags;
 	}
 
-#ifdef FIRING_AND_AIMING // fixing the game crash when near the Ammunntion
+#ifdef FIRING_AND_AIMING // fixing the game crash when near the Ammunation
 	// alternative solution: put the modified player animation files with weapons 
 	// to gta3.img (instead of ViceEx.img)
 	if (id >= MI_BRASS_KNUCKLES && id <= MI_MINIGUN2)

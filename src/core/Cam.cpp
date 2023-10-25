@@ -4372,17 +4372,12 @@ CCam::Process_Real_1st_Person(const CVector& CameraTarget, float TargetOrientati
 		LookUpDown = CPad::GetPad(0)->LookAroundUpDown();
 	}
 
-	if (vehicle) {
-		BetaOffset = LookLeftRight * TheCamera.m_fMouseAccelHorzntl * FOV / 80.0f;
-		AlphaOffset = LookUpDown * TheCamera.m_fMouseAccelVertical * FOV / 80.0f;
+	BetaOffset = LookLeftRight * TheCamera.m_fMouseAccelHorzntl * FOV / 80.0f;
+	AlphaOffset = LookUpDown * TheCamera.m_fMouseAccelVertical * FOV / 80.0f;
 
-		if (!FrontEndMenuManager.m_PrefsRelativeCamInVeh_DB_FP && ped->bIsPlayerAiming) {
-			BetaOffset += AlphaOffset * vehicle->GetRight().z;
-			AlphaOffset -= BetaOffset * vehicle->GetRight().z;
-		}
-	} else {
-		BetaOffset = LookLeftRight * TheCamera.m_fMouseAccelHorzntl * FOV / 80.0f;
-		AlphaOffset = LookUpDown * TheCamera.m_fMouseAccelVertical * FOV/80.0f;
+	if (vehicle && !FrontEndMenuManager.m_PrefsRelativeCamInVeh_DB_FP && ped->bIsPlayerAiming) {
+		BetaOffset += AlphaOffset * vehicle->GetRight().z;
+		AlphaOffset -= BetaOffset * vehicle->GetRight().z;
 	}
 
 	if(TheCamera.GetFading() && TheCamera.GetFadingDirection() == FADE_IN && nFadeControlThreshhold < CDraw::FadeValue ||
@@ -6382,7 +6377,7 @@ CCam::Process_FollowCar_SA(const CVector& CameraTarget, float TargetOrientation,
 
 	// -------- LCS specific part ends
 
-#ifdef FEATURES_INI
+#ifdef FEATURES_INI // CameraShakeInVehicleAtHighSpeed
 	if (bCameraShakeInVehicleAtHighSpeed) {
 		float speed = car->m_vecMoveSpeed.Magnitude();
 		if (speed > 0.75f)

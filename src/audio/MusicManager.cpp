@@ -20,6 +20,9 @@
 #include "Weather.h"
 #include "DMAudio.h"
 #include "GenericGameStorage.h"
+#ifdef EX_RADIO_ICONS
+#include "Frontend.h"
+#endif
 
 #if !defined FIX_BUGS && (defined RADIO_SCROLL_TO_PREV_STATION || defined RADIO_OFF_TEXT)
 static_assert(false, "R*'s radio implementation is quite buggy, RADIO_SCROLL_TO_PREV_STATION and RADIO_OFF_TEXT won't work without FIX_BUGS");
@@ -1373,6 +1376,11 @@ cMusicManager::DisplayRadioStationName()
 #endif
 			}
 
+#ifdef EX_RADIO_ICONS
+			FrontEndMenuManager.m_aFrontEndRadioSprites[track].Draw(CRect(SCREEN_WIDTH / 2 - SCREEN_SCALE_X(22.0f) + SCREEN_SCALE_X(15.0f) - SCREEN_STRETCH_Y(32.0f), SCREEN_SCALE_Y(22.0f) + SCREEN_SCALE_Y(15.0f) - SCREEN_STRETCH_Y(32.0f),
+																		  SCREEN_WIDTH / 2 - SCREEN_SCALE_X(22.0f) + SCREEN_SCALE_X(15.0f) + SCREEN_STRETCH_Y(32.0f), SCREEN_SCALE_Y(22.0f) + SCREEN_SCALE_Y(15.0f) + SCREEN_STRETCH_Y(32.0f)),
+																		  CRGBA(255, 255, 255, 255));
+#else
 			CFont::SetJustifyOff();
 			CFont::SetBackgroundOff();
 			CFont::SetScale(SCREEN_SCALE_X(0.8f), SCREEN_SCALE_Y(1.35f));
@@ -1390,6 +1398,7 @@ cMusicManager::DisplayRadioStationName()
 
 			CFont::PrintString(SCREEN_WIDTH / 2, SCREEN_SCALE_Y(22.0f), pCurrentStation);
 			CFont::DrawFonts();
+#endif
 		}
 	}
 	// Always show station text after entering car. Same behaviour as III and SA.

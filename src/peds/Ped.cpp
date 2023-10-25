@@ -43,6 +43,9 @@
 #ifdef FIRING_AND_AIMING
 #include "Darkel.h"
 #endif
+#ifdef EX_PED_VARIATIONS
+#include "TxdStore.h"
+#endif
 
 CPed *gapTempPedList[50];
 uint16 gnNumTempPedList;
@@ -398,28 +401,33 @@ CPed::CPed(uint32 pedType) : m_pedIK(this)
 
 	bIsClimbing = false;
 
-	currentClimbingHeight;
-	newClimbingPosition;
+	currentClimbingHeight = 0.0f;
+	newClimbingPosition = CVector(0.0f, 0.0f, 0.0f);
 
-	correctedClimbingStandPosition;
-	currentClimbingStandAnim = nil;
+	correctedClimbingStandPosition = CVector(0.0f, 0.0f, 0.0f);
+	currentClimbingStandAnim = nullptr;
 
 	bIsStartHighClimbing = false;
 	bIsClimbingHighJump = false;
 	bIsClimbingIdle = false;
 	bIsClimbingPull = false;
-	newClimbingIdlePosition;
-	newStartClimbingIdlePosition;
-	currentClimbingIdleAnim = nil;
+	newClimbingIdlePosition = CVector(0.0f, 0.0f, 0.0f);
+	newStartClimbingIdlePosition = CVector(0.0f, 0.0f, 0.0f);
+	currentClimbingIdleAnim = nullptr;
 
 	bIsClimbingJumpB = false;
-	newStartClimbingJumpBPosition;
-	newClimbingJumpBPosition;
-	currentClimbingJumpBAnim = nil;
+	newStartClimbingJumpBPosition = CVector(0.0f, 0.0f, 0.0f);
+	newClimbingJumpBPosition = CVector(0.0f, 0.0f, 0.0f);
+	currentClimbingJumpBAnim = nullptr;
 
-	currentJumpGlideAnim = nil;
+	currentJumpGlideAnim = nullptr;
 
 	m_tJumpAllowedTimer = 0.0f;
+#endif
+
+#ifdef EX_PED_VARIATIONS
+	texClothingVariation = nullptr;
+	texShadeVariation = nullptr;
 #endif
 }
 
@@ -428,6 +436,19 @@ CPed::~CPed(void)
 #ifdef USE_CUTSCENE_SHADOW_FOR_PED
 	if ( m_pRTShadow ) delete m_pRTShadow;
 #endif
+
+#ifdef EX_PED_VARIATIONS
+	texClothingVariation = nullptr;
+	texShadeVariation = nullptr;
+#endif
+
+#ifdef CLIMBING
+	currentClimbingStandAnim = nullptr;
+	currentClimbingIdleAnim = nullptr;
+	currentClimbingJumpBAnim = nullptr;
+	currentJumpGlideAnim = nullptr;
+#endif
+
 	CWorld::Remove(this);
 	if (m_attractor)
 		GetPedAttractorManager()->DeRegisterPed(this, m_attractor);
@@ -521,6 +542,26 @@ CPed::SetModelIndex(uint32 mi)
 		m_pRTShadow = new CCutsceneShadow;
 		m_pRTShadow->Create(m_rwObject, 10, 1, 1, 1);
 		//m_pRTShadow->Create(m_rwObject, 8, 0, 0, 0);
+	}
+#endif
+
+#ifdef EX_PED_VARIATIONS
+	if (GetModelIndex() != MI_PLAYER && modelInfo->textureClothingVariations[1]) {
+		if (modelInfo->textureClothingVariations[modelInfo->currentClothingVariation]) {
+			texClothingVariation = modelInfo->textureClothingVariations[modelInfo->currentClothingVariation];
+			modelInfo->currentClothingVariation++;
+		} else {
+			texClothingVariation = modelInfo->textureClothingVariations[0];
+			modelInfo->currentClothingVariation = 1;
+		}
+
+		if (modelInfo->textureShadeVariations[modelInfo->currentShadeVariation]) {
+			texShadeVariation = modelInfo->textureShadeVariations[modelInfo->currentShadeVariation];
+			modelInfo->currentShadeVariation++;
+		} else {
+			texShadeVariation = modelInfo->textureShadeVariations[0];
+			modelInfo->currentShadeVariation = 1;
+		}
 	}
 #endif
 }
@@ -693,8 +734,37 @@ CPed::SetMoveState(eMoveState state)
 void
 CPed::SetMoveAnim(void)
 {
+#ifdef CROUCH // AI crouch
+	if (bIsDucking && !IsPlayer()) {
+		CAnimBlendAssociation* curCrouchIdleAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_IDLE);
+		CAnimBlendAssociation* curCrouchForwardAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_FORWARD);
+		CAnimBlendAssociation* curCrouchBackwardAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_BACKWARD);
+		bool bIsCurMoveAnim = curCrouchForwardAssoc || curCrouchBackwardAssoc;
+
+		CAnimBlendAssociation* curCrouchFireAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_WEAPON_CROUCHFIRE);
+
+		//if (bIsPointingGunAt && GetWeapon()->GetInfo()->m_nWeaponSlot == WEAPONSLOT_SNIPER)
+			//return;
+
+		if (m_nMoveState == PEDMOVE_STILL) {
+			if (!curCrouchIdleAssoc)
+				curCrouchIdleAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_IDLE, 4.0f);
+		}
+
+		if (m_nMoveState >= PEDMOVE_WALK && m_nMoveState != PEDMOVE_THROWN) {
+			if (curCrouchIdleAssoc && !curCrouchForwardAssoc || curCrouchBackwardAssoc)
+				curCrouchForwardAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CROUCH_FORWARD, 4.0f);
+		}
+
+		return;
+	}
+
+	if ((m_nStoredMoveState == m_nMoveState || !IsPedInControl() || m_attachedTo) && !RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_CROUCH_IDLE))
+		return;
+#else
 	if (m_nStoredMoveState == m_nMoveState || !IsPedInControl() || m_attachedTo)
 		return;
+#endif
 
 	if (m_nMoveState == PEDMOVE_NONE) {
 		m_nStoredMoveState = PEDMOVE_NONE;
@@ -5519,6 +5589,20 @@ CPed::Render(void)
 				return;
 		}
 	}
+
+#ifdef EX_PED_VARIATIONS
+	if (texClothingVariation) {
+		RpAtomic* atomic = GetFirstAtomic(GetClump());
+		if (atomic && atomic->geometry->matList.materials[0])
+			RpMaterialSetTexture(atomic->geometry->matList.materials[0], texClothingVariation);
+	}
+
+	if (texShadeVariation) {
+		RpAtomic* atomic = GetFirstAtomic(GetClump());
+		if (atomic && atomic->geometry->matList.materials[1])
+			RpMaterialSetTexture(atomic->geometry->matList.materials[1], texShadeVariation);
+	}
+#endif
 
 	CEntity::Render();
 
@@ -10563,8 +10647,7 @@ void CPed::StartClimbing(CColPoint& hitForwardPoint, CColPoint& hitBackwardPoint
 
 		CAnimBlendAssociation* idleClimbAssoc = CAnimManager::AddAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_CLIMBING_JUMP);
 		idleClimbAssoc->SetFinishCallback(FinishHighClimbingCB, this);
-	}
-	else {
+	} else {
 		if (bIsClimbingJumpB) {
 			if (bIsClimbingHighJump) {
 				correctedPedZOffset = 2.0f;
@@ -10624,10 +10707,10 @@ void CPed::EndClimbing(bool bIsCancel)
 		bIsClimbingIdle = false;
 		bIsClimbingPull = false;
 		bIsClimbingJumpB = false;
-		currentClimbingStandAnim = nil;
-		currentClimbingIdleAnim = nil;
-		currentClimbingJumpBAnim = nil;
-		currentJumpGlideAnim = nil;
+		currentClimbingStandAnim = nullptr;
+		currentClimbingIdleAnim = nullptr;
+		currentClimbingJumpBAnim = nullptr;
+		currentJumpGlideAnim = nullptr;
 
 		bAffectedByGravity = 1;
 		bUsesCollision = 1;

@@ -421,6 +421,16 @@ CProjectileInfo::RemoveDetonatorProjectiles()
 	}
 }
 
+#ifdef IMPROVED_TECH_PART // When a projectile is fired, the projectile explodes (Detonator projectile)
+void CProjectileInfo::RemoveDetonatorProjectile(int projectileID)
+{
+	CExplosion::AddExplosion(nil, gaProjectileInfo[projectileID].m_pSource, EXPLOSION_GRENADE, gaProjectileInfo[projectileID].m_vecPos, 0);
+	gaProjectileInfo[projectileID].m_bInUse = false;
+	CWorld::Remove(ms_apProjectile[projectileID]);
+	delete ms_apProjectile[projectileID];
+}
+#endif
+
 void
 CProjectileInfo::RemoveAllProjectiles()
 {

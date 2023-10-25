@@ -81,7 +81,12 @@
 
 GlobalScene Scene;
 
+#ifdef VICE_CRY
+uint8 work_buff[100000];
+uint8 col_buff[100000];
+#else
 uint8 work_buff[55000];
+#endif
 char gString[256];
 char gString2[512];
 wchar gUString[256];
@@ -371,7 +376,7 @@ void TakeAndSaveScreenshot() {
 			strcpy(numberFinal, numberFinal2); // to prevent 4th digit bug it's better to split this stuff to two different chars
 		}
 	}
-	strcpy(s, "screens\\screen_");
+	strcpy(s, "userfiles\\Gallery\\photo_");
 	strcat(s, numberFinal);
 	strcat(s, ".png");
 

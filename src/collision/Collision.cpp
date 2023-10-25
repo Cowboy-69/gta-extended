@@ -1634,10 +1634,17 @@ CCollision::ProcessVerticalLine(const CColLine &line,
 }
 
 enum {
+#ifdef VICE_CRY
+	MAXNUMSPHERES = 128 * 2,
+	MAXNUMBOXES = 32 * 2,
+	MAXNUMLINES = 16 * 2,
+	MAXNUMTRIS = 600 * 2
+#else
 	MAXNUMSPHERES = 128,
 	MAXNUMBOXES = 32,
 	MAXNUMLINES = 16,
 	MAXNUMTRIS = 600
+#endif
 };
 
 #ifdef VU_COLLISION

@@ -1,0 +1,1 @@
+gxt -i "russian.txt" -o "russian.gxt"

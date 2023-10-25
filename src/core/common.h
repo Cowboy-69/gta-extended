@@ -365,6 +365,10 @@ extern bool bCameraShakeInVehicleAtHighSpeed;
 extern bool bMilitaryFiringFromTankAtPlayer;
 extern bool bDisableBulletTraces;
 extern CRGBA WaypointColor;
+#ifdef EX_DISTANT_LIGHTS
+extern bool bEnableDistantLights;
+#endif
+extern bool bRecoilWhenFiring;
 #endif
 
 #define DEBUGBREAK() __debugbreak();

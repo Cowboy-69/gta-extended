@@ -947,7 +947,7 @@ CCarCtrl::RemoveDistantCars()
 			continue;
 		PossiblyRemoveVehicle(pVehicle);
 		if (pVehicle->bCreateRoadBlockPeds){
-#ifdef IMPROVED_TECH_PART // increased spawn range
+#ifdef IMPROVED_TECH_PART // wanted system: A roadblock is not created if the player is not seen by the cops
 			if ((pVehicle->GetPosition() - FindPlayerCentreOfWorld(CWorld::PlayerInFocus)).Magnitude2D() < DISTANCE_TO_SPAWN_ROADBLOCK_PEDS && !FindPlayerPed()->m_pWanted->IsPlayerHides()) {
 #else
 			if ((pVehicle->GetPosition() - FindPlayerCentreOfWorld(CWorld::PlayerInFocus)).Magnitude2D() < DISTANCE_TO_SPAWN_ROADBLOCK_PEDS) {

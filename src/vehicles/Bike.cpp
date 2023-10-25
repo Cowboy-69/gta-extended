@@ -1497,10 +1497,8 @@ CBike::PreRender(void)
 			CCoronas::UpdateCoronaCoors((uintptr)this, light, 50.0f*TheCamera.LODDistMultiplier, angle);
 		}
 
-#ifndef IMPROVED_VEHICLES // remove bright lights (cubes)
 		// bright light
 		CBrightLights::RegisterOne(light, GetUp(), GetRight(), GetForward(), pHandling->FrontLights + BRIGHTLIGHT_FRONT);
-#endif
 
 		// Taillight
 
@@ -1538,10 +1536,8 @@ CBike::PreRender(void)
 			CCoronas::UpdateCoronaCoors((uintptr)this + 14, light, 50.0f*TheCamera.LODDistMultiplier, angle);
 		}
 
-#ifndef IMPROVED_VEHICLES // remove bright lights (cubes)
 		// bright light
 		CBrightLights::RegisterOne(light, GetUp(), GetRight(), GetForward(), pHandling->RearLights + BRIGHTLIGHT_REAR);
-#endif
 
 		// Light shadows
 		if(!alarmOff){
@@ -1595,9 +1591,7 @@ CBike::PreRender(void)
 						light, 1.2f, 50.0f*TheCamera.LODDistMultiplier,
 						CCoronas::TYPE_STAR, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
 						CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, 0.0f);
-#ifndef IMPROVED_VEHICLES // remove bright lights (cubes)
 					CBrightLights::RegisterOne(light, GetUp(), GetRight(), GetForward(), pHandling->RearLights + BRIGHTLIGHT_REAR);
-#endif
 				}
 			}else{
 				CCoronas::UpdateCoronaCoors((uintptr)this + 14, light, 50.0f*TheCamera.LODDistMultiplier, 0.0f);
@@ -2495,23 +2489,68 @@ void
 CBike::AddDamagedVehicleParticles(void)
 {
 #ifdef IMPROVED_VEHICLES_2 // change engine fire position
+	CVector overheatPos = ((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->m_positions[CAR_POS_OVERHEAT];
+	CVector overheat2Pos = ((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->m_positions[CAR_POS_OVERHEAT_2];
 	if (m_fHealth < 250.0f && GetStatus() != STATUS_WRECKED) {
 		// Car is on fire
-		CVector overheatPos = ((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->m_positions[CAR_POS_OVERHEAT];
-		CVector overheat2Pos = ((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->m_positions[CAR_POS_OVERHEAT_2];
-		CVector direction = m_vecMoveSpeed + GetRight() * 0.02f;
-		CVector direction2 = m_vecMoveSpeed - GetRight() * 0.02f;
 
-		overheatPos = GetMatrix() * overheatPos;
-		overheat2Pos = GetMatrix() * overheat2Pos;
-		CParticle::AddParticle(PARTICLE_CARFLAME_SMALL, overheatPos, direction);
-		CParticle::AddParticle(PARTICLE_CARFLAME_SMALL, overheat2Pos, direction2);
+		if (overheatPos.IsZero() && overheat2Pos.IsZero()) {
+			CVector damagePos, fireDir;
 
-		CParticle::AddParticle(PARTICLE_ENGINE_SMOKE2_SMALL, overheatPos, direction);
-		CParticle::AddParticle(PARTICLE_ENGINE_SMOKE2_SMALL, overheat2Pos, direction2);
+			// move fire forward if in first person
+			if(this == FindPlayerVehicle() && TheCamera.GetLookingForwardFirstPerson()){
+				damagePos = CVector(0.0f, 1.2f, -0.4f);
+				fireDir = CVector(0.0f, 0.0f, CGeneral::GetRandomNumberInRange(0.01125f, 0.09f));
+			}else{
+				damagePos = ((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->m_positions[CAR_POS_BACKSEAT];
+				damagePos.z -= 0.3f;
+				fireDir = CGeneral::GetRandomNumberInRange(0.02025f, 0.09f) * GetRight();
+				fireDir -= CGeneral::GetRandomNumberInRange(0.02025f, 0.18f) * GetForward();
+				fireDir.z = CGeneral::GetRandomNumberInRange(0.00225f, 0.018f);
+			}
 
-		CParticle::AddParticle(PARTICLE_CARFLAME_SMOKE_SMALL, overheatPos, direction);
-		CParticle::AddParticle(PARTICLE_CARFLAME_SMOKE_SMALL, overheat2Pos, direction);
+			damagePos = GetMatrix()*damagePos;
+			CParticle::AddParticle(PARTICLE_CARFLAME, damagePos, fireDir,
+				nil, 0.9f);
+
+			CParticle::AddParticle(PARTICLE_ENGINE_SMOKE2, damagePos, CVector(0.0f, 0.0f, 0.0f), nil, 0.5f);
+
+			damagePos.x += CGeneral::GetRandomNumberInRange(-0.5625f, 0.5625f),
+			damagePos.y += CGeneral::GetRandomNumberInRange(-0.5625f, 0.5625f),
+			damagePos.z += CGeneral::GetRandomNumberInRange(0.5625f, 2.25f);
+			CParticle::AddParticle(PARTICLE_CARFLAME_SMOKE, damagePos, CVector(0.0f, 0.0f, 0.0f));
+
+			// Blow up car after 5 seconds
+			m_fFireBlowUpTimer += CTimer::GetTimeStepInMilliseconds();
+			if(m_fFireBlowUpTimer > 5000.0f)
+				BlowUpCar(m_pSetOnFireEntity);
+		} else {
+			if (!overheatPos.IsZero()) {
+				CVector direction;
+				if (overheatPos.x > 0.0f)
+					direction = m_vecMoveSpeed + GetRight() * 0.02f;
+				else
+					direction = m_vecMoveSpeed - GetRight() * 0.02f;
+
+				overheatPos = GetMatrix() * overheatPos;
+				CParticle::AddParticle(PARTICLE_CARFLAME_SMALL, overheatPos, direction);
+				CParticle::AddParticle(PARTICLE_ENGINE_SMOKE2_SMALL, overheatPos, direction);
+				CParticle::AddParticle(PARTICLE_CARFLAME_SMOKE_SMALL, overheatPos, direction);
+			}
+			
+			if (!overheat2Pos.IsZero()) {
+				CVector direction2 = m_vecMoveSpeed - GetRight() * 0.02f;
+				if (overheat2Pos.x > 0.0f)
+					direction2 = m_vecMoveSpeed + GetRight() * 0.02f;
+				else
+					direction2 = m_vecMoveSpeed - GetRight() * 0.02f;
+
+				overheat2Pos = GetMatrix() * overheat2Pos;
+				CParticle::AddParticle(PARTICLE_CARFLAME_SMALL, overheat2Pos, direction2);
+				CParticle::AddParticle(PARTICLE_ENGINE_SMOKE2_SMALL, overheat2Pos, direction2);
+				CParticle::AddParticle(PARTICLE_CARFLAME_SMOKE_SMALL, overheat2Pos, direction2);
+			}
+		}
 	}
 #endif
 
@@ -2523,42 +2562,94 @@ CBike::AddDamagedVehicleParticles(void)
 		return;
 
 #ifdef IMPROVED_VEHICLES_2 // change engine smoke position
-	CVector overheatPos = ((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->m_positions[CAR_POS_OVERHEAT];
-	CVector overheat2Pos = ((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->m_positions[CAR_POS_OVERHEAT_2];
-	CVector direction = m_vecMoveSpeed + GetRight() * 0.02f;
-	CVector direction2 = m_vecMoveSpeed - GetRight() * 0.02f;
+	if (overheatPos.IsZero() && overheat2Pos.IsZero()) {
+		CVector direction = 0.5f*m_vecMoveSpeed;
+		CVector damagePos = ((CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex()))->GetFrontSeatPosn();
 
-	overheatPos = GetMatrix() * overheatPos;
-	overheat2Pos = GetMatrix() * overheat2Pos;
+		damagePos.z -= 0.4f;
+		damagePos = GetMatrix()*damagePos;
+
+		CalculateLeanMatrix();
+
+		if(m_fHealth < 250.0f){
+			// fire
+		}else if(m_fHealth < 320.0f){
+			direction *= 0.2f;
+			CParticle::AddParticle(PARTICLE_ENGINE_SMOKE2, damagePos, direction + 0.02f*m_leanMatrix.GetRight());
+		}else if(m_fHealth < 390.0f){
+			if(((CTimer::GetFrameCounter() + m_randomSeed) & 3) == 0 ||
+				((CTimer::GetFrameCounter() + m_randomSeed) & 3) == 2)
+				CParticle::AddParticle(PARTICLE_ENGINE_STEAM, damagePos, direction + 0.05f*m_leanMatrix.GetRight());
+			direction *= 0.3f;
+			CParticle::AddParticle(PARTICLE_ENGINE_SMOKE, damagePos, direction + 0.04f*m_leanMatrix.GetRight());
+		}else if(m_fHealth < 460.0f){
+			int rnd = CTimer::GetFrameCounter() + m_randomSeed;
+			if(rnd < 10 ||
+				rnd < 70 && rnd > 25 ||
+				rnd < 160 && rnd > 100 ||
+				rnd < 200 && rnd > 175 ||
+				rnd > 235)
+				return;
+			direction.z += 0.05f;
+			if(TheCamera.GetLookDirection() != LOOKING_FORWARD){
+				CParticle::AddParticle(PARTICLE_ENGINE_STEAM, damagePos, direction + 0.08f*m_leanMatrix.GetRight(), nil, 0.1f, 0, 0, 0, 1000);
+			}else if(((CTimer::GetFrameCounter() + m_randomSeed) & 1) == 0){
+				direction = 0.8f*m_vecMoveSpeed;
+				CParticle::AddParticle(PARTICLE_ENGINE_STEAM, damagePos, direction + 0.07f*m_leanMatrix.GetRight(), nil, 0.1f, 0, 0, 0, 1000);
+			}
+		}else if(((CTimer::GetFrameCounter() + m_randomSeed) & 3) == 0 ||
+					((CTimer::GetFrameCounter() + m_randomSeed) & 3) == 2){
+			CParticle::AddParticle(PARTICLE_ENGINE_STEAM, damagePos + 0.06f*m_leanMatrix.GetRight(), direction);
+		}
+
+		return;
+	}
+
+	CVector direction;
+	CVector direction2;
+
+	if (overheatPos.x > 0.0f)
+		direction = m_vecMoveSpeed + GetRight() * 0.02f;
+	else
+		direction = m_vecMoveSpeed - GetRight() * 0.02f;
+
+	if (overheat2Pos.x > 0.0f)
+		direction2 = m_vecMoveSpeed + GetRight() * 0.02f;
+	else
+		direction2 = m_vecMoveSpeed - GetRight() * 0.02f;
+
+	if (!overheatPos.IsZero()) overheatPos = GetMatrix() * overheatPos;
+	if (!overheat2Pos.IsZero()) overheat2Pos = GetMatrix() * overheat2Pos;
 
 	CalculateLeanMatrix();
 
 	if(m_fHealth < 250.0f){
 		// fire
 	}else if(m_fHealth < 320.0f){
-		CParticle::AddParticle(PARTICLE_ENGINE_SMOKE2_SMALL, overheatPos, direction);
-		CParticle::AddParticle(PARTICLE_ENGINE_SMOKE2_SMALL, overheat2Pos, direction2);
+		if (!overheatPos.IsZero()) CParticle::AddParticle(PARTICLE_ENGINE_SMOKE2_SMALL, overheatPos, direction);
+		if (!overheat2Pos.IsZero()) CParticle::AddParticle(PARTICLE_ENGINE_SMOKE2_SMALL, overheat2Pos, direction2);
 	}else if(m_fHealth < 390.0f){
 		if (((CTimer::GetFrameCounter() + m_randomSeed) & 3) == 0 ||
 			((CTimer::GetFrameCounter() + m_randomSeed) & 3) == 2) {
 
-			CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheatPos, direction);
-			CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheat2Pos, direction2);
+			if (!overheatPos.IsZero()) CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheatPos, direction);
+			if (!overheat2Pos.IsZero()) CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheat2Pos, direction2);
 		}
-		CParticle::AddParticle(PARTICLE_ENGINE_SMOKE_SMALL, overheatPos, direction);
-		CParticle::AddParticle(PARTICLE_ENGINE_SMOKE_SMALL, overheat2Pos, direction2);
+		if (!overheatPos.IsZero()) CParticle::AddParticle(PARTICLE_ENGINE_SMOKE_SMALL, overheatPos, direction);
+		if (!overheat2Pos.IsZero()) CParticle::AddParticle(PARTICLE_ENGINE_SMOKE_SMALL, overheat2Pos, direction2);
 	}else if(m_fHealth < 460.0f){
 		if(TheCamera.GetLookDirection() != LOOKING_FORWARD){
-			CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheatPos, direction);
-			CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheat2Pos, direction2);
+			if (!overheatPos.IsZero()) CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheatPos, direction);
+			if (!overheat2Pos.IsZero()) CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheat2Pos, direction2);
 		}else if(((CTimer::GetFrameCounter() + m_randomSeed) & 1) == 0){
-			CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheatPos, direction);
-			CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheat2Pos, direction2);
+			if (!overheatPos.IsZero()) CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheatPos, direction);
+			if (!overheat2Pos.IsZero()) CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheat2Pos, direction2);
 		}
 	}else if(((CTimer::GetFrameCounter() + m_randomSeed) & 3) == 0 ||
 	         ((CTimer::GetFrameCounter() + m_randomSeed) & 3) == 2){
-		CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheatPos, direction);
-		CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheat2Pos, direction2);
+
+		if (!overheatPos.IsZero()) CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheatPos, direction);
+		if (!overheat2Pos.IsZero()) CParticle::AddParticle(PARTICLE_ENGINE_STEAM_SMALL, overheat2Pos, direction2);
 	}
 #else
 	CVector direction = 0.5f*m_vecMoveSpeed;
@@ -3333,7 +3424,7 @@ void CBike::DoVehicleLights(void)
 #endif
 			// Turn off lights on abandoned vehicles only when we they're far away
 			if(bLightsOn &&
-			   Abs(TheCamera.GetPosition().x - GetPosition().x) + Abs(TheCamera.GetPosition().y - GetPosition().y) > 100.0f)
+				Abs(TheCamera.GetPosition().x - GetPosition().x) + Abs(TheCamera.GetPosition().y - GetPosition().y) > 100.0f)
 				bLightsOn = false;
 		}else
 			bLightsOn = shouldLightsBeOn;
@@ -3349,120 +3440,286 @@ void CBike::DoVehicleLights(void)
 			alarmOff = true;
 	}
 
-	if(bEngineOn && bLightsOn || alarmOn || alarmOff){
-		CalculateLeanMatrix();
-		CVector lookVector = GetPosition() - TheCamera.GetPosition();
-		float camDist = lookVector.Magnitude();
-		if(camDist != 0.0f)
-			lookVector *= 1.0f/camDist;
-		else
-			lookVector = CVector(1.0f, 0.0f, 0.0f);
+	if (mi->bNewLights) {
+		if(bEngineOn && bLightsOn || alarmOn || alarmOff){
+			CalculateLeanMatrix();
+			CVector lookVector = GetPosition() - TheCamera.GetPosition();
+			float camDist = lookVector.Magnitude();
+			if(camDist != 0.0f)
+				lookVector *= 1.0f/camDist;
+			else
+				lookVector = CVector(1.0f, 0.0f, 0.0f);
 
-		// 1.0 if directly behind car, -1.0 if in front
-		float behindness = DotProduct(lookVector, GetForward());
-		// 0.0 if behind car, PI if in front
-		float angle = Abs(Acos(Abs(behindness)));
+			// 1.0 if directly behind car, -1.0 if in front
+			float behindness = DotProduct(lookVector, GetForward());
+			// 0.0 if behind car, PI if in front
+			float angle = Abs(Acos(Abs(behindness)));
 
-		// Headlight
+			// Headlight
 
-		CMatrix mat;
-		CVector headLightPos = mi->m_positions[CAR_POS_HEADLIGHTS];
-		if(GetModelIndex() == 152){	// this is the bobcat in VC, but we don't want that effect anyway
-			mat.SetUnity();
-			mat.RotateZ(m_fWheelAngle);
-			mat = m_leanMatrix * mat;
-		}else
-			mat = m_leanMatrix;
-		CVector light = mat * headLightPos;
-		if(behindness < 0.0f && GetFrameLightStatus(BIKE_HEADLIGHT_L) == LIGHT_STATUS_OK){
-			// In front of bike
-			float intensity = -0.5f*behindness + 0.3f;
-			float size = 0.0f - behindness;
+			CMatrix mat;
+			CVector headLightPos = mi->m_positions[CAR_POS_HEADLIGHTS];
+			if(GetModelIndex() == 152){	// this is the bobcat in VC, but we don't want that effect anyway
+				mat.SetUnity();
+				mat.RotateZ(m_fWheelAngle);
+				mat = m_leanMatrix * mat;
+			}else
+				mat = m_leanMatrix;
+			CVector light = mat * headLightPos;
+			if(behindness < 0.0f && GetFrameLightStatus(BIKE_HEADLIGHT_L) == LIGHT_STATUS_OK){
+				// In front of bike
+				float intensity = -0.5f*behindness + 0.3f;
+				float size = 0.0f - behindness;
 
-			if(alarmOff){
-				CCoronas::RegisterCorona((uintptr)this, 0, 0, 0, 0,
-					light, size, 0.0f,
-					CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
-					CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
-			}else{
-				if(pHandling->Flags & HANDLING_HALOGEN_LIGHTS){
-					CCoronas::RegisterCorona((uintptr)this + 1, 190*intensity, 190*intensity, 255*intensity, 255,
-						light, size, 50.0f*TheCamera.LODDistMultiplier,
+				if(alarmOff){
+					CCoronas::RegisterCorona((uintptr)this, 0, 0, 0, 0,
+						light, size, 0.0f,
 						CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
 						CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
 				}else{
-					CCoronas::RegisterCorona((uintptr)this + 1, 210*intensity, 210*intensity, 195*intensity, 255,
+					if(pHandling->Flags & HANDLING_HALOGEN_LIGHTS){
+						CCoronas::RegisterCorona((uintptr)this + 1, 190*intensity, 190*intensity, 255*intensity, 255,
+							light, size, 50.0f*TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+					}else{
+						CCoronas::RegisterCorona((uintptr)this + 1, 210*intensity, 210*intensity, 195*intensity, 255,
+							light, size, 50.0f*TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+					}
+				}
+			}else{
+				CCoronas::UpdateCoronaCoors((uintptr)this, light, 50.0f*TheCamera.LODDistMultiplier, angle);
+			}
+
+			// Taillight
+
+			CVector tailLightPos = mi->m_positions[CAR_POS_TAILLIGHTS];
+			light = m_leanMatrix * tailLightPos;
+
+			// Taillight corona
+			if(behindness > 0.0f && GetFrameLightStatus(BIKE_TAILLIGHT_L) == LIGHT_STATUS_OK){
+				// Behind car
+				float intensity = 0.4f*behindness + 0.4f;
+				float size = (behindness + 0.5f)/2.0f;
+
+				if(m_fBrakePedal > 0.0f){
+					intensity += 0.2f;
+					size += 0.05f;
+				}
+
+				if(alarmOff){
+					CCoronas::RegisterCorona((uintptr)this + 14, 0, 0, 0, 0,
+						light, size, 0.0f,
+						CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+						CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+				}else{
+					CCoronas::RegisterCorona((uintptr)this + 14, 128*intensity, 0, 0, 255,
 						light, size, 50.0f*TheCamera.LODDistMultiplier,
 						CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
 						CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
 				}
-			}
-		}else{
-			CCoronas::UpdateCoronaCoors((uintptr)this, light, 50.0f*TheCamera.LODDistMultiplier, angle);
-		}
-
-		// Taillight
-
-		CVector tailLightPos = mi->m_positions[CAR_POS_TAILLIGHTS];
-		light = m_leanMatrix * tailLightPos;
-
-		// Taillight corona
-		if(behindness > 0.0f && GetFrameLightStatus(BIKE_TAILLIGHT_L) == LIGHT_STATUS_OK){
-			// Behind car
-			float intensity = 0.4f*behindness + 0.4f;
-			float size = (behindness + 0.5f)/2.0f;
-
-			if(m_fBrakePedal > 0.0f){
-				intensity += 0.2f;
-				size += 0.05f;
-			}
-
-			if(alarmOff){
-				CCoronas::RegisterCorona((uintptr)this + 14, 0, 0, 0, 0,
-					light, size, 0.0f,
-					CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
-					CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
 			}else{
-				CCoronas::RegisterCorona((uintptr)this + 14, 128*intensity, 0, 0, 255,
-					light, size, 50.0f*TheCamera.LODDistMultiplier,
-					CCoronas::TYPE_NORMAL, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
-					CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+				CCoronas::UpdateCoronaCoors((uintptr)this + 14, light, 50.0f*TheCamera.LODDistMultiplier, angle);
 			}
-		}else{
-			CCoronas::UpdateCoronaCoors((uintptr)this + 14, light, 50.0f*TheCamera.LODDistMultiplier, angle);
+
+			// Light shadows
+			if(!alarmOff){
+				CVector pos = GetPosition();
+				CVector2D fwd(GetForward());
+				fwd.Normalise();
+				float f = headLightPos.y + 6.0f;
+				pos += CVector(f*fwd.x, f*fwd.y, 2.0f);
+				if (GetFrameLightStatus(BIKE_HEADLIGHT_L) == LIGHT_STATUS_OK) {
+					CShadows::StoreCarLightShadow(this, (uintptr)this + 22, gpShadowExplosionTex, &pos,
+						7.0f * fwd.x, 7.0f * fwd.y, 3.5f * fwd.y, -3.5f * fwd.x, 45, 45, 45, 7.0f);
+				}
+
+				f = (tailLightPos.y - 2.5f) - (headLightPos.y + 6.0f);
+				pos += CVector(f*fwd.x, f*fwd.y, 0.0f);
+				if (GetFrameLightStatus(BIKE_TAILLIGHT_L) == LIGHT_STATUS_OK) {
+					CShadows::StoreCarLightShadow(this, (uintptr)this + 25, gpShadowExplosionTex, &pos,
+						3.0f, 0.0f, 0.0f, -3.0f, 35, 0, 0, 4.0f);
+				}
+			}
+
+			if(this == FindPlayerVehicle() && !alarmOff){
+				if (GetFrameLightStatus(BIKE_HEADLIGHT_L) == LIGHT_STATUS_OK) {
+					CPointLights::AddLight(CPointLights::LIGHT_DIRECTIONAL, GetPosition(), GetForward(),
+						20.0f, 1.0f, 1.0f, 1.0f,
+						FindPlayerVehicle()->m_vecMoveSpeed.MagnitudeSqr2D() < sq(0.45f) ? CPointLights::FOG_NORMAL : CPointLights::FOG_NONE,
+						false);
+				}
+
+				if (GetFrameLightStatus(BIKE_TAILLIGHT_L) == LIGHT_STATUS_OK) {
+					CVector pos = GetPosition() - 4.0f * GetForward();
+					if (m_fBrakePedal > 0.0f)
+						CPointLights::AddLight(CPointLights::LIGHT_POINT, pos, CVector(0.0f, 0.0f, 0.0f),
+							10.0f, 1.0f, 0.0f, 0.0f,
+							CPointLights::FOG_NONE, false);
+					else
+						CPointLights::AddLight(CPointLights::LIGHT_POINT, pos, CVector(0.0f, 0.0f, 0.0f),
+							7.0f, 0.6f, 0.0f, 0.0f,
+							CPointLights::FOG_NONE, false);
+				}
+			}
+		}else if(GetStatus() != STATUS_ABANDONED && GetStatus() != STATUS_WRECKED){
+			// Lights off
+			CalculateLeanMatrix();
+
+			CVector tailLightPos = mi->m_positions[CAR_POS_TAILLIGHTS];
+			CVector light = m_leanMatrix * tailLightPos;
+
+			if(m_fBrakePedal > 0.0f || m_fGasPedal < 0.0f){
+				CVector lookVector = GetPosition() - TheCamera.GetPosition();
+				lookVector.Normalise();
+				float behindness = DotProduct(lookVector, GetForward());
+				if(behindness > 0.0f && GetFrameLightStatus(BIKE_TAILLIGHT_L) == LIGHT_STATUS_OK){
+					if (m_fGasPedal < 0.0f) {
+						// reversing
+						// no lights in this case
+					} else {
+						// braking
+						CCoronas::RegisterCorona((uintptr)this + 14, 120, 0, 0, 255,
+							light, 1.2f, 50.0f * TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_STAR, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, 0.0f);
+					}
+				}else{
+					CCoronas::UpdateCoronaCoors((uintptr)this + 14, light, 50.0f*TheCamera.LODDistMultiplier, 0.0f);
+				}
+			}else{
+				CCoronas::UpdateCoronaCoors((uintptr)this + 14, light, 50.0f*TheCamera.LODDistMultiplier, 0.0f);
+			}
 		}
+	} else {
+		if(bEngineOn && bLightsOn || alarmOn || alarmOff){
+			CalculateLeanMatrix();
+			CVector lookVector = GetPosition() - TheCamera.GetPosition();
+			float camDist = lookVector.Magnitude();
+			if(camDist != 0.0f)
+				lookVector *= 1.0f/camDist;
+			else
+				lookVector = CVector(1.0f, 0.0f, 0.0f);
 
-		// Light shadows
-		if(!alarmOff){
-			CVector pos = GetPosition();
-			CVector2D fwd(GetForward());
-			fwd.Normalise();
-			float f = headLightPos.y + 6.0f;
-			pos += CVector(f*fwd.x, f*fwd.y, 2.0f);
-			if (GetFrameLightStatus(BIKE_HEADLIGHT_L) == LIGHT_STATUS_OK) {
-				CShadows::StoreCarLightShadow(this, (uintptr)this + 22, gpShadowExplosionTex, &pos,
-					7.0f * fwd.x, 7.0f * fwd.y, 3.5f * fwd.y, -3.5f * fwd.x, 45, 45, 45, 7.0f);
+			// 1.0 if directly behind car, -1.0 if in front
+			float behindness = DotProduct(lookVector, GetForward());
+			// 0.0 if behind car, PI if in front
+			float angle = Abs(Acos(Abs(behindness)));
+
+			// Headlight
+
+			CMatrix mat;
+			CVector headLightPos = mi->m_positions[CAR_POS_HEADLIGHTS];
+			if(GetModelIndex() == 152){	// this is the bobcat in VC, but we don't want that effect anyway
+				mat.SetUnity();
+				mat.RotateZ(m_fWheelAngle);
+				mat = m_leanMatrix * mat;
+			}else
+				mat = m_leanMatrix;
+			CVector light = mat * headLightPos;
+			if(behindness < 0.0f){
+				// In front of bike
+				float intensity = -0.5f*behindness + 0.3f;
+				float size = 1.0f - behindness;
+
+				if(behindness < -0.97f && camDist < 30.0f){
+					// Directly in front and not too far away
+					if(pHandling->Flags & HANDLING_HALOGEN_LIGHTS){
+						CCoronas::RegisterCorona((uintptr)this + 6, 150, 150, 195, 255,
+							light, 1.2f, 45.0f*TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_HEADLIGHT, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_OFF, angle);
+					}else{
+						CCoronas::RegisterCorona((uintptr)this + 6, 160, 160, 140, 255,
+							light, 1.2f, 45.0f*TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_HEADLIGHT, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_OFF, angle);
+					}
+				}
+
+				if(alarmOff){
+					CCoronas::RegisterCorona((uintptr)this, 0, 0, 0, 0,
+						light, size, 0.0f,
+						CCoronas::TYPE_STREAK, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+						CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+				}else{
+					if(pHandling->Flags & HANDLING_HALOGEN_LIGHTS){
+						CCoronas::RegisterCorona((uintptr)this + 1, 190*intensity, 190*intensity, 255*intensity, 255,
+							light, size, 50.0f*TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_STREAK, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+					}else{
+						CCoronas::RegisterCorona((uintptr)this + 1, 210*intensity, 210*intensity, 195*intensity, 255,
+							light, size, 50.0f*TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_STREAK, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+					}
+				}
+			}else{
+				CCoronas::UpdateCoronaCoors((uintptr)this, light, 50.0f*TheCamera.LODDistMultiplier, angle);
 			}
 
-			f = (tailLightPos.y - 2.5f) - (headLightPos.y + 6.0f);
-			pos += CVector(f*fwd.x, f*fwd.y, 0.0f);
-			if (GetFrameLightStatus(BIKE_TAILLIGHT_L) == LIGHT_STATUS_OK) {
+			// Taillight
+
+			CVector tailLightPos = mi->m_positions[CAR_POS_TAILLIGHTS];
+			light = m_leanMatrix * tailLightPos;
+
+			// Taillight corona
+			if(behindness > 0.0f){
+				// Behind car
+				float intensity = 0.4f*behindness + 0.4f;
+				float size = (behindness + 1.0f)/2.0f;
+
+				if(m_fGasPedal < 0.0f){
+					// reversing
+					// no lights in this case
+				}else{
+					if(m_fBrakePedal > 0.0f){
+						intensity += 0.4f;
+						size += 0.3f;
+					}
+
+					if(alarmOff){
+						CCoronas::RegisterCorona((uintptr)this + 14, 0, 0, 0, 0,
+							light, size, 0.0f,
+							CCoronas::TYPE_STREAK, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+					}else{
+						CCoronas::RegisterCorona((uintptr)this + 14, 128*intensity, 0, 0, 255,
+							light, size, 50.0f*TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_STREAK, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, angle);
+					}
+				}
+			}else{
+				CCoronas::UpdateCoronaCoors((uintptr)this + 14, light, 50.0f*TheCamera.LODDistMultiplier, angle);
+			}
+
+			// Light shadows
+			if(!alarmOff){
+				CVector pos = GetPosition();
+				CVector2D fwd(GetForward());
+				fwd.Normalise();
+				float f = headLightPos.y + 6.0f;
+				pos += CVector(f*fwd.x, f*fwd.y, 2.0f);
+				CShadows::StoreCarLightShadow(this, (uintptr)this + 22, gpShadowExplosionTex, &pos,
+					7.0f*fwd.x, 7.0f*fwd.y, 3.5f*fwd.y, -3.5f*fwd.x, 45, 45, 45, 7.0f);
+
+				f = (tailLightPos.y - 2.5f) - (headLightPos.y + 6.0f);
+				pos += CVector(f*fwd.x, f*fwd.y, 0.0f);
 				CShadows::StoreCarLightShadow(this, (uintptr)this + 25, gpShadowExplosionTex, &pos,
 					3.0f, 0.0f, 0.0f, -3.0f, 35, 0, 0, 4.0f);
 			}
-		}
 
-		if(this == FindPlayerVehicle() && !alarmOff){
-			if (GetFrameLightStatus(BIKE_HEADLIGHT_L) == LIGHT_STATUS_OK) {
+			if(this == FindPlayerVehicle() && !alarmOff){
 				CPointLights::AddLight(CPointLights::LIGHT_DIRECTIONAL, GetPosition(), GetForward(),
 					20.0f, 1.0f, 1.0f, 1.0f,
 					FindPlayerVehicle()->m_vecMoveSpeed.MagnitudeSqr2D() < sq(0.45f) ? CPointLights::FOG_NORMAL : CPointLights::FOG_NONE,
 					false);
-			}
-
-			if (GetFrameLightStatus(BIKE_TAILLIGHT_L) == LIGHT_STATUS_OK) {
-				CVector pos = GetPosition() - 4.0f * GetForward();
-				if (m_fBrakePedal > 0.0f)
+				CVector pos = GetPosition() - 4.0f*GetForward();
+				if(m_fBrakePedal > 0.0f)
 					CPointLights::AddLight(CPointLights::LIGHT_POINT, pos, CVector(0.0f, 0.0f, 0.0f),
 						10.0f, 1.0f, 0.0f, 0.0f,
 						CPointLights::FOG_NONE, false);
@@ -3471,34 +3728,34 @@ void CBike::DoVehicleLights(void)
 						7.0f, 0.6f, 0.0f, 0.0f,
 						CPointLights::FOG_NONE, false);
 			}
-		}
-	}else if(GetStatus() != STATUS_ABANDONED && GetStatus() != STATUS_WRECKED){
-		// Lights off
-		CalculateLeanMatrix();
+		}else if(GetStatus() != STATUS_ABANDONED && GetStatus() != STATUS_WRECKED){
+			// Lights off
+			CalculateLeanMatrix();
 
-		CVector tailLightPos = mi->m_positions[CAR_POS_TAILLIGHTS];
-		CVector light = m_leanMatrix * tailLightPos;
+			CVector tailLightPos = mi->m_positions[CAR_POS_TAILLIGHTS];
+			CVector light = m_leanMatrix * tailLightPos;
 
-		if(m_fBrakePedal > 0.0f || m_fGasPedal < 0.0f){
-			CVector lookVector = GetPosition() - TheCamera.GetPosition();
-			lookVector.Normalise();
-			float behindness = DotProduct(lookVector, GetForward());
-			if(behindness > 0.0f && GetFrameLightStatus(BIKE_TAILLIGHT_L) == LIGHT_STATUS_OK){
-				if (m_fGasPedal < 0.0f) {
-					// reversing
-					// no lights in this case
-				} else {
-					// braking
-					CCoronas::RegisterCorona((uintptr)this + 14, 120, 0, 0, 255,
-						light, 1.2f, 50.0f * TheCamera.LODDistMultiplier,
-						CCoronas::TYPE_STAR, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
-						CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, 0.0f);
+			if(m_fBrakePedal > 0.0f || m_fGasPedal < 0.0f){
+				CVector lookVector = GetPosition() - TheCamera.GetPosition();
+				lookVector.Normalise();
+				float behindness = DotProduct(lookVector, GetForward());
+				if(behindness > 0.0f){
+					if(m_fGasPedal < 0.0f){
+						// reversing
+						// no lights in this case
+					}else{
+						// braking
+						CCoronas::RegisterCorona((uintptr)this + 14, 120, 0, 0, 255,
+							light, 1.2f, 50.0f*TheCamera.LODDistMultiplier,
+							CCoronas::TYPE_STAR, CCoronas::FLARE_NONE, CCoronas::REFLECTION_ON,
+							CCoronas::LOSCHECK_OFF, CCoronas::STREAK_ON, 0.0f);
+					}
+				}else{
+					CCoronas::UpdateCoronaCoors((uintptr)this + 14, light, 50.0f*TheCamera.LODDistMultiplier, 0.0f);
 				}
 			}else{
 				CCoronas::UpdateCoronaCoors((uintptr)this + 14, light, 50.0f*TheCamera.LODDistMultiplier, 0.0f);
 			}
-		}else{
-			CCoronas::UpdateCoronaCoors((uintptr)this + 14, light, 50.0f*TheCamera.LODDistMultiplier, 0.0f);
 		}
 	}
 }

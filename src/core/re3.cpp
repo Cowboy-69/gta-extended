@@ -275,6 +275,10 @@ extern bool bCameraShakeInVehicleAtHighSpeed = ReadAndGetFeature("CameraShakeInV
 extern bool bMilitaryFiringFromTankAtPlayer = ReadAndGetFeature("MilitaryFiringFromTankAtPlayer");
 extern bool bDisableBulletTraces = ReadAndGetFeature("DisableBulletTraces");
 CRGBA WaypointColor = ReadAndGetWaypointColor("WaypointColorRGB");
+#ifdef EX_DISTANT_LIGHTS
+extern bool bEnableDistantLights = ReadAndGetFeature("EnableDistantLights");
+#endif
+extern bool bRecoilWhenFiring = ReadAndGetFeature("RecoilWhenFiring");
 #endif
 
 bool ReadIniIfExists(const char *cat, const char *key, uint32 *out)
@@ -402,7 +406,18 @@ const char *iniControllerActions[] = { "PED_FIREWEAPON", "PED_CYCLE_WEAPON_RIGHT
 	"VEHICLE_ACCELERATE", "VEHICLE_BRAKE", "VEHICLE_CHANGE_RADIO_STATION", "VEHICLE_HORN", "TOGGLE_SUBMISSIONS", "VEHICLE_HANDBRAKE", "PED_1RST_PERSON_LOOK_LEFT",
 	"PED_1RST_PERSON_LOOK_RIGHT", "VEHICLE_LOOKLEFT", "VEHICLE_LOOKRIGHT", "VEHICLE_LOOKBEHIND", "VEHICLE_TURRETLEFT", "VEHICLE_TURRETRIGHT", "VEHICLE_TURRETUP", "VEHICLE_TURRETDOWN",
 	"PED_CYCLE_TARGET_LEFT", "PED_CYCLE_TARGET_RIGHT", "PED_CENTER_CAMERA_BEHIND_PLAYER", "PED_LOCK_TARGET", "NETWORK_TALK", "PED_1RST_PERSON_LOOK_UP", "PED_1RST_PERSON_LOOK_DOWN",
-	"_CONTROLLERACTION_36", "TOGGLE_DPAD", "SWITCH_DEBUG_CAM_ON", "TAKE_SCREEN_SHOT", "SHOW_MOUSE_POINTER_TOGGLE", "UNKNOWN_ACTION" };
+	"_CONTROLLERACTION_36", "TOGGLE_DPAD", "SWITCH_DEBUG_CAM_ON", "TAKE_SCREEN_SHOT", "SHOW_MOUSE_POINTER_TOGGLE", "UNKNOWN_ACTION"
+#ifdef IMPROVED_MENU_AND_INPUT // iniControllerActions
+	"PED_WALK",
+	"RADAR_ZOOM_OUT",
+	"PED_RELOAD",
+#endif
+#if defined IMPROVED_MENU_AND_INPUT && defined IMPROVED_VEHICLES_2 // iniControllerActions: Turn and emergency signals for player
+	"VEHICLE_LEFT_TURNSIGNALS",
+	"VEHICLE_RIGHT_TURNSIGNALS",
+	"VEHICLE_EMERGENCYLIGHTS",
+#endif
+};
 
 const char *iniControllerTypes[] = { "kbd:", "2ndKbd:", "mouse:", "joy:" };
 

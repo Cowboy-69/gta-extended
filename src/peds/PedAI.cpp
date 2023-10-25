@@ -5656,8 +5656,10 @@ CPed::DuckAndCover(void)
 	bool justDucked = false;
 	CVehicle *foundVeh = nil;
 	float maxDist = 225.0f;
+#ifndef CROUCH // AI crouch
 	if (bIsDucking)
 		ClearDuck(true);
+#endif
 
 	bCrouchWhenShooting = false;
 	bool duckingWithoutVeh = false;
@@ -5754,6 +5756,13 @@ CPed::DuckAndCover(void)
 				duckPos = duckAtRightSide;
 
 			if (CWorld::TestSphereAgainstWorld(duckPos, 0.5f, nil, true, true, true, false, false, false)) {
+#ifdef CROUCH // AI crouch
+				if (!bIsDucking) {
+					bCrouchWhenShooting = true;
+					SetDuck(10000, true);
+				}
+#endif
+
 				SetSeek(duckPos, 1.0f);
 				m_headingRate = 15.0f;
 				bIsRunning = true;

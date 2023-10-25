@@ -24,6 +24,9 @@
 #include "World.h"
 #include "SurfaceTable.h"
 #include "Heli.h"
+#ifdef IMPROVED_TECH_PART // When a projectile is fired, the projectile explodes (Sniper)
+#include "ProjectileInfo.h"
+#endif
 
 #ifdef SQUEEZE_PERFORMANCE
 uint32 bulletInfoInUse;
@@ -219,6 +222,24 @@ void CBulletInfo::Update(void)
 								CVector moveForce = point.normal * -BULLET_HIT_FORCE;
 								pHitObject->ApplyMoveForce(moveForce.x, moveForce.y, moveForce.z);
 							}
+
+#ifdef IMPROVED_TECH_PART // When a projectile is fired, the projectile explodes (Sniper)
+							if (pHitObject->m_modelIndex == MI_GRENADE || pHitObject->m_modelIndex == MI_MOLOTOV || pHitObject->m_modelIndex == MI_MISSILE) {
+								for (uint8 i = 0; i < NUM_PROJECTILES; i++) {
+									if (!CProjectileInfo::GetProjectileInfo(i)->ms_apProjectile[i])
+										continue;
+
+									if (CProjectileInfo::GetProjectileInfo(i)->ms_apProjectile[i] != (CProjectile*)pHitObject)
+										continue;
+
+									if (gaProjectileInfo[i].m_eWeaponType == WEAPONTYPE_DETONATOR_GRENADE) {
+										CProjectileInfo::RemoveDetonatorProjectile(i);
+									} else {
+										gaProjectileInfo[i].m_nExplosionTime = CTimer::GetTimeInMilliseconds();
+									}
+								}
+							}
+#endif
 						} else if (pHitObject->m_nCollisionDamageEffect >= DAMAGE_EFFECT_SMASH_COMPLETELY) {
 							pHitObject->ObjectDamage(50.f);
 						}

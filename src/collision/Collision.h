@@ -17,10 +17,14 @@ struct CStoredCollPoly
 };
 
 // If you spawn many tanks at once, you will see that collisions of two entity exceeds 32.
+#ifdef VICE_CRY
+#define MAX_COLLISION_POINTS 128
+#else
 #if defined(FIX_BUGS) && !defined(SQUEEZE_PERFORMANCE)
 #define MAX_COLLISION_POINTS 64
 #else
 #define MAX_COLLISION_POINTS 32
+#endif
 #endif
 
 class CCollision

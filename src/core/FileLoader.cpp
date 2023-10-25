@@ -192,6 +192,25 @@ CFileLoader::LoadCollisionFile(const char *filename, uint8 colSlot)
 	assert(fd > 0);
 
 	while(CFileMgr::Read(fd, (char*)&header, sizeof(header))){
+#ifdef VICE_CRY
+		assert(header.ident == 'LLOC');
+		CFileMgr::Read(fd, (char*)col_buff, header.size);
+		memcpy(modelname, col_buff, 24);
+
+		mi = CModelInfo::GetModelInfo(modelname, nil);
+		if(mi){
+			if(mi->GetColModel() && mi->DoesOwnColModel()){
+				LoadCollisionModel(col_buff+24, *mi->GetColModel(), modelname);
+			}else{
+				CColModel *model = new CColModel;
+				model->level = colSlot;
+				LoadCollisionModel(col_buff+24, *model, modelname);
+				mi->SetColModel(model, true);
+			}
+		}else{
+			debug("colmodel %s can't find a modelinfo\n", modelname);
+		}
+#else
 		assert(header.ident == 'LLOC');
 		CFileMgr::Read(fd, (char*)work_buff, header.size);
 		memcpy(modelname, work_buff, 24);
@@ -209,6 +228,7 @@ CFileLoader::LoadCollisionFile(const char *filename, uint8 colSlot)
 		}else{
 			debug("colmodel %s can't find a modelinfo\n", modelname);
 		}
+#endif
 	}
 
 	CFileMgr::CloseFile(fd);
@@ -227,6 +247,29 @@ CFileLoader::LoadCollisionFileFirstTime(uint8 *buffer, uint32 size, uint8 colSlo
 	int modelIndex;
 
 	while(size > 8){
+#ifdef VICE_CRY
+		header = (ColHeader*)buffer;
+		modelsize = header->size;
+		if(header->ident != 'LLOC')
+			return size-8 < CDSTREAM_SECTOR_SIZE;
+		memcpy(modelname, buffer+8, 24);
+		memcpy(col_buff, buffer+32, modelsize-24);
+		size -= 32 + (modelsize-24);
+		buffer += 32 + (modelsize-24);
+		if(modelsize > 15*1024)
+			debug("colmodel %s is huge, size %d\n", modelname, modelsize);
+
+		mi = CModelInfo::GetModelInfo(modelname, &modelIndex);
+		if(mi){
+			CColStore::IncludeModelIndex(colSlot, modelIndex);
+			CColModel *model = new CColModel;
+			model->level = colSlot;
+			LoadCollisionModel(col_buff, *model, modelname);
+			mi->SetColModel(model, true);
+		}else{
+			debug("colmodel %s can't find a modelinfo\n", modelname);
+		}
+#else
 		header = (ColHeader*)buffer;
 		modelsize = header->size;
 		if(header->ident != 'LLOC')
@@ -248,6 +291,7 @@ CFileLoader::LoadCollisionFileFirstTime(uint8 *buffer, uint32 size, uint8 colSlo
 		}else{
 			debug("colmodel %s can't find a modelinfo\n", modelname);
 		}
+#endif
 	}
 	return true;
 }
@@ -261,6 +305,32 @@ CFileLoader::LoadCollisionFile(uint8 *buffer, uint32 size, uint8 colSlot)
 	ColHeader *header;
 
 	while(size > 8){
+#ifdef VICE_CRY
+		header = (ColHeader*)buffer;
+		modelsize = header->size;
+		if(header->ident != 'LLOC')
+			return size-8 < CDSTREAM_SECTOR_SIZE;
+		memcpy(modelname, buffer+8, 24);
+		memcpy(col_buff, buffer+32, modelsize-24);
+		size -= 32 + (modelsize-24);
+		buffer += 32 + (modelsize-24);
+		if(modelsize > 15*1024)
+			debug("colmodel %s is huge, size %d\n", modelname, modelsize);
+
+		mi = CModelInfo::GetModelInfo(modelname, CColStore::GetSlot(colSlot)->minIndex, CColStore::GetSlot(colSlot)->maxIndex);
+		if(mi){
+			if(mi->GetColModel()){
+				LoadCollisionModel(col_buff, *mi->GetColModel(), modelname);
+			}else{
+				CColModel *model = new CColModel;
+				model->level = colSlot;
+				LoadCollisionModel(col_buff, *model, modelname);
+				mi->SetColModel(model, true);
+			}
+		}else{
+			debug("colmodel %s can't find a modelinfo\n", modelname);
+		}
+#else
 		header = (ColHeader*)buffer;
 		modelsize = header->size;
 		if(header->ident != 'LLOC')
@@ -285,6 +355,7 @@ CFileLoader::LoadCollisionFile(uint8 *buffer, uint32 size, uint8 colSlot)
 		}else{
 			debug("colmodel %s can't find a modelinfo\n", modelname);
 		}
+#endif
 	}
 	return true;
 }

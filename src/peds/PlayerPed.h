@@ -85,6 +85,12 @@ public:
 	bool bIsAutoAiming;
 #endif
 
+#ifdef EX_PED_VARIATIONS // Player
+	//uint8 currentVariation;
+	//uint8 storedVariation;
+	//char storedModelName[MAX_MODEL_NAME];
+#endif
+
 	CPlayerPed();
 	~CPlayerPed();
 	void SetMoveAnim() { };

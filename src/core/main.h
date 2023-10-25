@@ -18,7 +18,12 @@ struct GlobalScene
 };
 extern GlobalScene Scene;
 
+#ifdef VICE_CRY
+extern uint8 work_buff[100000];
+extern uint8 col_buff[100000];
+#else
 extern uint8 work_buff[55000];
+#endif
 extern char gString[256];
 extern char gString2[512];
 extern wchar gUString[256];

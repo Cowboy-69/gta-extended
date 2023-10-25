@@ -1160,8 +1160,8 @@ CPlayerPed::ProcessWeaponSwitch(CPad *padUsed)
 	if (CDarkel::FrenzyOnGoing() || m_attachedTo)
 		goto switchDetectDone;
 
-#ifdef IMPROVED_MENU_AND_INPUT // You cannot switch weapons during reloading
-	if (!m_pPointGunAt && !bDontAllowWeaponChange && GetWeapon()->m_eWeaponType != WEAPONTYPE_DETONATOR && GetWeapon()->m_eWeaponState != WEAPONSTATE_RELOADING) { 
+#ifdef IMPROVED_MENU_AND_INPUT // You cannot switch weapons during reloading, but you can with the detonator
+	if (!m_pPointGunAt && !bDontAllowWeaponChange && GetWeapon()->m_eWeaponState != WEAPONSTATE_RELOADING) { 
 #else
 	if (!m_pPointGunAt && !bDontAllowWeaponChange && GetWeapon()->m_eWeaponType != WEAPONTYPE_DETONATOR) {
 #endif

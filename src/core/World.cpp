@@ -1941,6 +1941,28 @@ CWorld::Process(void)
 {
 	if(!(CTimer::GetFrameCounter() & 63)) CReferences::PruneAllReferencesInWorld();
 
+#ifdef EX_DISTANT_LIGHTS
+	if (bEnableDistantLights) {
+		for (int i = CPools::GetDummyPool()->GetSize() - 1; i >= 0; i--) {
+			CDummy* entity = CPools::GetDummyPool()->GetSlot(i);
+
+			if (!entity)
+				continue;
+
+			entity->ProcessDistantLights();
+		}
+
+		for (int i = CPools::GetBuildingPool()->GetSize() - 1; i >= 0; i--) {
+			CBuilding* entity = CPools::GetBuildingPool()->GetSlot(i);
+
+			if (!entity)
+				continue;
+
+			entity->ProcessDistantLights();
+		}
+	}
+#endif
+
 	if(bProcessCutsceneOnly) {
 		for(int i = 0; i < NUMCUTSCENEOBJECTS; i++) {
 			CCutsceneObject *csObj = CCutsceneMgr::GetCutsceneObject(i);

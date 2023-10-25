@@ -1019,9 +1019,11 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 			CPlayerPed* shooterPed = (CPlayerPed*)shooter;
 			Find3rdPersonCamTargetVectorFromCachedVectors(info->m_fRange, *fireSource, source, target, shooterPed->m_cachedCamSource, shooterPed->m_cachedCamFront, shooterPed->m_cachedCamUp);
 
-#ifdef IMPROVED_TECH_PART // recoil
-			TheCamera.Cams[TheCamera.ActiveCam].Alpha += CGeneral::GetRandomNumberInRange(0.001f, 0.005f);
-			TheCamera.Cams[TheCamera.ActiveCam].Beta += CGeneral::GetRandomNumberInRange(-0.005f, 0.005f);
+#ifdef FEATURES_INI // RecoilWhenFiring
+			if (bRecoilWhenFiring) {
+				TheCamera.Cams[TheCamera.ActiveCam].Alpha += CGeneral::GetRandomNumberInRange(0.001f, 0.005f);
+				TheCamera.Cams[TheCamera.ActiveCam].Beta += CGeneral::GetRandomNumberInRange(-0.005f, 0.005f);
+			}
 #endif
 
 			if ((shooterPed->m_pedIK.m_flags & CPedIK::GUN_POINTED_SUCCESSFULLY) == 0) {
@@ -1699,6 +1701,24 @@ CWeapon::DoBulletImpact(CEntity *shooter, CEntity *victim,
 							CVector moveForce = point->normal * -4.0f;
 							victimObject->ApplyMoveForce(moveForce.x, moveForce.y, moveForce.z);
 						}
+
+#ifdef IMPROVED_TECH_PART // When a projectile is fired, the projectile explodes (FireInstantHit)
+						if (victimObject->m_modelIndex == MI_GRENADE || victimObject->m_modelIndex == MI_MOLOTOV || victimObject->m_modelIndex == MI_MISSILE) {
+							for (uint8 i = 0; i < NUM_PROJECTILES; i++) {
+								if (!CProjectileInfo::GetProjectileInfo(i)->ms_apProjectile[i])
+									continue;
+
+								if (CProjectileInfo::GetProjectileInfo(i)->ms_apProjectile[i] != (CProjectile*)victimObject)
+									continue;
+
+								if (gaProjectileInfo[i].m_eWeaponType == WEAPONTYPE_DETONATOR_GRENADE) {
+									CProjectileInfo::RemoveDetonatorProjectile(i);
+								} else {
+									gaProjectileInfo[i].m_nExplosionTime = CTimer::GetTimeInMilliseconds();
+								}
+							}
+						}
+#endif
 					} else if (victimObject->m_nCollisionDamageEffect >= DAMAGE_EFFECT_SMASH_COMPLETELY) {
 						victimObject->ObjectDamage(50.f);
 					}
@@ -2119,6 +2139,24 @@ CWeapon::FireShotgun(CEntity *shooter, CVector *fireSource)
 									CVector moveForce = point.normal*-5.0f;
 									victimObject->ApplyMoveForce(moveForce.x, moveForce.y, moveForce.z);
 								}
+
+#ifdef IMPROVED_TECH_PART // When a projectile is fired, the projectile explodes (shotgun)
+								if (victimObject->m_modelIndex == MI_GRENADE || victimObject->m_modelIndex == MI_MOLOTOV || victimObject->m_modelIndex == MI_MISSILE) {
+									for (uint8 i = 0; i < NUM_PROJECTILES; i++) {
+										if (!CProjectileInfo::GetProjectileInfo(i)->ms_apProjectile[i])
+											continue;
+
+										if (CProjectileInfo::GetProjectileInfo(i)->ms_apProjectile[i] != (CProjectile*)victimObject)
+											continue;
+
+										if (gaProjectileInfo[i].m_eWeaponType == WEAPONTYPE_DETONATOR_GRENADE) {
+											CProjectileInfo::RemoveDetonatorProjectile(i);
+										} else {
+											gaProjectileInfo[i].m_nExplosionTime = CTimer::GetTimeInMilliseconds();
+										}
+									}
+								}
+#endif
 							}
 						}
 
@@ -2180,9 +2218,11 @@ CWeapon::FireShotgun(CEntity *shooter, CVector *fireSource)
 	}
 
 	if ( shooter == FindPlayerPed() ) {
-#ifdef IMPROVED_TECH_PART // recoil
-		TheCamera.Cams[TheCamera.ActiveCam].Alpha += CGeneral::GetRandomNumberInRange(0.005f, 0.01f);
-		TheCamera.Cams[TheCamera.ActiveCam].Beta += CGeneral::GetRandomNumberInRange(-0.01f, 0.01f);
+#ifdef FEATURES_INI // RecoilWhenFiring
+		if (bRecoilWhenFiring) {
+			TheCamera.Cams[TheCamera.ActiveCam].Alpha += CGeneral::GetRandomNumberInRange(0.005f, 0.01f);
+			TheCamera.Cams[TheCamera.ActiveCam].Beta += CGeneral::GetRandomNumberInRange(-0.01f, 0.01f);
+		}
 #endif
 
 #ifdef IMPROVED_MENU_AND_INPUT
@@ -2447,9 +2487,11 @@ CWeapon::FireSniper(CEntity *shooter)
 
 	if ( shooter == FindPlayerPed() )
 	{
-#ifdef IMPROVED_TECH_PART // recoil
-		TheCamera.Cams[TheCamera.ActiveCam].Alpha += CGeneral::GetRandomNumberInRange(0.001f, 0.005f);
-		TheCamera.Cams[TheCamera.ActiveCam].Beta += CGeneral::GetRandomNumberInRange(-0.005f, 0.005f);
+#ifdef FEATURES_INI // RecoilWhenFiring
+		if (bRecoilWhenFiring) {
+			TheCamera.Cams[TheCamera.ActiveCam].Alpha += CGeneral::GetRandomNumberInRange(0.001f, 0.005f);
+			TheCamera.Cams[TheCamera.ActiveCam].Beta += CGeneral::GetRandomNumberInRange(-0.005f, 0.005f);
+		}
 #endif
 
 #ifdef IMPROVED_MENU_AND_INPUT

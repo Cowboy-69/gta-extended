@@ -701,6 +701,11 @@ public:
 	float m_tJumpAllowedTimer;
 #endif
 
+#ifdef EX_PED_VARIATIONS
+	RwTexture* texClothingVariation;
+	RwTexture* texShadeVariation;
+#endif
+
 	static void *operator new(size_t) throw();
 	static void *operator new(size_t, int) throw();
 	static void operator delete(void*, size_t) throw();

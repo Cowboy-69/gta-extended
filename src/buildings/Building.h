@@ -20,6 +20,9 @@ public:
 	//bool SetupLighting(void);
 	//void RemoveLighting(bool reset);
 #endif
+#ifdef EX_DISTANT_LIGHTS
+	void ProcessDistantLights();
+#endif
 };
 
 bool IsBuildingPointerValid(CBuilding*);

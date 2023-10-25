@@ -5,6 +5,9 @@
 
 #include "Sprite2d.h"
 #include "Timer.h"
+#ifdef EX_RADIO_ICONS
+#include "DMAudio.h"
+#endif
 
 #define MENUHEADER_POS_X 10.0f
 #define MENUHEADER_POS_Y 10.0f
@@ -154,6 +157,15 @@ enum eMenuSprites
 	MENUSPRITE_ARROWS2,
 	MENUSPRITE_ARROWS3,
 	MENUSPRITE_ARROWS4,
+#endif
+#ifdef NEW_MENU
+	MENUSPRITE_BACKGROUND_2,
+	MENUSPRITE_BACKGROUND_3,
+	MENUSPRITE_BACKGROUND_4,
+	MENUSPRITE_BACKGROUND_5,
+	MENUSPRITE_BACKGROUND_6,
+	MENUSPRITE_BACKGROUND_7,
+	MENUSPRITE_CHARACTER,
 #endif
 	NUM_MENU_SPRITES
 };
@@ -726,6 +738,9 @@ public:
 	bool m_OnlySaveMenu;
 	int32 m_firstStartCounter;
 	CSprite2d m_aFrontEndSprites[NUM_MENU_SPRITES];
+#ifdef EX_RADIO_ICONS
+	CSprite2d m_aFrontEndRadioSprites[NUM_RADIOS + 1];
+#endif
 	bool m_bSpritesLoaded;
 	int32 m_LeftMostRadioX;
 	int32 m_ScrollRadioBy;
@@ -947,6 +962,9 @@ public:
 	float StretchY(float);
 	void SwitchMenuOnAndOff();
 	void UnloadTextures();
+#ifdef EX_RADIO_ICONS
+	void UnloadRadioTextures();
+#endif
 	void WaitForUserCD();
 	int GetNumOptionsCntrlConfigScreens();
 	void SwitchToNewScreen(int8);

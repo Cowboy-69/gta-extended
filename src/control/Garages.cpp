@@ -175,7 +175,7 @@ void CGarages::Init(void)
 	bPlayerInModGarage = false;
 	bPlayerShouldBeLeaveModGarage = false;
 
-	AddOne(-7.55f, -1268.164f, 9.322f,
+	/*AddOne(-7.55f, -1268.164f, 9.322f,
 		   -7.55f, -1276.632f, // depth
 		   2.64f, -1268.164f, 14.4f,
 		   GARAGE_MOD, 0);
@@ -193,7 +193,7 @@ void CGarages::Init(void)
 	AddOne(328.419f, 441.153f, 10.014f,
 		   325.326f, 450.675f, // depth
 		   318.205f, 444.41f, 16.657f,
-		   GARAGE_MOD, 0);
+		   GARAGE_MOD, 0);*/
 #endif
 }
 
@@ -2640,8 +2640,12 @@ void CGarages::SetAllDoorsBackToOriginalHeight()
 void CGarages::Save(uint8 * buf, uint32 * size)
 {
 //INITSAVEBUF
+#ifdef VEHICLE_MODS // Save/Load
+	*size = (6 * sizeof(uint32) + TOTAL_COLLECTCARS_GARAGES * sizeof(*CarTypesCollected) + sizeof(uint32) + TOTAL_HIDEOUT_GARAGES * NUM_GARAGE_STORED_CARS * sizeof(CStoredCar) + NUM_GARAGES * sizeof(CGarage));
+#else
 	*size = 7876; // for some reason it's not actual size again
 	//*size = (6 * sizeof(uint32) + TOTAL_COLLECTCARS_GARAGES * sizeof(*CarTypesCollected) + sizeof(uint32) + TOTAL_HIDEOUT_GARAGES * NUM_GARAGE_STORED_CARS * sizeof(CStoredCar) + NUM_GARAGES * sizeof(CGarage));
+#endif
 #if !defined THIS_IS_STUPID && defined COMPATIBLE_SAVES
 	memset(buf + 7340, 0, *size - 7340); // garbage data is written otherwise
 #endif
@@ -2743,8 +2747,12 @@ const CStoredCar &CStoredCar::operator=(const CStoredCar & other)
 void CGarages::Load(uint8* buf, uint32 size)
 {
 //INITSAVEBUF
+#ifdef VEHICLE_MODS // Save/Load
+	assert(size == (6 * sizeof(uint32) + TOTAL_COLLECTCARS_GARAGES * sizeof(*CarTypesCollected) + sizeof(uint32) + TOTAL_HIDEOUT_GARAGES * NUM_GARAGE_STORED_CARS * sizeof(CStoredCar) + NUM_GARAGES * sizeof(CGarage)));
+#else
 	assert(size == 7876);
 	//assert(size == (6 * sizeof(uint32) + TOTAL_COLLECTCARS_GARAGES * sizeof(*CarTypesCollected) + sizeof(uint32) + TOTAL_HIDEOUT_GARAGES * NUM_GARAGE_STORED_CARS * sizeof(CStoredCar) + NUM_GARAGES * sizeof(CGarage)));
+#endif
 	CloseHideOutGaragesBeforeSave();
 	ReadSaveBuf(&NumGarages, buf);
 	int32 tempInt;
