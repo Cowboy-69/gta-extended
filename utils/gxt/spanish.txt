@@ -1504,17 +1504,17 @@ Acelerar
 [FEC_CCF]
 Configuración:
 
-[FEC_CF1]   
-Clásico
+[FEC_CF1]
+Configuración 1
 
-[FEC_CF2]   
-Estándar
+[FEC_CF2]
+Configuración 2
 
-[FEC_CF3]   
-Clásico
+[FEC_CF3]
+Configuración 3
 
-[FEC_CF4]   
-Estándar
+[FEC_CF4]
+Configuración 4
 
 [FEC_CDP]
 Pantalla del mando
@@ -14415,133 +14415,6 @@ PED DENSITY
 
 [FEM_CAR]
 CAR DENSITY
-
-{______________________________Vice Extended______________________________}
-[FEC_AIM]   
-Apuntar auto
-
-[FEC_LSX]   
-Mira la sensibilidad X
-
-[FEC_LSY]   
-Mira la sensibilidad Y
-
-[FEC_ASX]   
-Apuntar la sensibilidad X
-
-[FEC_ASY]   
-Apuntar la sensibilidad Y
-
-[FEC_IVL]   
-Invertir verticalmente
-
-[FEC_LZN]   
-Zona muerta del stick izquierdo
-
-[FEC_RZN]   
-Zona muerta del stick derecho
-
-[FEC_VBF]   
-Fuerza de vibración
-
-[FEC_PRS]   
-Estación de radio anterior
-
-[FEC_NRS]   
-Próxima emisora de radio
-
-[FEC_RTC]   
-Girar cámara
-
-[FET_AGC]   
-Configuración del mando
-
-[FET_AGS]   
-Configuración del mando
-
-[FEC_FOV]   
-Campo de visión
-
-[FEC_ACV]   
-Autocentrado en vehículo
-
-[FEC_RVD]   
-Vehículo relativo mientras conduce por
-
-[FEC_DOM]   
-DOOM Modo
-
-[GA_22]
-¡Sólo un coche!
-
-[GA_23]
-No tienes suficiente dinero para comprar esta modificación
-
-[GA_24]
-Ya tiene esta modificación
-
-[LG_39]
-Inmuebles en venta
-
-[FEC_WAL]
-Caminar
-
-[FEC_RZO]
-Zoom radar
-
-[FEC_REL]
-Recargar arma
-
-[FED_GPS]
-GPS
-
-[FEC_DS5]
-DUALSENSE
-
-[FEC_ATK]
-Ataque
-
-[FET_SGP]
-Guardar fotos en una galería
-
-[FES_SAV]
-No puedes guardar la partida en este momento. Para guardar la partida, no debes estar en una misión, no moverte ni tener un nivel buscado.
-
-[FET_AUT]
-Autosave
-
-[FEM_SL9]
-Archivo de autoguardado no disponible
-
-[FEO_OTH]
-Otros ajustes
-
-[LG_40]
-Tienda de bombas
-
-[LG_41]
-Carrera
-
-[LG_42]
-Farmacia
-
-[FEC_LTS]
-Intermitentes a la izquierda
-
-[FEC_RTS]
-Intermitentes a la derecha
-
-[FEC_EML]
-Luces de emergencia
-
-[CLTHST1]
-Use ~h~~k~~PED_CYCLE_WEAPON_LEFT~ ~h~~k~~PED_CYCLE_WEAPON_RIGHT~ ~h~~k~~PED_JUMPING~ ~w~ to choose clothes. To buy clothes, press ~h~~k~~PED_ANSWER_PHONE~ ~w~. Press ~h~~k~~VEHICLE_ENTER_EXIT~ to leave the store
-
-[CLTHST2]
-You don't have enough money to buy this item
-
-[FED_BRL]
-Sin fronteras
 
 { end of file }
 [DUMMY]
