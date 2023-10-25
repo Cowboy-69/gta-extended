@@ -655,8 +655,14 @@ void AirWaysCheat(void) {
 	if (CVehicle::bAirWaysCheat) {
 		string = TheText.Get("CHEATOF");
 
-		if (FindPlayerVehicle())
-			FindPlayerVehicle()->bAffectedByGravity = true;
+		for (int i = CPools::GetVehiclePool()->GetSize() - 1; i >= 0; i--) {
+			CVehicle* vehicle = CPools::GetVehiclePool()->GetSlot(i);
+			if (!vehicle)
+				continue;
+			
+			vehicle->bAffectedByGravity = true;
+			vehicle->m_vecMoveSpeed.z += 0.01f;
+		}
 	} else {
 		string = TheText.Get("CHEAT1");
 	}
@@ -785,6 +791,9 @@ CControllerState::Clear(void)
 	Square = Triangle = Cross = Circle = 0;
 	LeftShock = RightShock = 0;
 	NetworkTalk = 0;
+#ifdef IMPROVED_MENU_AND_INPUT // walking on the key
+	bWalk = 0;
+#endif
 }
 
 void CKeyboardState::Clear()
@@ -1124,6 +1133,9 @@ CControllerState CPad::ReconcileTwoControllersInput(CControllerState const &Stat
 	_RECONCILE_BUTTON(LeftShock);
 	_RECONCILE_BUTTON(RightShock);
 	_RECONCILE_BUTTON(NetworkTalk);
+#ifdef IMPROVED_MENU_AND_INPUT // walking on the key
+	_RECONCILE_BUTTON(bWalk);
+#endif
 	_RECONCILE_AXIS(LeftStickX);
 	_RECONCILE_AXIS(LeftStickY);
 	_FIX_AXIS_DIR(LeftStickX);
@@ -2393,6 +2405,9 @@ int16 CPad::GetSteeringUpDown(void)
 		case 0:
 		case 2:
 		{
+#ifdef IMPROVED_MENU_AND_INPUT
+			return NewState.LeftStickY;
+#else
 			int16 axis = NewState.LeftStickY;
 			int16 dpad = (NewState.DPadDown - NewState.DPadUp) / 2;
 
@@ -2400,6 +2415,7 @@ int16 CPad::GetSteeringUpDown(void)
 				return axis;
 			else
 				return dpad;
+#endif
 
 			break;
 		}
@@ -2499,18 +2515,14 @@ int16 CPad::GetPedWalkLeftRight(void)
 		case 2:
 		{
 			int16 axis = NewState.LeftStickX;
+#ifdef IMPROVED_MENU_AND_INPUT
+			if (Abs(axis) > FrontEndMenuManager.m_PrefsLeftStickDeadzone)
+				return axis;
+			else
+				return 0;
+#else
 			int16 dpad = (NewState.DPadRight - NewState.DPadLeft) / 2;
 
-#ifdef IMPROVED_MENU_AND_INPUT
-			if (Abs(axis) > Abs(dpad)) {
-				if (Abs(axis) > FrontEndMenuManager.m_PrefsLeftStickDeadzone)
-					return axis;
-				else
-					return 0;
-			} else {
-				return dpad;
-			}
-#else
 			if ( Abs(axis) > Abs(dpad) )
 				return axis;
 			else
@@ -2551,18 +2563,14 @@ int16 CPad::GetPedWalkUpDown(void)
 		case 2:
 		{
 			int16 axis = NewState.LeftStickY;
+#ifdef IMPROVED_MENU_AND_INPUT
+			if (Abs(axis) > FrontEndMenuManager.m_PrefsLeftStickDeadzone)
+				return axis;
+			else
+				return 0;
+#else
 			int16 dpad = (NewState.DPadDown - NewState.DPadUp) / 2;
 
-#ifdef IMPROVED_MENU_AND_INPUT
-			if (Abs(axis) > Abs(dpad)) {
-				if (Abs(axis) > FrontEndMenuManager.m_PrefsLeftStickDeadzone)
-					return axis;
-				else
-					return 0;
-			} else {
-				return dpad;
-			}
-#else
 			if ( Abs(axis) > Abs(dpad) )
 				return axis;
 			else
@@ -2594,6 +2602,9 @@ int16 CPad::GetPedWalkUpDown(void)
 
 int16 CPad::GetAnalogueUpDown(void)
 {
+#ifdef IMPROVED_MENU_AND_INPUT
+	return NewState.LeftStickY;
+#else
 	switch (CURMODE)
 	{
 		case 0:
@@ -2606,7 +2617,6 @@ int16 CPad::GetAnalogueUpDown(void)
 				return axis;
 			else
 				return dpad;
-
 			break;
 		}
 
@@ -2620,10 +2630,14 @@ int16 CPad::GetAnalogueUpDown(void)
 	}
 
 	return 0;
+#endif
 }
 
 int16 CPad::GetAnalogueLeftRight(void)
 {
+#ifdef IMPROVED_MENU_AND_INPUT
+	return NewState.LeftStickX;
+#else
 	switch (CURMODE)
 	{
 		case 0:
@@ -2650,6 +2664,7 @@ int16 CPad::GetAnalogueLeftRight(void)
 	}
 
 	return 0;
+#endif
 }
 
 bool CPad::GetLookLeft(void)
@@ -3092,10 +3107,17 @@ int32 CPad::GetWeapon(void)
 		case 0:
 		case 2:
 		{
-			if (IsAffectedByController && FindPlayerVehicle())
-				return NewState.RightShoulder2 || NewState.Circle;
+			if (FindPlayerVehicle()) {
+				if (IsAffectedByController)
+					return NewState.RightShoulder1 || NewState.Circle;
 
-			return NewState.Circle || (NewState.RightShoulder1 && NewState.LeftShoulder1);
+				return NewState.Circle || (NewState.RightShoulder1 && NewState.LeftShoulder1);
+			}
+
+			if (IsAffectedByController)
+				return NewState.RightShoulder1 && NewState.LeftShoulder1;
+
+			return NewState.LeftShoulder1;
 
 			break;
 		}
@@ -3103,10 +3125,14 @@ int32 CPad::GetWeapon(void)
 		case 1:
 		case 3:
 		{
-			if (IsAffectedByController && FindPlayerVehicle())
-				return NewState.RightShoulder1 || NewState.Circle;
+			if (FindPlayerVehicle()) {
+				if (IsAffectedByController)
+					return NewState.RightShoulder1 || NewState.Circle;
+				else
+					return NewState.RightShoulder2 || NewState.Circle;
+			}
 
-			return NewState.RightShoulder2 || NewState.Circle;
+			return NewState.RightShoulder2;
 
 			break;
 		}
@@ -3149,7 +3175,10 @@ bool CPad::WeaponJustDown(void)
 		case 0:
 		case 2:
 		{
-			return !!(NewState.Circle && !OldState.Circle);
+			if (IsAffectedByController)
+				return !!(NewState.RightShoulder2 && !OldState.RightShoulder2) || !!(NewState.LeftShoulder1 && !OldState.LeftShoulder1);
+
+			return !!(NewState.LeftShoulder1 && !OldState.LeftShoulder1);
 
 			break;
 		}
@@ -3157,7 +3186,7 @@ bool CPad::WeaponJustDown(void)
 		case 1:
 		case 3:
 		{
-			return !!(NewState.RightShoulder2 && !OldState.RightShoulder2) || !!(NewState.Circle && !OldState.Circle);
+			return !!(NewState.RightShoulder2 && !OldState.RightShoulder2);
 
 			break;
 		}
@@ -3364,6 +3393,96 @@ bool CPad::CycleCameraModeDownJustDown(void)
 }
 
 #ifdef IMPROVED_MENU_AND_INPUT
+bool CPad::GetRadarZoomOut(void)
+{
+	if (ArePlayerControlsDisabled())
+		return false;
+
+	if (JustOutOfFrontend != 0)
+		return false;
+
+	if (TheCamera.PlayerWeaponMode.Mode == CCam::MODE_SNIPER || TheCamera.PlayerWeaponMode.Mode == CCam::MODE_CAMERA)
+		return false;
+
+	return IsAffectedByController ? !!NewState.DPadDown : !!NewState.DPadUp;
+}
+
+bool CPad::GetPedWalk()
+{
+	if (ArePlayerControlsDisabled())
+		return false;
+
+	return NewState.bWalk;
+}
+
+bool CPad::WeaponReloadJustDown()
+{
+	if (ArePlayerControlsDisabled())
+		return false;
+
+	return !!(NewState.Circle && !OldState.Circle);
+}
+
+bool CPad::GetMeleeWeapon()
+{
+	if ( ArePlayerControlsDisabled() )
+		return false;
+
+	switch (CURMODE)
+	{
+		case 0:
+		case 2:
+		{
+			if (IsAffectedByController)
+				return NewState.Circle;
+
+			return NewState.LeftShoulder1;
+
+			break;
+		}
+
+		case 1:
+		case 3:
+		{
+			return NewState.Circle || NewState.RightShoulder2;
+
+			break;
+		}
+	}
+
+	return false;
+}
+
+bool CPad::MeleeWeaponJustDown()
+{
+	if (ArePlayerControlsDisabled())
+		return false;
+
+	switch (CURMODE)
+	{
+		case 0:
+		case 2:
+		{
+			if (IsAffectedByController)
+				return !!(NewState.LeftShoulder1 && !OldState.LeftShoulder1) || !!(NewState.Circle && !OldState.Circle);
+
+			return !!(NewState.LeftShoulder1 && !OldState.LeftShoulder1);
+
+			break;
+		}
+
+		case 1:
+		case 3:
+		{
+			return !!(NewState.Circle && !OldState.Circle) || !!(NewState.RightShoulder2 && !OldState.RightShoulder2);
+
+			break;
+		}
+	}
+
+	return false;
+}
+
 bool CPad::NextStationJustDown(void)
 #else
 bool CPad::ChangeStationJustDown(void)
@@ -3605,7 +3724,10 @@ bool CPad::CollectPickupJustDown(void)
 		return false;
 
 #ifdef IMPROVED_MENU_AND_INPUT
-	return !!(NewState.LeftShoulder1 && !OldState.LeftShoulder1);
+	if (IsAffectedByController)
+		return !!(NewState.LeftShoulder1 && !OldState.LeftShoulder1);
+
+	return !!(NewState.Circle && !OldState.Circle);
 #else
 	switch (CURMODE)
 	{

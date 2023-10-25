@@ -10116,6 +10116,23 @@ cAudioManager::ClearMissionAudio(uint8 slot)
 	}
 }
 
+#ifdef IMPROVED_TECH_PART // skip a phone call
+void cAudioManager::FinishMissionAudioPhoneDialogue(uint8 slot)
+{
+	if (!m_bIsMissionAudioPhoneCall[slot])
+		return;
+
+	if (!SampleManager.IsStreamPlaying(slot + 1))
+		return;
+
+	m_nMissionAudioPlayStatus[slot] = PLAY_STATUS_FINISHED;
+	m_bIsMissionAudioPhoneCall[slot] = FALSE;
+	m_nMissionAudioSampleIndex[slot] = NO_SAMPLE;
+	SampleManager.StopStreamedFile(slot + 1);
+	m_nMissionAudioFramesToPlay[slot] = 0;
+}
+#endif
+
 void
 cAudioManager::ProcessMissionAudioSlot(uint8 slot)
 {

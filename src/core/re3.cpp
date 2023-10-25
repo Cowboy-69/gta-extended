@@ -206,6 +206,34 @@ CustomFrontendOptionsPopulate(void)
 
 mINI::INIFile ini("reVC.ini");
 mINI::INIStructure cfg;
+#ifdef VICE_EXTENDED // Game limits
+mINI::INIFile limitsIni("limits.ini");
+mINI::INIStructure limitsCfg;
+
+uint8 bInitLimitsIni = limitsIni.read(limitsCfg);
+
+uint16 ReadAndGetGameLimit(const char* key)
+{
+	mINI::INIMap<std::string> section = limitsCfg.get("Limits");
+	if (section.has(key)) {
+		char* endPtr;
+		return strtol(section.get(key).c_str(), &endPtr, 0);
+	}
+	return 0;
+}
+
+extern uint16 NUMPTRNODES = ReadAndGetGameLimit("NUMPTRNODES");
+extern uint16 NUMENTRYINFOS = ReadAndGetGameLimit("NUMENTRYINFOS");
+extern uint16 NUMPEDS = ReadAndGetGameLimit("NUMPEDS");
+extern uint16 NUMVEHICLES = ReadAndGetGameLimit("NUMVEHICLES");
+extern uint16 NUMBUILDINGS = ReadAndGetGameLimit("NUMBUILDINGS");
+extern uint16 NUMTREADABLES = ReadAndGetGameLimit("NUMTREADABLES");
+extern uint16 NUMOBJECTS = ReadAndGetGameLimit("NUMOBJECTS");
+extern uint16 NUMDUMMIES = ReadAndGetGameLimit("NUMDUMMIES");
+extern uint16 NUMAUDIOSCRIPTOBJECTS = ReadAndGetGameLimit("NUMAUDIOSCRIPTOBJECTS");
+extern uint16 NUMCOLMODELS = ReadAndGetGameLimit("NUMCOLMODELS");
+extern uint16 MAXWHEELMODELS = ReadAndGetGameLimit("MAXWHEELMODELS");
+#endif
 
 bool ReadIniIfExists(const char *cat, const char *key, uint32 *out)
 {
@@ -521,6 +549,7 @@ bool LoadINISettings()
 	ReadIniIfExists("Controller", "MouseAimSensX", &FrontEndMenuManager.m_PrefsMouseAimSensX);
 	ReadIniIfExists("Controller", "MouseLookSensY", &FrontEndMenuManager.m_PrefsMouseLookSensY);
 	ReadIniIfExists("Controller", "MouseAimSensY", &FrontEndMenuManager.m_PrefsMouseAimSensY);
+	ReadIniIfExists("Display", "GPS", &FrontEndMenuManager.m_PrefsGPS);
 #else
 	ReadIniIfExists("Controller", "Vibration", &FrontEndMenuManager.m_PrefsUseVibration);
 #endif
@@ -667,6 +696,7 @@ void SaveINISettings()
 	StoreIni("Controller", "MouseAimSensX", FrontEndMenuManager.m_PrefsMouseAimSensX);
 	StoreIni("Controller", "MouseLookSensY", FrontEndMenuManager.m_PrefsMouseLookSensY);
 	StoreIni("Controller", "MouseAimSensY", FrontEndMenuManager.m_PrefsMouseAimSensY);
+	StoreIni("Display", "GPS", FrontEndMenuManager.m_PrefsGPS);
 #else
 	StoreIni("Controller", "Vibration", FrontEndMenuManager.m_PrefsUseVibration);
 #endif

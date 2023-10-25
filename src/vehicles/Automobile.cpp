@@ -2765,6 +2765,43 @@ CAutomobile::PreRender(void)
 #endif
 
 		// Light shadows
+#ifdef IMPROVED_VEHICLES // Headlight texture now divided into two parts, reversing lights have texture of light (thanks to Alex_Delphi)
+		if(!alarmOff){
+			CVector2D fwd(GetForward());
+			fwd.Normalise();
+			float f = tailLightPos.y + 2.0f;
+			if(Damage.GetLightStatus(VEHLIGHT_REAR_RIGHT) == LIGHT_STATUS_OK) {
+				lightR += CVector(f * fwd.x, f * fwd.y, 2.0f);
+				if(m_fGasPedal < 0.0f) // reversing
+					CShadows::StoreCarLightShadow(this, (uintptr)this + 27, gpShadowExplosionTex, &lightR, 1.0f, 0.0f, 0.0f, -1.0f, 35, 35, 35, 4.0f);
+				else
+					CShadows::StoreCarLightShadow(this, (uintptr)this + 27, gpShadowExplosionTex, &lightR, 1.0f, 0.0f, 0.0f, -1.0f, 35, 0, 0, 4.0f);
+			}
+			if(Damage.GetLightStatus(VEHLIGHT_REAR_LEFT) == LIGHT_STATUS_OK) {
+				lightL += CVector(f * fwd.x, f * fwd.y, 2.0f);
+				if(m_fGasPedal < 0.0f) // reversing
+					CShadows::StoreCarLightShadow(this, (uintptr)this + 29, gpShadowExplosionTex, &lightL, 1.0f, 0.0f, 0.0f, -1.0f, 35, 35, 35, 4.0f);
+				else
+					CShadows::StoreCarLightShadow(this, (uintptr)this + 29, gpShadowExplosionTex, &lightL, 1.0f, 0.0f, 0.0f, -1.0f, 35, 0, 0, 4.0f);
+			}
+
+
+			lightR = GetMatrix() * headLightPos;
+			lightL = lightR;
+			lightL -= GetRight() * 2.0f * headLightPos.x;
+			f = headLightPos.y + 6.0f;			
+			if(Damage.GetLightStatus(VEHLIGHT_FRONT_RIGHT) == LIGHT_STATUS_OK) {
+				lightR += CVector(f * fwd.x, f * fwd.y, 2.0f);
+				CShadows::StoreCarLightShadow(this, (uintptr)this + 22, gpShadowHeadLightsTex, &lightR, 8.0f * fwd.x, 8.0f * fwd.y,
+				4.5f * fwd.y, -4.5f * fwd.x, 45, 45, 45, 7.0f);
+			}
+			if(Damage.GetLightStatus(VEHLIGHT_FRONT_LEFT) == LIGHT_STATUS_OK) {
+				lightL += CVector(f * fwd.x, f * fwd.y, 2.0f);
+				CShadows::StoreCarLightShadow(this, (uintptr)this + 25, gpShadowHeadLightsTex, &lightL, 8.0f * fwd.x, 8.0f * fwd.y,
+				4.5f * fwd.y, -4.5f * fwd.x, 45, 45, 45, 7.0f);
+			}
+		}
+#else
 		if(!alarmOff){
 			CVector pos = GetPosition();
 			CVector2D fwd(GetForward());
@@ -2784,6 +2821,7 @@ CAutomobile::PreRender(void)
 				CShadows::StoreCarLightShadow(this, (uintptr)this + 25, gpShadowExplosionTex, &pos,
 					3.0f, 0.0f, 0.0f, -3.0f, 35, 0, 0, 4.0f);
 		}
+#endif
 
 		if(this == FindPlayerVehicle() && !alarmOff){
 			if(Damage.GetLightStatus(VEHLIGHT_FRONT_LEFT) == LIGHT_STATUS_OK ||
@@ -3430,9 +3468,11 @@ CAutomobile::Render(void)
 		if (!wheelAtomic)
 			continue;
 
-		RpMaterial* material = wheelAtomic->geometry->matList.materials[0];
 		int wheelColor = CGarages::bPlayerInModGarage ? m_nTempRimsColor : m_nRimsColor;
-		material->color = CVehicleModelInfo::ms_vehicleColourTable[wheelColor];
+		RpMaterial* material1 = wheelAtomic->geometry->matList.materials[0];
+		//RpMaterial* material2 = wheelAtomic->geometry->matList.materials[1];
+		material1->color = CVehicleModelInfo::ms_vehicleColourTable[wheelColor];
+		//material2->color = CVehicleModelInfo::ms_vehicleColourTable[wheelColor];
 	}
 
 	// spoiler
@@ -5073,59 +5113,6 @@ void CAutomobile::DoHoverAboveSurface(void)
 		m_aWheelColPoints[i].surfaceB = SURFACE_DEFAULT;
 	}
 
-	/*CPad* pad = CPad::GetPad(0);
-
-	CVector upVector;
-
-	float waterLevel;
-	CColPoint hitPoint;
-	CEntity* hitEntity;
-	if (!pad->GetCarGunUpDown() && CWorld::ProcessLineOfSight(GetPosition(), GetPosition() - GetUp() * 5.0f, hitPoint, hitEntity, true, false, false, false, false, false, true) ||
-		CWorld::ProcessLineOfSight(GetPosition(), GetPosition() - CVector(0.0f, 0.0f, 3.0f), hitPoint, hitEntity, true, false, false, false, false, false, true)) {
-		float height = m_vecMoveSpeed.Magnitude2D() < 0.1f ? 0.9f : 1.5f;
-		float dist = (GetPosition().z - height) - hitPoint.point.z;
-		dist *= 20.0f;
-		ApplyMoveForce(CVector(0.0f, 0.0f, 20.0f - dist));
-
-		upVector = -hitPoint.normal;
-	} else if (CWaterLevel::GetWaterLevel(GetPosition(), &waterLevel, false) && GetPosition().z < (waterLevel + 3.0f)) {
-		float dist = (GetPosition().z - 1.0f) - waterLevel;
-		dist *= 20.0f;
-		ApplyMoveForce(CVector(0.0f, 0.0f, 20.0f - dist));
-
-		upVector = GetUp();
-		if (GetUp().z > 0.0f)
-			upVector.z = -upVector.z;
-	} else {
-		float loweringForce = 30.0f;
-		ApplyMoveForce(CVector(0.0f, 0.0f, -1.0f) * loweringForce * pad->GetHandBrake() / 255);
-
-		upVector = GetUp();
-		if (GetUp().z > 0.0f)
-			upVector.z = -upVector.z;
-		else
-			ApplyTurnForce(upVector * 20.0f, GetRight());
-	}
-
-	float movementForce = pHandling->Transmission.fMaxVelocity * 80.0f;
-	float pitchForce = 50.0f;
-	float yawForce = pHandling->fMass / 60.0f;
-
-	ApplyMoveForce(-m_vecMoveSpeed * 100.0f);
-	m_vecTurnSpeed *= 0.9f;
-
-	CVector centerOfMass = Multiply3x3(GetMatrix(), m_vecCentreOfMass);
-
-	ApplyTurnForce(GetRight() * yawForce * pad->GetSteeringLeftRight() / 255, GetForward() + centerOfMass);
-	ApplyTurnForce(-GetUp() * 17.0f * pad->GetSteeringLeftRight() / 255, GetRight() + centerOfMass);
-
-	ApplyTurnForce(GetUp() * pitchForce * -pad->GetCarGunUpDown() / 255, GetForward() + centerOfMass);
-	ApplyTurnForce(GetUp() * pitchForce * pad->GetSteeringUpDown() / 255, GetForward() + centerOfMass);
-
-	ApplyMoveForce(GetForward() * movementForce * pad->GetAccelerate() / 255);
-	ApplyMoveForce(-GetForward() * movementForce * pad->GetBrake() / 255);
-
-	ApplyTurnForce(GetUp() * 50.0f, upVector + centerOfMass);*/
 	bool bPlayerVehicle = FindPlayerVehicle() == this;
 
 	CVector upVector;
@@ -6189,6 +6176,12 @@ CAutomobile::ProcessOpenDoor(uint32 component, uint32 anim, float time)
 	case ANIM_STD_GETOUT_LO_LHS:
 	case ANIM_STD_GETOUT_RHS:
 	case ANIM_STD_GETOUT_LO_RHS:
+#ifdef IMPROVED_TECH_PART // Opening the door when jumping out and crawling out of the car (thanks to Alex_Delphi)
+	case ANIM_STD_CRAWLOUT_LHS:
+	case ANIM_STD_CRAWLOUT_RHS:
+	case ANIM_STD_ROLLOUT_LHS:
+	case ANIM_STD_ROLLOUT_RHS:
+#endif
 		ProcessDoorOpenAnimation(this, component, door, time, 0.06f, 0.43f);
 		break;
 	case ANIM_STD_CAR_CLOSE_LHS:
@@ -6878,6 +6871,11 @@ CAutomobile::ProcessSwingingDoor(int32 component, eDoors door)
 	mat.SetRotate(axes[0], axes[1], axes[2]);
 	mat.Translate(pos);
 	mat.UpdateRW();
+
+#ifdef IMPROVED_TECH_PART // Open doors can close (thanks to Alex_Delphi)
+	if (!Doors[door].IsFullyOpen() && (Abs(Doors[door].m_fAngle) < 0.035f) && (Doors[door].m_fAngVel > 0.01f))
+		OpenDoor(component, door, 0.0f);
+#endif
 
 	// make wind rip off bonnet
 	if(door == DOOR_BONNET && Doors[door].m_nDoorState == DOORST_OPEN &&
@@ -8048,9 +8046,12 @@ void CAutomobile::TrySetRandomCarMod(bool bForce)
 	}
 
 	if (bForce || CGeneral::GetRandomNumberInRange(0.0f, 1.0f) < 0.5f) {
-		int wheels[MAXWHEELMODELS] = { MI_WHEEL_RIM, MI_WHEEL_OFFROAD, MI_WHEEL_TRUCK, MI_WHEEL_SPORT,
-									   MI_WHEEL_SALOON, MI_WHEEL_LIGHTVAN, MI_WHEEL_CLASSIC, MI_WHEEL_ALLOY,
-									   MI_WHEEL_LIGHTTRUCK, MI_WHEEL_SMALLCAR, MI_WHEEL_CLASSIC2, MI_WHEEL_SALOON2 };
+		int wheels[] = { MI_WHEEL_RIM, MI_WHEEL_OFFROAD, MI_WHEEL_TRUCK, MI_WHEEL_SPORT, 
+						 MI_WHEEL_SALOON, MI_WHEEL_LIGHTVAN, MI_WHEEL_CLASSIC, MI_WHEEL_ALLOY,
+						 MI_WHEEL_LIGHTTRUCK, MI_WHEEL_SMALLCAR, 
+						 MI_WHEEL_CLASSIC2, MI_WHEEL_SALOON2, MI_WHEEL_LIGHTTRUCK2, MI_WHEEL_OFFROAD2, MI_WHEEL_SALOON3, 
+						 MI_WHEEL_16, MI_WHEEL_17, MI_WHEEL_18, MI_WHEEL_19, MI_WHEEL_20, MI_WHEEL_21, MI_WHEEL_22, MI_WHEEL_23, 
+						 MI_WHEEL_24, MI_WHEEL_25, MI_WHEEL_26, MI_WHEEL_27, MI_WHEEL_28, MI_WHEEL_29, MI_WHEEL_30, };
 		SetWheels(wheels[CGeneral::GetRandomNumberInRange(0, MAXWHEELMODELS)]);
 	}
 
@@ -8166,6 +8167,60 @@ void CAutomobile::SetWheelNumber(int modelIndex)
 		case MI_WHEEL_SALOON2:
 			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 12;
 			break;
+		case MI_WHEEL_LIGHTTRUCK2:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 13;
+			break;
+		case MI_WHEEL_OFFROAD2:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 14;
+			break;
+		case MI_WHEEL_SALOON3:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 15;
+			break;
+		case MI_WHEEL_16:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 16;
+			break;
+		case MI_WHEEL_17:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 17;
+			break;
+		case MI_WHEEL_18:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 18;
+			break;
+		case MI_WHEEL_19:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 19;
+			break;
+		case MI_WHEEL_20:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 20;
+			break;
+		case MI_WHEEL_21:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 21;
+			break;
+		case MI_WHEEL_22:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 22;
+			break;
+		case MI_WHEEL_23:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 23;
+			break;
+		case MI_WHEEL_24:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 24;
+			break;
+		case MI_WHEEL_25:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 25;
+			break;
+		case MI_WHEEL_26:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 26;
+			break;
+		case MI_WHEEL_27:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 27;
+			break;
+		case MI_WHEEL_28:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 28;
+			break;
+		case MI_WHEEL_29:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 29;
+			break;
+		case MI_WHEEL_30:
+			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 30;
+			break;
 		default:
 			m_aUpgrades[UPGRADE_WHEELS].m_nUpgradeNumber = 1;
 			break;
@@ -8199,6 +8254,42 @@ int CAutomobile::GetWheelModelIndexFromWheelNumber()
 			return MI_WHEEL_CLASSIC2;
 		case 12:
 			return MI_WHEEL_SALOON2;
+		case 13:
+			return MI_WHEEL_LIGHTTRUCK2;
+		case 14:
+			return MI_WHEEL_OFFROAD2;
+		case 15:
+			return MI_WHEEL_SALOON3;
+		case 16:
+			return MI_WHEEL_16;
+		case 17:
+			return MI_WHEEL_17;
+		case 18:
+			return MI_WHEEL_18;
+		case 19:
+			return MI_WHEEL_19;
+		case 20:
+			return MI_WHEEL_20;
+		case 21:
+			return MI_WHEEL_21;
+		case 22:
+			return MI_WHEEL_22;
+		case 23:
+			return MI_WHEEL_23;
+		case 24:
+			return MI_WHEEL_24;
+		case 25:
+			return MI_WHEEL_25;
+		case 26:
+			return MI_WHEEL_26;
+		case 27:
+			return MI_WHEEL_27;
+		case 28:
+			return MI_WHEEL_28;
+		case 29:
+			return MI_WHEEL_29;
+		case 30:
+			return MI_WHEEL_30;
 		default:
 			return MI_WHEEL_RIM;
 	}

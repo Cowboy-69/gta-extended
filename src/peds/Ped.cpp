@@ -699,9 +699,11 @@ CPed::SetMoveAnim(void)
 	}
 
 	AssocGroupId animGroupToUse;
+#ifndef IMPROVED_TECH_PART // Tommy's gang members use their own walk (thanks to Bloodriver)
 	if (m_leader && m_leader->IsPlayer())
 		animGroupToUse = ASSOCGRP_PLAYER;
 	else
+#endif
 		animGroupToUse = m_animGroup;
 
 	CAnimBlendAssociation *animAssoc = RpAnimBlendClumpGetFirstAssociation(GetClump(), ASSOC_BLOCK);
@@ -1623,7 +1625,9 @@ CPed::CalculateNewVelocity(void)
 			RwV3d Xaxis = { 1.0f, 0.0f, 0.0f };
 			RwV3d Zaxis = { 0.0f, 0.0f, 1.0f };
 #ifdef FIRING_AND_AIMING
-			if (FindPlayerPed() == this && !FindPlayerPed()->bIsDucking && FindPlayerPed()->bIsPlayerAiming && Abs(CPad::GetPad(0)->GetPedWalkLeftRight()) > 64) {
+			if (FindPlayerPed() == this && !FindPlayerPed()->bIsDucking && FindPlayerPed()->bIsPlayerAiming && 
+				Abs(CPad::GetPad(0)->GetPedWalkLeftRight()) > 64 && !CanWeRunAndFireWithWeapon()) {
+
 				newUpperLegs.pitch = -newUpperLegs.pitch;
 				newUpperLegs.yaw = -newUpperLegs.yaw;
 			}
@@ -4329,10 +4333,6 @@ CPed::CanStrafeOrMouseControl(void)
 
 #ifdef FIRING_AND_AIMING
 	CPlayerPed* playerPed = (CPlayerPed*)this;
-
-	if (CCamera::bFreeCam && playerPed->bIsPlayerAiming && playerPed->CanWeRunAndFireWithWeapon() && !playerPed->bIsDucking)
-		return false;
-
 	if (CCamera::bFreeCam && !playerPed->bIsPlayerAiming)
 #else
 	if(CCamera::bFreeCam)
@@ -5195,8 +5195,10 @@ void
 CPed::RemoveWeaponWhenEnteringVehicle(void)
 {
 #ifdef FIRING_AND_AIMING
-	if (IsPlayer() && !CDarkel::FrenzyOnGoing() && ((CPlayerPed*)this)->GetPlayerInfoForThisPlayerPed()->m_bDriveByAllowed) {
-		if (HasWeaponSlot(3) && GetWeapon(3).m_nAmmoTotal > 0 && (GetWeapon()->m_eWeaponType == WEAPONTYPE_COLT45 || GetWeapon(5).m_nAmmoTotal <= 0)) {
+	if (IsPlayer() && ((CPlayerPed*)this)->GetPlayerInfoForThisPlayerPed()->m_bDriveByAllowed) {
+		if (!CDarkel::FrenzyOnGoing() && HasWeaponSlot(3) && GetWeapon(3).m_nAmmoTotal > 0 && 
+			(GetWeapon()->m_eWeaponType == WEAPONTYPE_COLT45 || GetWeapon(5).m_nAmmoTotal <= 0)) {
+
 			if (m_storedWeapon == WEAPONTYPE_UNIDENTIFIED)
 				m_storedWeapon = GetWeapon()->m_eWeaponType;
 			SetCurrentWeapon(GetWeapon(3).m_eWeaponType);
@@ -5226,10 +5228,11 @@ CPed::ReplaceWeaponWhenExitingVehicle(void)
 	eWeaponType weaponType = GetWeapon()->m_eWeaponType;
 
 #ifdef IMPROVED_TECH_PART // hide/show weapon in car
-	AddWeaponModel(CWeaponInfo::GetWeaponInfo(weaponType)->m_nModelId);
+	if (IsPlayer() && (GetWeaponSlot(weaponType) == WEAPONSLOT_SUBMACHINEGUN || GetWeaponSlot(weaponType) == WEAPONSLOT_HANDGUN)) {
 #else
 	// If it's Uzi, we may have stored weapon. Uzi is the only gun we can use in car.
 	if (IsPlayer() && GetWeaponSlot(weaponType) == WEAPONSLOT_SUBMACHINEGUN) {
+#endif
 		if (m_storedWeapon != WEAPONTYPE_UNIDENTIFIED) {
 			SetCurrentWeapon(m_storedWeapon);
 			m_storedWeapon = WEAPONTYPE_UNIDENTIFIED;
@@ -5237,7 +5240,6 @@ CPed::ReplaceWeaponWhenExitingVehicle(void)
 	} else {
 		AddWeaponModel(CWeaponInfo::GetWeaponInfo(weaponType)->m_nModelId);
 	}
-#endif
 }
 
 void
@@ -7884,6 +7886,11 @@ CPed::ClearAnswerMobile(void)
 		RestorePreviousState();
 		m_pVehicleAnim = nil;
 	}
+
+#ifdef IMPROVED_TECH_PART // skip a phone call
+	if (IsPlayer())
+		((CPlayerPed*)this)->m_bSkipPhoneCall = false;
+#endif
 }
 
 void

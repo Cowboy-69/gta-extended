@@ -541,6 +541,12 @@ void CGarage::Update()
 						bChangedColour = (attempt < 10);
 						FindPlayerVehicle()->m_currentColour1 = colour1;
 						FindPlayerVehicle()->m_currentColour2 = colour2;
+#ifdef VEHICLE_MODS // Repainting also paints the spoiler
+						if (FindPlayerVehicle()->IsCar()) {
+							((CAutomobile*)FindPlayerVehicle())->m_nSpoilerColor = colour1;
+							((CAutomobile*)FindPlayerVehicle())->m_nTempSpoilerColor = colour1;
+						}
+#endif
 						if (bChangedColour) {
 							for (int i = 0; i < NUM_PARTICLES_IN_RESPRAY; i++) {
 								CVector pos;

@@ -580,7 +580,11 @@ CPopulation::AddToPopulation(float minDist, float maxDist, float minDistOffScree
 
 	// Yeah, float
 	float maxPossiblePedsForArea = (zoneInfo.pedDensity + zoneInfo.carDensity) * playerInfo->m_fRoadDensity * PedDensityMultiplier
+#ifdef IMPROVED_TECH_PART // rampage (frenzy)
+		* (CDarkel::FrenzyOnGoing() ? 1.2f : CIniFile::PedNumberMultiplier) * missionAndWeatherMult;
+#else
 		* (CDarkel::FrenzyOnGoing() ? 1.f : CIniFile::PedNumberMultiplier) * missionAndWeatherMult;
+#endif
 	maxPossiblePedsForArea = Min(maxPossiblePedsForArea, selectedMaxPeds);
 
 	if (ms_nTotalPeds < maxPossiblePedsForArea || addCop) {

@@ -54,6 +54,10 @@ public:
 	CVector m_cachedCamUp;
 #endif
 
+#ifdef IMPROVED_TECH_PART // skip a phone call
+	bool m_bSkipPhoneCall;
+#endif
+
 	static bool bDontAllowWeaponChange;
 #ifndef MASTER
 	static bool bDebugPlayerInfo;

@@ -771,6 +771,9 @@ ProcessSlowMode(void)
 	int16 L3 = CPad::GetPad(0)->NewState.LeftShock;
 	int16 R3 = CPad::GetPad(0)->NewState.RightShock;
 	int16 networktalk = CPad::GetPad(0)->NewState.NetworkTalk;
+#ifdef IMPROVED_MENU_AND_INPUT // walking on the key
+	int16 walk = CPad::GetPad(0)->NewState.bWalk;
+#endif
 	int16 stop = true;
 	
 	do
@@ -834,6 +837,9 @@ ProcessSlowMode(void)
 	CPad::GetPad(0)->NewState.LeftShock = L3;
 	CPad::GetPad(0)->NewState.RightShock = R3;
 	CPad::GetPad(0)->NewState.NetworkTalk = networktalk;
+#ifdef IMPROVED_MENU_AND_INPUT // walking on the key
+	CPad::GetPad(0)->NewState.bWalk = walk;
+#endif
 }
 
 

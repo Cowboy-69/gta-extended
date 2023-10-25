@@ -340,6 +340,19 @@ void re3_usererror(const char *format, ...);
 float InterpFloat(float currentValue, float newValue, float interpSpeed);
 CVector InterpVector(CVector currentValue, CVector newValue, float interpSpeed);
 #endif
+#ifdef VICE_EXTENDED // Game limits
+extern uint16 NUMPTRNODES;
+extern uint16 NUMENTRYINFOS;
+extern uint16 NUMPEDS;
+extern uint16 NUMVEHICLES;
+extern uint16 NUMBUILDINGS;
+extern uint16 NUMTREADABLES;
+extern uint16 NUMOBJECTS;
+extern uint16 NUMDUMMIES;
+extern uint16 NUMAUDIOSCRIPTOBJECTS;
+extern uint16 NUMCOLMODELS;
+extern uint16 MAXWHEELMODELS;
+#endif
 
 #define DEBUGBREAK() __debugbreak();
 

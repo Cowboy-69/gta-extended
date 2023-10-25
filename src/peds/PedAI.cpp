@@ -4463,6 +4463,14 @@ CPed::SetExitCar(CVehicle *veh, uint32 wantedDoorNode)
 				}
 
 			} else {
+#ifdef IMPROVED_TECH_PART // Door opening when jumping out of the car (thanks to Alex_Delphi)
+				if (canJumpOut) {
+					if (m_vehDoor == CAR_DOOR_LF || m_vehDoor == CAR_DOOR_LR)
+						veh->ProcessOpenDoor(m_vehDoor, ANIM_STD_ROLLOUT_LHS, 1.0f);
+					else if (m_vehDoor == CAR_DOOR_RF || m_vehDoor == CAR_DOOR_RR)
+						veh->ProcessOpenDoor(m_vehDoor, ANIM_STD_ROLLOUT_RHS, 1.0f);
+				}
+#endif
 				switch (m_vehDoor) {
 					case CAR_DOOR_RF:
 						if (canJumpOut) {

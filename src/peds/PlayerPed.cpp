@@ -31,6 +31,9 @@
 #ifdef IMPROVED_MENU_AND_INPUT
 #include "Frontend.h"
 #endif
+#ifdef IMPROVED_TECH_PART // skiped phone calls
+#include "AudioManager.h"
+#endif
 
 #define PAD_MOVE_TO_GAME_WORLD_MOVE 60.0f
 
@@ -124,6 +127,10 @@ CPlayerPed::CPlayerPed(void) : CPed(PEDTYPE_PLAYER1)
 
 #ifdef IMPROVED_MENU_AND_INPUT
 	bIsAutoAiming = false;
+#endif
+
+#ifdef IMPROVED_TECH_PART // skiped phone calls
+	m_bSkipPhoneCall = false;
 #endif
 }
 
@@ -592,7 +599,9 @@ CPlayerPed::MakeChangesForNewWeapon(eWeaponType weapon)
 	SetCurrentWeapon(weapon);
 	m_nSelectedWepSlot = m_currentWeapon;
 
+#ifndef IMPROVED_MENU_AND_INPUT // Disabling automatic reloading when changing weapons (thanks to VitalRus)
 	GetWeapon()->m_nAmmoInClip = Min(GetWeapon()->m_nAmmoTotal, CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType)->m_nAmountofAmmunition);
+#endif
 
 #if defined FIRING_AND_AIMING && defined FIRST_PERSON
 	if (IsDoomMode() && GetWeapon()->GetInfo()->IsFlagSet(WEAPONFLAG_CANAIM_WITHARM))
@@ -1143,7 +1152,11 @@ CPlayerPed::ProcessWeaponSwitch(CPad *padUsed)
 	if (CDarkel::FrenzyOnGoing() || m_attachedTo)
 		goto switchDetectDone;
 
+#ifdef IMPROVED_MENU_AND_INPUT // You cannot switch weapons during reloading
+	if (!m_pPointGunAt && !bDontAllowWeaponChange && GetWeapon()->m_eWeaponType != WEAPONTYPE_DETONATOR && GetWeapon()->m_eWeaponState != WEAPONSTATE_RELOADING) { 
+#else
 	if (!m_pPointGunAt && !bDontAllowWeaponChange && GetWeapon()->m_eWeaponType != WEAPONTYPE_DETONATOR) {
+#endif
 		if (padUsed->CycleWeaponRightJustDown()) {
 
 			if (TheCamera.PlayerWeaponMode.Mode != CCam::MODE_M16_1STPERSON
@@ -1467,7 +1480,11 @@ CPlayerPed::CanIKReachThisTarget(CVector target, CWeapon* weapon, bool zRotImpor
 	float angleToFace = CGeneral::GetRadianAngleBetweenPoints(target.x, target.y, GetPosition().x, GetPosition().y);
 	float angleDiff = CGeneral::LimitRadianAngle(angleToFace - m_fRotationCur);
 
+#ifdef FIRING_AND_AIMING // decrease the auto-aim angle
+	return (!zRotImportant || CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->IsFlagSet(WEAPONFLAG_CANAIM_WITHARM) || Abs(angleDiff) <= HALFPI) && TheCamera.IsSphereVisible(target, 1.0f) &&
+#else
 	return (!zRotImportant || CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->IsFlagSet(WEAPONFLAG_CANAIM_WITHARM) || Abs(angleDiff) <= HALFPI) &&
+#endif
 		(CWeaponInfo::GetWeaponInfo(weapon->m_eWeaponType)->IsFlagSet(WEAPONFLAG_CANAIM_WITHARM) || Abs(target.z - GetPosition().z) <= (target - GetPosition()).Magnitude2D());
 }
 
@@ -1789,7 +1806,7 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 				bDontAllowWeaponChange = !IsDoomMode();
 
 				SetAimFlag(m_fRotationCur);
-				((CPlayerPed*)this)->m_fFPSMoveHeading = TheCamera.Find3rdPersonQuickAimPitch();
+				m_fFPSMoveHeading = TheCamera.Find3rdPersonQuickAimPitch();
 
 				if (m_nPedState != PED_ATTACK && weapon != WEAPONTYPE_CAMERA) {
 					SetPointGunAt(nil);
@@ -1917,13 +1934,94 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 #endif
 	}
 
+#ifdef IMPROVED_MENU_AND_INPUT
+	if (padUsed->GetMeleeWeapon() && weaponInfo->m_nWeaponSlot <= WEAPONSLOT_MELEE && m_nMoveState != PEDMOVE_SPRINT) {
+		if (m_nSelectedWepSlot == m_currentWeapon) {
+			if (m_nPedState == PED_ATTACK) {
+				if (padUsed->MeleeWeaponJustDown()) {
+					m_bHaveTargetSelected = true;
+				} else if (!m_bHaveTargetSelected) {
+					m_fAttackButtonCounter += CTimer::GetTimeStepNonClipped();
+				}
+			} else {
+				m_fAttackButtonCounter = 0.0f;
+				m_bHaveTargetSelected = false;
+			}
+
+			if (padUsed->MeleeWeaponJustDown()) {
+				if ((GetWeapon()->m_eWeaponType == WEAPONTYPE_UNARMED || GetWeapon()->m_eWeaponType == WEAPONTYPE_BRASSKNUCKLE) && 
+					(m_fMoveSpeed < 1.0f || m_nPedState == PED_FIGHT)) {
+					
+					StartFightAttack(padUsed->GetWeapon());
+				} else {
+					SetAttack(nil);
+				}
+			}
+		}
+	} else if (padUsed->GetWeapon() && m_nMoveState != PEDMOVE_SPRINT) {
+		if (m_nSelectedWepSlot == m_currentWeapon) {
+			if (m_pPointGunAt && FrontEndMenuManager.m_PrefsAutoaim) {
+				if (m_nPedState == PED_ATTACK) {
+					m_fAttackButtonCounter *= Pow(0.94f, CTimer::GetTimeStep());
+				} else {
+					m_fAttackButtonCounter = 0.0f;
+				}
+				SetAttack(m_pPointGunAt);
+			} else {
+				if (m_nPedState == PED_ATTACK) {
+					if (padUsed->WeaponJustDown()) {
+						m_bHaveTargetSelected = true;
+					} else if (!m_bHaveTargetSelected) {
+						m_fAttackButtonCounter += CTimer::GetTimeStepNonClipped();
+					}
+				} else {
+					m_fAttackButtonCounter = 0.0f;
+					m_bHaveTargetSelected = false;
+				}
+
+				if (GetWeapon()->m_eWeaponType != WEAPONTYPE_UNARMED && GetWeapon()->m_eWeaponType != WEAPONTYPE_BRASSKNUCKLE &&
+					!weaponInfo->IsFlagSet(WEAPONFLAG_FIGHTMODE)) {
+
+					if (GetWeapon()->m_eWeaponType != WEAPONTYPE_DETONATOR && GetWeapon()->m_eWeaponType != WEAPONTYPE_DETONATOR_GRENADE ||
+						padUsed->WeaponJustDown())
+
+						SetAttack(nil);
+				}
+			}
+		}
+	} else {
+		m_pedIK.m_flags &= ~CPedIK::LOOKAROUND_HEAD_ONLY;
+		if (m_nPedState == PED_ATTACK) {
+			m_bHaveTargetSelected = true;
+			bIsAttacking = false;
+		}
+	}
+
+	if (CPad::GetPad(0)->WeaponReloadJustDown() && weaponInfo->IsFlagSet(WEAPONFLAG_RELOAD)) {
+		CWeapon* weapon = GetWeapon();
+		if (weapon->m_eWeaponState == WEAPONSTATE_READY && weapon->m_nAmmoInClip > 0 && 
+			weapon->m_nAmmoInClip < weaponInfo->m_nAmountofAmmunition && weapon->m_nAmmoTotal != weapon->m_nAmmoInClip) {
+
+			weapon->m_eWeaponState = WEAPONSTATE_RELOADING;
+			weapon->m_nTimer = CTimer::GetTimeInMilliseconds() + weapon->GetInfo()->m_nReload;
+
+			CAnimBlendAssociation* newReloadAssoc = CAnimManager::BlendAnimation(
+				GetClump(), weaponInfo->m_AnimToPlay,
+				bIsDucking && GetCrouchReloadAnim(weaponInfo) ? GetCrouchReloadAnim(weaponInfo) : GetReloadAnim(weaponInfo),
+				8.0f);
+			newReloadAssoc->SetFinishCallback(FinishedReloadCB, this);
+
+			ClearLookFlag();
+			ClearAimFlag();
+			bIsAttacking = false;
+			bIsPointingGunAt = false;
+			m_shootTimer = CTimer::GetTimeInMilliseconds();
+		}
+	}
+#else
 	if (padUsed->GetWeapon() && m_nMoveState != PEDMOVE_SPRINT) {
 		if (m_nSelectedWepSlot == m_currentWeapon) {
-#ifdef IMPROVED_MENU_AND_INPUT
-			if (m_pPointGunAt && FrontEndMenuManager.m_PrefsAutoaim) {
-#else
 			if (m_pPointGunAt) {
-#endif
 				if (m_nPedState == PED_ATTACK) {
 					m_fAttackButtonCounter *= Pow(0.94f, CTimer::GetTimeStep());
 				} else {
@@ -1963,6 +2061,7 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 			bIsAttacking = false;
 		}
 	}
+#endif
 
 #ifdef FREE_CAM
 	static int8 changedHeadingRate = 0;
@@ -2202,10 +2301,9 @@ CPlayerPed::PlayerControlZelda(CPad *padUsed)
 			m_fRotationDest = neededTurn;
 		}
 
-#ifdef IMPROVED_MENU_AND_INPUT // walking on the ALT key
-		if (CPad::GetPad(0)->GetLeftAlt()) {
+#ifdef IMPROVED_MENU_AND_INPUT // walking on the key
+		if (CPad::GetPad(0)->GetPedWalk() && !bIsPlayerAiming)
 			m_fMoveSpeed /= 2;
-		}
 #endif
 		float maxAcc = 0.07f * CTimer::GetTimeStep();
 		m_fMoveSpeed = Min(padMoveInGameUnit, m_fMoveSpeed + maxAcc);
@@ -2595,11 +2693,19 @@ CPlayerPed::ProcessControl(void)
 
 #if defined FIRING_AND_AIMING && defined FIRST_PERSON
 	if (IsDoomMode() && (!IsPedInControl() || m_nPedState == PED_ANSWER_MOBILE || m_nPedState == PED_SEEK_CAR || m_nPedState == PED_SEEK_IN_BOAT)) {
-	//if (m_nPedState != PED_ROLL && (IsDoomMode() || !IsPedInControl() || m_nPedState == PED_ANSWER_MOBILE || m_nPedState == PED_SEEK_CAR || m_nPedState == PED_SEEK_IN_BOAT)) {
 		bIsPlayerAiming = false;
 		ClearWeaponTarget();
 
 		StopAimingAnims();
+	}
+#endif
+
+#ifdef IMPROVED_TECH_PART // skip a phone call
+	if (m_nPedState == PED_ANSWER_MOBILE && m_bSkipPhoneCall) {
+		for (int slot = 0; slot < MISSION_AUDIO_SLOTS; slot++)
+			AudioManager.FinishMissionAudioPhoneDialogue(slot);
+	} else if (m_nPedState == PED_ANSWER_MOBILE && !m_bSkipPhoneCall && CPad::GetPad(0)->ExitVehicleJustDown()) {
+		m_bSkipPhoneCall = true;
 	}
 #endif
 

@@ -21,6 +21,12 @@
 #include "SpecialFX.h"
 #include "Font.h"
 #include "SaveBuf.h"
+#ifdef IMPROVED_MENU_AND_INPUT
+#include "Pad.h"
+#endif
+#ifdef IMPROVED_TECH_PART // TEMPORARY, business blip
+#include "Pickups.h"
+#endif
 
 float CRadar::m_radarRange;
 sRadarTrace CRadar::ms_RadarTrace[NUMRADARBLIPS];
@@ -69,6 +75,9 @@ CSprite2d CRadar::RadioWaveSprite;
 #ifdef MAP_ENHANCEMENTS
 CSprite2d CRadar::WaypointSprite;
 #endif
+#ifdef IMPROVED_TECH_PART // TEMPORARY, business blip
+CSprite2d CRadar::HouseForSaleSprite;
+#endif
 
 CSprite2d *CRadar::RadarSprites[RADAR_SPRITE_COUNT] = { 
 	nil,
@@ -114,6 +123,9 @@ CSprite2d *CRadar::RadarSprites[RADAR_SPRITE_COUNT] = {
 #ifdef MAP_ENHANCEMENTS
 	&WaypointSprite,
 #endif
+#ifdef IMPROVED_TECH_PART // TEMPORARY, business blip
+	&HouseForSaleSprite,
+#endif
 };
 
 // Why this doesn't coincide with world coordinates i don't know
@@ -137,6 +149,9 @@ CRGBA CRadar::ArrowBlipColour1;
 CRGBA CRadar::ArrowBlipColour2;
 int16 CRadar::MapLegendCounter;
 int16 CRadar::MapLegendList[NUM_MAP_LEGENDS];
+#ifdef IMPROVED_MENU_AND_INPUT
+int32 CRadar::RadarZoomOutTimer;
+#endif
 #ifdef MAP_ENHANCEMENTS
 int CRadar::TargetMarkerId = -1;
 CVector CRadar::TargetMarkerPos;
@@ -629,7 +644,11 @@ void CRadar::DrawBlips()
 				case BLIP_CHAR:
 				case BLIP_OBJECT:
 					if (ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_SAVE && ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_HARDWARE
+#ifdef IMPROVED_TECH_PART // displaying the icon of the property for sale
+						&& ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_SPRAY
+#else
 						&& ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_SPRAY && ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_PROPERTY
+#endif
 						&& ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_GUN
 						&& (!CTheScripts::bPlayerIsInTheStatium || !FrontEndMenuManager.m_bMenuMapActive))
 
@@ -647,7 +666,11 @@ void CRadar::DrawBlips()
 				case BLIP_COORD:
 				case BLIP_CONTACT_POINT:
 					if (ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_SAVE && ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_HARDWARE
+#ifdef IMPROVED_TECH_PART // displaying the icon of the property for sale
+						&& ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_SPRAY
+#else
 						&& ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_SPRAY && ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_PROPERTY
+#endif
 						&& ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_GUN && ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_PHONE
 						&& (!CTheScripts::bPlayerIsInTheStatium || !FrontEndMenuManager.m_bMenuMapActive))
 
@@ -675,6 +698,27 @@ void CRadar::DrawMap()
 {
 	if (!TheCamera.m_WideScreenOn && CHud::m_Wants_To_Draw_Hud) {
 		CalculateCachedSinCos();
+#ifdef IMPROVED_MENU_AND_INPUT // Radar zoom out
+		if (CPad::GetPad(0)->GetRadarZoomOut())
+			RadarZoomOutTimer = CTimer::GetTimeInMilliseconds();
+
+		if (CTimer::GetTimeInMilliseconds() < RadarZoomOutTimer + 2000) {
+			float maxRange = FindPlayerVehicle() ? RADAR_MAX_RANGE + 150.0f : RADAR_MAX_RANGE;
+			m_radarRange = InterpFloat(m_radarRange, maxRange, 5.0);
+		} else {
+			if (FindPlayerVehicle()) {
+				float speed = FindPlayerSpeed().Magnitude();
+				if (speed < RADAR_MIN_SPEED)
+					m_radarRange = InterpFloat(m_radarRange, RADAR_MIN_RANGE, 5.0);
+				else if (speed < RADAR_MAX_SPEED) {
+					int newRadarRange = (speed - RADAR_MIN_SPEED)/(RADAR_MAX_SPEED-RADAR_MIN_SPEED) * (RADAR_MAX_RANGE-RADAR_MIN_RANGE) + RADAR_MIN_RANGE;
+					m_radarRange = InterpFloat(m_radarRange, newRadarRange, 5.0f);
+				} else
+					m_radarRange = InterpFloat(m_radarRange, RADAR_MAX_RANGE, 5.0);
+			} else
+				m_radarRange = InterpFloat(m_radarRange, RADAR_MIN_RANGE, 5.0);
+		}
+#else
 		if (FindPlayerVehicle()) {
 			float speed = FindPlayerSpeed().Magnitude();
 			if (speed < RADAR_MIN_SPEED)
@@ -686,6 +730,7 @@ void CRadar::DrawMap()
 		}
 		else
 			m_radarRange = RADAR_MIN_RANGE;
+#endif
 
 		vec2DRadarOrigin = CVector2D(FindPlayerCentreOfWorld_NoSniperShift());
 		if (FrontEndMenuManager.m_PrefsRadarMode != 1)
@@ -858,6 +903,234 @@ void CRadar::DrawRotatingRadarSprite(CSprite2d* sprite, float x, float y, float 
 
 	sprite->Draw(curPosn[3].x, curPosn[3].y, curPosn[2].x, curPosn[2].y, curPosn[0].x, curPosn[0].y, curPosn[1].x, curPosn[1].y, CRGBA(255, 255, 255, alpha));
 }
+
+#ifdef IMPROVED_TECH_PART // GPS and business blip
+void CRadar::DrawGPS()
+{
+	// thank plugin-sdk\examples\GPS
+
+	if (!FrontEndMenuManager.m_PrefsGPS)
+		return;
+
+	const uint16 maxNodePoints = 500;
+	static CPathNode* resultNodes[maxNodePoints];
+	static CVector2D nodePoints[maxNodePoints];
+	static RwIm2DVertex lineVerts[maxNodePoints * 4];
+
+    if (FindPlayerPed() && (FindPlayerPed()->m_pMyVehicle && FindPlayerPed()->InVehicle() && CHud::m_bDrawRadar || FrontEndMenuManager.m_bMenuMapActive)) {
+		// Mission blip
+		if (CTheScripts::IsPlayerOnAMission()) {
+			for (int blipId = 0; blipId < NUMRADARBLIPS; blipId++) {
+				if (!ms_RadarTrace[blipId].m_bInUse)
+					continue;
+
+				if (ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_NONE &&
+					ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_TSHIRT ||
+					ms_RadarTrace[blipId].m_eBlipType == BLIP_CONTACT_POINT) {
+
+					continue;
+				}
+
+				CVector destPosn;
+
+				switch (ms_RadarTrace[blipId].m_eBlipType) {
+				case BLIP_CAR: {
+					CEntity *entity = CPools::GetVehiclePool()->GetAt(ms_RadarTrace[blipId].m_nEntityHandle);
+					if (entity) destPosn = entity->GetPosition();
+					break;
+				}
+				case BLIP_CHAR: {
+					CEntity *entity = CPools::GetPedPool()->GetAt(ms_RadarTrace[blipId].m_nEntityHandle);
+					if (entity) destPosn = entity->GetPosition();
+					break;
+				}
+				case BLIP_OBJECT: {
+					CEntity *entity = CPools::GetObjectPool()->GetAt(ms_RadarTrace[blipId].m_nEntityHandle);
+					if (entity) destPosn = entity->GetPosition();
+					break;
+				}
+				default:
+					destPosn = ms_RadarTrace[blipId].m_vecPos;
+					break;
+				}
+
+				destPosn.z = CWorld::FindGroundZForCoord(destPosn.x, destPosn.y);
+
+				short nodesCount = 0;
+
+				ThePaths.DoPathSearch(0, FindPlayerCoors(), -1, destPosn, resultNodes, &nodesCount, maxNodePoints, nullptr, nil, 500.0f, -1);
+
+				int nodesCountDeleted = 0;
+				if (nodesCount > 0) {
+					for (short i = 0; i < nodesCount; i++) {
+						CVector nodePosn = resultNodes[i]->GetPosition();
+						CVector2D tmpPoint;
+						CRadar::TransformRealWorldPointToRadarSpace(tmpPoint, CVector2D(nodePosn.x, nodePosn.y));
+						if (!CHud::m_bDrawRadar && !FrontEndMenuManager.m_bMenuMapActive)
+							CRadar::TransformRadarPointToScreenSpace(nodePoints[i], tmpPoint);
+						else {
+							if (CRadar::LimitRadarPoint(tmpPoint) >= 1.0f)
+								nodesCountDeleted++;
+
+							CRadar::TransformRadarPointToScreenSpace(nodePoints[i], tmpPoint);
+						}
+					}
+
+					if (CHud::m_bDrawRadar && nodesCountDeleted != 0)
+						nodesCount -= nodesCountDeleted - 1;
+
+					RwRenderStateSet(rwRENDERSTATETEXTURERASTER, NULL);
+
+					unsigned int vertIndex = 0;
+					for (short i = 0; i < (nodesCount - 1); i++) {
+						CVector2D point[4], shift[2];
+						CVector2D dir = nodePoints[i + 1] - nodePoints[i];
+						float angle = atan2(dir.y, dir.x);
+						if (!CHud::m_bDrawRadar && !FrontEndMenuManager.m_bMenuMapActive) {
+							shift[0].x = cosf(angle - 1.5707963f) * 4.0f;
+							shift[0].y = sinf(angle - 1.5707963f) * 4.0f;
+							shift[1].x = cosf(angle + 1.5707963f) * 4.0f;
+							shift[1].y = sinf(angle + 1.5707963f) * 4.0f;
+						} else {
+							float mp = 1.0f;
+							if (!CHud::m_bDrawRadar) {
+								mp = FrontEndMenuManager.m_fMapSize - 140.0f;
+								if (mp < 140.0f)
+									mp = 140.0f;
+								else if (mp > 960.0f)
+									mp = 960.0f;
+								mp = mp / 960.0f + 0.4f;
+							}
+							shift[0].x = cosf(angle - 1.5707963f) * 4.0f * mp;
+							shift[0].y = sinf(angle - 1.5707963f) * 4.0f * mp;
+							shift[1].x = cosf(angle + 1.5707963f) * 4.0f * mp;
+							shift[1].y = sinf(angle + 1.5707963f) * 4.0f * mp;
+						}
+
+						uint32 color = GetRadarTraceColour(ms_RadarTrace[blipId].m_nColor, ms_RadarTrace[blipId].m_bDim);
+						CRGBA normalColor = CRGBA((uint8)(color >> 24), (uint8)(color >> 16), (uint8)(color >> 8), 255);
+						Setup2dVertex(lineVerts[vertIndex + 0], nodePoints[i].x + shift[0].x, nodePoints[i].y + shift[0].y, normalColor);
+						Setup2dVertex(lineVerts[vertIndex + 1], nodePoints[i + 1].x + shift[0].x, nodePoints[i + 1].y + shift[0].y, normalColor);
+						Setup2dVertex(lineVerts[vertIndex + 2], nodePoints[i].x + shift[1].x, nodePoints[i].y + shift[1].y, normalColor);
+						Setup2dVertex(lineVerts[vertIndex + 3], nodePoints[i + 1].x + shift[1].x, nodePoints[i + 1].y + shift[1].y, normalColor);
+						vertIndex += 4;
+					}
+
+					RwIm2DRenderPrimitive(rwPRIMTYPETRISTRIP, lineVerts, 4 * (nodesCount - 1));
+
+					break;
+				}
+			}
+		}
+
+		// Waypoint
+		if (TargetMarkerId != -1) {
+			if (Distance(FindPlayerCoors(), TargetMarkerPos) < 30.0f) {
+				CRadar::ClearBlip(TargetMarkerId);
+				TargetMarkerId = -1;
+			}
+
+			CVector destPosn = TargetMarkerPos;
+			destPosn.z = CWorld::FindGroundZForCoord(destPosn.x, destPosn.y);
+
+			short nodesCount = 0;
+
+			ThePaths.DoPathSearch(0, FindPlayerCoors(), -1, destPosn, resultNodes, &nodesCount, maxNodePoints, nullptr, nil, 500.0f, -1);
+
+			int nodesCountDeleted = 0;
+			if (nodesCount > 0) {
+				for (short i = 0; i < nodesCount; i++) {
+					CVector nodePosn = resultNodes[i]->GetPosition();
+					CVector2D tmpPoint;
+					CRadar::TransformRealWorldPointToRadarSpace(tmpPoint, CVector2D(nodePosn.x, nodePosn.y));
+					if (!CHud::m_bDrawRadar && !FrontEndMenuManager.m_bMenuMapActive)
+						CRadar::TransformRadarPointToScreenSpace(nodePoints[i], tmpPoint);
+					else {
+						if (CRadar::LimitRadarPoint(tmpPoint) >= 1.0f)
+							nodesCountDeleted++;
+
+						CRadar::TransformRadarPointToScreenSpace(nodePoints[i], tmpPoint);
+					}
+				}
+
+				if (CHud::m_bDrawRadar && nodesCountDeleted != 0)
+					nodesCount -= nodesCountDeleted - 1;
+
+				RwRenderStateSet(rwRENDERSTATETEXTURERASTER, NULL);
+
+				unsigned int vertIndex = 0;
+				for (short i = 0; i < (nodesCount - 1); i++) {
+					CVector2D point[4], shift[2];
+					CVector2D dir = nodePoints[i + 1] - nodePoints[i];
+					float angle = atan2(dir.y, dir.x);
+					if (!CHud::m_bDrawRadar && !FrontEndMenuManager.m_bMenuMapActive) {
+						shift[0].x = cosf(angle - 1.5707963f) * 4.0f;
+						shift[0].y = sinf(angle - 1.5707963f) * 4.0f;
+						shift[1].x = cosf(angle + 1.5707963f) * 4.0f;
+						shift[1].y = sinf(angle + 1.5707963f) * 4.0f;
+					} else {
+						float mp = 1.0f;
+						if (!CHud::m_bDrawRadar) {
+							mp = FrontEndMenuManager.m_fMapSize - 140.0f;
+							if (mp < 140.0f)
+								mp = 140.0f;
+							else if (mp > 960.0f)
+								mp = 960.0f;
+							mp = mp / 960.0f + 0.4f;
+						}
+						shift[0].x = cosf(angle - 1.5707963f) * 4.0f * mp;
+						shift[0].y = sinf(angle - 1.5707963f) * 4.0f * mp;
+						shift[1].x = cosf(angle + 1.5707963f) * 4.0f * mp;
+						shift[1].y = sinf(angle + 1.5707963f) * 4.0f * mp;
+					}
+
+					Setup2dVertex(lineVerts[vertIndex + 0], nodePoints[i].x + shift[0].x, nodePoints[i].y + shift[0].y, CRGBA(180, 24, 24, 255));
+					Setup2dVertex(lineVerts[vertIndex + 1], nodePoints[i + 1].x + shift[0].x, nodePoints[i + 1].y + shift[0].y, CRGBA(180, 24, 24, 255));
+					Setup2dVertex(lineVerts[vertIndex + 2], nodePoints[i].x + shift[1].x, nodePoints[i].y + shift[1].y, CRGBA(180, 24, 24, 255));
+					Setup2dVertex(lineVerts[vertIndex + 3], nodePoints[i + 1].x + shift[1].x, nodePoints[i + 1].y + shift[1].y, CRGBA(180, 24, 24, 255));
+					vertIndex += 4;
+				}
+
+				RwIm2DRenderPrimitive(rwPRIMTYPETRISTRIP, lineVerts, 4 * (nodesCount - 1));
+			}
+		}
+    }
+}
+
+void CRadar::Setup2dVertex(RwIm2DVertex& vertex, float x, float y, CRGBA color)
+{
+	vertex.x = x;
+	vertex.y = y;
+	vertex.u = vertex.v = 0.0f;
+	vertex.z = RwIm2DGetNearScreenZ() + 0.0001f;
+	vertex.w = 1.11111116f;
+	vertex.color = RWRGBALONG(color.r, color.g, color.b, color.a);
+}
+
+void CRadar::DrawPropertyBlips()
+{
+	// TEMPORARY
+
+	if (CTheScripts::IsPlayerOnAMission())
+		return;
+
+	for (int i = 0; i < NUMPICKUPS; i++) {
+		if (CPickups::aPickUps[i].m_eType != PICKUP_PROPERTY_FORSALE)
+			continue;
+
+		CVector2D out;
+		CVector2D in;
+		TransformRealWorldPointToRadarSpace(in, CPickups::aPickUps[i].m_vecPos);
+		float dist = LimitRadarPoint(in);
+
+		if (dist > 1.0f && !FrontEndMenuManager.m_bMenuMapActive)
+			continue;
+
+		TransformRadarPointToScreenSpace(out, in);
+		DrawRadarSprite(RADAR_SPRITE_HOUSE_FOR_SALE, out.x, out.y, CalculateBlipAlpha(dist));
+	}
+}
+#endif
 
 int32 CRadar::GetActualBlipArrayIndex(int32 i)
 {
@@ -1081,7 +1354,11 @@ CRadar::LoadTextures()
 	KCabsSprite.SetTexture("kcabs");
 	LovefistSprite.SetTexture("lovefist");
 	PrintworksSprite.SetTexture("printworks");
+#ifdef IMPROVED_TECH_PART // TEMPORARY, business blip
+	PropertySprite.SetTexture("business");
+#else
 	PropertySprite.SetTexture("property");
+#endif
 	SunYardSprite.SetTexture("SunYard");
 	SpraySprite.SetTexture("spray");
 	TShirtSprite.SetTexture("tshirt");
@@ -1132,6 +1409,9 @@ CRadar::LoadTextures()
 #undef WAYPOINT_G
 #undef WAYPOINT_B
 	}
+#endif
+#ifdef IMPROVED_TECH_PART // TEMPORARY, business blip
+	HouseForSaleSprite.SetTexture("property");
 #endif
 	CTxdStore::PopCurrentTxd();
 }
@@ -1329,6 +1609,9 @@ void CRadar::Shutdown()
 	RadioWaveSprite.Delete();
 #ifdef MAP_ENHANCEMENTS
 	WaypointSprite.Delete();
+#endif
+#ifdef IMPROVED_TECH_PART // TEMPORARY, business blip
+	HouseForSaleSprite.Delete();
 #endif
 	RemoveRadarSections();
 }
@@ -1754,9 +2037,11 @@ CRadar::DrawLegend(int32 x, int32 y, int32 sprite)
 		case RADAR_SPRITE_PRINTWORKS:
 			text = TheText.Get("LG_20");
 		break;
+#ifndef IMPROVED_TECH_PART // TEMPORARY, business blip
 		case RADAR_SPRITE_PROPERTY:
 			text = TheText.Get("LG_21");
 		break;
+#endif
 		case RADAR_SPRITE_SUNYARD:
 			text = TheText.Get("LG_36");
 		break;
@@ -1802,6 +2087,12 @@ CRadar::DrawLegend(int32 x, int32 y, int32 sprite)
 #ifdef MAP_ENHANCEMENTS
         case RADAR_SPRITE_WAYPOINT:
 			text = TheText.Get("LG_38");
+		break;
+#endif
+#ifdef IMPROVED_TECH_PART // TEMPORARY, business blip
+		case RADAR_SPRITE_HOUSE_FOR_SALE:
+		case RADAR_SPRITE_PROPERTY:
+			text = TheText.Get("LG_39");
 		break;
 #endif
 		default:

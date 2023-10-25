@@ -237,6 +237,8 @@ enum eMenuScreen
 	MENUPAGE_OUTRO, // Originally 34, but CFO needs last screen to be empty to count number of menu pages
 #ifdef IMPROVED_MENU_AND_INPUT
 	MENUPAGE_GAMEPAD_SETTINGS,
+	MENUPAGE_PC_FOOT_CONTROLS,
+	MENUPAGE_PC_VEHICLE_CONTROLS,
 #endif
 #ifdef FIRST_PERSON
 	MENUPAGE_FIRST_PERSON,
@@ -329,6 +331,10 @@ enum eMenuAction
 	MENUACTION_PADLOOKSENSY,
 	MENUACTION_PADAIMSENSX,
 	MENUACTION_PADAIMSENSY,
+
+	MENUACTION_FOOTCONTROLS,
+	MENUACTION_VEHICLECONTROLS,
+	MENUACTION_GPS,
 #endif
 #if defined FIRST_PERSON && defined FIRING_AND_AIMING
 	MENUACTION_FOV_FP,
@@ -783,7 +789,6 @@ public:
 
 #ifdef IMPROVED_MENU_AND_INPUT
 	bool m_PrefsInvertVertically;
-
 	float m_PrefsPadLookSensX;
 	float m_PrefsPadAimSensX;
 	float m_PrefsPadLookSensY;
@@ -792,11 +797,11 @@ public:
 	int8 m_PrefsRightStickDeadzone;
 	float m_PrefsVibrationForce;
 	bool m_PrefsAutoaim;
-
 	float m_PrefsMouseLookSensX;
 	float m_PrefsMouseAimSensX;
 	float m_PrefsMouseLookSensY;
 	float m_PrefsMouseAimSensY;
+	bool m_PrefsGPS;
 #endif
 #if defined FIRST_PERSON && defined FIRING_AND_AIMING
 	int8 m_PrefsFOV_FP;
@@ -814,6 +819,9 @@ public:
 		CONTROLLER_XBOX360,
 		CONTROLLER_XBOXONE,
 		CONTROLLER_NINTENDO_SWITCH,
+#ifdef IMPROVED_MENU_AND_INPUT // Gamepad buttons
+		CONTROLLER_DUALSENSE,
+#endif
 	};
 
 	int8 m_PrefsControllerType;

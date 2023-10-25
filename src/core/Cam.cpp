@@ -378,7 +378,11 @@ CCam::Process(void)
 					TheCamera.m_bJust_Switched = true;
 				DirectionWasLooking = LOOKING_FORWARD;
 #ifdef FIRING_AND_AIMING
-			}else if(CPad::GetPad(0)->GetLookLeft() && !CPad::GetPad(0)->IsAffectedByController){
+			}else if(CPad::GetPad(0)->GetLookLeft() && (!CPad::GetPad(0)->IsAffectedByController || 
+					(CPad::GetPad(0)->IsAffectedByController &&
+					CWeaponInfo::GetWeaponInfo(ped->GetWeapon()->m_eWeaponType)->m_nWeaponSlot != WEAPONSLOT_SUBMACHINEGUN &&
+					(CWeaponInfo::GetWeaponInfo(ped->GetWeapon()->m_eWeaponType)->m_nWeaponSlot != WEAPONSLOT_HANDGUN || 
+					CWeaponInfo::GetWeaponInfo(ped->GetWeapon()->m_eWeaponType)->m_nWeaponSlot == WEAPONSLOT_HANDGUN && ped->GetWeapon()->m_eWeaponType == WEAPONTYPE_PYTHON)))){
 #else
 			}else if(CPad::GetPad(0)->GetLookLeft()){
 #endif

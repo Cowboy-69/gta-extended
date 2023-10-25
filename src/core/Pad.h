@@ -25,6 +25,9 @@ public:
 	int16 Square, Triangle, Cross, Circle;
 	int16 LeftShock, RightShock;
 	int16 NetworkTalk;
+#ifdef IMPROVED_MENU_AND_INPUT
+	int16 bWalk;
+#endif
 	float GetLeftStickX(void) { return LeftStickX/32767.0f; };
 	float GetLeftStickY(void) { return LeftStickY/32767.0f; };
 	float GetRightStickX(void) { return RightStickX/32767.0f; };
@@ -254,6 +257,11 @@ public:
 	bool CycleCameraModeUpJustDown(void);
 	bool CycleCameraModeDownJustDown(void);
 #ifdef IMPROVED_MENU_AND_INPUT
+	bool GetRadarZoomOut(void);
+	bool GetPedWalk();
+	bool WeaponReloadJustDown();
+	bool GetMeleeWeapon();
+	bool MeleeWeaponJustDown();
 	bool NextStationJustDown(void);
 	bool PrevStationJustDown(void);
 #else

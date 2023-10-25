@@ -3164,6 +3164,16 @@ CWeapon::Update(int32 audioEntity, CPed *pedToAdjustSound)
 			{
 				Reload();
 				m_eWeaponState = WEAPONSTATE_READY;
+
+#ifdef FIRING_AND_AIMING // After reloading
+				if (pedToAdjustSound && pedToAdjustSound->IsPlayer()) {
+					CPlayerPed* playerPed = (CPlayerPed*)pedToAdjustSound;
+					if (!playerPed->bIsPlayerAiming && !CPad::GetPad(0)->GetWeapon()) {
+						playerPed->ClearWeaponTarget();
+						playerPed->StopAimingAnims();
+					}
+				}
+#endif
 			}
 
 			break;
