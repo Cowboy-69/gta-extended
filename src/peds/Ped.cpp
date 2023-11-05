@@ -428,6 +428,7 @@ CPed::CPed(uint32 pedType) : m_pedIK(this)
 #ifdef EX_PED_VARIATIONS
 	texClothingVariation = nullptr;
 	texShadeVariation = nullptr;
+	curClothingVariation = 0;
 #endif
 }
 
@@ -555,6 +556,8 @@ CPed::SetModelIndex(uint32 mi)
 			modelInfo->currentClothingVariation = 1;
 		}
 
+		curClothingVariation = modelInfo->currentClothingVariation;
+
 		if (modelInfo->textureShadeVariations[modelInfo->currentShadeVariation]) {
 			texShadeVariation = modelInfo->textureShadeVariations[modelInfo->currentShadeVariation];
 			modelInfo->currentShadeVariation++;
@@ -562,6 +565,12 @@ CPed::SetModelIndex(uint32 mi)
 			texShadeVariation = modelInfo->textureShadeVariations[0];
 			modelInfo->currentShadeVariation = 1;
 		}
+	} else if (GetModelIndex() == MI_PLAYER) {
+		modelInfo->currentClothingVariation = 0;
+		modelInfo->currentShadeVariation = 0;
+		curClothingVariation = 0;
+		texClothingVariation = nullptr;
+		texShadeVariation = nullptr;
 	}
 #endif
 }

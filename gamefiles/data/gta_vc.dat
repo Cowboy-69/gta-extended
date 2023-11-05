@@ -9,7 +9,7 @@ CDIMAGE MODELS\VICEEX\weapons.img
 CDIMAGE MODELS\VICEEX\objects.img
 CDIMAGE MODELS\VICEEX\anims.img
 CDIMAGE MODELS\VICEEX\peds.img
-#CDIMAGE MODELS\VICEEX\playerPed.img
+CDIMAGE MODELS\VICEEX\playerPed.img
 CDIMAGE ViceEx\newVehicles\newVehicles.img
 
 #

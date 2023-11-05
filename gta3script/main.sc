@@ -490,7 +490,7 @@ VAR_INT the_bankjob_blip the_phil_blip the_porn_blip the_protection_blip the_cou
 VAR_INT the_biker_blip the_rock_blip the_cuban_blip the_haitian_blip the_assasin_blip the_taxiwar_blip
 VAR_INT weapon_shop1_blip weapon_shop2_blip weapon_shop3_blip hardware_shop1 hardware_shop2 hardware_shop3
 VAR_INT spray_shop1 spray_shop2 spray_shop3 spray_shop5	hotel_save_pickup remove_hotel_pickup
-VAR_INT pharmacy_shop1 pharmacy_shop2 pharmacy_shop3 bomb_shop_blip stadium_blip // ViceEx, pharmacy blips, bomb shop blip and stadium blip
+VAR_INT pharmacy_shop1 pharmacy_shop2 pharmacy_shop3 bomb_shop_blip stadium_blip clothing_store_blip // ViceEx, pharmacy blips, bomb shop blip, stadium blip and clothing store blip
 
 VAR_FLOAT x y z the_yacht_x the_yacht_y the_yacht_z
 VAR_INT car
@@ -1180,6 +1180,11 @@ LAUNCH_MISSION robbing.sc
 
 LAUNCH_MISSION audio.sc
 
+LAUNCH_MISSION clothes.sc // ViceEx, Clothing store and wardrobe
+LAUNCH_MISSION wardrobe.sc
+
+//ADD_SCORE player1 1000 // ViceEx debug
+
 WAIT 0
 	
 
@@ -1217,6 +1222,7 @@ ENDIF
 mission_start:
 
 WAIT 1000
+//WAIT 0 // ViceEx debug
 
 IF IS_PLAYER_PLAYING player1
 
@@ -1253,6 +1259,16 @@ IF IS_PLAYER_PLAYING player1
 		PLAYER_MADE_PROGRESS 1
 		robbed_every_shop = -1
 	ENDIF
+
+	// ViceEx debug
+	/*IF IS_BUTTON_PRESSED PAD1 RIGHTSHOULDER2
+		WHILE IS_BUTTON_PRESSED PAD1 RIGHTSHOULDER2
+			WAIT 0
+		ENDWHILE
+
+		SET_CHAR_COORDINATES scplayer, 231.0, -1278.0, 12.0
+    ENDIF*/
+	// ViceEx debug
 
 ENDIF //IF IS_PLAYER_PLAYING player1
 

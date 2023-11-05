@@ -704,6 +704,7 @@ public:
 #ifdef EX_PED_VARIATIONS
 	RwTexture* texClothingVariation;
 	RwTexture* texShadeVariation;
+	uint8 curClothingVariation;
 #endif
 
 	static void *operator new(size_t) throw();

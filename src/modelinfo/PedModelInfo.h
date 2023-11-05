@@ -44,8 +44,8 @@ public:
 #ifdef EX_PED_VARIATIONS
 	RwTexture* textureClothingVariations[MAX_VARIATIONS_TEXTURES];
 	RwTexture* textureShadeVariations[MAX_VARIATIONS_TEXTURES];
-	int currentClothingVariation;
-	int currentShadeVariation;
+	uint8 currentClothingVariation;
+	uint8 currentShadeVariation;
 #endif
 
 	static RwObjectNameIdAssocation m_pPedIds[PED_NODE_MAX];

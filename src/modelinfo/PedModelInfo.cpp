@@ -11,7 +11,8 @@
 #include "custompipes.h"
 #ifdef EX_PED_VARIATIONS
 #include "TxdStore.h"
-#include <core/World.h>
+#include "PlayerInfo.h"
+#include "PlayerPed.h"
 #endif
 
 void
@@ -43,12 +44,15 @@ RwObjectNameIdAssocation CPedModelInfo::m_pPedIds[PED_NODE_MAX] = {
 RwTexture* storeTextureVariation(RwTexture* texture, void* data)
 {
 	CPedModelInfo* modelInfo = static_cast<CPedModelInfo*>(data);
-
+	
 	for (int i = 0; i < MAX_VARIATIONS_TEXTURES; i++) {
 		if (modelInfo->textureClothingVariations[i])
 			continue;
 
 		if (strstr(texture->name, "shade"))
+			continue;
+
+		if (!strstr(texture->name, "remap") && !strstr(texture->name, "CSplay"))
 			continue;
 
 		modelInfo->textureClothingVariations[i] = texture;
@@ -99,6 +103,21 @@ CPedModelInfo::SetClump(RpClump *clump)
 			textureShadeVariations[i] = nullptr;
 
 		RwTexDictionaryForAllTextures(pedTxd, storeTextureVariation, this);
+
+		if (strstr(GetModelName(), "csplay")) {
+			CPedModelInfo* playerModelInfo = (CPedModelInfo*)CModelInfo::GetModelInfo(FindPlayerPed()->GetModelIndex());
+			if (playerModelInfo && playerModelInfo->currentClothingVariation > 0) {
+				RwTexDictionary* playerTxd = CTxdStore::GetSlot(GetTxdSlot())->texDict;
+				if (playerTxd) {
+					char sTemp[16];
+					sprintf(sTemp, "%s_%i", GetModelName(), playerModelInfo->currentClothingVariation);
+					RwTexture* texClothingVariation = RwTexDictionaryFindNamedTexture(playerTxd, sTemp);
+					RpAtomic* atomic = GetFirstAtomic(m_clump);
+					if (texClothingVariation && atomic && atomic->geometry->matList.materials[0])
+						RpMaterialSetTexture(atomic->geometry->matList.materials[0], texClothingVariation);
+				}
+			}
+		}
 	}
 #endif
 }

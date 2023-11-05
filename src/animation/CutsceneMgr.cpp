@@ -22,6 +22,9 @@
 #include "ColStore.h"
 #include "Radar.h"
 #include "Pools.h"
+#ifdef EX_PED_VARIATIONS
+#include "TxdStore.h"
+#endif
 
 const struct {
 	const char *szTrackName;

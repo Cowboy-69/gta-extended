@@ -1219,6 +1219,11 @@ void CHud::Draw()
 				else
 					CFont::SetPropOff();
 
+#ifdef IMPROVED_MENU_AND_INPUT // DrawScriptText: Always place a black drop shadow
+				CFont::SetDropShadowPosition(2);
+				CFont::SetDropColor(CRGBA(0, 0, 0, 255));
+#endif
+
 				CFont::SetFontStyle(FONT_LOCALE(CTheScripts::IntroTextLines[i].m_nFont));
 				CFont::PrintString(SCREEN_WIDTH - SCALE_AND_CENTER_X(DEFAULT_SCREEN_WIDTH - CTheScripts::IntroTextLines[i].m_fAtX), SCREEN_HEIGHT - SCREEN_SCALE_Y(DEFAULT_SCREEN_HEIGHT - CTheScripts::IntroTextLines[i].m_fAtY), CTheScripts::IntroTextLines[i].m_Text);
 			}
@@ -1563,6 +1568,11 @@ void CHud::DrawAfterFade()
 				CFont::SetPropOn();
 			else
 				CFont::SetPropOff();
+
+#ifdef IMPROVED_MENU_AND_INPUT // DrawScriptText: Always place a black drop shadow
+			CFont::SetDropShadowPosition(2);
+			CFont::SetDropColor(CRGBA(0, 0, 0, 255));
+#endif
 
 			CFont::SetFontStyle(line.m_nFont);
 			CFont::PrintString(SCREEN_WIDTH - SCALE_AND_CENTER_X(DEFAULT_SCREEN_WIDTH - line.m_fAtX), SCREEN_HEIGHT - SCREEN_SCALE_Y(DEFAULT_SCREEN_HEIGHT - line.m_fAtY), line.m_Text);

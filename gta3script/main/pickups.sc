@@ -210,7 +210,7 @@ ENDIF
 IF shit_counter = 2 
 	IF flag_cell_nation = 0 
 		
-		IF mansion_clothes_created = 1
+		/*IF mansion_clothes_created = 1 // ViceEx - see wardrobe.sc
 			IF HAS_PICKUP_BEEN_COLLECTED mansion_clothes
 				GOSUB changing_clothes_part1
 				IF IS_PLAYER_PLAYING player1 
@@ -219,7 +219,7 @@ IF shit_counter = 2
 				ENDIF
 				GOSUB changing_clothes_part2
 			ENDIF
-		ENDIF
+		ENDIF*/
 		
 		IF HAS_PICKUP_BEEN_COLLECTED starting_tracksuit
 			GOSUB changing_clothes_part1
@@ -254,7 +254,7 @@ IF shit_counter = 2
 			ENDIF
 		ENDIF
 		*/
-		IF safehouse_created2 = 1
+		/*IF safehouse_created2 = 1 // ViceEx - see wardrobe.sc
 			IF HAS_PICKUP_BEEN_COLLECTED safehouse_clothes2
 				GOSUB changing_clothes_part1
 				IF IS_PLAYER_PLAYING player1 
@@ -263,7 +263,7 @@ IF shit_counter = 2
 				ENDIF
 				GOSUB changing_clothes_part2
 			ENDIF
-		ENDIF
+		ENDIF*/
 		/*
 		IF safehouse_created3 = 1
 			IF HAS_PICKUP_BEEN_COLLECTED safehouse_clothes3
@@ -324,7 +324,7 @@ IF shit_counter = 3
 			ENDIF
 		ENDIF
 		*/
-		IF hotel_clothes_created = 1
+		/*IF hotel_clothes_created = 1 // ViceEx - see wardrobe.sc
 			IF HAS_PICKUP_BEEN_COLLECTED clothes_pickup1
 				GOSUB changing_clothes_part1
 				IF IS_PLAYER_PLAYING player1 
@@ -333,7 +333,7 @@ IF shit_counter = 3
 				ENDIF
 				GOSUB changing_clothes_part2
 			ENDIF
-		ENDIF
+		ENDIF*/
 
 		IF clothes2_created = 1
 			IF HAS_PICKUP_BEEN_COLLECTED clothes_pickup2

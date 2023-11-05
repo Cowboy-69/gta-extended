@@ -450,13 +450,14 @@ ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD 319.0 441.3 12.0 RADAR_SPRITE_SPRAY spray_
 ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD -903.0 -1261.1 12.0 RADAR_SPRITE_SPRAY spray_shop3 //Docks
 ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD -876.2 -105.5 12.0 RADAR_SPRITE_SPRAY spray_shop5 //Main road haiti
 
-// ViceEx, pharmacy blips, bomb shop blip and stadium blip
+// ViceEx, pharmacy blips, bomb shop blip, stadium blip and clothing store blip
 ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD -1167.607 -1400.143 10.831 42 bomb_shop_blip
 ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD -1110.331 1331.096 20.1119 43 stadium_blip
 ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD 381.365 755.785 11.744 44 pharmacy_shop1
 ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD -853.876 -81.226 11.556 44 pharmacy_shop2
 ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD -832.925 743.542 11.288 44 pharmacy_shop3
-// ViceEx, pharmacy blips, bomb shop blip and stadium blip
+ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD 414.0 1038.0 19.0 RADAR_SPRITE_TSHIRT clothing_store_blip
+// ViceEx, pharmacy blips, bomb shop blip, stadium blip and clothing store blip
 
 	//CHANGE_BLIP_DISPLAY hotel_contact_blip BLIP_ONLY
 

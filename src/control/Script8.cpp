@@ -615,14 +615,14 @@ int8 CRunningScript::ProcessCommands1400To1499(int32 command)
 		return 0;
 #endif
 #ifdef EX_PED_VARIATIONS
-	/*case COMMAND_SET_CHAR_VARIATION:
+	case COMMAND_SET_CHAR_CLOTHING_VARIATION:
 	{
 		CollectParameters(&m_nIp, 2);
 		CPed* pPed = CPools::GetPedPool()->GetAt(ScriptParams[0]);
 		script_assert(pPed);
 		int curVariation = ScriptParams[1];
 
-		CBaseModelInfo* modelInfo = CModelInfo::GetModelInfo(pPed->GetModelIndex());
+		CPedModelInfo* modelInfo = (CPedModelInfo*)CModelInfo::GetModelInfo(pPed->GetModelIndex());
 		RwTexDictionary* playerTxd = CTxdStore::GetSlot(modelInfo->GetTxdSlot())->texDict;
 		if (playerTxd) {
 			char sTemp[16];
@@ -632,9 +632,20 @@ int8 CRunningScript::ProcessCommands1400To1499(int32 command)
 				sprintf(sTemp, "%s_%i", modelInfo->GetModelName(), curVariation);
 
 			pPed->texClothingVariation = RwTexDictionaryFindNamedTexture(playerTxd, sTemp);
+			pPed->curClothingVariation = curVariation;
+			modelInfo->currentClothingVariation = curVariation;
 		}
 		return 0;
-	}*/
+	}
+	case COMMAND_GET_CHAR_CLOTHING_VARIATION:
+	{
+		CollectParameters(&m_nIp, 1);
+		CPed* pPed = CPools::GetPedPool()->GetAt(ScriptParams[0]);
+		script_assert(pPed);
+		ScriptParams[0] = pPed->curClothingVariation;
+		StoreParameters(&m_nIp, 1);
+		return 0;
+	}
 #endif
 	default:
 		script_assert(0);
