@@ -1641,6 +1641,11 @@ void CGarages::PrintMessages()
 
 bool CGarages::IsCarSprayable(CVehicle * pVehicle)
 {
+#ifdef EX_VCPD_WINTERGREEN
+	if (pVehicle->GetModelIndex() == MI_POLWINTERGREEN)
+		return false;
+#endif
+
 	switch (pVehicle->GetModelIndex()) {
 	case MI_FIRETRUCK:
 	case MI_AMBULAN:
@@ -1666,6 +1671,11 @@ bool CGarages::IsCarModifiable(CVehicle* pVehicle)
 {
 	if (pVehicle->IsRealHeli() || pVehicle->IsBoat())
 		return false;
+
+#ifdef EX_VCPD_WINTERGREEN
+	if (pVehicle->GetModelIndex() == MI_POLWINTERGREEN)
+		return false;
+#endif
 
 	switch (pVehicle->GetModelIndex()) {
 		case MI_FIRETRUCK:

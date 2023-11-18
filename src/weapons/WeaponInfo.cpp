@@ -131,6 +131,9 @@ CWeaponInfo::Initialise(void)
 		aWeaponInfo[i].m_fAnimBreakout = 0.0f;
 		aWeaponInfo[i].m_Flags = WEAPONFLAG_USE_GRAVITY | WEAPONFLAG_SLOWS_DOWN | WEAPONFLAG_RAND_SPEED | WEAPONFLAG_EXPANDS | WEAPONFLAG_EXPLODES;
 		aWeaponInfo[i].m_nWeaponSlot = WEAPONSLOT_UNARMED;
+#ifdef EX_IMPROVED_WEAPONS
+		aWeaponInfo[i].m_animForWeaponToPlay = ASSOCGRP_STD;
+#endif
 	}
 	debug("Loading weapon data...\n");
 	LoadWeaponData();
@@ -148,6 +151,9 @@ CWeaponInfo::LoadWeaponData(void)
 	int firingRate, modelId, modelId2, weaponSlot;
 	char line[256], weaponName[32], fireType[32];
 	char animToPlay[32];
+#ifdef EX_IMPROVED_WEAPONS // weapon.dat
+	char animForWeaponToPlay[32];
+#endif
 
 	size_t bp, buflen;
 	int lp, linelen;
@@ -186,7 +192,11 @@ CWeaponInfo::LoadWeaponData(void)
 		fireOffsetZ = 0.0f;
 		sscanf(
 			&line[lp],
+#ifdef EX_IMPROVED_WEAPONS // weapon.dat
+			"%s %s %f %d %d %d %d %f %f %f %f %f %f %f %s %f %f %f %f %f %f %f %d %d %x %d %s",
+#else
 			"%s %s %f %d %d %d %d %f %f %f %f %f %f %f %s %f %f %f %f %f %f %f %d %d %x %d",
+#endif
 			weaponName,
 			fireType,
 			&range,
@@ -212,7 +222,12 @@ CWeaponInfo::LoadWeaponData(void)
 			&modelId,
 			&modelId2,
 			&flags,
+#ifdef EX_IMPROVED_WEAPONS // weapon.dat
+			&weaponSlot,
+			animForWeaponToPlay);
+#else
 			&weaponSlot);
+#endif
 
 		if (strncmp(weaponName, "ENDWEAPONDATA", 13) == 0)
 			return;
@@ -261,6 +276,15 @@ CWeaponInfo::LoadWeaponData(void)
 				break;
 			}
 		}
+
+#ifdef EX_IMPROVED_WEAPONS // weapon.dat
+		for (int i = 0; i < NUM_ANIM_ASSOC_GROUPS; i++) {
+			if (!strcmp(animForWeaponToPlay, CAnimManager::GetAnimGroupName((AssocGroupId)i))) {
+				aWeaponInfo[weaponType].m_animForWeaponToPlay = (AssocGroupId)i;
+				break;
+			}
+		}
+#endif
 	}
 }
 

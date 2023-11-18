@@ -323,6 +323,22 @@ CVisibilityPlugins::RenderAlphaAtomic(RpAtomic *atomic, int alpha)
 RpAtomic*
 CVisibilityPlugins::RenderWeaponCB(RpAtomic *atomic)
 {
+#ifdef EX_CLUMP_WEAPON_MODELS
+	RpClump *clump;
+	float dist;
+	int32 alpha;
+
+	clump = RpAtomicGetClump(atomic);
+	dist = GetDistanceSquaredFromCamera(RpClumpGetFrame(clump));
+	if(dist < ms_pedLod1Dist){
+		alpha = GetClumpAlpha(clump);
+		if(alpha == 255)
+			RENDERCALLBACK(atomic);
+		else
+			RenderAlphaAtomic(atomic, alpha);
+	}
+	return atomic;
+#else
 	RwMatrix *m;
 	RwV3d view;
 	float maxdist, distsq;
@@ -336,6 +352,7 @@ CVisibilityPlugins::RenderWeaponCB(RpAtomic *atomic)
 	if(distsq < maxdist*maxdist)
 		RENDERCALLBACK(atomic);
 	return atomic;
+#endif
 }
 
 RpAtomic*

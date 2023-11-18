@@ -1612,6 +1612,11 @@ CVehicle::ProcessDelayedExplosion(void)
 bool
 CVehicle::IsLawEnforcementVehicle(void)
 {
+#ifdef EX_VCPD_WINTERGREEN
+	if (GetModelIndex() == MI_POLWINTERGREEN)
+		return true;
+#endif
+
 	switch(GetModelIndex()){
 	case MI_POLICE:
 	case MI_ENFORCER:
@@ -1629,6 +1634,11 @@ CVehicle::IsLawEnforcementVehicle(void)
 bool
 CVehicle::UsesSiren(void)
 {
+#ifdef EX_VCPD_WINTERGREEN
+	if (GetModelIndex() == MI_POLWINTERGREEN)
+		return true;
+#endif
+
 	switch(GetModelIndex()){
 	case MI_FIRETRUCK:
 	case MI_AMBULAN:

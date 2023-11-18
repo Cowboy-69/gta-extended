@@ -331,7 +331,9 @@ CPlayerInfo::Process(void)
 							}
 
 							if (canJumpOff || veh->m_vecMoveSpeed.Magnitude() < 0.1f) {
-#ifndef SWIMMING
+#ifdef SWIMMING
+								if (bEnableSwimming || !bEnableSwimming && !veh->bIsInWater)
+#else
 								if (!veh->bIsInWater)
 #endif
 									m_pPed->SetObjective(OBJECTIVE_LEAVE_CAR, veh);

@@ -59,10 +59,8 @@
 #ifdef VICE_EXTENDED
 	// These macros are used to navigation; Disabling them individually is not recommended
 
-	#define CLIMBING // also in clump.cpp, Clump::destroy
 	#define CROUCH
 	#define FIRING_AND_AIMING
-	#define SWIMMING
 	#define FIRST_PERSON
 
 	#define IMPROVED_MENU_AND_INPUT
@@ -74,6 +72,8 @@
 
 	#define FEATURES_INI
 	#ifdef FEATURES_INI
+		#define CLIMBING
+		#define SWIMMING
 		#define EX_DISTANT_LIGHTS // thank https://github.com/ThirteenAG/III.VC.SA.IV.Project2DFX/releases/tag/gtavc
 	#endif
 
@@ -83,9 +83,17 @@
 	#define IMPROVED_VEHICLES
 	#define IMPROVED_VEHICLES_2
 	#define NEW_VEHICLE_LOADER
+	#ifdef NEW_VEHICLE_LOADER
+		#define EX_VCPD_WINTERGREEN
+	#endif
 
 	#define EX_PED_VARIATIONS
 	#define EX_PARTICLES
+
+	/*#define EX_CLUMP_WEAPON_MODELS
+	#ifdef EX_CLUMP_WEAPON_MODELS
+		#define EX_IMPROVED_WEAPONS
+	#endif*/
 
 	#define NEW_CHEATS
 

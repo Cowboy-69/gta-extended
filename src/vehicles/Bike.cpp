@@ -284,6 +284,19 @@ CBike::ProcessControl(void)
 
 	ProcessCarAlarm();
 
+#ifdef EX_VCPD_WINTERGREEN // ScanForCrimes - if player's alarm is on, increase wanted level
+	if (GetStatus() != STATUS_ABANDONED && GetStatus() != STATUS_WRECKED &&
+		GetStatus() != STATUS_PLAYER && GetStatus() != STATUS_PLAYER_REMOTE && GetStatus() != STATUS_PLAYER_DISABLED) {
+		
+		if (GetModelIndex() == MI_POLWINTERGREEN) {
+			if (FindPlayerVehicle() && FindPlayerVehicle()->IsCar())
+				if (FindPlayerVehicle()->IsAlarmOn())
+					if ((FindPlayerVehicle()->GetPosition() - GetPosition()).MagnitudeSqr() < sq(20.0f))
+						CWorld::Players[CWorld::PlayerInFocus].m_pPed->SetWantedLevelNoDrop(1);
+		}
+	}
+#endif
+
 	ActivateBombWhenEntered();
 
 	CRubbish::StirUp(this);
@@ -1147,6 +1160,29 @@ CBike::ProcessControl(void)
 #endif
 				ReduceHornCounter();
 		}else{
+#ifdef EX_VCPD_WINTERGREEN
+			if(UsesSiren()){
+				if(Pads[0].bHornHistory[Pads[0].iCurrHornHistory]){
+					if(Pads[0].bHornHistory[(Pads[0].iCurrHornHistory+CPad::HORNHISTORY_SIZE-1) % CPad::HORNHISTORY_SIZE] &&
+					   Pads[0].bHornHistory[(Pads[0].iCurrHornHistory+CPad::HORNHISTORY_SIZE-2) % CPad::HORNHISTORY_SIZE])
+						m_nCarHornTimer = 1;
+					else
+						m_nCarHornTimer = 0;
+				}else if(Pads[0].bHornHistory[(Pads[0].iCurrHornHistory+CPad::HORNHISTORY_SIZE-1) % CPad::HORNHISTORY_SIZE] &&
+				         !Pads[0].bHornHistory[(Pads[0].iCurrHornHistory+1) % CPad::HORNHISTORY_SIZE]){
+					m_nCarHornTimer = 0;
+					m_bSirenOrAlarm = !m_bSirenOrAlarm;
+				}else
+					m_nCarHornTimer = 0;
+			}else if(!CVehicle::bCheat3){
+				if(!IsAlarmOn()){
+					if(Pads[0].GetHorn())
+						m_nCarHornTimer = 1;
+					else
+						m_nCarHornTimer = 0;
+				}
+			}
+#else
 #ifdef FIX_BUGS
 			if(!IsAlarmOn())
 #endif
@@ -1156,6 +1192,7 @@ CBike::ProcessControl(void)
 				else
 					m_nCarHornTimer = 0;
 			}
+#endif
 		}
 	}
 
@@ -1397,6 +1434,68 @@ CBike::PreRender(void)
 		CSkidmarks::RegisterOne((uintptr)this, groundPos, GetForward().x, GetForward().y,
 			m_aWheelSkidmarkType[BIKEWHEEL_REAR], &m_aWheelSkidmarkBloody[BIKEWHEEL_REAR]);
 	}
+
+#ifdef EX_VCPD_WINTERGREEN // Siren lights
+	if (GetModelIndex() == MI_POLWINTERGREEN && m_bSirenOrAlarm) {
+		CalculateLeanMatrix();
+		CVector frontLeftSirenPos = m_leanMatrix * CVector(-0.236697f, 0.915334f, 0.540212f);
+		CVector frontRightSirenPos = m_leanMatrix * CVector(0.236697f, 0.915334f, 0.540212f);
+		CVector rearLeftSirenPos = m_leanMatrix * CVector(-0.26499f, -1.35235f, 0.195883f);
+		CVector rearRightSirenPos = m_leanMatrix * CVector(0.26499f, -1.35235f, 0.195883f);
+		CVector rearUpperSirenPos = m_leanMatrix * CVector(0.310562f, -1.04444f, 0.893928f);
+		if (CTimer::GetTimeInMilliseconds() & 0x100) {
+			CCoronas::UpdateCoronaCoors((uintptr)this + 3, frontRightSirenPos, 50.0f, 0.0f);
+			CCoronas::UpdateCoronaCoors((uintptr)this + 6, rearRightSirenPos, 50.0f, 0.0f);
+			CCoronas::UpdateCoronaCoors((uintptr)this + 4, rearUpperSirenPos, 50.0f, 0.0f);
+
+			if (DotProduct(GetForward(), GetPosition() - TheCamera.GetPosition()) < 0.0f) {
+				CCoronas::RegisterCorona((uintptr)this + 2,
+					255, 0, 0, 255,
+					frontLeftSirenPos, 0.3f, 50.0f,
+					CCoronas::TYPE_STAR,
+					CCoronas::FLARE_NONE,
+					CCoronas::REFLECTION_OFF, CCoronas::LOSCHECK_OFF, CCoronas::STREAK_OFF, 0.0f);
+			}
+
+			if (DotProduct(GetForward(), GetPosition() - TheCamera.GetPosition()) > 0.0f) {
+				CCoronas::RegisterCorona((uintptr)this + 5,
+					255, 0, 0, 255,
+					rearLeftSirenPos, 0.3f, 50.0f,
+					CCoronas::TYPE_STAR,
+					CCoronas::FLARE_NONE,
+					CCoronas::REFLECTION_OFF, CCoronas::LOSCHECK_OFF, CCoronas::STREAK_OFF, 0.0f);
+			}
+		} else {
+			CCoronas::UpdateCoronaCoors((uintptr)this + 2, frontLeftSirenPos, 50.0f, 0.0f);
+			CCoronas::UpdateCoronaCoors((uintptr)this + 5, rearLeftSirenPos, 50.0f, 0.0f);
+
+			if (DotProduct(GetForward(), GetPosition() - TheCamera.GetPosition()) > 0.0f) {
+				CCoronas::RegisterCorona((uintptr)this + 6,
+					255, 0, 0, 255,
+					rearRightSirenPos, 0.3f, 50.0f,
+					CCoronas::TYPE_STAR,
+					CCoronas::FLARE_NONE,
+					CCoronas::REFLECTION_OFF, CCoronas::LOSCHECK_OFF, CCoronas::STREAK_OFF, 0.0f);
+			}
+
+			if (DotProduct(GetForward(), GetPosition() - TheCamera.GetPosition()) < 0.0f) {
+				CCoronas::RegisterCorona((uintptr)this + 3,
+					255, 0, 0, 255,
+					frontRightSirenPos, 0.3f, 50.0f,
+					CCoronas::TYPE_STAR,
+					CCoronas::FLARE_NONE,
+					CCoronas::REFLECTION_OFF, CCoronas::LOSCHECK_OFF, CCoronas::STREAK_OFF, 0.0f);
+			}
+
+			CCoronas::RegisterCorona((uintptr)this + 4,
+				255, 0, 0, 255,
+				rearUpperSirenPos, 0.4f, 50.0f,
+				CCoronas::TYPE_STAR,
+				CCoronas::FLARE_NONE,
+				CCoronas::REFLECTION_OFF, CCoronas::LOSCHECK_OFF, CCoronas::STREAK_OFF, 0.0f);
+		}
+	}
+#endif
 
 	// Process lights
 
@@ -2259,9 +2358,9 @@ CBike::DoDriveByShootings(void)
 	}
 
 #ifdef FIRING_AND_AIMING // hide/show weapon in vehicle
-	if ((lookingLeft || lookingRight || CPad::GetPad(0)->GetCarGunFired()) || FindPlayerPed()->bIsPlayerAiming)
+	if (!FindPlayerPed()->m_pWeaponModel && (FindPlayerPed()->bIsPlayerAiming || (lookingLeft || lookingRight || CPad::GetPad(0)->GetCarGunFired())))
 		pDriver->AddWeaponModel(weapon->GetInfo()->m_nModelId);
-	else if (!FindPlayerPed()->bIsPlayerAiming)
+	else if (FindPlayerPed()->m_pWeaponModel && !FindPlayerPed()->bIsPlayerAiming)
 		pDriver->RemoveWeaponModel(weapon->GetInfo()->m_nModelId);
 #endif
 
@@ -2468,6 +2567,17 @@ CBike::VehicleDamage(void)
 				}
 				break;
 			}
+		}
+#endif
+
+#ifdef EX_VCPD_WINTERGREEN // A player can be given one star if he crashes into the bike the cop is sitting in
+		if (bIsLawEnforcer &&
+			FindPlayerVehicle() && FindPlayerVehicle() == m_pDamageEntity &&
+			GetStatus() != STATUS_ABANDONED &&
+			FindPlayerVehicle()->m_vecMoveSpeed.Magnitude() >= m_vecMoveSpeed.Magnitude() &&
+			FindPlayerVehicle()->m_vecMoveSpeed.Magnitude() > 0.1f) {
+
+			FindPlayerPed()->SetWantedLevelNoDrop(1);
 		}
 #endif
 	}
@@ -2856,6 +2966,9 @@ CBike::BlowUpCar(CEntity *culprit)
 
 	KillPedsInVehicle();
 
+#ifdef EX_VCPD_WINTERGREEN // Siren lights off after BlowUpCar
+	m_bSirenOrAlarm = false;
+#endif
 	bEngineOn = false;
 	bLightsOn = false;
 	ChangeLawEnforcerState(false);

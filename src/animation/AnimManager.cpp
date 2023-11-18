@@ -342,6 +342,11 @@ AnimAssocDesc aStdAnimDescsSide[] = {
 	{ ANIM_STD_STARTWALK, ASSOC_HAS_TRANSLATION | ASSOC_HAS_X_TRANSLATION },
 };
 #endif
+#ifdef EX_IMPROVED_WEAPONS
+AnimAssocDesc aAnimForWeaponDescsSide[] = {
+	{ ANIM_FOR_WEAPON_SLIDE, ASSOC_FADEOUTWHENDONE },
+};
+#endif
 
 char const* aStdAnimations[] = {
 	"walk_civi",
@@ -1039,6 +1044,11 @@ char const* aChainsawStrafeRightAnimations[] = {
 	"walkst_csaw_right",
 };
 #endif
+#ifdef EX_IMPROVED_WEAPONS
+char const* aColtWeaponAnimations[] = {
+	"weapon_colt45_slide",
+};
+#endif
 
 #define awc(a) ARRAY_SIZE(a), a
 const AnimAssocDefinition CAnimManager::ms_aAnimAssocDefinitions[NUM_ANIM_ASSOC_GROUPS] = {
@@ -1104,6 +1114,9 @@ const AnimAssocDefinition CAnimManager::ms_aAnimAssocDefinitions[NUM_ANIM_ASSOC_
 	{ "csawback", "ped", MI_COP, awc(aChainsawStrafeBackAnimations), aStdAnimDescs },
 	{ "csawleft", "ped", MI_COP, awc(aChainsawStrafeLeftAnimations), aStdAnimDescsSide },
 	{ "csawright", "ped", MI_COP, awc(aChainsawStrafeRightAnimations), aStdAnimDescsSide },
+#endif
+#ifdef EX_IMPROVED_WEAPONS
+	{ "colt45weap", "colt45weap", MI_COLT45, awc(aColtWeaponAnimations), aAnimForWeaponDescsSide },
 #endif
 };
 #undef awc

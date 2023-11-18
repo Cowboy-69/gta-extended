@@ -331,6 +331,13 @@ CObject::Render(void)
 	}
 
 	CEntity::Render();
+
+#ifdef EX_CLUMP_WEAPON_MODELS
+	if (RwObjectGetType(m_rwObject) == rpCLUMP && IsClumpSkinned(GetClump())) {
+		RpHAnimHierarchy* weaponHier = GetAnimHierarchyFromSkinClump(GetClump());
+		RpHAnimHierarchyUpdateMatrices(weaponHier);
+	}
+#endif
 }
 
 bool

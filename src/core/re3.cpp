@@ -279,6 +279,12 @@ CRGBA WaypointColor = ReadAndGetWaypointColor("WaypointColorRGB");
 extern bool bEnableDistantLights = ReadAndGetFeature("EnableDistantLights");
 #endif
 extern bool bRecoilWhenFiring = ReadAndGetFeature("RecoilWhenFiring");
+#ifdef CLIMBING
+extern bool bEnableClimbing = ReadAndGetFeature("EnableClimbing");
+#endif
+#ifdef SWIMMING
+extern bool bEnableSwimming = ReadAndGetFeature("EnableSwimming");
+#endif
 #endif
 
 bool ReadIniIfExists(const char *cat, const char *key, uint32 *out)

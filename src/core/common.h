@@ -369,6 +369,12 @@ extern CRGBA WaypointColor;
 extern bool bEnableDistantLights;
 #endif
 extern bool bRecoilWhenFiring;
+#ifdef CLIMBING
+extern bool bEnableClimbing;
+#endif
+#ifdef SWIMMING
+extern bool bEnableSwimming;
+#endif
 #endif
 
 #define DEBUGBREAK() __debugbreak();

@@ -336,4 +336,8 @@ enum AnimationId
 	ANIM_STRIP_E,
 	ANIM_STRIP_F,
 	ANIM_STRIP_G,
+
+#ifdef EX_IMPROVED_WEAPONS
+	ANIM_FOR_WEAPON_SLIDE,
+#endif
 };

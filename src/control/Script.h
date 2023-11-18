@@ -250,11 +250,7 @@ struct tBuildingSwap
 
 enum {
 	MAX_STACK_DEPTH = 6,
-#ifdef VICE_EXTENDED // Script: Increase the limit of local variables
-	NUM_LOCAL_VARS = 32,
-#else
 	NUM_LOCAL_VARS = 16,
-#endif
 	NUM_TIMERS = 2
 };
 

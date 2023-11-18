@@ -52,6 +52,9 @@
 #ifdef IMPROVED_TECH_PART // Saving a screenshot after taking a photo
 #include "main.h"
 #endif
+#ifdef EX_IMPROVED_WEAPONS
+#include "Streaming.h"
+#endif
 
 float fReloadAnimSampleFraction[5] = {  0.5f,  0.7f,  0.75f,  0.75f,  0.7f };
 float fSeaSparrowAimingAngle = 10.0f;
@@ -164,6 +167,18 @@ CWeapon::Initialise(eWeaponType type, int32 ammo)
 		CModelInfo::GetModelInfo(modelId)->AddRef();
 	if ( model2Id != -1 )
 		CModelInfo::GetModelInfo(model2Id)->AddRef();
+
+#ifdef EX_IMPROVED_WEAPONS
+	CWeaponModelInfo* modelInfo = (CWeaponModelInfo*)CModelInfo::GetModelInfo(modelId);
+	if (modelId != -1) {
+		int animForWeaponBlock = modelInfo->GetAnimForWeaponFileIndex();
+		if (animForWeaponBlock != -1) {
+			CStreaming::RequestAnim(animForWeaponBlock, STREAMFLAGS_DEPENDENCY);
+			CStreaming::LoadAllRequestedModels(false);
+			CAnimManager::AddAnimBlockRef(animForWeaponBlock);
+		}
+	}
+#endif
 }
 
 void
@@ -172,6 +187,16 @@ CWeapon::Shutdown()
 	int32 modelId = CWeaponInfo::GetWeaponInfo(m_eWeaponType)->m_nModelId;
 	if (modelId != -1)
 		CModelInfo::GetModelInfo(modelId)->RemoveRef();
+
+#ifdef EX_IMPROVED_WEAPONS
+	CWeaponModelInfo* modelInfo = (CWeaponModelInfo*)CModelInfo::GetModelInfo(modelId);
+	if (modelId != -1) {
+		int animForWeaponBlock = modelInfo->GetAnimForWeaponFileIndex();
+		if (animForWeaponBlock != -1) {
+			CAnimManager::RemoveAnimBlockRef(animForWeaponBlock);
+		}
+	}
+#endif
 
 	int32 model2Id = CWeaponInfo::GetWeaponInfo(m_eWeaponType)->m_nModel2Id;
 	if (model2Id != -1)
@@ -225,6 +250,18 @@ CWeapon::Fire(CEntity *shooter, CVector *fireSource)
 
 			Reload();
 		}
+
+#ifdef EX_IMPROVED_WEAPONS // Slide animation after a shot
+		if (shooter->IsPed()) {
+			CPed* ped = (CPed*)shooter;
+			if (ped->m_pWeaponModel && GetInfo()->m_animForWeaponToPlay != ASSOCGRP_STD) {
+				if (RpAnimBlendClumpGetAssociation(ped->m_pWeaponModel, ANIM_FOR_WEAPON_SLIDE))
+					CAnimManager::BlendAnimation(ped->m_pWeaponModel, GetInfo()->m_animForWeaponToPlay, ANIM_FOR_WEAPON_SLIDE, 100.0f);
+				else
+					CAnimManager::AddAnimation(ped->m_pWeaponModel, GetInfo()->m_animForWeaponToPlay, ANIM_FOR_WEAPON_SLIDE);
+			}
+		}
+#endif
 
 		switch ( m_eWeaponType )
 		{
@@ -3128,6 +3165,23 @@ CWeapon::Update(int32 audioEntity, CPed *pedToAdjustSound)
 {
 	CWeaponInfo *info = GetInfo();
 
+#ifdef EX_IMPROVED_WEAPONS // After the last shot is fired, the slide moves backwards
+	if (pedToAdjustSound && pedToAdjustSound->m_pWeaponModel) {
+		CAnimBlendAssociation* animForWeaponAssoc = RpAnimBlendClumpGetAssociation(pedToAdjustSound->m_pWeaponModel, ANIM_FOR_WEAPON_SLIDE);
+		if (m_eWeaponState == WEAPONSTATE_RELOADING && m_nAmmoInClip == 0) {
+			if (animForWeaponAssoc) {
+				float maxSlideOffsetTime = animForWeaponAssoc->hierarchy->totalLength / 2.5f;
+				if (animForWeaponAssoc->speed != 0.75f && animForWeaponAssoc->IsRunning() &&
+					animForWeaponAssoc->currentTime >= maxSlideOffsetTime) {
+
+					animForWeaponAssoc->SetCurrentTime(maxSlideOffsetTime);
+					animForWeaponAssoc->flags &= ~ASSOC_RUNNING;
+				}
+			}
+		}
+	}
+#endif
+
 	switch ( m_eWeaponState )
 	{
 		case WEAPONSTATE_MELEE_MADECONTACT:
@@ -3204,8 +3258,17 @@ CWeapon::Update(int32 audioEntity, CPed *pedToAdjustSound)
 						default:
 							break;
 					}
-					if (reloadAssoc->GetProgress() >= soundStart && (reloadAssoc->currentTime - reloadAssoc->timeStep) / reloadAssoc->hierarchy->totalLength < soundStart)
+					if (reloadAssoc->GetProgress() >= soundStart && (reloadAssoc->currentTime - reloadAssoc->timeStep) / reloadAssoc->hierarchy->totalLength < soundStart) {
 						DMAudio.PlayOneShot(audioEntity, SOUND_WEAPON_RELOAD, m_eWeaponType);
+
+#ifdef EX_IMPROVED_WEAPONS // After the last shot is fired, the slide moves backwards
+						CAnimBlendAssociation* animForWeaponAssoc = RpAnimBlendClumpGetAssociation(pedToAdjustSound->m_pWeaponModel, ANIM_FOR_WEAPON_SLIDE);
+						if (animForWeaponAssoc && !animForWeaponAssoc->IsRunning()) {
+							animForWeaponAssoc->SetRun();
+							animForWeaponAssoc->speed = 0.75f;
+						}
+#endif
+					}
 					if (CTimer::GetTimeInMilliseconds() > m_nTimer && reloadAssoc->GetProgress() < 0.9f) {
 						m_nTimer = CTimer::GetTimeInMilliseconds();
 					}

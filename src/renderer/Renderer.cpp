@@ -692,7 +692,11 @@ CRenderer::SetupEntityVisibility(CEntity *ent)
 			request = false;
 		}
 	}else{
+#ifdef EX_CLUMP_WEAPON_MODELS
+		if(mi->GetModelType() != MITYPE_SIMPLE){
+#else
 		if(mi->GetModelType() != MITYPE_SIMPLE && mi->GetModelType() != MITYPE_WEAPON){
+#endif
 			if(FindPlayerVehicle() == ent &&
 			   TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_1STPERSON &&
 			   !(FindPlayerVehicle()->IsBike() && ((CBike*)FindPlayerVehicle())->bWheelieCam)){

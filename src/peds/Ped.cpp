@@ -1891,7 +1891,33 @@ CPed::ProcessBuoyancy(void)
 		color.g = (0.5f * CTimeCycle::GetDirectionalBlue() + CTimeCycle::GetAmbientBlue()) * 127.5f;
 		color.b = (0.5f * CTimeCycle::GetDirectionalGreen() + CTimeCycle::GetAmbientGreen()) * 127.5f;
 		color.a = CGeneral::GetRandomNumberInRange(48.0f, 96.0f);
-#ifndef SWIMMING
+#ifdef SWIMMING
+		if (!bEnableSwimming) {
+			ApplyMoveForce(buoyancyImpulse);
+			if (!DyingOrDead()) {
+				if (bTryingToReachDryLand) {
+					if (buoyancyImpulse.z / m_fMass > GRAVITY * 0.4f * CTimer::GetTimeStep()) {
+						bTryingToReachDryLand = false;
+						CVector pos = GetPosition();
+						if (PlacePedOnDryLand()) {
+							if (m_fHealth > 20.0f)
+								InflictDamage(nil, WEAPONTYPE_DROWNING, 15.0f, PEDPIECE_TORSO, false);
+
+							if (bIsInTheAir) {
+								RpAnimBlendClumpSetBlendDeltas(GetClump(), ASSOC_PARTIAL, -1000.0f);
+								bIsInTheAir = false;
+							}
+							pos.z = pos.z - 0.8f;
+							CParticleObject::AddObject(POBJECT_PED_WATER_SPLASH, pos, CVector(0.0f, 0.0f, 0.0f), 0.0f, 50, color, true);
+							m_vecMoveSpeed = CVector(0.0f, 0.0f, 0.0f);
+							SetPedState(PED_IDLE);
+							return;
+						}
+					}
+				}
+			}
+		}
+#else
 		ApplyMoveForce(buoyancyImpulse);
 		if (!DyingOrDead()) {
 			if (bTryingToReachDryLand) {
@@ -1918,54 +1944,67 @@ CPed::ProcessBuoyancy(void)
 #endif
 		float speedMult = 0.0f;
 #ifdef SWIMMING
-		if (buoyancyImpulse.z / m_fMass > GRAVITY * CTimer::GetTimeStep()
-			|| mod_Buoyancy.m_waterlevel > GetPosition().z + 0.2f) {
-			if (IsPlayer() && !bIsSwimming && !DyingOrDead()) {
-				RemoveWeaponModel(GetWeapon()->GetInfo()->m_nModelId);
+		if (bEnableSwimming) {
+			if (buoyancyImpulse.z / m_fMass > GRAVITY * CTimer::GetTimeStep()
+				|| mod_Buoyancy.m_waterlevel > GetPosition().z + 0.2f) {
+				if (IsPlayer() && !bIsSwimming && !DyingOrDead()) {
+					RemoveWeaponModel(GetWeapon()->GetInfo()->m_nModelId);
 
-				if (bIsDucking) {
-					ClearDuck();
-					bCrouchWhenShooting = false;
+					if (bIsDucking) {
+						ClearDuck();
+						bCrouchWhenShooting = false;
+					}
+
+					if (bFallenDown)
+						SetGetUp();
+
+					ClearLook();
+					ClearAimFlag();
+
+					if (m_nPedState == PED_JUMP) {
+						CAnimBlendAssociation* swimTreadAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_SWIM_TREAD, 4.0f);
+						swimTreadAssoc->SetFinishCallback(PedLandCB, this);
+						bIsLanding = true;
+					}
+
+					SetPedState(PED_SWIM);
+					bIsSwimming = true;
+
+	#ifdef CLIMBING
+					bIsReadyToClimbing = false;
+	#endif
+
+					bIsInTheAir = false;
+					bAffectedByGravity = false;
+					m_vecMoveSpeed.z = 0.0f;
+				} else if (!IsPlayer() || IsPlayer() && DyingOrDead()) {
+					m_vecMoveSpeed.x = 0.0f;
+					m_vecMoveSpeed.y = 0.0f;
+					m_vecMoveSpeed.z = 0.0f;
+					bIsStanding = false;
+					bIsDrowning = true;
+					InflictDamage(nil, WEAPONTYPE_DROWNING, 3.0f * CTimer::GetTimeStep(), PEDPIECE_TORSO, 0);
 				}
+			} else if (bIsSwimming && bIsStanding) {
+				AddWeaponModel(GetWeapon()->GetInfo()->m_nModelId);
 
-				if (bFallenDown)
-					SetGetUp();
+				RestorePreviousState();
+				bIsSwimming = false;
+				bAffectedByGravity = true;
 
-				ClearLook();
-				ClearAimFlag();
-
-				if (m_nPedState == PED_JUMP) {
-					CAnimBlendAssociation* swimTreadAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_SWIM_TREAD, 4.0f);
-					swimTreadAssoc->SetFinishCallback(PedLandCB, this);
-					bIsLanding = true;
-				}
-
-				SetPedState(PED_SWIM);
-				bIsSwimming = true;
-
-#ifdef CLIMBING
-				bIsReadyToClimbing = false;
-#endif
-
-				bIsInTheAir = false;
-				bAffectedByGravity = false;
-				m_vecMoveSpeed.z = 0.0f;
-			} else if (!IsPlayer() || IsPlayer() && DyingOrDead()) {
-				m_vecMoveSpeed.x = 0.0f;
-				m_vecMoveSpeed.y = 0.0f;
-				m_vecMoveSpeed.z = 0.0f;
+				RemoveSwimAnims();
+			}
+		} else {
+			if (buoyancyImpulse.z / m_fMass > GRAVITY * CTimer::GetTimeStep()
+				|| mod_Buoyancy.m_waterlevel > GetPosition().z + 0.6f) {
+				speedMult = pow(0.9f, CTimer::GetTimeStep());
+				m_vecMoveSpeed.x *= speedMult;
+				m_vecMoveSpeed.y *= speedMult;
+				m_vecMoveSpeed.z *= speedMult;
 				bIsStanding = false;
 				bIsDrowning = true;
 				InflictDamage(nil, WEAPONTYPE_DROWNING, 3.0f * CTimer::GetTimeStep(), PEDPIECE_TORSO, 0);
 			}
-		} else if (bIsSwimming && bIsStanding) {
-			AddWeaponModel(GetWeapon()->GetInfo()->m_nModelId);
-
-			RestorePreviousState();
-			bIsSwimming = false;
-			bAffectedByGravity = true;
-
-			RemoveSwimAnims();
 		}
 #else
 		if (buoyancyImpulse.z / m_fMass > GRAVITY * CTimer::GetTimeStep()
@@ -1981,17 +2020,42 @@ CPed::ProcessBuoyancy(void)
 #endif
 		if (buoyancyImpulse.z / m_fMass > GRAVITY * 0.25f * CTimer::GetTimeStep()) {
 #ifdef SWIMMING
-			if (IsPlayer() && !bIsSwimming && m_vecMoveSpeed.z < -0.2f) {
-				DMAudio.PlayOneShot(m_audioEntityId, SOUND_SPLASH, 0.0f);
-				CVector aBitForward = 2.2f * m_vecMoveSpeed + GetPosition();
-				float level = 0.0f;
-				if (CWaterLevel::GetWaterLevel(aBitForward, &level, false))
-					aBitForward.z = level;
+			if (bEnableSwimming) {
+				if (IsPlayer() && !bIsSwimming && m_vecMoveSpeed.z < -0.2f) {
+					DMAudio.PlayOneShot(m_audioEntityId, SOUND_SPLASH, 0.0f);
+					CVector aBitForward = 2.2f * m_vecMoveSpeed + GetPosition();
+					float level = 0.0f;
+					if (CWaterLevel::GetWaterLevel(aBitForward, &level, false))
+						aBitForward.z = level;
 
-				CParticleObject::AddObject(POBJECT_PED_WATER_SPLASH, aBitForward, CVector(0.0f, 0.0f, 0.1f), 0.0f, 200, color, true);
-				nGenerateRaindrops = CTimer::GetTimeInMilliseconds() + 80;
-				nGenerateWaterCircles = CTimer::GetTimeInMilliseconds() + 100;
-			} else if (!IsPlayer()) {
+					CParticleObject::AddObject(POBJECT_PED_WATER_SPLASH, aBitForward, CVector(0.0f, 0.0f, 0.1f), 0.0f, 200, color, true);
+					nGenerateRaindrops = CTimer::GetTimeInMilliseconds() + 80;
+					nGenerateWaterCircles = CTimer::GetTimeInMilliseconds() + 100;
+				} else if (!IsPlayer()) {
+					if (speedMult == 0.0f) {
+						speedMult = pow(0.9f, CTimer::GetTimeStep());
+					}
+					m_vecMoveSpeed.x *= speedMult;
+					m_vecMoveSpeed.y *= speedMult;
+
+					if (m_vecMoveSpeed.z >= -0.1f) {
+						if (m_vecMoveSpeed.z < -0.04f)
+							m_vecMoveSpeed.z = -0.02f;
+					}
+					else {
+						m_vecMoveSpeed.z = -0.01f;
+						DMAudio.PlayOneShot(m_audioEntityId, SOUND_SPLASH, 0.0f);
+						CVector aBitForward = 2.2f * m_vecMoveSpeed + GetPosition();
+						float level = 0.0f;
+						if (CWaterLevel::GetWaterLevel(aBitForward, &level, false))
+							aBitForward.z = level;
+
+						CParticleObject::AddObject(POBJECT_PED_WATER_SPLASH, aBitForward, CVector(0.0f, 0.0f, 0.1f), 0.0f, 200, color, true);
+						nGenerateRaindrops = CTimer::GetTimeInMilliseconds() + 80;
+						nGenerateWaterCircles = CTimer::GetTimeInMilliseconds() + 100;
+					}
+				}
+			} else {
 				if (speedMult == 0.0f) {
 					speedMult = pow(0.9f, CTimer::GetTimeStep());
 				}
@@ -2001,8 +2065,7 @@ CPed::ProcessBuoyancy(void)
 				if (m_vecMoveSpeed.z >= -0.1f) {
 					if (m_vecMoveSpeed.z < -0.04f)
 						m_vecMoveSpeed.z = -0.02f;
-				}
-				else {
+				} else {
 					m_vecMoveSpeed.z = -0.01f;
 					DMAudio.PlayOneShot(m_audioEntityId, SOUND_SPLASH, 0.0f);
 					CVector aBitForward = 2.2f * m_vecMoveSpeed + GetPosition();
@@ -5067,12 +5130,19 @@ CPed::AddWeaponModel(int id)
 		if (m_pWeaponModel)
 			RemoveWeaponModel(-1);
 
+#ifdef EX_CLUMP_WEAPON_MODELS // CPed::m_pWeaponModel
+		m_pWeaponModel = (RpClump*)CModelInfo::GetModelInfo(id)->CreateInstance();
+		RpAnimBlendClumpInit(m_pWeaponModel);
+#else
 		m_pWeaponModel = (RpAtomic*)CModelInfo::GetModelInfo(id)->CreateInstance();
+#endif
 		CModelInfo::GetModelInfo(id)->AddRef();
 		m_wepModelID = id;
 
+#ifndef EX_CLUMP_WEAPON_MODELS // TODO: MINIGUN !!!!!!!!
 		if (IsPlayer() && id == MI_MINIGUN)
 			((CPlayerPed*)this)->m_pMinigunTopAtomic = (RpAtomic*)CModelInfo::GetModelInfo(MI_MINIGUN2)->CreateInstance();
+#endif
 	}
 }
 
@@ -5092,6 +5162,15 @@ CPed::RemoveWeaponModel(int modelId)
 {
 	// modelId is not used!! This function just removes the current weapon.
 	if(m_pWeaponModel){
+#ifdef EX_CLUMP_WEAPON_MODELS // CPed::m_pWeaponModel
+		if (modelId == -1
+			|| CVisibilityPlugins::GetClumpModelInfo(m_pWeaponModel) == CModelInfo::GetModelInfo(modelId)) {
+
+			CVisibilityPlugins::GetClumpModelInfo(m_pWeaponModel)->RemoveRef();
+			RpClumpDestroy(m_pWeaponModel);
+			m_pWeaponModel = nil;
+		}
+#else
 		if (modelId == -1
 			|| CVisibilityPlugins::GetAtomicModelInfo(m_pWeaponModel) == CModelInfo::GetModelInfo(modelId)) {
 			CVisibilityPlugins::GetAtomicModelInfo(m_pWeaponModel)->RemoveRef();
@@ -5100,6 +5179,7 @@ CPed::RemoveWeaponModel(int modelId)
 			RwFrameDestroy(frm);
 			m_pWeaponModel = nil;
 		}
+#endif
 	}
 
 	if (IsPlayer() && (modelId == -1 || modelId == MI_MINIGUN)) {
@@ -5616,6 +5696,25 @@ CPed::Render(void)
 	CEntity::Render();
 
 	if(m_pWeaponModel){
+#ifdef EX_CLUMP_WEAPON_MODELS // CPed::m_pWeaponModel
+		RpHAnimHierarchy* pedHier = GetAnimHierarchyFromSkinClump(GetClump());
+		int idx = RpHAnimIDGetIndex(pedHier, m_pFrames[PED_HANDR]->nodeID);
+		RwMatrix* mat = &RpHAnimHierarchyGetMatrixArray(pedHier)[idx];
+
+		RwFrame* frame = RpClumpGetFrame(m_pWeaponModel);
+		*RwFrameGetMatrix(frame) = *mat;
+		RwFrameUpdateObjects(frame);
+
+		if (IsClumpSkinned(m_pWeaponModel)) {
+			RpHAnimHierarchy* weaponHier = GetAnimHierarchyFromSkinClump(m_pWeaponModel);
+			//*RwFrameGetMatrix(weaponHier->parentFrame) = *mat;
+			//RwFrameUpdateObjects(weaponHier->parentFrame);
+			RpHAnimHierarchyUpdateMatrices(weaponHier);
+			RpAnimBlendClumpUpdateAnimations(m_pWeaponModel, CTimer::GetTimeStepInSeconds(), true);
+		}
+
+		RpClumpRender(m_pWeaponModel);
+#else
 		RpHAnimHierarchy *hier = GetAnimHierarchyFromSkinClump(GetClump());
 		int idx = RpHAnimIDGetIndex(hier, m_pFrames[PED_HANDR]->nodeID);
 		RwMatrix *mat = &RpHAnimHierarchyGetMatrixArray(hier)[idx];
@@ -5645,6 +5744,7 @@ CPed::Render(void)
 				RpAtomicRender(player->m_pMinigunTopAtomic);
 			}
 		}
+#endif
 	}
 }
 
@@ -8025,7 +8125,11 @@ CPed::AnswerMobile(void)
 		if (phoneInAssoc) {
 			if (phoneInAssoc->currentTime >= 0.85f && !m_pWeaponModel) {
 				CBaseModelInfo *phoneModel = CModelInfo::GetModelInfo(MI_MOBILE);
+#ifdef EX_CLUMP_WEAPON_MODELS // CPed::m_pWeaponModel
+				m_pWeaponModel = (RpClump*)phoneModel->CreateInstance();
+#else
 				m_pWeaponModel = (RpAtomic*)phoneModel->CreateInstance();
+#endif
 				phoneModel->AddRef();
 				m_wepModelID = MI_MOBILE;
 
@@ -9840,7 +9944,7 @@ CPed::CanPedJumpThis(CEntity *unused, CVector *damageNormal)
 	}
 
 #ifdef CLIMBING
-	if (!IsPlayer() && bClimbingPeds)
+	if (bEnableClimbing && !IsPlayer() && bClimbingPeds)
 		pos.z += maxPossibleCheckHeightForPeds;
 #endif
 
@@ -10407,6 +10511,9 @@ CPed::Say(uint16 audio, int32 time)
 #ifdef CLIMBING
 bool CPed::CanPedClimbingThis(CColPoint& hitForwardPoint, CColPoint& hitBackwardPoint, CColPoint& hitJumpBPoint)
 {
+	if (!bEnableClimbing)
+		return false;
+
 	if (!IsPlayer() && !bClimbingPeds)
 		return false;
 

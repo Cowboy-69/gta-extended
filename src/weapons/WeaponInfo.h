@@ -60,6 +60,9 @@ public:
 	uint32 m_Flags;
 
 	uint32 m_nWeaponSlot;
+#ifdef EX_IMPROVED_WEAPONS // weapon.dat
+	AssocGroupId m_animForWeaponToPlay;
+#endif
 
 	static void Initialise(void);
 	static void LoadWeaponData(void);

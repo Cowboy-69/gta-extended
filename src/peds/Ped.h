@@ -530,7 +530,11 @@ public:
 	CEntity* m_pEventEntity;
 	float m_fAngleToEvent;
 	AnimBlendFrameData *m_pFrames[PED_NODE_MAX];
+#ifdef EX_CLUMP_WEAPON_MODELS // CPed::m_pWeaponModel
+	RpClump *m_pWeaponModel;
+#else
 	RpAtomic *m_pWeaponModel;
+#endif
 	AssocGroupId m_animGroup;
 	CAnimBlendAssociation *m_pVehicleAnim;
 	CVector2D m_vecAnimMoveDelta;

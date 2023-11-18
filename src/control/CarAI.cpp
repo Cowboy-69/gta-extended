@@ -646,6 +646,12 @@ void CCarAI::AddPoliceCarOccupants(CVehicle* pVehicle)
 	if (pVehicle->bOccupantsHaveBeenGenerated)
 		return;
 	pVehicle->bOccupantsHaveBeenGenerated = true;
+#ifdef EX_VCPD_WINTERGREEN
+	if (pVehicle->GetModelIndex() == MI_POLWINTERGREEN) {
+		pVehicle->SetUpDriver();
+		return;
+	}
+#endif
 	switch (pVehicle->GetModelIndex()){
 	case MI_FBIRANCH:
 	case MI_ENFORCER:

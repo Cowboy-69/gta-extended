@@ -48,8 +48,13 @@ public:
 	// one day it becomes virtual
 	uint8 GetModelType() const { return m_type; }
 	bool IsBuilding(void) { return m_type == MITYPE_SIMPLE || m_type == MITYPE_TIME; }
+#ifdef EX_CLUMP_WEAPON_MODELS
+	bool IsSimple(void) { return m_type == MITYPE_SIMPLE || m_type == MITYPE_TIME; }
+	bool IsClump(void) { return m_type == MITYPE_CLUMP || m_type == MITYPE_PED || m_type == MITYPE_VEHICLE || m_type == MITYPE_WEAPON; }
+#else
 	bool IsSimple(void) { return m_type == MITYPE_SIMPLE || m_type == MITYPE_TIME || m_type == MITYPE_WEAPON; }
 	bool IsClump(void) { return m_type == MITYPE_CLUMP || m_type == MITYPE_PED || m_type == MITYPE_VEHICLE;	}
+#endif
 	char *GetModelName(void) { return m_name; }
 	void SetModelName(const char *name) { strncpy(m_name, name, MAX_MODEL_NAME); }
 	void SetColModel(CColModel *col, bool owns = false){

@@ -202,7 +202,14 @@ CPickup::GiveUsAPickUpObject(CObject **ppObject, CObject **ppExtraObject, int32 
 		if (extraHandle >= 0 && modelId != -1 && extraObject == nil)
 			extraObject = new(extraHandle) CObject(modelId, false);
 	} else {
+#ifdef EX_CLUMP_WEAPON_MODELS
+		if (CModelInfo::GetModelInfo(m_eModelIndex)->GetModelType() == MITYPE_WEAPON)
+			object = new CObject(m_eModelIndex, true);
+		else
+			object = new CObject(m_eModelIndex, false);
+#else
 		object = new CObject(m_eModelIndex, false);
+#endif
 		if (modelId != -1)
 			extraObject = new CObject(modelId, false);
 	}

@@ -920,7 +920,11 @@ CCarCtrl::ChoosePoliceCarModel(void)
 		CStreaming::HasModelLoaded(MI_BARRACKS) &&
 		CStreaming::HasModelLoaded(MI_ARMY))
 		return CGeneral::GetRandomTrueFalse() ? MI_BARRACKS : MI_RHINO;
+#ifdef EX_VCPD_WINTERGREEN // ChoosePoliceCarModel
+	return (CGeneral::GetRandomTrueFalse()) == true ? MI_POLWINTERGREEN : MI_POLICE;
+#else
 	return MI_POLICE;
+#endif
 }
 
 int32

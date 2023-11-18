@@ -1727,6 +1727,13 @@ CStreaming::StreamVehiclesAndPeds(void)
 		SetModelIsDeletable(MI_VICE8);
 	}
 
+#ifdef EX_VCPD_WINTERGREEN // A bike model is requested if the player's wanted level is less than three stars
+	if (FindPlayerPed()->m_pWanted->AreMiamiViceRequired())
+		SetModelIsDeletable(MI_POLWINTERGREEN);
+	else
+		RequestModel(MI_POLWINTERGREEN, STREAMFLAGS_DONT_REMOVE);
+#endif
+
 	if(timeBeforeNextLoad >= 0)
 		timeBeforeNextLoad--;
 	else if(ms_numVehiclesLoaded <= desiredNumVehiclesLoaded){

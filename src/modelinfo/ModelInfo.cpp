@@ -142,7 +142,11 @@ CModelInfo::AddWeaponModel(int id)
 	CWeaponModelInfo *modelinfo;
 	modelinfo = CModelInfo::ms_weaponModelStore.Alloc();
 	CModelInfo::ms_modelInfoPtrs[id] = modelinfo;
+#ifdef EX_CLUMP_WEAPON_MODELS
+	modelinfo->m_clump = nil;
+#else
 	modelinfo->Init();
+#endif
 	return modelinfo;
 }
 

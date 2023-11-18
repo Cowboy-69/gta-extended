@@ -108,6 +108,23 @@ CSpecialFX::AddWeaponStreak(int type)
 
 	if (FindPlayerPed() != nil && FindPlayerPed()->m_pWeaponModel != nil) {
 		switch (type) {
+#ifdef EX_CLUMP_WEAPON_MODELS
+		case WEAPONTYPE_BASEBALLBAT:
+			matrix = RwFrameGetLTM(RpClumpGetFrame(FindPlayerPed()->m_pWeaponModel));
+			start = matrix * CVector(0.02f, 0.05f, 0.07f);
+			end = matrix * CVector(0.246f, 0.0325f, 0.796f);
+			break;
+		case WEAPONTYPE_GOLFCLUB:
+			matrix = RwFrameGetLTM(RpClumpGetFrame(FindPlayerPed()->m_pWeaponModel));
+			start = matrix * CVector(0.02f, 0.05f, 0.07f);
+			end = matrix * CVector(-0.054f, 0.0325f, 0.796f);
+			break;
+		case WEAPONTYPE_KATANA:
+			matrix = RwFrameGetLTM(RpClumpGetFrame(FindPlayerPed()->m_pWeaponModel));
+			start = matrix * CVector(0.02f, 0.05f, 0.07f);
+			end = matrix * CVector(0.096f, -0.0175f, 1.096f);
+			break;
+#else
 		case WEAPONTYPE_BASEBALLBAT:
 			matrix = RwFrameGetLTM(RpAtomicGetFrame(FindPlayerPed()->m_pWeaponModel));
 			start = matrix * CVector(0.02f, 0.05f, 0.07f);
@@ -123,6 +140,7 @@ CSpecialFX::AddWeaponStreak(int type)
 			start = matrix * CVector(0.02f, 0.05f, 0.07f);
 			end = matrix * CVector(0.096f, -0.0175f, 1.096f);
 			break;
+#endif
 		default:
 			return;
 		}

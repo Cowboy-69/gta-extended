@@ -873,6 +873,16 @@ CPopulation::AddPedInCar(CVehicle* car, bool isDriver)
 				}
 				// fall through if not
 			}
+#ifdef EX_VCPD_WINTERGREEN
+			else if (car->GetModelIndex() == MI_POLWINTERGREEN) {
+				if (car->bIsLawEnforcer) {
+					preferredModel = COP_STREET;
+					pedType = PEDTYPE_COP;
+					break;
+				}
+				// fall through if not
+			}
+#endif
 
 			int gangOfPed = 0;
 			imSureThatModelIsLoaded = false;

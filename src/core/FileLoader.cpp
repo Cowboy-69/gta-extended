@@ -894,14 +894,25 @@ CFileLoader::LoadWeaponObject(const char *line)
 	float dist;
 	CWeaponModelInfo *mi;
 
+#ifdef EX_IMPROVED_WEAPONS
+	char animForWeaponFile[16];
+
+	sscanf(line, "%d %s %s %s %d %f %s", &id, model, txd, animFile, &numObjs, &dist, animForWeaponFile);
+#else
 	sscanf(line, "%d %s %s %s %d %f", &id, model, txd, animFile, &numObjs, &dist);
+#endif
 
 	mi = CModelInfo::AddWeaponModel(id);
 	mi->SetModelName(model);
+#ifndef EX_CLUMP_WEAPON_MODELS
 	mi->SetNumAtomics(1);
 	mi->m_lodDistances[0] = dist;
+#endif
 	mi->SetTexDictionary(txd);
 	mi->SetAnimFile(animFile);
+#ifdef EX_IMPROVED_WEAPONS
+	mi->SetAnimForWeaponFile(animForWeaponFile);
+#endif
 	mi->SetColModel(&CTempColModels::ms_colModelWeapon);
 	MatchModelString(model, id);
 	return id;
@@ -1221,6 +1232,10 @@ void CFileLoader::LoadAnotherVehicleObject(const char* line)
 		strcpy(mi->m_anotherAnimFileName, animFile);
 		mi->m_level = level;
 		mi->m_compRules = comprules;
+
+#ifdef EX_VCPD_WINTERGREEN
+		MatchModelString(model, id);
+#endif
 
 		for (p = gamename; *p; p++)
 			if (*p == '_') *p = ' ';
