@@ -975,7 +975,11 @@ void _InputInitialiseJoys()
 	PSGLOBAL(joy2id) = -1;
 
 	// Load our gamepad mappings.
+#ifdef VICE_EXTENDED // ViceExtended folder - gamecontrollerdb.txt
+#define SDL_GAMEPAD_DB_PATH "ViceExtended/gamecontrollerdb.txt"
+#else
 #define SDL_GAMEPAD_DB_PATH "gamecontrollerdb.txt"
+#endif
 	FILE *f = fopen(SDL_GAMEPAD_DB_PATH, "rb");
 	if (f) {
 		fseek(f, 0, SEEK_END);

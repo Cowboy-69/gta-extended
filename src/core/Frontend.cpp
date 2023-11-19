@@ -3742,7 +3742,12 @@ CMenuManager::LoadAllTextures()
 		frontendTxdSlot1 = CTxdStore::AddTxdSlot("frontend1");
 
 	printf("LOAD frontend1\n");
+#ifdef VICE_EXTENDED // ViceExtended folder - fronten1.txd
+	//CTxdStore::LoadTxd(frontendTxdSlot1, "ViceExtended/MODELS/FRONTEN1.TXD");
 	CTxdStore::LoadTxd(frontendTxdSlot1, "MODELS/FRONTEN1.TXD");
+#else
+	CTxdStore::LoadTxd(frontendTxdSlot1, "MODELS/FRONTEN1.TXD");
+#endif
 	CTxdStore::AddRef(frontendTxdSlot1);
 	CTxdStore::SetCurrentTxd(frontendTxdSlot1);
 
@@ -3772,7 +3777,11 @@ CMenuManager::LoadAllTextures()
 		radioFrontendTxdSlot = CTxdStore::AddTxdSlot("radio");
 
 	printf("LOAD radio\n");
+#ifdef VICE_EXTENDED // ViceExtended folder - radio.txd
+	CTxdStore::LoadTxd(radioFrontendTxdSlot, "ViceExtended/MODELS/RADIO.TXD");
+#else
 	CTxdStore::LoadTxd(radioFrontendTxdSlot, "MODELS/RADIO.TXD");
+#endif
 	CTxdStore::AddRef(radioFrontendTxdSlot);
 	CTxdStore::SetCurrentTxd(radioFrontendTxdSlot);
 
@@ -3796,7 +3805,12 @@ CMenuManager::LoadAllTextures()
 			frontendTxdSlot2 = CTxdStore::AddTxdSlot("frontend2");
 
 		printf("LOAD frontend2\n");
+#ifdef VICE_EXTENDED // ViceExtended folder - fronten2.txd
+		//CTxdStore::LoadTxd(frontendTxdSlot2, "ViceExtended/MODELS/FRONTEN2.TXD");
 		CTxdStore::LoadTxd(frontendTxdSlot2, "MODELS/FRONTEN2.TXD");
+#else
+		CTxdStore::LoadTxd(frontendTxdSlot2, "MODELS/FRONTEN2.TXD");
+#endif
 		CTxdStore::AddRef(frontendTxdSlot2);
 		CTxdStore::SetCurrentTxd(frontendTxdSlot2);
 
@@ -7011,6 +7025,17 @@ uint8 CMenuManager::GetNumberOfMenuOptions()
 
 #ifdef GAMEPAD_MENU
 const char* controllerTypesPaths[] = {
+#ifdef VICE_EXTENDED // ViceExtended folder - Controller types
+	"ViceExtended/MODELS/FRONTEND_DS2.TXD",
+	"ViceExtended/MODELS/FRONTEND_DS3.TXD",
+	"ViceExtended/MODELS/FRONTEND_DS4.TXD",
+	"ViceExtended/MODELS/FRONTEND_X360.TXD",
+	"ViceExtended/MODELS/FRONTEND_XONE.TXD",
+	"ViceExtended/MODELS/FRONTEND_NSW.TXD",
+#ifdef IMPROVED_MENU_AND_INPUT // Gamepad icon
+	"ViceExtended/MODELS/FRONTEND_DS5.TXD",
+#endif
+#else
 	"MODELS/FRONTEND_DS2.TXD",
 	"MODELS/FRONTEND_DS3.TXD",
 	"MODELS/FRONTEND_DS4.TXD",
@@ -7019,6 +7044,7 @@ const char* controllerTypesPaths[] = {
 	"MODELS/FRONTEND_NSW.TXD",
 #ifdef IMPROVED_MENU_AND_INPUT // Gamepad icon
 	"MODELS/FRONTEND_DS5.TXD",
+#endif
 #endif
 };
 
@@ -7884,6 +7910,41 @@ CMenuManager::LoadController(int8 type)
 {
 	switch (type)
 	{
+#ifdef VICE_EXTENDED // ViceExtended folder - Gamepad buttons
+#ifdef IMPROVED_MENU_AND_INPUT // Gamepad buttons
+	case CONTROLLER_DUALSHOCK2:
+	case CONTROLLER_DUALSHOCK3:
+		CFont::LoadButtons("ViceExtended/MODELS/PS3BTNS.TXD");
+		break;
+	case CONTROLLER_DUALSHOCK4:
+		CFont::LoadButtons("ViceExtended/MODELS/ps4btns.TXD");
+		break;
+	case CONTROLLER_XBOXONE:
+		CFont::LoadButtons("ViceExtended/MODELS/x1btns.TXD");
+		break;
+	case CONTROLLER_NINTENDO_SWITCH:
+		CFont::LoadButtons("ViceExtended/MODELS/NSWBTNS.TXD");
+		break;
+	case CONTROLLER_DUALSENSE:
+		CFont::LoadButtons("ViceExtended/MODELS/ps5btns.TXD");
+		break;
+	default:
+		CFont::LoadButtons("ViceExtended/MODELS/X360BTNS.TXD");
+		break;
+#else
+	case CONTROLLER_DUALSHOCK2:
+	case CONTROLLER_DUALSHOCK3:
+	case CONTROLLER_DUALSHOCK4:
+		CFont::LoadButtons("ViceExtended/MODELS/PS3BTNS.TXD");
+		break;
+	case CONTROLLER_NINTENDO_SWITCH:
+		CFont::LoadButtons("ViceExtended/MODELS/NSWBTNS.TXD");
+		break;
+	default:
+		CFont::LoadButtons("ViceExtended/MODELS/X360BTNS.TXD");
+		break;
+#endif
+#else
 #ifdef IMPROVED_MENU_AND_INPUT // Gamepad buttons
 	case CONTROLLER_DUALSHOCK2:
 	case CONTROLLER_DUALSHOCK3:
@@ -7916,6 +7977,7 @@ CMenuManager::LoadController(int8 type)
 	default:
 		CFont::LoadButtons("MODELS/X360BTNS.TXD");
 		break;
+#endif
 #endif
 	}
 

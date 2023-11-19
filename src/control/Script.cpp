@@ -733,12 +733,21 @@ int CTheScripts::ScriptToLoad = 0;
 int CTheScripts::OpenScript()
 {
 	CFileMgr::ChangeDir("\\");
+#ifdef VICE_EXTENDED // ViceExtended folder - scm
+	switch (ScriptToLoad) {
+	case 0: return CFileMgr::OpenFile("ViceExtended\\data\\main.scm", "rb");
+	case 1: return CFileMgr::OpenFile("ViceExtended\\data\\freeroam_miami.scm", "rb");
+	case 2: return CFileMgr::OpenFile("ViceExtended\\data\\main_d.scm", "rb");
+	}
+	return CFileMgr::OpenFile("ViceExtended\\data\\main.scm", "rb");
+#else
 	switch (ScriptToLoad) {
 	case 0: return CFileMgr::OpenFile("data\\main.scm", "rb");
 	case 1: return CFileMgr::OpenFile("data\\freeroam_miami.scm", "rb");
 	case 2: return CFileMgr::OpenFile("data\\main_d.scm", "rb");
 	}
 	return CFileMgr::OpenFile("data\\main.scm", "rb");
+#endif
 }
 #endif
 
@@ -763,8 +772,13 @@ void CTheScripts::Init()
 
 	int mainf = OpenScript();
 #else
+#ifdef VICE_EXTENDED // ViceExtended folder - scm
+	CFileMgr::SetDir("ViceExtended");
+	int mainf = CFileMgr::OpenFile("data\\main.scm", "rb");
+#else
 	CFileMgr::SetDir("data");
 	int mainf = CFileMgr::OpenFile("main.scm", "rb");
+#endif
 #endif
 	CFileMgr::Read(mainf, (char*)ScriptSpace, SIZE_MAIN_SCRIPT);
 	CFileMgr::CloseFile(mainf);

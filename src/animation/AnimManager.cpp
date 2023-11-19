@@ -1387,7 +1387,11 @@ CAnimManager::BlendAnimation(RpClump *clump, AssocGroupId groupId, AnimationId a
 void
 CAnimManager::LoadAnimFiles(void)
 {
+#ifdef VICE_EXTENDED // ViceExtended folder - ped.ifp
+	LoadAnimFile("ViceExtended\\ANIM\\PED.IFP");
+#else
 	LoadAnimFile("ANIM\\PED.IFP");
+#endif
 	ms_aAnimAssocGroups = new CAnimBlendAssocGroup[NUM_ANIM_ASSOC_GROUPS];
 	CreateAnimAssocGroups();
 }

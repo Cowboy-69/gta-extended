@@ -23,8 +23,13 @@ void cParticleSystemMgr::Initialise()
 
 void cParticleSystemMgr::LoadParticleData()
 {
+#ifdef VICE_EXTENDED // ViceExtended folder - particle.cfg
+	CFileMgr::SetDir("ViceExtended");
+	CFileMgr::LoadFile("data\\particle.cfg", work_buff, ARRAY_SIZE(work_buff), "r");
+#else
 	CFileMgr::SetDir("DATA");
 	CFileMgr::LoadFile(ParticleFilename, work_buff, ARRAY_SIZE(work_buff), "r");
+#endif
 	CFileMgr::SetDir("");
 	
 	tParticleSystemData *entry = nil;

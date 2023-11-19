@@ -146,7 +146,11 @@ CustomFrontendOptionsPopulate(void)
 #ifdef EXTENDED_PIPELINES
 	const char *vehPipelineNames[] = { "FED_MFX", "FED_NEO" };
 	const char *off_on[] = { "FEM_OFF", "FEM_ON" };
+#ifdef VICE_EXTENDED // ViceExtended folder - neo.txd
+	fd = CFileMgr::OpenFile("ViceExtended/neo/neo.txd","r");
+#else
 	fd = CFileMgr::OpenFile("neo/neo.txd","r");
+#endif
 	if (fd) {
 #ifdef GRAPHICS_MENU_OPTIONS
 		FrontendOptionSetCursor(MENUPAGE_GRAPHICS_SETTINGS, -3, false);
@@ -169,8 +173,13 @@ CustomFrontendOptionsPopulate(void)
 	int fd2;
 	FrontendOptionSetCursor(MENUPAGE_LANGUAGE_SETTINGS, 5, false);
 #if 0
+#ifdef VICE_EXTENDED // ViceExtended folder - polish.gxt and fonts_p.txd
+	if (fd = CFileMgr::OpenFile("ViceExtended/text/polish.gxt")) {
+		if (fd2 = CFileMgr::OpenFile("ViceExtended/models/fonts_p.txd")) {
+#else
 	if (fd = CFileMgr::OpenFile("text/polish.gxt")) {
 		if (fd2 = CFileMgr::OpenFile("models/fonts_p.txd")) {
+#endif
 			FrontendOptionAddDynamic("FEL_POL", 0, 0, MENUALIGN_CENTER, nil, nil, LangPolSelect, nil, nil);
 			CFileMgr::CloseFile(fd2);
 		}
@@ -178,8 +187,13 @@ CustomFrontendOptionsPopulate(void)
 	}
 #endif
 
+#ifdef VICE_EXTENDED // ViceExtended folder - russian.gxt and fonts_r.txd
+	if (fd = CFileMgr::OpenFile("ViceExtended/text/russian.gxt")) {
+		if (fd2 = CFileMgr::OpenFile("ViceExtended/models/fonts_r.txd")) {
+#else
 	if (fd = CFileMgr::OpenFile("text/russian.gxt")) {
 		if (fd2 = CFileMgr::OpenFile("models/fonts_r.txd")) {
+#endif
 			FrontendOptionAddDynamic("FEL_RUS", 0, 0, MENUALIGN_CENTER, nil, nil, LangRusSelect, nil, nil);
 			CFileMgr::CloseFile(fd2);
 		}
@@ -187,8 +201,13 @@ CustomFrontendOptionsPopulate(void)
 	}
 
 #if 0
+#ifdef VICE_EXTENDED // ViceExtended folder - japanese.gxt and fonts_j.txd
+	if (fd = CFileMgr::OpenFile("ViceExtended/text/japanese.gxt")) {
+		if (fd2 = CFileMgr::OpenFile("ViceExtended/models/fonts_j.txd")) {
+#else
 	if (fd = CFileMgr::OpenFile("text/japanese.gxt")) {
 		if (fd2 = CFileMgr::OpenFile("models/fonts_j.txd")) {
+#endif
 			FrontendOptionAddDynamic("FEL_JAP", 0, 0, MENUALIGN_CENTER, nil, nil, LangJapSelect, nil, nil);
 			CFileMgr::CloseFile(fd2);
 		}
@@ -207,7 +226,7 @@ CustomFrontendOptionsPopulate(void)
 mINI::INIFile ini("reVC.ini");
 mINI::INIStructure cfg;
 #ifdef VICE_EXTENDED // Game limits
-mINI::INIFile limitsIni("limits.ini");
+mINI::INIFile limitsIni("ViceExtended/limits.ini");
 mINI::INIStructure limitsCfg;
 
 uint8 bInitLimitsIni = limitsIni.read(limitsCfg);
@@ -236,7 +255,7 @@ extern uint16 MAXWHEELMODELS = ReadAndGetGameLimit("MAXWHEELMODELS");
 #endif
 
 #ifdef FEATURES_INI
-mINI::INIFile featuresIni("features.ini");
+mINI::INIFile featuresIni("ViceExtended/features.ini");
 mINI::INIStructure featuresCfg;
 
 uint8 bInitFeaturesIni = featuresIni.read(featuresCfg);

@@ -206,7 +206,11 @@ const char *_psGetUserFilesFolder()
 	return szUserFiles;
 #else
 	static CHAR szUserFiles[256];
+#ifdef VICE_EXTENDED // ViceExtended folder - userfiles folder
+	strcpy(szUserFiles, "ViceExtended\\userfiles");
+#else
 	strcpy(szUserFiles, "userfiles");
+#endif
 	_psCreateFolder(szUserFiles);
 	return szUserFiles;
 #endif
@@ -2299,12 +2303,20 @@ WinMain(HINSTANCE instance,
 
 #ifdef IMPROVED_TECH_PART // New screenshot folder and numbering (thanks to Shagg_E)
 						WIN32_FIND_DATA findData;
+#ifdef VICE_EXTENDED // ViceExtended folder - Gallery folder
+						HANDLE handle = FindFirstFile("ViceExtended\\userfiles\\Gallery\\*.*", &findData);
+#else
 						HANDLE handle = FindFirstFile("userfiles\\Gallery\\*.*", &findData);
+#endif
 						if (handle != INVALID_HANDLE_VALUE)
 						{
 							int32 currentScreenNumber = 0;
 							int32 highestScreenNumber = 0;
+#ifdef VICE_EXTENDED // ViceExtended folder - Gallery folder
+							HANDLE handle2 = FindFirstFile("ViceExtended\\userfiles\\Gallery\\*.png", &findData);
+#else
 							HANDLE handle2 = FindFirstFile("userfiles\\Gallery\\*.png", &findData);
+#endif
 							for (int i = 1; handle2 != INVALID_HANDLE_VALUE && i; i = FindNextFile(handle2, &findData)) {
 								int32 number = 0;
 								unsigned int nameLength = (unsigned)strlen(findData.cFileName);
@@ -2327,7 +2339,11 @@ WinMain(HINSTANCE instance,
 								newScreenNumber = highestScreenNumber;
 							}
 						} else {
+#ifdef VICE_EXTENDED // ViceExtended folder - Gallery folder
+							_psCreateFolder("ViceExtended\\userfiles\\Gallery");
+#else
 							_psCreateFolder("userfiles\\Gallery");
+#endif
 						}
 						FindClose(handle);
 #endif

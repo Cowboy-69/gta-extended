@@ -472,7 +472,11 @@ AttachRimPipe(rw::Clump *clump)
 void
 CustomPipeInit(void)
 {
+#ifdef VICE_EXTENDED // ViceExtended folder - neo.txd
+	RwStream *stream = RwStreamOpen(rwSTREAMFILENAME, rwSTREAMREAD, "ViceExtended/neo/neo.txd");
+#else
 	RwStream *stream = RwStreamOpen(rwSTREAMFILENAME, rwSTREAMREAD, "neo/neo.txd");
+#endif
 	if(stream == nil)
 		printf("Error: couldn't open 'neo/neo.txd'\n");
 	else{

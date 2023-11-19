@@ -376,7 +376,11 @@ void TakeAndSaveScreenshot() {
 			strcpy(numberFinal, numberFinal2); // to prevent 4th digit bug it's better to split this stuff to two different chars
 		}
 	}
+#ifdef VICE_EXTENDED // ViceExtended folder - Gallery folder
+	strcpy(s, "ViceExtended\\userfiles\\Gallery\\photo_");
+#else
 	strcpy(s, "userfiles\\Gallery\\photo_");
+#endif
 	strcat(s, numberFinal);
 	strcat(s, ".png");
 
@@ -1782,7 +1786,11 @@ void
 InitialiseGame(void)
 {
 	LoadingScreen(nil, nil, "loadsc0");
+#ifdef VICE_EXTENDED
+	CGame::Initialise("ViceExtended\\DATA\\GTA_VC.DAT");
+#else
 	CGame::Initialise("DATA\\GTA_VC.DAT");
+#endif
 }
 
 RsEventStatus

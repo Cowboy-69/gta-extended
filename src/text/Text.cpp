@@ -36,6 +36,37 @@ CText::Load(void)
 
 	Unload();
 
+#ifdef VICE_EXTENDED // ViceExtended folder - gxt
+	CFileMgr::SetDir("ViceExtended");
+	switch(FrontEndMenuManager.m_PrefsLanguage){
+	case CMenuManager::LANGUAGE_AMERICAN:
+		sprintf(filename, "TEXT/AMERICAN.GXT");
+		break;
+	case CMenuManager::LANGUAGE_FRENCH:
+		sprintf(filename, "TEXT/FRENCH.GXT");
+		break;
+	case CMenuManager::LANGUAGE_GERMAN:
+		sprintf(filename, "TEXT/GERMAN.GXT");
+		break;
+	case CMenuManager::LANGUAGE_ITALIAN:
+		sprintf(filename, "TEXT/ITALIAN.GXT");
+		break;
+	case CMenuManager::LANGUAGE_SPANISH:
+		sprintf(filename, "TEXT/SPANISH.GXT");
+		break;
+#ifdef MORE_LANGUAGES
+	case CMenuManager::LANGUAGE_POLISH:
+		sprintf(filename, "TEXT/POLISH.GXT");
+		break;
+	case CMenuManager::LANGUAGE_RUSSIAN:
+		sprintf(filename, "TEXT/RUSSIAN.GXT");
+		break;
+	case CMenuManager::LANGUAGE_JAPANESE:
+		sprintf(filename, "TEXT/JAPANESE.GXT");
+		break;
+#endif
+	}
+#else
 	CFileMgr::SetDir("TEXT");
 	switch(FrontEndMenuManager.m_PrefsLanguage){
 	case CMenuManager::LANGUAGE_AMERICAN:
@@ -65,6 +96,7 @@ CText::Load(void)
 		break;
 #endif
 	}
+#endif
 
 	file = CFileMgr::OpenFile(filename, "rb");
 
@@ -240,6 +272,37 @@ CText::LoadMissionText(char *MissionTableName)
 		return;
 	}
 
+#ifdef VICE_EXTENDED // ViceExtended folder - gxt
+	CFileMgr::SetDir("ViceExtended");
+	switch (FrontEndMenuManager.m_PrefsLanguage) {
+	case CMenuManager::LANGUAGE_AMERICAN:
+		sprintf(filename, "TEXT/AMERICAN.GXT");
+		break;
+	case CMenuManager::LANGUAGE_FRENCH:
+		sprintf(filename, "TEXT/FRENCH.GXT");
+		break;
+	case CMenuManager::LANGUAGE_GERMAN:
+		sprintf(filename, "TEXT/GERMAN.GXT");
+		break;
+	case CMenuManager::LANGUAGE_ITALIAN:
+		sprintf(filename, "TEXT/ITALIAN.GXT");
+		break;
+	case CMenuManager::LANGUAGE_SPANISH:
+		sprintf(filename, "TEXT/SPANISH.GXT");
+		break;
+#ifdef MORE_LANGUAGES
+	case CMenuManager::LANGUAGE_POLISH:
+		sprintf(filename, "TEXT/POLISH.GXT");
+		break;
+	case CMenuManager::LANGUAGE_RUSSIAN:
+		sprintf(filename, "TEXT/RUSSIAN.GXT");
+		break;
+	case CMenuManager::LANGUAGE_JAPANESE:
+		sprintf(filename, "TEXT/JAPANESE.GXT");
+		break;
+#endif
+	}
+#else
 	CFileMgr::SetDir("TEXT");
 	switch (FrontEndMenuManager.m_PrefsLanguage) {
 	case CMenuManager::LANGUAGE_AMERICAN:
@@ -269,6 +332,7 @@ CText::LoadMissionText(char *MissionTableName)
 		break;
 #endif
 	}
+#endif
 	CTimer::Suspend();
 	int file = CFileMgr::OpenFile(filename, "rb");
 	CFileMgr::Seek(file, MissionTextOffsets.data[missionTableId].offset, SEEK_SET);

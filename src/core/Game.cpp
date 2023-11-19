@@ -403,7 +403,11 @@ bool CGame::Initialise(const char* datFile)
 
 	LoadingScreen("Loading the Game", "Loading particles", nil);
 	int particleTxdSlot = CTxdStore::AddTxdSlot("particle");
+#ifdef VICE_EXTENDED // ViceExtended folder - particle.txd
+	CTxdStore::LoadTxd(particleTxdSlot, "ViceExtended/MODELS/PARTICLE.TXD");
+#else
 	CTxdStore::LoadTxd(particleTxdSlot, "MODELS/PARTICLE.TXD");
+#endif
 	CTxdStore::AddRef(particleTxdSlot);
 	CTxdStore::SetCurrentTxd(gameTxdSlot);
 	LoadingScreen("Loading the Game", "Setup game variables", nil);
@@ -458,7 +462,11 @@ bool CGame::Initialise(const char* datFile)
 
 	CdStreamAddImage("MODELS\\GTA3.IMG");
 
+#ifdef VICE_EXTENDED // ViceExtended folder - default.dat
+	CFileLoader::LoadLevel("ViceExtended\\DATA\\DEFAULT.DAT");
+#else
 	CFileLoader::LoadLevel("DATA\\DEFAULT.DAT");
+#endif
 	CFileLoader::LoadLevel(datFile);
 
 	LoadingScreen("Loading the Game", "Add Particles", nil);

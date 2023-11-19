@@ -1786,7 +1786,11 @@ void CHud::ReloadTXD()
 	debug("Reloading HUD.TXD...\n");
 
 	HudTXD = CTxdStore::AddTxdSlot("hud");
+#ifdef VICE_EXTENDED // ViceExtended folder - hud.txd
+	CTxdStore::LoadTxd(HudTXD, "ViceExtended/MODELS/HUD.TXD");
+#else
 	CTxdStore::LoadTxd(HudTXD, "MODELS/HUD.TXD");
+#endif
 	CTxdStore::AddRef(HudTXD);
 	CTxdStore::PopCurrentTxd();
 	CTxdStore::SetCurrentTxd(HudTXD);
@@ -1803,7 +1807,11 @@ void CHud::Initialise()
 	m_Wants_To_Draw_3dMarkers = true;
 
 	int HudTXD = CTxdStore::AddTxdSlot("hud");
+#ifdef VICE_EXTENDED // ViceExtended folder - hud.txd
+	CTxdStore::LoadTxd(HudTXD, "ViceExtended/MODELS/HUD.TXD");
+#else
 	CTxdStore::LoadTxd(HudTXD, "MODELS/HUD.TXD");
+#endif
 	CTxdStore::AddRef(HudTXD);
 	CTxdStore::PopCurrentTxd();
 	CTxdStore::SetCurrentTxd(HudTXD);

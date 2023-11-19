@@ -307,6 +307,31 @@ CFont::Initialise(void)
 	int slot;
 
 	slot = CTxdStore::AddTxdSlot("fonts");
+#ifdef VICE_EXTENDED // ViceExtended folder - fonts
+#ifdef MORE_LANGUAGES
+	Slot = slot;
+	switch (LanguageSet)
+	{
+	case FONT_LANGSET_EFIGS:
+	default:
+		//CTxdStore::LoadTxd(slot, "ViceExtended/MODELS/FONTS.TXD");
+		CTxdStore::LoadTxd(slot, "MODELS/FONTS.TXD");
+		break;
+	case FONT_LANGSET_POLISH:
+		CTxdStore::LoadTxd(slot, "ViceExtended/MODELS/FONTS_P.TXD");
+		break;
+	case FONT_LANGSET_RUSSIAN:
+		CTxdStore::LoadTxd(slot, "ViceExtended/MODELS/FONTS_R.TXD");
+		break;
+	case FONT_LANGSET_JAPANESE:
+		CTxdStore::LoadTxd(slot, "ViceExtended/MODELS/FONTS_J.TXD");
+		break;
+	}
+#else
+	//CTxdStore::LoadTxd(slot, "ViceExtended/MODELS/FONTS.TXD");
+	CTxdStore::LoadTxd(slot, "MODELS/FONTS.TXD");
+#endif
+#else
 #ifdef MORE_LANGUAGES
 	Slot = slot;
 	switch (LanguageSet)
@@ -327,6 +352,7 @@ CFont::Initialise(void)
 	}
 #else
 	CTxdStore::LoadTxd(slot, "MODELS/FONTS.TXD");
+#endif
 #endif
 	CTxdStore::AddRef(slot);
 	CTxdStore::PushCurrentTxd();
@@ -359,7 +385,11 @@ CFont::Initialise(void)
 
 #if !defined(GAMEPAD_MENU) && defined(BUTTON_ICONS)
 	// loaded in CMenuManager with GAMEPAD_MENU defined
+#ifdef VICE_EXTENDED // ViceExtended folder - fonts
+	LoadButtons("ViceExtended/MODELS/X360BTNS.TXD");
+#else
 	LoadButtons("MODELS/X360BTNS.TXD");
+#endif
 #endif
 }
 
@@ -424,6 +454,23 @@ CFont::ReloadFonts(uint8 set)
 		CTxdStore::RemoveTxd(Slot);
 		switch (set)
 		{
+#ifdef VICE_EXTENDED // ViceExtended folder - fonts
+		case FONT_LANGSET_EFIGS:
+		default:
+			//CTxdStore::LoadTxd(Slot, "ViceExtended/MODELS/FONTS.TXD");
+			CTxdStore::LoadTxd(Slot, "MODELS/FONTS.TXD");
+			break;
+		case FONT_LANGSET_POLISH:
+			CTxdStore::LoadTxd(Slot, "ViceExtended/MODELS/FONTS_P.TXD");
+			break;
+		case FONT_LANGSET_RUSSIAN:
+			CTxdStore::LoadTxd(Slot, "ViceExtended/MODELS/FONTS_R.TXD");
+			break;
+		case FONT_LANGSET_JAPANESE:
+			CTxdStore::LoadTxd(Slot, "ViceExtended/MODELS/FONTS_J.TXD");
+			break;
+		}
+#else
 		case FONT_LANGSET_EFIGS:
 		default:
 			CTxdStore::LoadTxd(Slot, "MODELS/FONTS.TXD");
@@ -438,6 +485,7 @@ CFont::ReloadFonts(uint8 set)
 			CTxdStore::LoadTxd(Slot, "MODELS/FONTS_J.TXD");
 			break;
 		}
+#endif
 		CTxdStore::SetCurrentTxd(Slot);
 		Sprite[0].SetTexture("font2", "font2_mask");
 		if (set == FONT_LANGSET_JAPANESE) {

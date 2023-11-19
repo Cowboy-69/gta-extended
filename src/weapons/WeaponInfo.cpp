@@ -158,8 +158,13 @@ CWeaponInfo::LoadWeaponData(void)
 	size_t bp, buflen;
 	int lp, linelen;
 		
+#ifdef VICE_EXTENDED // ViceExtended folder - weapon.dat
+	CFileMgr::SetDir("ViceExtended");
+	buflen = CFileMgr::LoadFile("data\\WEAPON.DAT", work_buff, sizeof(work_buff), "r");
+#else
 	CFileMgr::SetDir("DATA");
 	buflen = CFileMgr::LoadFile("WEAPON.DAT", work_buff, sizeof(work_buff), "r");
+#endif
 
 	for (bp = 0; bp < buflen; ) {
 		// read file line by line

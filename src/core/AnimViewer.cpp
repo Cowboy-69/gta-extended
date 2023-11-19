@@ -63,13 +63,21 @@ CAnimViewer::Initialise(void) {
 
 	// we need messages, messages needs hud, hud needs those
 	int hudSlot = CTxdStore::AddTxdSlot("hud");
+#ifdef VICE_EXTENDED // ViceExtended folder - hud.txd
+	CTxdStore::LoadTxd(hudSlot, "ViceExtended/MODELS/HUD.TXD");
+#else
 	CTxdStore::LoadTxd(hudSlot, "MODELS/HUD.TXD");
+#endif
 	CHud::m_Wants_To_Draw_Hud = false;
 
 	animTxdSlot = CTxdStore::AddTxdSlot("generic");
 	CTxdStore::Create(animTxdSlot);
 	int particleSlot = CTxdStore::AddTxdSlot("particle");
+#ifdef VICE_EXTENDED // ViceExtended folder - particle.txd
+	CTxdStore::LoadTxd(particleSlot, "ViceExtended/MODELS/PARTICLE.TXD");
+#else
 	CTxdStore::LoadTxd(particleSlot, "MODELS/PARTICLE.TXD");
+#endif
 	CTxdStore::SetCurrentTxd(animTxdSlot);
 	CPools::Initialise();
 	CReferences::Init();
@@ -89,8 +97,13 @@ CAnimViewer::Initialise(void) {
 	CPedStats::Initialise();
 	CMessages::Init();
 	CdStreamAddImage("MODELS\\GTA3.IMG");
+#ifdef VICE_EXTENDED // ViceExtended folder - default.dat and animviewer.dat
+	CFileLoader::LoadLevel("ViceExtended\\data\\DEFAULT.DAT");
+	CFileLoader::LoadLevel("ViceExtended\\data\\ANIMVIEWER.DAT");
+#else
 	CFileLoader::LoadLevel("DATA\\DEFAULT.DAT");
 	CFileLoader::LoadLevel("DATA\\ANIMVIEWER.DAT");
+#endif
 	CStreaming::Init();
 	for(int i = 0; i < MODELINFOSIZE; i++)
 		if(CModelInfo::GetModelInfo(i))
@@ -117,7 +130,11 @@ CAnimViewer::Initialise(void) {
 	CDraw::SetFOV(120.0f);
 	CDraw::ms_fLODDistance = 500.0f;
 
+#ifdef VICE_EXTENDED // ViceExtended folder - special.txd
+	int fd = CFileMgr::OpenFile("ViceExtended\\data\\SPECIAL.TXT", "r");
+#else
 	int fd = CFileMgr::OpenFile("DATA\\SPECIAL.TXT", "r");
+#endif
 	char animGroup[32], modelName[32];
 	if (fd) {
 		for (int lineId = 0; lineId < NUM_OF_SPECIAL_CHARS; lineId++) {
