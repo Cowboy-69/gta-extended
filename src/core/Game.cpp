@@ -113,8 +113,8 @@ bool CGame::japaneseGame = false;
 CVector CGame::PlayerCoords;
 bool8 CGame::VarUpdatePlayerCoords;
 #endif
-#ifdef VICE_EXTENDED  // Vice Extended version
-uint8 CGame::viceExtendedVersion = VICEEX_VER_3_0;
+#ifdef VICE_EXTENDED // Vice Extended version
+uint8 CGame::viceExtendedVersion = VICEEX_VER_2_7;
 #endif
 
 int gameTxdSlot;
