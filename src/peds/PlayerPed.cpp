@@ -768,7 +768,11 @@ CPlayerPed::SetRealMoveAnim(void)
 			
 			RestoreHeadingRate();
 			if (!curIdleAssoc) {
+#ifdef IMPROVED_TECH_PART // The idle tired animation is not played when the player cannot control the character
+				if (!CPad::GetPad(0)->ArePlayerControlsDisabled() && m_fCurrentStamina < 0.0f && !bIsAimingGun && !CWorld::TestSphereAgainstWorld(GetPosition(), 0.5f,
+#else
 				if (m_fCurrentStamina < 0.0f && !bIsAimingGun && !CWorld::TestSphereAgainstWorld(GetPosition(), 0.5f,
+#endif
 						nil, true, false, false, false, false, false)) {
 					curIdleAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_IDLE_TIRED, 8.0f);
 
@@ -782,7 +786,11 @@ CPlayerPed::SetRealMoveAnim(void)
 
 		} else if (m_fMoveSpeed == 0.0f && !curSprintAssoc) {
 			if (!curIdleAssoc) {
+#ifdef IMPROVED_TECH_PART // The idle tired animation is not played when the player cannot control the character
+				if (!CPad::GetPad(0)->ArePlayerControlsDisabled() && m_fCurrentStamina < 0.0f && !bIsAimingGun && !CWorld::TestSphereAgainstWorld(GetPosition(), 0.5f,
+#else
 				if (m_fCurrentStamina < 0.0f && !bIsAimingGun && !CWorld::TestSphereAgainstWorld(GetPosition(), 0.5f,
+#endif
 						nil, true, false, false, false, false, false)) {
 					curIdleAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_IDLE_TIRED, 4.0f);
 					
@@ -797,7 +805,11 @@ CPlayerPed::SetRealMoveAnim(void)
 				CAnimManager::BlendAnimation(GetClump(), m_animGroup, ANIM_STD_IDLE, 4.0f);
 
 			} else if (m_nPedState != PED_FIGHT) {
+#ifdef IMPROVED_TECH_PART // The idle tired animation is not played when the player cannot control the character
+				if (!CPad::GetPad(0)->ArePlayerControlsDisabled() && m_fCurrentStamina < 0.0f && !bIsAimingGun && curIdleAssoc->animId != ANIM_STD_IDLE_TIRED
+#else
 				if (m_fCurrentStamina < 0.0f && !bIsAimingGun && curIdleAssoc->animId != ANIM_STD_IDLE_TIRED
+#endif
 					&& !CWorld::TestSphereAgainstWorld(GetPosition(), 0.5f, nil, true, false, false, false, false, false)) {
 					CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_IDLE_TIRED, 4.0f);
 
