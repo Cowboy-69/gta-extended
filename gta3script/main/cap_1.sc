@@ -494,6 +494,7 @@ cap1_mission_loop:
 			DO_FADE 1500 FADE_IN
 			IF NOT IS_CHAR_DEAD	collector1
 				ADD_BLIP_FOR_CHAR collector1 collector1_blip
+				SET_BLIP_ROUTE collector1_blip TRUE
 				CHANGE_BLIP_COLOUR collector1_blip RED
 			ENDIF
 			SET_PLAYER_MOOD player1 PLAYER_MOOD_ANGRY 60000
@@ -584,6 +585,7 @@ cap1_mission_loop:
 				collector1_dude1 = -1
 				collector1_cash = 0
 				ADD_BLIP_FOR_CHAR collector1 collector1_blip
+				SET_BLIP_ROUTE collector1_blip TRUE
 				CHANGE_BLIP_COLOUR collector1_blip RED
 			//ELSE//PUT MORE GOONS HERE
 			ELSE
@@ -674,6 +676,7 @@ cap1_mission_loop:
 			SET_CHAR_STAY_IN_SAME_PLACE	collector2 TRUE
 			SET_CHAR_RUNNING collector2 TRUE
 			ADD_BLIP_FOR_CHAR collector2 collector2_blip
+			SET_BLIP_ROUTE collector2_blip TRUE
 			CHANGE_BLIP_COLOUR collector2_blip RED
 
 			CREATE_CHAR_AS_PASSENGER collector2_car PEDTYPE_CIVMALE SPECIAL02 0 collector2_dude1
@@ -745,6 +748,7 @@ cap1_mission_loop:
 					collector2_dude1 = -1
 					collector2_cash = 0
 					ADD_BLIP_FOR_CHAR collector2 collector2_blip
+					SET_BLIP_ROUTE collector2_blip TRUE
 					CHANGE_BLIP_COLOUR collector2_blip RED
 				//ELSE//PUT MORE GOONS HERE
 				ELSE
@@ -837,6 +841,7 @@ cap1_mission_loop:
 			SET_CHAR_STAY_IN_SAME_PLACE	collector3 TRUE
 			SET_CHAR_RUNNING collector3 TRUE
 			ADD_BLIP_FOR_CHAR collector3 collector3_blip
+			SET_BLIP_ROUTE collector3_blip TRUE
 			CHANGE_BLIP_COLOUR collector3_blip RED
 
 			CREATE_CHAR_AS_PASSENGER collector3_car PEDTYPE_CIVMALE SPECIAL02 0 collector3_dude1
@@ -909,6 +914,7 @@ cap1_mission_loop:
 					collector3_dude1 = -1
 					collector3_cash = 0
 					ADD_BLIP_FOR_CHAR collector3 collector3_blip
+					SET_BLIP_ROUTE collector3_blip TRUE
 					CHANGE_BLIP_COLOUR collector3_blip RED
 				//ELSE//PUT MORE GOONS HERE
 				ELSE

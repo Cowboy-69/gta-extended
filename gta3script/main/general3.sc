@@ -632,6 +632,7 @@ DO_FADE 1500 FADE_IN
 CREATE_PICKUP_WITH_AMMO RUGER PICKUP_ONCE 210 gun_g3x gun_g3y gun_g3z gun_g3
 
 ADD_BLIP_FOR_PICKUP gun_g3 gun_g3_blip
+SET_BLIP_ROUTE gun_g3_blip TRUE
 
 PRINT_NOW ( GEN3_20 ) 10000 2
 
@@ -869,6 +870,7 @@ IF NOT IS_CHAR_DEAD buddy_g3
 				SET_PLAYER_CONTROL player1 ON
 				RESTORE_CAMERA_JUMPCUT
 				ADD_BLIP_FOR_COORD meetingx_s3 meetingy_s3 11.062 meeting_blip_s3
+				SET_BLIP_ROUTE meeting_blip_s3 TRUE
 				PRINT_NOW ( GEN3_44 ) 10000 2
 				SET_RADIO_CHANNEL FEVER -1
 				protect_deal_flag = 2

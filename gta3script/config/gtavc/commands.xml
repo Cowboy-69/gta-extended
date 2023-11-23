@@ -9331,5 +9331,11 @@
         <Arg Type="INT" Out="true"/>
       </Args>
     </Command>
+	<Command ID="0x5B3" Name="SET_BLIP_ROUTE">
+      <Args>
+		<Arg Type="INT" Entity="BLIP"/>
+        <Arg Type="INT" Desc="Bool"/>
+      </Args>
+    </Command>
   </Commands>
 </GTA3Script>

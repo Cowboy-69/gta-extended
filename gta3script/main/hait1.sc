@@ -1006,6 +1006,7 @@ DO_FADE 1500 FADE_IN
 CREATE_PICKUP briefcase PICKUP_ONCE case1_x_hait1 case1_y_hait1 case1_z_hait1 case1_hait1
 
 ADD_BLIP_FOR_PICKUP case1_hait1 radar_blip_case1_hait1
+SET_BLIP_ROUTE radar_blip_case1_hait1 TRUE
 
 case1_created_hait1 = 1
 
@@ -1084,6 +1085,7 @@ WHILE all_cases_recoverd_hait1 = 0
 				CLEAR_AREA case2_x_hait1 case2_y_hait1 case2_z_hait1 1.0 FALSE 
 				CREATE_PICKUP briefcase PICKUP_ONCE case2_x_hait1 case2_y_hait1 case2_z_hait1 case2_hait1
 				ADD_BLIP_FOR_PICKUP case2_hait1 radar_blip_case2_hait1
+				SET_BLIP_ROUTE radar_blip_case2_hait1 TRUE
 				DISPLAY_ONSCREEN_TIMER timer_case2_hait1 TIMER_DOWN
 				
 // creates cop1 case 2
@@ -1234,6 +1236,7 @@ WHILE all_cases_recoverd_hait1 = 0
 			CLEAR_AREA case3_x_hait1 case3_y_hait1 case3_z_hait1 1.0 FALSE 
 			CREATE_PICKUP briefcase PICKUP_ONCE case3_x_hait1 case3_y_hait1 case3_z_hait1 case3_hait1
 			ADD_BLIP_FOR_PICKUP case3_hait1 radar_blip_case3_hait1
+			SET_BLIP_ROUTE radar_blip_case3_hait1 TRUE
 		   	DISPLAY_ONSCREEN_TIMER timer_case3_hait1 TIMER_DOWN	
 			case3_created_hait1 = 1
 		ENDIF

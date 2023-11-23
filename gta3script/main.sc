@@ -1180,8 +1180,8 @@ LAUNCH_MISSION robbing.sc
 
 LAUNCH_MISSION audio.sc
 
-LAUNCH_MISSION clothes.sc // ViceEx, Clothing store and wardrobe
-LAUNCH_MISSION wardrobe.sc
+LAUNCH_MISSION clothes.sc // ViceEx, Clothing store
+LAUNCH_MISSION wardrobe.sc // ViceEx, Player's wardrobe
 
 //ADD_SCORE player1 1000 // ViceEx debug
 
@@ -1242,7 +1242,7 @@ IF IS_PLAYER_PLAYING player1
 		GET_PROGRESS_PERCENTAGE game_percentage
 	ELSE
 		IF created_final_shirt = 0
-			CREATE_CLOTHES_PICKUP -382.6 -585.9 25.3 12 final_clothes
+			//CREATE_CLOTHES_PICKUP -382.6 -585.9 25.3 12 final_clothes
 			PRINT_HELP ( CUNTY ) //New clothes delivered to the Vercetti Estate! 
 			INCREASE_PLAYER_MAX_HEALTH player1 50
 			INCREASE_PLAYER_MAX_ARMOUR player1 50
@@ -6201,6 +6201,7 @@ game_help_loop_inner:
 				PRINT_HELP ( HELP42 )  // "This is the ~h~radar~w~. Use it to navigate the city. Follow the ~q~pink blip~w~ to find the hotel." );
 
 				ADD_BLIP_FOR_CONTACT_POINT 240.4 -1280.2 10.0 goto_hotel_contact_blip
+				//SET_BLIP_ROUTE goto_hotel_contact_blip TRUE
 
 				FLASH_HUD_OBJECT HUD_FLASH_RADAR
 					WAIT 3000

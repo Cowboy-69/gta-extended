@@ -762,6 +762,7 @@ SET_EVERYONE_IGNORE_PLAYER player1 OFF
 //Waiting for player1 to get back to battle
 
 ADD_BLIP_FOR_COORD -1072.6 70.3 11.2 drop_off_point1
+SET_BLIP_ROUTE drop_off_point1 TRUE
 PRINT_NOW ( CUB2_19 ) 5000 1 //We gonna fight like men!
 PLAY_MISSION_AUDIO 2
 WHILE NOT HAS_MISSION_AUDIO_FINISHED 2
@@ -2335,6 +2336,7 @@ IF NOT IS_CAR_DEAD escape_car
 		ENDIF
 		REMOVE_BLIP escape_car_blip
 		ADD_BLIP_FOR_COORD -1160.0 -605.9 10.7 home_blip
+		SET_BLIP_ROUTE home_blip TRUE
 		blob_flag = 0
 		PRINT_NOW ( CUB2_24 ) 5000 1 //Return to Robina's Cafe with the Van and park it round the back.  
 		IF NOT IS_CAR_DEAD escape_car 

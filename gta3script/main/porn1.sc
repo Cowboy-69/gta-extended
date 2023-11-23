@@ -398,6 +398,7 @@ ENDWHILE
 LOAD_ALL_MODELS_NOW
 
 ADD_BLIP_FOR_COORD -448.3 1324.6 10.7 candy_sexxx_blip  
+SET_BLIP_ROUTE candy_sexxx_blip TRUE
 
 DO_FADE 1500 FADE_IN
 
@@ -956,6 +957,7 @@ IF NOT IS_CHAR_DEAD candy_sexxx
 	SET_CHAR_HEADING candy_sexxx 14.9  	
 	SET_CHAR_STAY_IN_SAME_PLACE candy_sexxx FALSE
 	ADD_BLIP_FOR_COORD -448.3 1324.6 10.7 candy_sexxx_blip
+	SET_BLIP_ROUTE candy_sexxx_blip TRUE
 ENDIF  
 
 WHILE NOT LOCATE_PLAYER_ON_FOOT_3D player1 -448.3 1326.6 10.7 1.0 1.0 2.0 TRUE
@@ -1029,6 +1031,7 @@ SET_CHARS_CHATTING pap_guard3 pap_guard2 86400000
 
 
 ADD_BLIP_FOR_COORD -900.8 796.0 10.3 mercedes_blip
+SET_BLIP_ROUTE mercedes_blip TRUE
 
 WHILE NOT LOCATE_PLAYER_ON_FOOT_3D player1 -900.8 796.0 10.3 1.0 1.0 2.0 flag_candy_sexxx_in_group
 	WAIT 0
@@ -1268,6 +1271,7 @@ PRINT ( POR1_13 ) 5000 1 //Take the girls back to the Studio for some casting co
 //go back to porn studios
 
 ADD_BLIP_FOR_COORD -60.2 934.5 10.6 pron_studio 
+SET_BLIP_ROUTE pron_studio TRUE
 
 going_to_studio:
 WAIT 0

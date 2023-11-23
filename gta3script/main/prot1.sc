@@ -351,6 +351,7 @@ SET_PLAYER_AUTO_AIM player1 FALSE
 
 //coffee shop
 ADD_BLIP_FOR_COORD 459.9 1004.1 18.1 glass1_blip
+SET_BLIP_ROUTE glass1_blip TRUE
 ADD_BLIP_FOR_COORD 467.2 1012.0 18.1 glass2_blip
 //pearl necklace
 ADD_BLIP_FOR_COORD 457.5 1197.6 18.1 glass3_blip

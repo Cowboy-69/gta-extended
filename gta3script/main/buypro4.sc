@@ -37,7 +37,7 @@ WAIT 0
 	CHANGE_BLIP_DISPLAY strpbuy_blip BLIP_ONLY
 	START_NEW_SCRIPT strpbuy_save_loop
 	flag_membership = 1
-	CREATE_CLOTHES_PICKUP 158.3 -1275.9 10.6 9 clothes_pickup8
+	//CREATE_CLOTHES_PICKUP 158.3 -1275.9 10.6 9 clothes_pickup8
 	clothes8_created = 1
 	START_NEW_SCRIPT cloth7
 

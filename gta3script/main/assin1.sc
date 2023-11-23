@@ -235,6 +235,7 @@ IF mission_assin1_started = 0
 	
 	//Give his car a blip
 	ADD_BLIP_FOR_CHAR carlpearson carlblip
+	SET_BLIP_ROUTE carlblip TRUE
 	
 	mission_assin1_started = 1
 ENDIF

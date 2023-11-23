@@ -2177,7 +2177,7 @@ CREATE_COLLECTABLE1 -1063.5 -965.5 14.8   //Between the 4 HUGE pipes EAST of air
 CREATE_COLLECTABLE1 -1265.8 -1346.9 29.6  //On top of SOUTH EAST building at airport (Vice City International Airport Freight and Cargo Terminal)
 
 VAR_INT starting_tracksuit hunter_created south_beach_hunter  
-CREATE_CLOTHES_PICKUP -1200.3 -322.9 10.9 11 starting_tracksuit 
+//CREATE_CLOTHES_PICKUP -1200.3 -322.9 10.9 11 starting_tracksuit 
 hunter_created = 0
 
 // OOOO    OOOO    OOOO    OOOO    OOOO    OOOO    OOOO    OOOO    OOOO    OOOO    OOOO    OOOO    OOOO    OOOO    OOOO    OOOO

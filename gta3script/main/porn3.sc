@@ -1029,6 +1029,7 @@ IF NOT IS_CHAR_DEAD congressman
 		ENDIF
 		REMOVE_BLIP slut_blip
 		ADD_BLIP_FOR_COORD -52.5 941.9 9.9 porn_studio 
+		SET_BLIP_ROUTE porn_studio TRUE
 		ALTER_WANTED_LEVEL_NO_DROP player1 5
 		PRINT_NOW ( POR3_17 ) 7000 1 //Get back to the Porn Studios with the film.
 		where_candy = 0

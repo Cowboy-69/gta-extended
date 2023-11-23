@@ -327,6 +327,7 @@ PRINT_NOW HAT2_B1 15000 1//"Get to the van that contains the flying bombs."
 CREATE_CAR TOPFUN -808.9448 -162.9215 10.0458 plane_carrier
 SET_CAR_HEADING plane_carrier 0.0
 ADD_BLIP_FOR_CAR plane_carrier plane_carrier_blip
+SET_BLIP_ROUTE plane_carrier_blip TRUE
 FREEZE_CAR_POSITION	plane_carrier TRUE
 
 WHILE NOT IS_PLAYER_SITTING_IN_CAR player1 plane_carrier

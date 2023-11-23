@@ -470,6 +470,7 @@ IF NOT IS_PLAYER_WEARING player1 player5
 	PRINT_NOW ( TEX_2c ) 5000 1	//GET A CHANGE OF CLOTHES
 
 	ADD_SPRITE_BLIP_FOR_COORD clothes_shopX clothes_shopY clothes_shopZ RADAR_SPRITE_TSHIRT cuban_clothes_blip
+	SET_BLIP_ROUTE cuban_clothes_blip TRUE
 
 	WHILE NOT LOCATE_PLAYER_ON_FOOT_3D player1 clothes_shopX clothes_shopY clothes_shopZ 1.2 1.2 3.0 TRUE
 		WAIT 0
@@ -502,6 +503,7 @@ IF NOT IS_PLAYER_WEARING player1 player5
 		IF NOT IS_CHAR_DEAD scplayer
 			DRESS_CHAR scplayer
 		ENDIF
+		SET_CHAR_CLOTHING_VARIATION scplayer 0
 	ENDIF
 
 	SET_CHAR_OBJ_NO_OBJ scplayer
@@ -531,6 +533,7 @@ PRINT_NOW (TEX_2d) 10000	1
 
 SET_THREAT_FOR_PED_TYPE PEDTYPE_GANG_HAITIAN THREAT_PLAYER1
 ADD_BLIP_FOR_COORD ped_group_x ped_group_y 20.0 mission_blip1
+SET_BLIP_ROUTE mission_blip1 TRUE
 SWITCH_ROADS_OFF min_x min_y 14.0 max_x max_y 20.0
 
 ground_z = 0.0000
@@ -878,7 +881,7 @@ RETURN
 
 mission_serg3_passed:
 
-CREATE_CLOTHES_PICKUP -1025.2 -429.2 10.8 5 clothes_pickup5
+//CREATE_CLOTHES_PICKUP -1025.2 -429.2 10.8 5 clothes_pickup5
 clothes5_created = 1
 START_NEW_SCRIPT cloth4
 

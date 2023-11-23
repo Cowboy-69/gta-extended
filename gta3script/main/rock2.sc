@@ -1045,6 +1045,7 @@ SET_OBJECT_HEADING stage_rock2 180.0
 // Waiting for the player to locate outside the area
 
 ADD_BLIP_FOR_COORD -869.44 770.12 9.91 radar_blip_coord1_rock2
+SET_BLIP_ROUTE radar_blip_coord1_rock2 TRUE
 
 blob_flag = 1 
 

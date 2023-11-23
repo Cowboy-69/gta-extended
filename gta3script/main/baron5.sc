@@ -1696,7 +1696,7 @@ CREATE_PICKUP_WITH_AMMO m4 PICKUP_ON_STREET_SLOW 120 -330.9 -569.7 11.6 star_gun
 CREATE_PICKUP_WITH_AMMO chromegun PICKUP_ON_STREET_SLOW 50 -335.9 -569.5 11.6 star_gun4 //In the armoury
 CREATE_PICKUP health PICKUP_ON_STREET -330.702 -573.366 11.6 star_health3 //In armoury
 CREATE_PICKUP bodyarmour PICKUP_ON_STREET -336.0 -573.7 11.6 star_arm1 //In the armoury
-CREATE_CLOTHES_PICKUP -384.5 -591.9 25.3 1 mansion_clothes   
+//CREATE_CLOTHES_PICKUP -384.5 -591.9 25.3 1 mansion_clothes   
 mansion_clothes_created = 1
 SWITCH_CAR_GENERATOR gen_car51 0
 SWITCH_CAR_GENERATOR buddys_lambo 101

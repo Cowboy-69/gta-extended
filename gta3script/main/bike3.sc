@@ -790,6 +790,7 @@ WAIT 1000
 DO_FADE 2000 FADE_IN
 
 ADD_BLIP_FOR_COORD -674.59 1128.49 10.08 stair_blip_bike3
+SET_BLIP_ROUTE stair_blip_bike3 TRUE
 
 flag_stair_blip_on_bike3 = 1
 
@@ -1008,6 +1009,7 @@ WHILE NOT LOCATE_STOPPED_CAR_3D bike_bike3 -596.63 658.20 10.06 4.0 4.0 4.0 blob
 				REMOVE_BLIP radar_blip_bike_bike3 
 
 				ADD_BLIP_FOR_COORD -596.63 658.20 10.06 radar_blip_coord1_bike3
+				SET_BLIP_ROUTE radar_blip_coord1_bike3 TRUE
 				PRINT_NOW ( BM3_3 ) 5000 1 //"Get the bike back to the base!"
 				flag_player_got_bike_bike3 = 1
 				flag_location_on_bike3 = 1

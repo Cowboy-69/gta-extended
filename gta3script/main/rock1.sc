@@ -540,6 +540,7 @@ DO_FADE 1500 FADE_IN
 PRINT_NOW ( RBM1_12 ) 4000 1 //"Go and collect the ingredients for "Love juice from the dealer."
 
 ADD_BLIP_FOR_COORD deal_local_x_rock1 deal_local_y_rock1 deal_local_z_rock1 radar_blip_deal_rock1  
+SET_BLIP_ROUTE radar_blip_deal_rock1 TRUE
 
 // ********************** Waiting for the player to collect all the drugs ******************
 
@@ -843,6 +844,7 @@ SET_CHAR_AS_PLAYER_FRIEND mercedes_rock1 player1 TRUE
 SET_CHAR_NEVER_TARGETTED mercedes_rock1 TRUE  
 
 ADD_BLIP_FOR_COORD 304.747 291.581 15.238 radar_blip_coord2_rock1
+SET_BLIP_ROUTE radar_blip_coord2_rock1 TRUE
 
 blob_flag = 1
 
@@ -1132,6 +1134,7 @@ SET_EVERYONE_IGNORE_PLAYER player1 OFF
 PRINT_NOW ( RBM1_13 ) 7000 1 //"Get the love juice before the band are needed on stage"
 
 ADD_BLIP_FOR_COORD -867.8 1165.7 10.2 radar_blip_studio_rock1
+SET_BLIP_ROUTE radar_blip_studio_rock1 TRUE
 
 DISPLAY_ONSCREEN_TIMER timer_rock1 TIMER_DOWN
 
@@ -1170,6 +1173,7 @@ WHILE NOT LOCATE_STOPPED_CHAR_ANY_MEANS_3D mercedes_rock1 -867.8 1165.7 10.2 4.0
 					PRINT_NOW ( RBM1_13 ) 7000 1 //"Get the love juice before the band are needed on stage"
 					SET_PLAYER_AS_LEADER mercedes_rock1 player1
 					ADD_BLIP_FOR_COORD -867.8 1165.7 10.2 radar_blip_studio_rock1
+					SET_BLIP_ROUTE radar_blip_studio_rock1 TRUE
 					blob_flag = 1
 					flag_merc_in_group_rock1 = 1
 				ENDIF

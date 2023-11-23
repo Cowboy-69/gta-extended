@@ -274,6 +274,7 @@ DO_FADE 1500 FADE_IN
  
 PRINT_NOW ( COK1_10 ) 10000 1 //Go and find the traitor at his house
 ADD_BLIP_FOR_COORD 380.3 247.4 10.0 baron_blip1
+SET_BLIP_ROUTE baron_blip1 TRUE
 
 LOAD_SPECIAL_CHARACTER 5 SGc
 REQUEST_MODEL bfinject

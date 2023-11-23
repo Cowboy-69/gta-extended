@@ -54,10 +54,11 @@ first_two_samples = 0
 second_two_samples = 0
 third_two_samples = 0
 stored_any_vehicle = 0
+clothing_store_flag = 0
 
 CLEAR_HELP
  
-IF NOT IS_CHAR_DEAD scplayer
+/*IF NOT IS_CHAR_DEAD scplayer
 
 	UNDRESS_CHAR scplayer player
 
@@ -67,7 +68,7 @@ IF NOT IS_CHAR_DEAD scplayer
 		DRESS_CHAR scplayer
 	ENDIF
 
-ENDIF
+ENDIF*/
 
 LOAD_MISSION_AUDIO 1 MONO_1
 
@@ -378,6 +379,7 @@ SWITCH_CAR_GENERATOR gen_car120 0
 
 PRINT_NOW ( LAW1_1 ) 10000 1  //GET A CHANGE OF CLOTHES
 ADD_SPRITE_BLIP_FOR_COORD clothes_shopX clothes_shopY clothes_shopZ RADAR_SPRITE_TSHIRT colar_cuffs_blip
+SET_BLIP_ROUTE colar_cuffs_blip TRUE
 
 WAIT 3500
 
@@ -434,6 +436,7 @@ IF NOT IS_CHAR_DEAD scplayer
 		DRESS_CHAR scplayer
 	ENDIF
 
+	SET_CHAR_CLOTHING_VARIATION scplayer 0
 ENDIF
 
 LOAD_MISSION_AUDIO 1 LAW1_7
@@ -1446,6 +1449,7 @@ DO_FADE 1500 FADE_IN
 PRINT_NOW ( LAW1_3 ) 5000 1	//GO TO THE STRIP CLUB
 
 ADD_BLIP_FOR_COORD strip_clubX strip_clubY strip_clubZ lawyer_blip1
+SET_BLIP_ROUTE lawyer_blip1 TRUE
 
 TIMERB = 0
 
@@ -1763,8 +1767,9 @@ SET_ZONE_CIVILIAN_CAR_INFO SHOP2 NIGHT 250 0 300 250 0 0 100 0 100 500 500
 
 CREATE_CLOTHES_PICKUP 226.4 -1265.6 20.1 1 clothes_pickup1
 hotel_clothes_created = 1
+clothing_store_flag = 1
 
-CREATE_CLOTHES_PICKUP 97.5 -1133.6 10.4 2 clothes_pickup2
+//CREATE_CLOTHES_PICKUP 97.5 -1133.6 10.4 2 clothes_pickup2
 clothes2_created = 1
 START_NEW_SCRIPT cloth1
 

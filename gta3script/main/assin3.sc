@@ -433,6 +433,7 @@ IF getsecondguy = 1
 	CLEAR_CHAR_THREAT_SEARCH secondguy_a3
 	CAR_SET_IDLE secondguyscar
 	ADD_BLIP_FOR_CHAR secondguy_a3 secondguyblip
+	SET_BLIP_ROUTE secondguyblip TRUE
 	LOCK_CAR_DOORS secondguyscar CARLOCK_LOCKOUT_PLAYER_ONLY
 	SET_CAR_HEALTH secondguyscar 2200
 	SET_CAR_ONLY_DAMAGED_BY_PLAYER secondguyscar TRUE
@@ -606,6 +607,7 @@ IF getthirdguy = 1
 	CLEAR_CHAR_THREAT_SEARCH thirdguy_a3
 	CAR_SET_IDLE thirdguyscar
 	ADD_BLIP_FOR_CHAR thirdguy_a3 thirdguyblip
+	SET_BLIP_ROUTE thirdguyblip TRUE
 	SET_CHAR_ONLY_DAMAGED_BY_PLAYER thirdguy_a3 TRUE
 	
 	//passenger
@@ -825,6 +827,7 @@ IF getfourthguy = 1
 	ATTACH_CHAR_TO_CAR fourthguy_a3 fourthguyscar 0.0 -4.0 1.2 FACING_FORWARD 360.0	WEAPONTYPE_UNARMED
 	
 	ADD_BLIP_FOR_CHAR fourthguy_a3 fourthguyblip
+	SET_BLIP_ROUTE fourthguyblip TRUE
 	SET_CAR_ONLY_DAMAGED_BY_PLAYER fourthguyscar TRUE
 	SET_CHAR_STAY_IN_SAME_PLACE fourthguy_a3 TRUE
 	SET_CHAR_WAIT_STATE fourthguy_a3 WAITSTATE_LOOK_ABOUT 800000
@@ -906,6 +909,7 @@ IF getfifthguy = 1
     
 	CLEAR_CHAR_THREAT_SEARCH fifthguy_a3
 	ADD_BLIP_FOR_CHAR fifthguy_a3 fifthguyblip
+	SET_BLIP_ROUTE fifthguyblip TRUE
 	LOCK_CAR_DOORS fifthguyscar CARLOCK_LOCKED
 	SET_CAR_ONLY_DAMAGED_BY_PLAYER fifthguyscar TRUE
 	SET_CHAR_ONLY_DAMAGED_BY_PLAYER fifthguy_a3 TRUE

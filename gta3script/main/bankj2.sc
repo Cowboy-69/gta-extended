@@ -1586,6 +1586,7 @@ DO_FADE 2000 FADE_IN
 PRINT_NOW ( BJM2_1 ) 5000 1 //"Go to the competition and win it!"
 
 ADD_BLIP_FOR_COORD -667.85 1211.9 10.08 radar_blip_coord2_bankjob2  
+SET_BLIP_ROUTE radar_blip_coord2_bankjob2 TRUE
 
 ADD_SPHERE -667.85 1211.9 10.08 1.5 sphere_bankjob2
 

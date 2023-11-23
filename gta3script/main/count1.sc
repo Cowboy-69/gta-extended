@@ -714,6 +714,7 @@ ENDIF
 PRINT_NOW ( CM1_5 ) 5000 1 //"Go and meet Kent Paul at the Malibu Club!"
 
 ADD_BLIP_FOR_COORD 491.0 -77.7 10.4 radar_blip_malibu_count1
+SET_BLIP_ROUTE radar_blip_malibu_count1 TRUE
 
 DELETE_OBJECT malibu_doors 
 CREATE_OBJECT_NO_OFFSET od_clbdr_open 490.34 -77.017 11.598 malibu_doors
@@ -978,6 +979,7 @@ PRINT ( CM1_2 ) 5000 1 //"The Shipping officer will have the required informatio
 // Waiting for the ship collision to be loaded
 
 ADD_BLIP_FOR_COORD -686.85 -1245.43 30.14 radar_blip_target_count1
+SET_BLIP_ROUTE radar_blip_target_count1 TRUE
 
 ADD_SPHERE -686.85 -1245.43 30.14 1.5 sphere_count1
 
@@ -1297,6 +1299,7 @@ WHILE flag_had_escape_message_count1 < 2
 				PRINT_NOW ( CM1_6 ) 5000 1 //"Escape from the boat to safety!"
 				ALTER_WANTED_LEVEL_NO_DROP player1 2
 				ADD_BLIP_FOR_COORD -1052.579 -282.013 10.279 radar_blip_escape_count1
+				SET_BLIP_ROUTE radar_blip_escape_count1 TRUE
 				
 				IF alarm_raised_count1 = 0 
 					ADD_CONTINUOUS_SOUND -692.33 -1258.94 15.25 SOUND_BANK_ALARM_LOOP alarm_count1

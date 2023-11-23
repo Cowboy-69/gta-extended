@@ -899,6 +899,7 @@ ENDIF
 
 IF porn4_goals = 25
 	ADD_BLIP_FOR_COORD -358.0 992.2 46.3 searchlight_blip
+	SET_BLIP_ROUTE searchlight_blip TRUE
 	porn4_goals = 26
 ENDIF
 

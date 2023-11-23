@@ -378,6 +378,7 @@ SET_CHAR_STAY_IN_CAR_WHEN_JACKED phil_noarm TRUE
 SET_TIME_SCALE 0.99999999
 
 ADD_BLIP_FOR_COORD -871.6 -469.5 9.9 radar_blip_hospital1
+SET_BLIP_ROUTE radar_blip_hospital1 TRUE
 
 DISPLAY_ONSCREEN_COUNTER_WITH_STRING phil2_total_car_health COUNTER_DISPLAY_BAR (PHI2_04)
 
@@ -746,6 +747,7 @@ IF NOT IS_CAR_DEAD phil2_car
 				IF LOCATE_STOPPED_CAR_3D phil2_car -871.6 -469.5 9.9 7.0 7.0 7.0 TRUE
 					REMOVE_BLIP radar_blip_hospital1
 					ADD_BLIP_FOR_COORD -1183.0 -664.2 10.5 radar_blip_hospital2
+					SET_BLIP_ROUTE radar_blip_hospital2 TRUE
 					at_hospital = 1
 					PRINT_NOW PHI2_05 5000 1//Not the hospital, man! Too many cops and Viet Cong!
 					PLAY_MISSION_AUDIO 2

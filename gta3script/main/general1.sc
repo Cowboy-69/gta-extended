@@ -315,7 +315,7 @@ SWITCH_PED_ROADS_OFF 479.9 -1.4 11.0 450.3 59.5 40.0
 GIVE_WEAPON_TO_PLAYER player1 WEAPONTYPE_CHAINSAW 1
 
 ADD_BLIP_FOR_COORD 476.8 30.4 11.0 gonzalez_house  
-
+SET_BLIP_ROUTE gonzalez_house TRUE
 
 
 //creating random chars
@@ -1125,6 +1125,7 @@ paint_n_spray_setup:
 
 SET_FREE_RESPRAYS ON
 ADD_BLIP_FOR_COORD 327.2 429.9 10.3 gen1_spray_shop_blip
+SET_BLIP_ROUTE gen1_spray_shop_blip TRUE
   
 paint_n_spray_loop:
 WAIT 0
@@ -1171,7 +1172,7 @@ mission_passed_general1:
 
 CLEAR_PRINTS
 PRINT_WITH_NUMBER_BIG ( M_PASS ) 250 5000 1 //"Mission Passed!"
-CREATE_CLOTHES_PICKUP 414.3 1042.0 25.4 8 clothes_pickup7
+//CREATE_CLOTHES_PICKUP 414.3 1042.0 25.4 8 clothes_pickup7
 clothes7_created = 1
 START_NEW_SCRIPT cloth6
 PLAY_MISSION_PASSED_TUNE 1 

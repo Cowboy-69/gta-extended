@@ -82,13 +82,13 @@ flag_player_on_army_ped_mission = 1
 REGISTER_MISSION_GIVEN
 WAIT 0
 LOAD_MISSION_TEXT PROT3 
-IF NOT IS_CHAR_DEAD scplayer
+/*IF NOT IS_CHAR_DEAD scplayer
     UNDRESS_CHAR scplayer player
     LOAD_ALL_MODELS_NOW
     IF NOT IS_CHAR_DEAD scplayer
         DRESS_CHAR scplayer
     ENDIF
-ENDIF
+ENDIF*/
 SET_SHORTCUT_DROPOFF_POINT_FOR_MISSION -288.2 -487.5 9.8 275.0
 // *****************************************Set Flags/variables************************************
 
@@ -385,10 +385,11 @@ SET_PLAYER_CONTROL player1 ON
 SET_PLAYER_MOOD player1 PLAYER_MOOD_CALM 60000
 
 //remove clothes picups
+clothing_store_flag = 0
 REMOVE_PICKUP mansion_clothes 
 REMOVE_PICKUP safehouse_clothes2
 REMOVE_PICKUP clothes_pickup1
-REMOVE_PICKUP clothes_pickup2
+/*REMOVE_PICKUP clothes_pickup2
 REMOVE_PICKUP clothes_pickup3
 REMOVE_PICKUP clothes_pickup4
 REMOVE_PICKUP clothes_pickup5
@@ -396,7 +397,7 @@ REMOVE_PICKUP clothes_pickup6
 REMOVE_PICKUP clothes_pickup7
 REMOVE_PICKUP clothes_pickup8
 REMOVE_PICKUP clothes_pickup9
-REMOVE_PICKUP clothes_pickup13
+REMOVE_PICKUP clothes_pickup13*/
 
 REQUEST_MODEL dynamite 
 REQUEST_MODEL cop
@@ -544,6 +545,7 @@ PRINT ( PRO3_21 ) 5000 1 //Get a wanted level so the cops will follow you into t
 
 
 ADD_BLIP_FOR_COORD 459.1 332.5 9.4 cop_garage 
+SET_BLIP_ROUTE cop_garage TRUE
 timera = 0
 
 
@@ -866,6 +868,7 @@ IF disguise_goals = 0
 				IF NOT IS_CHAR_DEAD scplayer
 					DRESS_CHAR scplayer
 				ENDIF
+				SET_CHAR_CLOTHING_VARIATION scplayer 0
 			ENDIF
 			
 			LOAD_MISSION_AUDIO 1 BUD3_3
@@ -991,6 +994,7 @@ IF disguise_goals = 1
 	
 
 	ADD_BLIP_FOR_COORD 468.0 1005.9 18.1 bombplace
+	SET_BLIP_ROUTE bombplace TRUE
 	
 //waiting for player1 to set bomb
 
@@ -1334,6 +1338,7 @@ IF disguise_goals = 2
 			flag_cops_alerted = 1
 			PRINT_NOW ( PRO3_08 ) 5000 1 //Get back to Raphaels to change out of the cops uniforms.
 			ADD_BLIP_FOR_COORD -378.2 -549.8 17.6 boutique1
+			SET_BLIP_ROUTE boutique1 TRUE
 			CLEAR_ALL_SCRIPT_ROADBLOCKS
 			disguise_goals = 3
 			timer_flag = 1
@@ -1537,7 +1542,7 @@ mission_passed_protec3:
 
 CLEAR_PRINTS
 PRINT_WITH_NUMBER_BIG ( M_PASS ) 10000 5000 1 //"Mission Passed!"
-CREATE_CLOTHES_PICKUP 405.7 -485.6 12.3 6 clothes_pickup6
+//CREATE_CLOTHES_PICKUP 405.7 -485.6 12.3 6 clothes_pickup6
 clothes6_created = 1
 START_NEW_SCRIPT cloth5
 //PLAY_MISSION_PASSED_TUNE 1 
@@ -1599,6 +1604,8 @@ SET_ZONE_CIVILIAN_CAR_INFO SHOP1 NIGHT 250 250 200 0 100 0 200 0 0 500 500
 SET_ZONE_GROUP SHOP1 DAY SHOP1_PEDGRP
 SET_ZONE_GROUP SHOP1 NIGHT SHOP1_NIGHT_PEDGRP
 
+clothing_store_flag = 1
+
 IF mansion_clothes_created = 1
 	CREATE_CLOTHES_PICKUP -384.5 -591.9 25.3 1 mansion_clothes   
 ENDIF 
@@ -1608,7 +1615,7 @@ ENDIF
 IF safehouse_created2 = 1
 	CREATE_CLOTHES_PICKUP -820.2 1364.1 66.4 1 safehouse_clothes2   
 ENDIF 
-IF clothes2_created = 1
+/*IF clothes2_created = 1
    CREATE_CLOTHES_PICKUP 97.5 -1133.6 10.4 2 clothes_pickup2
 ENDIF
 IF clothes3_created = 1
@@ -1636,7 +1643,7 @@ IF clothes9_created = 1
 ENDIF
 IF clothes13_created = 1
     CREATE_CLOTHES_PICKUP 465.3 -57.4 15.7 7 clothes_pickup13
-ENDIF
+ENDIF*/
 
 REMOVE_PARTICLE_EFFECTS_IN_AREA 466.0 1023.0 14.1 476.0 1033.0 24.1 
 REMOVE_ALL_SCRIPT_FIRES

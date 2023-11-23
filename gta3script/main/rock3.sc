@@ -743,6 +743,7 @@ ENDIF
 SET_RADIO_CHANNEL V_ROCK -1 
 PRINT_NOW ( RBM3_1 ) 5000 1 //"Get the band to the venue!"
 ADD_BLIP_FOR_COORD -870.933 1053.342 9.90 venue_blip_rock3
+SET_BLIP_ROUTE venue_blip_rock3 TRUE
 flag_blip_added_rock3 = 1
 
 WHILE NOT LOCATE_CAR_3D limo_rock3 -870.933 1053.342 9.90 3.0 3.0 3.0 TRUE
@@ -815,6 +816,7 @@ OR band_in_car_rock3 = 0
 				REMOVE_BLIP limo_blip_rock3
 				PRINT_NOW ( RBM3_1 ) 5000 1 //"Get the band to the venue!"
 				ADD_BLIP_FOR_COORD -870.933 1053.342 9.90 venue_blip_rock3  
+				SET_BLIP_ROUTE venue_blip_rock3 TRUE
 				flag_blip_added_rock3 = 1
 			ENDIF
 

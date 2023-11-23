@@ -623,6 +623,7 @@ IF plyr_in_hait_car = 0
 					
 						IF final_meeting_place = 0
 							ADD_BLIP_FOR_COORD -1037.4 172.3 10.0 meetingplace1_blip
+							SET_BLIP_ROUTE meetingplace1_blip TRUE
 						ELSE
 						 	ADD_BLIP_FOR_COORD -1084.1 70.2 10.8 final_meeting_place_blip
 						ENDIF

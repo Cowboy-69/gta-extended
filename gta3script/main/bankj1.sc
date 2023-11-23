@@ -764,10 +764,11 @@ SET_SHORTCUT_DROPOFF_POINT_FOR_MISSION 512.591 -74.900 9.573 189.24
 
 // removes all of the clothes pickups
 
+clothing_store_flag = 0
 REMOVE_PICKUP mansion_clothes 
 REMOVE_PICKUP safehouse_clothes2
 REMOVE_PICKUP clothes_pickup1
-REMOVE_PICKUP clothes_pickup2
+/*REMOVE_PICKUP clothes_pickup2
 REMOVE_PICKUP clothes_pickup3
 REMOVE_PICKUP clothes_pickup4
 REMOVE_PICKUP clothes_pickup5
@@ -775,7 +776,7 @@ REMOVE_PICKUP clothes_pickup6
 REMOVE_PICKUP clothes_pickup7
 REMOVE_PICKUP clothes_pickup8
 REMOVE_PICKUP clothes_pickup9
-REMOVE_PICKUP clothes_pickup13
+REMOVE_PICKUP clothes_pickup13*/
 
 REMOVE_PICKUP gun_beach11 //Inside Police Station
 
@@ -788,7 +789,7 @@ SWITCH_PED_ROADS_OFF 376.66 -453.85 -10.00 328.91 -504.02 30.0 //Cop Shop (Used 
 ADD_CONTINUOUS_SOUND 385.49 -509.0 9.6 SOUND_BANK_ALARM_LOOP door_sliding_bankjob1
 REMOVE_SOUND door_sliding_bankjob1
 
-IF NOT IS_CHAR_DEAD scplayer
+/*IF NOT IS_CHAR_DEAD scplayer
 		   
 	UNDRESS_CHAR scplayer player
 		   
@@ -797,8 +798,8 @@ IF NOT IS_CHAR_DEAD scplayer
 	IF NOT IS_CHAR_DEAD scplayer
 		DRESS_CHAR scplayer
 	ENDIF
-
-ENDIF
+	
+ENDIF*/
  
 LOAD_SPECIAL_CHARACTER 1 CSplay
 LOAD_SPECIAL_CHARACTER 2 CSken
@@ -1024,6 +1025,7 @@ PRINT_NOW ( BJM1_1 ) 4000 1 //"Break the safecracker out of police custody!"
 
 
 ADD_BLIP_FOR_CHAR safecracker_bankjob1 radar_blip_ped1_bankjob1
+SET_BLIP_ROUTE radar_blip_ped1_bankjob1 TRUE
 
 // creates cop1 at the info desk ground floor 
 
@@ -1523,6 +1525,7 @@ OR IS_WANTED_LEVEL_GREATER player1 0
 						IF flag_cams_blip_on_bankjob1 = 0
 							blob_flag = 1
 							ADD_BLIP_FOR_COORD -848.02 -901.72 10.10 radar_blip_coord1_bankjob1
+							SET_BLIP_ROUTE radar_blip_coord1_bankjob1 TRUE
 							PRINT_NOW ( BJM1_22 ) 5000 1 //"Get Cam back to his house!"
 							flag_cams_blip_on_bankjob1 = 1
 						ENDIF
@@ -1843,6 +1846,8 @@ GET_GAME_TIMER timer_mobile_start
 
 // Recreates all the clothes pickups
 
+clothing_store_flag = 1
+
 IF mansion_clothes_created = 1
 	CREATE_CLOTHES_PICKUP -384.5 -591.9 25.3 1 mansion_clothes   
 ENDIF
@@ -1855,7 +1860,7 @@ IF hotel_clothes_created = 1
 	CREATE_CLOTHES_PICKUP 226.4 -1265.6 20.1 1 clothes_pickup1
 ENDIF 
 
-IF clothes2_created = 1
+/*IF clothes2_created = 1
 	CREATE_CLOTHES_PICKUP 97.5 -1133.6 10.4 2 clothes_pickup2
 ENDIF
 
@@ -1889,7 +1894,7 @@ ENDIF
 
 IF clothes13_created = 1
 	CREATE_CLOTHES_PICKUP 465.3 -57.4 15.7 7 clothes_pickup13
-ENDIF
+ENDIF*/
 
 MISSION_HAS_FINISHED
 RETURN
@@ -4171,6 +4176,7 @@ IF uniform_pickedup_bankjob1 = 0
 			DRESS_CHAR scplayer
 		ENDIF
 		
+		SET_CHAR_CLOTHING_VARIATION scplayer 0
 	ENDIF
 			
 	SET_CHAR_OBJ_GOTO_COORD_ON_FOOT scplayer 407.77 -487.13

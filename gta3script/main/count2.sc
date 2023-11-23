@@ -407,6 +407,7 @@ ENDWHILE
 
 PRINT_NOW CNT2_01 30000 1//"Go and get the plates from the courier who is leaving the docks any second now."
 ADD_BLIP_FOR_COORD -683.1377 -1566.9713 11.4 docks_blip
+SET_BLIP_ROUTE docks_blip TRUE
 
 SET_ENTER_CAR_RANGE_MULTIPLIER 10.0
 SET_THREAT_REACTION_RANGE_MULTIPLIER 3.0
@@ -1542,6 +1543,7 @@ IF courier_in_car = 3
 	ADD_ONE_OFF_SOUND 0.0 0.0 0.0 SOUND_PART_MISSION_COMPLETE
 	PRINT_NOW CNT2_05 5000 1 //"You have the countfeit plates."
 	ADD_BLIP_FOR_COORD counterX counterY counterZ mission_blip
+	SET_BLIP_ROUTE mission_blip TRUE
 	courier_in_car = 4
 ENDIF
 

@@ -315,6 +315,7 @@ SHUT_CHAR_UP the_seller TRUE
 SET_ENTER_CAR_RANGE_MULTIPLIER 6.0
 
 ADD_BLIP_FOR_CHAR the_seller the_seller_blip
+SET_BLIP_ROUTE the_seller_blip TRUE
 
 IF flag_player_on_mission = 0
 	CREATE_CHAR PEDTYPE_CIVMALE	SPECIAL01 18.9999 -928.7729 15.0727	french_security1
@@ -1267,6 +1268,7 @@ mall_shootout_loop:
 					chips_pickup_flag = 2
 					REMOVE_BLIP	the_seller_blip
 					ADD_BLIP_FOR_COORD -245.0020 -1360.8174 7.0786 the_seller_blip
+					SET_BLIP_ROUTE the_seller_blip TRUE
 					PRINT_NOW COL2_B3 5000 1//"~g~Take the guidance chips back to the Colonel"
 					ADD_ONE_OFF_SOUND 0.0 0.0 0.0 SOUND_PART_MISSION_COMPLETE
 				ENDIF

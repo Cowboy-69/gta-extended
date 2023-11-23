@@ -401,6 +401,7 @@ ENDWHILE
 
 //creating boat and waiting for player to reach it 
 ADD_BLIP_FOR_COORD -725.4 -1166.8 9.7 radar_blip_playrs_boat
+SET_BLIP_ROUTE radar_blip_playrs_boat TRUE
 
 CREATE_CHAR PEDTYPE_GANG_CUBAN CBb -724.3 -1166.5 9.7 boat_driver 
 SET_CHAR_AS_PLAYER_FRIEND boat_driver player1 TRUE
@@ -1570,6 +1571,7 @@ SET_PLAYER_CONTROL player1 ON
 SWITCH_WIDESCREEN OFF
 // ******************************************END OF CUTSCENE - BLOWING UP PLAYERS BOAT************************************
 	ADD_BLIP_FOR_COORD -1170.0 -603.4 11.6 cuban_base
+	SET_BLIP_ROUTE cuban_base TRUE
 	PRINT_NOW ( CUB3_04 ) 7000 1 //Get the drugs and cash back to Umberto.
 	ALTER_WANTED_LEVEL_NO_DROP player1 4
 	GOTO taking_drugsandmoney_back

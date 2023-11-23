@@ -1040,6 +1040,7 @@ SET_PLAYER_MOOD player1 PLAYER_MOOD_ANGRY 60000
 // fades the screen in
 
 ADD_BLIP_FOR_COORD_OLD -1219.969 8.543 10.44 GREEN BOTH radar_blip_cheat_kent1
+SET_BLIP_ROUTE radar_blip_cheat_kent1 TRUE
 
 CHANGE_BLIP_SCALE radar_blip_cheat_kent1 3 
 
@@ -1629,6 +1630,7 @@ WHILE flag_buddy_home_kent1 = 0
 							REMOVE_BLIP radar_blip_buddy_kent1
 							PRINT_NOW ( KPM1_4 ) 5000 1 //"Get Lance to the hospital!"
 							ADD_BLIP_FOR_COORD home_x_kent1 home_y_kent1 home_z_kent1 radar_blip_coord1_kent1
+							SET_BLIP_ROUTE radar_blip_coord1_kent1 TRUE
 							blob_flag = 1
 							CLEAR_ONSCREEN_COUNTER buddy_life_guage_kent1
 							SET_CURRENT_CHAR_WEAPON scplayer stored_current_weapon_kent1
@@ -2495,6 +2497,7 @@ IF flag_buddy_joined_player = 1
 				PRINT_NOW ( KPM1_4 ) 5000 1 //"Get me to safety!"
 				REMOVE_BLIP radar_blip_buddy_kent1  
 				ADD_BLIP_FOR_COORD home_x_kent1 home_y_kent1 home_z_kent1 radar_blip_coord1_kent1
+				SET_BLIP_ROUTE radar_blip_coord1_kent1 TRUE
 				blob_flag = 1
 				flag_buddy_in_group_kent1 = 1
 				flag_had_buddy_message_kent1 = 0 

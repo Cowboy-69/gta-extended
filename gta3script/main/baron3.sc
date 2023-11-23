@@ -319,6 +319,7 @@ ADD_SPHERE -665.4 -1484.7 12.8 1.0 Sphere_cok3
 CREATE_CAR squalo -597.6 -1507.7 5.4 fastest_boat
 SET_CAR_HEADING fastest_boat 250.0
 ADD_BLIP_FOR_CAR fastest_boat fastest_boat_blip  
+SET_BLIP_ROUTE fastest_boat_blip TRUE
 
 PRINT_NOW ( COK3_8 ) 10000 1 // Go to the boat yard at the dock and steal the fastest boat!
 

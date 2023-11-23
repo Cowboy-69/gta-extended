@@ -3,13 +3,12 @@
 // ************************************Clothing store***************************************
 // *****************************************************************************************
 
-// Note: the 'play13' and 'player' models are the same, but 'play13' also has texture variations. 
-// In case the player has the standard clothing variation, the 'player' model is used. Otherwise, 'play13' is used. 
-// This is done for compatibility with Player skin setup.
-
 MISSION_START
 
-VAR_INT streetVariationState, soireeVariationState, countryVariationState, casualVariationState, vercettiVariationState, tracksuitVariationState
+VAR_INT clothing_store_flag // Activates or deactivates the clothing store
+clothing_store_flag = 1
+
+VAR_INT streetVariationState, soireeVariationState, countryVariationState, casualVariationState, vercettiVariationState, blackTracksuitVariationState, redTracksuitVariationState
 // Four states (need for wardrobe):
 // 0 - None of the clothing variations were purchased (default)
 // 1 - Only the first variation was purchased
@@ -20,7 +19,8 @@ soireeVariationState = 0
 countryVariationState = 0
 casualVariationState = 0
 vercettiVariationState = 0
-tracksuitVariationState = 0
+blackTracksuitVariationState = 0
+redTracksuitVariationState = 0
 
 SCRIPT_NAME clothes
 
@@ -37,20 +37,10 @@ SCRIPT_NAME CL_ST
 
 {
 
-LVAR_FLOAT clothingStorePosX, clothingStorePosY, clothingStorePosZ
 LVAR_INT bPlayerInMarker, bPlayerInStore
 LVAR_INT storedClothingModel, currentClothingModel, storedVariation, currentVariation
 LVAR_INT storedStoreClothingNumber currentStoreClothingNumber, maxStoreClothingNumbers, currentClothingPrice
 
-//CREATE_CLOTHES_PICKUP 226.4 -1265.6 20.1 1 clothes_pickup1 // ViceEx debug
-//hotel_clothes_created = 1
-
-clothingStorePosX = 414.0
-//clothingStorePosX = 142.0 // ViceEx debug
-clothingStorePosY = 1038.0
-//clothingStorePosY = -821.0 // ViceEx debug
-clothingStorePosZ = 19.0
-//clothingStorePosZ = 10.0 // ViceEx debug
 bPlayerInMarker = FALSE
 bPlayerInStore = FALSE
 storedClothingModel = 1
@@ -59,23 +49,29 @@ storedVariation = 0
 currentVariation = 0
 storedStoreClothingNumber = 1
 currentStoreClothingNumber = 1
-maxStoreClothingNumbers = 12
+maxStoreClothingNumbers = 14
 currentClothingPrice = 0
 
 shop_clothes_loop:
     WAIT 0
     
+    if (clothing_store_flag = 0)
+        GOTO shop_clothes_loop
+    endif
+
     if (bPlayerInStore = TRUE)
-        GOTO player_in_store_loop    
+        GOTO player_in_store_loop
     endif
 
     if (bPlayerInMarker = FALSE)
-        if (not LOCATE_CHAR_ON_FOOT_3D scplayer, clothingStorePosX, clothingStorePosY, clothingStorePosZ, 1.3, 1.3, 1.3, TRUE)
+        //if (not LOCATE_CHAR_ON_FOOT_3D scplayer, 142.0, -821.0, 10.0, 1.3, 1.3, 1.3, TRUE) // debug
+        if (not LOCATE_CHAR_ON_FOOT_3D scplayer, 414.0, 1038.0, 19.0, 1.3, 1.3, 1.3, TRUE)
             GOTO shop_clothes_loop
         endif
     else 
         if (bPlayerInMarker = 1)
-            if (not LOCATE_CHAR_ON_FOOT_3D scplayer, clothingStorePosX, clothingStorePosY, clothingStorePosZ, 1.3, 1.3, 1.3, FALSE)
+            //if (not LOCATE_CHAR_ON_FOOT_3D scplayer, 142.0, -821.0, 10.0, 1.3, 1.3, 1.3, FALSE) // debug
+            if (not LOCATE_CHAR_ON_FOOT_3D scplayer, 414.0, 1038.0, 19.0, 1.3, 1.3, 1.3, FALSE)
                 bPlayerInMarker = FALSE
             endif
 
@@ -91,22 +87,20 @@ shop_clothes_loop:
     WAIT 1000
 
     CLEAR_ALL_CHAR_ANIMS scplayer
-    LVAR_FLOAT playerPosY
-    playerPosY = clothingStorePosZ - 1.5
-    SET_CHAR_COORDINATES scplayer, clothingStorePosX, clothingStorePosY, playerPosY
+    //SET_CHAR_COORDINATES scplayer, 142.0, -821.0, 8.5 // debug
+    SET_CHAR_COORDINATES scplayer, 414.0, 1038.0, 17.5
+    //SET_CHAR_HEADING scplayer, 180.0 // debug
     SET_CHAR_HEADING scplayer, 0.0
 
-    LVAR_FLOAT cameraPosY, cameraPosZ
-    cameraPosY = clothingStorePosY + 2.5
-    cameraPosZ = clothingStorePosZ + 0.5
-    SET_FIXED_CAMERA_POSITION clothingStorePosX, cameraPosY, cameraPosZ, 0.0, 0.0, 0.0
+    //SET_FIXED_CAMERA_POSITION 142.0, -823.5, 10.5, 0.0, 0.0, 0.0 // debug
+    SET_FIXED_CAMERA_POSITION 414.0, 1040.5, 19.5, 0.0, 0.0, 0.0
     POINT_CAMERA_AT_CHAR scplayer 15 2
 
     GET_CHAR_CLOTHING_VARIATION scplayer storedVariation
     currentVariation = storedVariation
 
-    if (IS_PLAYER_WEARING player1 play13)
-    or (IS_PLAYER_WEARING player1 player)
+    // Street
+    if (IS_PLAYER_WEARING player1 PLAYER)
         storedClothingModel = 1
 
         if (storedVariation = 0)
@@ -116,7 +110,9 @@ shop_clothes_loop:
             storedStoreClothingNumber = 2
         endif
     endif
-    if (IS_PLAYER_WEARING player1 player2)
+
+    // Soiree
+    if (IS_PLAYER_WEARING player1 PLAYER2)
         storedClothingModel = 2
         
         if (storedVariation = 0)
@@ -126,7 +122,9 @@ shop_clothes_loop:
             storedStoreClothingNumber = 4
         endif
     endif
-    if (IS_PLAYER_WEARING player1 player4)
+
+    // Country Club
+    if (IS_PLAYER_WEARING player1 PLAYER4)
         storedClothingModel = 3
         
         if (storedVariation = 0)
@@ -136,7 +134,9 @@ shop_clothes_loop:
             storedStoreClothingNumber = 6
         endif
     endif
-    if (IS_PLAYER_WEARING player1 player8)
+
+    // Casual
+    if (IS_PLAYER_WEARING player1 PLAYER8)
         storedClothingModel = 4
         
         if (storedVariation = 0)
@@ -146,7 +146,9 @@ shop_clothes_loop:
             storedStoreClothingNumber = 8
         endif
     endif
-    if (IS_PLAYER_WEARING player1 player9)
+
+    // Mr Vercetti
+    if (IS_PLAYER_WEARING player1 PLAYER9)
         storedClothingModel = 5
         
         if (storedVariation = 0)
@@ -156,7 +158,9 @@ shop_clothes_loop:
             storedStoreClothingNumber = 10
         endif
     endif
-    if (IS_PLAYER_WEARING player1 play10)
+
+    // Black tracksuit
+    if (IS_PLAYER_WEARING player1 PLAY10)
         storedClothingModel = 6
         
         if (storedVariation = 0)
@@ -167,9 +171,21 @@ shop_clothes_loop:
         endif
     endif
 
+    // Red tracksuit
+    if (IS_PLAYER_WEARING player1 PLAY11)
+        storedClothingModel = 7
+        
+        if (storedVariation = 0)
+        or (storedVariation = 1)
+            storedStoreClothingNumber = 13
+        else
+            storedStoreClothingNumber = 14
+        endif
+    endif
+
     if (storedVariation = 0)
-        if not (IS_PLAYER_WEARING player1 play13)
-            UNDRESS_CHAR scplayer play13
+        if not (IS_PLAYER_WEARING player1 PLAYER)
+            UNDRESS_CHAR scplayer PLAYER
             LOAD_ALL_MODELS_NOW
             DRESS_CHAR scplayer
         endif
@@ -336,8 +352,8 @@ display_info:
                 endif
             endif
         endif
-        /**/
     endif
+
     // Casual
     if (currentStoreClothingNumber = 7)
     or (currentStoreClothingNumber = 8)
@@ -408,7 +424,7 @@ display_info:
         endif
     endif
 
-    // Tracksuit
+    // Black tracksuit
     if (currentStoreClothingNumber = 11)
     or (currentStoreClothingNumber = 12)
         currentClothingPrice = 50
@@ -424,15 +440,50 @@ display_info:
         if (clothes9_created = 0)
             DISPLAY_TEXT 320.0 425.0 STOCK
         else
-            if (tracksuitVariationState = 1)
+            if (blackTracksuitVariationState = 1)
             and (currentVariation = 1)
                 DISPLAY_TEXT 320.0 425.0 CLOTH_3
             else
-                if (tracksuitVariationState = 2)
+                if (blackTracksuitVariationState = 2)
                 and (currentVariation = 2)
                     DISPLAY_TEXT 320.0 425.0 CLOTH_3
                 else
-                    if (tracksuitVariationState = 3)
+                    if (blackTracksuitVariationState = 3)
+                        DISPLAY_TEXT 320.0 425.0 CLOTH_3
+                    else
+                        SET_TEXT_COLOUR 255 255 255 255
+                        DISPLAY_TEXT_WITH_NUMBER 320.0 425.0 G_COST currentClothingPrice
+                    endif
+                endif
+            endif
+        endif
+    endif
+
+    // Red tracksuit
+    if (currentStoreClothingNumber = 13)
+    or (currentStoreClothingNumber = 14)
+        currentClothingPrice = 50
+        
+        SET_TEXT_CENTRE TRUE
+        SET_TEXT_COLOUR 0 207 133 255
+        SET_TEXT_SCALE 1.2 2.5
+        DISPLAY_TEXT 320.0 45.0 OUTFT10
+
+        SET_TEXT_CENTRE TRUE
+        SET_TEXT_COLOUR 0 207 133 255
+        SET_TEXT_SCALE 0.58 1.2
+        if (clothes9_created = 0)
+            DISPLAY_TEXT 320.0 425.0 STOCK
+        else
+            if (redTracksuitVariationState = 1)
+            and (currentVariation = 1)
+                DISPLAY_TEXT 320.0 425.0 CLOTH_3
+            else
+                if (redTracksuitVariationState = 2)
+                and (currentVariation = 2)
+                    DISPLAY_TEXT 320.0 425.0 CLOTH_3
+                else
+                    if (redTracksuitVariationState = 3)
                         DISPLAY_TEXT 320.0 425.0 CLOTH_3
                     else
                         SET_TEXT_COLOUR 255 255 255 255
@@ -452,7 +503,7 @@ change_clothes:
     if (currentStoreClothingNumber = 1)
     or (currentStoreClothingNumber = 2)
         if (not currentClothingModel = 1)
-            UNDRESS_CHAR scplayer play13
+            UNDRESS_CHAR scplayer PLAYER
             LOAD_ALL_MODELS_NOW
             DRESS_CHAR scplayer
         endif
@@ -539,7 +590,7 @@ change_clothes:
         SET_CHAR_CLOTHING_VARIATION scplayer currentVariation
     endif
 
-    // Tracksuit
+    // Black tracksuit
     if (currentStoreClothingNumber = 11)
     or (currentStoreClothingNumber = 12)
         if not currentClothingModel = 6
@@ -551,6 +602,25 @@ change_clothes:
         currentClothingModel = 6
 
         if (currentStoreClothingNumber = 11)
+            currentVariation = 1
+        else
+            currentVariation = 2
+        endif
+        SET_CHAR_CLOTHING_VARIATION scplayer currentVariation
+    endif
+
+    // Red tracksuit
+    if (currentStoreClothingNumber = 13)
+    or (currentStoreClothingNumber = 14)
+        if not currentClothingModel = 7
+            UNDRESS_CHAR scplayer PLAY11
+            LOAD_ALL_MODELS_NOW
+            DRESS_CHAR scplayer
+        endif
+
+        currentClothingModel = 7
+
+        if (currentStoreClothingNumber = 13)
             currentVariation = 1
         else
             currentVariation = 2
@@ -591,6 +661,10 @@ buy_clothes:
     endif
     if (clothes9_created = 0)
     and (currentClothingModel = 6)
+        RETURN
+    endif
+    if (clothes9_created = 0)
+    and (currentClothingModel = 7)
         RETURN
     endif
 
@@ -729,21 +803,41 @@ change_clothing_state:
         endif
     endif
 
-    // Tracksuit
+    // Black tracksuit
     if (currentClothingModel = 6)
-        if (tracksuitVariationState = 0)
-            tracksuitVariationState = currentVariation
+        if (blackTracksuitVariationState = 0)
+            blackTracksuitVariationState = currentVariation
             RETURN
         endif
-        if (tracksuitVariationState = 1)
+        if (blackTracksuitVariationState = 1)
             if (currentVariation = 2)
-                tracksuitVariationState = 3
+                blackTracksuitVariationState = 3
             endif
             RETURN
         endif
-        if tracksuitVariationState = 2
+        if blackTracksuitVariationState = 2
             if (currentVariation = 1)
-                tracksuitVariationState = 3
+                blackTracksuitVariationState = 3
+            endif
+            RETURN
+        endif
+    endif
+
+    // Red tracksuit
+    if (currentClothingModel = 7)
+        if (redTracksuitVariationState = 0)
+            redTracksuitVariationState = currentVariation
+            RETURN
+        endif
+        if (redTracksuitVariationState = 1)
+            if (currentVariation = 2)
+                redTracksuitVariationState = 3
+            endif
+            RETURN
+        endif
+        if redTracksuitVariationState = 2
+            if (currentVariation = 1)
+                redTracksuitVariationState = 3
             endif
             RETURN
         endif
@@ -753,11 +847,7 @@ change_clothing_state:
 
 leave_store:
     if (storedClothingModel = 1)
-        if (storedVariation = 0)
-            UNDRESS_CHAR scplayer player
-        else
-            UNDRESS_CHAR scplayer play13
-        endif
+        UNDRESS_CHAR scplayer PLAYER
     endif
     if (storedClothingModel = 2)
         UNDRESS_CHAR scplayer PLAYER2
@@ -774,6 +864,9 @@ leave_store:
     if (storedClothingModel = 6)
         UNDRESS_CHAR scplayer PLAY10
     endif
+    if (storedClothingModel = 7)
+        UNDRESS_CHAR scplayer PLAY11
+    endif
     LOAD_ALL_MODELS_NOW
     DRESS_CHAR scplayer
 
@@ -788,5 +881,4 @@ leave_store:
     bPlayerInStore = FALSE
 
     GOTO shop_clothes_loop
-
 }

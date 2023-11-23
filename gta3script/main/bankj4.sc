@@ -639,6 +639,7 @@ bank_job_loop1:	// GETTING TO THE BANK
 
 			IF locate_dome_flag	= 0
 				ADD_BLIP_FOR_COORD -833.0 -348.0 10.0 mission_blip
+				SET_BLIP_ROUTE mission_blip TRUE
 				locate_dome_flag = 1
 			ENDIF
 			IF NOT IS_CAR_DEAD getaway_car
@@ -974,6 +975,7 @@ IF NOT IS_CHAR_DEAD scplayer
 	IF NOT IS_CHAR_DEAD scplayer
 		DRESS_CHAR scplayer
 	ENDIF
+	SET_CHAR_CLOTHING_VARIATION scplayer 0
 ENDIF
 /*
 REQUEST_MODEL M4
@@ -3188,6 +3190,7 @@ lose_wanted_level:
 
 REMOVE_BLIP mission_blip
 ADD_BLIP_FOR_COORD -871.57 -118.5 10.0 mission_blip
+SET_BLIP_ROUTE mission_blip TRUE
 
 WHILE IS_WANTED_LEVEL_GREATER player1 0
 	WAIT 0
@@ -3212,6 +3215,7 @@ get_to_cams:
 
 REMOVE_BLIP mission_blip
 ADD_BLIP_FOR_COORD -832.2 -901.0 10.0 mission_blip
+SET_BLIP_ROUTE mission_blip TRUE
 
 //SET_OBJECT_COORDINATES cams_door -837.134 -901.672 15.03 
 
@@ -3549,6 +3553,7 @@ IF NOT IS_CHAR_DEAD scplayer
 	IF NOT IS_CHAR_DEAD scplayer
 		DRESS_CHAR scplayer
 	ENDIF
+	SET_CHAR_CLOTHING_VARIATION scplayer 0
 ENDIF
 
 SET_PLAYER_HEADING player1 345.0
@@ -3578,7 +3583,7 @@ flag_bankjob_mission4_passed = 1
 CLEAR_WANTED_LEVEL player1
 PLAYER_MADE_PROGRESS 1
 
-CREATE_CLOTHES_PICKUP 465.3 -57.4 15.7 7 clothes_pickup13
+//CREATE_CLOTHES_PICKUP 465.3 -57.4 15.7 7 clothes_pickup13
 CREATE_PICKUP knifecur PICKUP_ON_STREET 468.5 -54.2 15.7 jason_knife 
 clothes13_created = 1
 START_NEW_SCRIPT cloth9

@@ -348,6 +348,7 @@ GIVE_WEAPON_TO_CHAR shop_defend_guard1 WEAPONTYPE_UZI 10000
 CLEAR_CHAR_THREAT_SEARCH shop_defend_guard1
 SET_CHAR_PERSONALITY shop_defend_guard1 PEDSTAT_TOUGH_GUY  
 ADD_BLIP_FOR_CHAR shop_defend_guard1 shop_defend_guard1_blip
+SET_BLIP_ROUTE shop_defend_guard1_blip TRUE
 SET_CHAR_STAY_IN_SAME_PLACE shop_defend_guard1 TRUE 
 
 //Guard 2 - doorman to NEWS BAR
@@ -758,6 +759,7 @@ GIVE_WEAPON_TO_CHAR shop_defend_guard1 WEAPONTYPE_UZI 30000
 CLEAR_CHAR_THREAT_SEARCH shop_defend_guard1
 SET_CHAR_PERSONALITY shop_defend_guard1 PEDSTAT_TOUGH_GUY  
 ADD_BLIP_FOR_CHAR shop_defend_guard1 shop_defend_guard1_blip
+SET_BLIP_ROUTE shop_defend_guard1_blip TRUE
 SET_CHAR_STAY_IN_SAME_PLACE shop_defend_guard1 TRUE 
 SET_CHAR_ACCURACY shop_defend_guard1 90 
 SET_CHAR_HEALTH shop_defend_guard1 150 

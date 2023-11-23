@@ -156,7 +156,7 @@ WAIT 0
 
 WAIT 500
 
-IF NOT IS_CHAR_DEAD scplayer
+/*IF NOT IS_CHAR_DEAD scplayer
 
 	UNDRESS_CHAR scplayer player
 
@@ -166,7 +166,7 @@ IF NOT IS_CHAR_DEAD scplayer
 		DRESS_CHAR scplayer
 	ENDIF
 
-ENDIF
+ENDIF*/
 
 //DO_FADE 1500 FADE_IN
 
@@ -591,10 +591,11 @@ DO_FADE 1500 FADE_IN
 // ****************************************END OF CUTSCENE**********************************
 
 //remove clothes picups
+clothing_store_flag = 0
 REMOVE_PICKUP mansion_clothes 
 REMOVE_PICKUP safehouse_clothes2
 REMOVE_PICKUP clothes_pickup1
-REMOVE_PICKUP clothes_pickup2
+/*REMOVE_PICKUP clothes_pickup2
 REMOVE_PICKUP clothes_pickup3
 REMOVE_PICKUP clothes_pickup4
 REMOVE_PICKUP clothes_pickup5
@@ -602,11 +603,12 @@ REMOVE_PICKUP clothes_pickup6
 REMOVE_PICKUP clothes_pickup7
 REMOVE_PICKUP clothes_pickup8
 REMOVE_PICKUP clothes_pickup9
-REMOVE_PICKUP clothes_pickup13
+REMOVE_PICKUP clothes_pickup13*/
 
 //get golf costume from clothes shop
 IF has_player_been_to_clothes_shop = 0
 	ADD_SPRITE_BLIP_FOR_COORD clothes_shopX clothes_shopY clothes_shopZ RADAR_SPRITE_TSHIRT clothesblip
+	SET_BLIP_ROUTE clothesblip TRUE
 	PRINT_NOW ( TEX1_1 ) 7000 2
 	has_player_been_to_clothes_shop = 1
 ENDIF
@@ -690,6 +692,7 @@ IF has_player_been_to_clothes_shop = 1
 				DRESS_CHAR scplayer
 			ENDIF
 
+			SET_CHAR_CLOTHING_VARIATION scplayer 0
 		ENDIF
 
 
@@ -803,6 +806,7 @@ IF has_player_been_to_clothes_shop = 2
 		SET_PLAYER_CONTROL player1 ON
 		SWITCH_WIDESCREEN OFF
 		ADD_BLIP_FOR_COORD 100.5953 251.2470 20.7290 golfblip
+		SET_BLIP_ROUTE golfblip TRUE
 	   //	CHANGE_BLIP_COLOUR golfblip GREEN
 		PRINT_NOW ( TEX1_2 ) 7000 2
 		has_player_been_to_clothes_shop = 3
@@ -1666,7 +1670,7 @@ ADD_SCORE player1 500
 REGISTER_MISSION_PASSED TEX_1
 PLAYER_MADE_PROGRESS 1
 START_NEW_SCRIPT serg_mission2_loop
-CREATE_CLOTHES_PICKUP 106.5 253.0 21.7 4 clothes_pickup4
+//CREATE_CLOTHES_PICKUP 106.5 253.0 21.7 4 clothes_pickup4
 clothes4_created = 1
 START_NEW_SCRIPT cloth3
 RETURN
@@ -1694,6 +1698,8 @@ RELEASE_WEATHER
 CLEAR_MISSION_AUDIO 1
 CLEAR_MISSION_AUDIO 2
 
+clothing_store_flag = 1
+
 IF mansion_clothes_created = 1
 	CREATE_CLOTHES_PICKUP -384.5 -591.9 25.3 1 mansion_clothes   
 ENDIF 
@@ -1706,7 +1712,7 @@ IF safehouse_created2 = 1
 	CREATE_CLOTHES_PICKUP -820.2 1364.1 66.4 1 safehouse_clothes2   
 ENDIF 
 
-IF clothes2_created = 1
+/*IF clothes2_created = 1
    CREATE_CLOTHES_PICKUP 97.5 -1133.6 10.4 2 clothes_pickup2
 ENDIF
 
@@ -1742,7 +1748,7 @@ ENDIF
 
 IF clothes13_created = 1
     CREATE_CLOTHES_PICKUP 465.3 -57.4 15.7 7 clothes_pickup13
-ENDIF
+ENDIF*/
 
  
 

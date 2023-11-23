@@ -115,6 +115,7 @@ REQUEST_MODEL kaufman
 
 
 ADD_BLIP_FOR_COORD -576.7 -480.1 10.8 blip1_taxicab1
+SET_BLIP_ROUTE blip1_taxicab1 TRUE
 
 PRINT_NOW ( TAXW1_1 ) 10000 1	//Pick up the VIP
 
@@ -161,6 +162,8 @@ IF NOT IS_CAR_DEAD players_cab
 ENDIF
 
 WAIT 500
+
+SET_BLIP_ROUTE blip1_taxicab1 FALSE
 
 SET_PLAYER_CONTROL player1 OFF
 SWITCH_WIDESCREEN ON
@@ -427,6 +430,7 @@ WHILE NOT LOCATE_STOPPED_CHAR_ANY_MEANS_3D theVIP -1438.1 -833.6 11.3 5.0 5.0 5.
 								PRINT_NOW ( TAX1_5 ) 4000 1
 								WAIT 4000
 								PRINT_NOW ( TAXW1_6 ) 8000 1 //Take to the airport.
+								SET_BLIP_ROUTE blip1_taxicab1 TRUE
 								played_taxiwar1_samp = 1
 							ENDIF
 						ENDIF

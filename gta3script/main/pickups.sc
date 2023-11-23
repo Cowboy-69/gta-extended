@@ -221,7 +221,7 @@ IF shit_counter = 2
 			ENDIF
 		ENDIF*/
 		
-		IF HAS_PICKUP_BEEN_COLLECTED starting_tracksuit
+		/*IF HAS_PICKUP_BEEN_COLLECTED starting_tracksuit
 			GOSUB changing_clothes_part1
 			IF IS_PLAYER_PLAYING player1 
 				UNDRESS_CHAR scplayer play11
@@ -239,7 +239,7 @@ IF shit_counter = 2
 				ENDIF
 				GOSUB changing_clothes_part2
 			ENDIF
-		ENDIF
+		ENDIF*/
 		
 		
 		/*
@@ -335,7 +335,7 @@ IF shit_counter = 3
 			ENDIF
 		ENDIF*/
 
-		IF clothes2_created = 1
+		/*IF clothes2_created = 1
 			IF HAS_PICKUP_BEEN_COLLECTED clothes_pickup2
 				GOSUB changing_clothes_part1
 				IF IS_PLAYER_PLAYING player1 
@@ -387,7 +387,7 @@ IF shit_counter = 3
 				ENDIF
 				GOSUB changing_clothes_part2
 			ENDIF
-		ENDIF
+		ENDIF*/
 	ENDIF
 ENDIF
 
@@ -395,7 +395,7 @@ ENDIF
 IF shit_counter = 4 
 	IF flag_cell_nation = 0 
 		
-		IF clothes7_created = 1
+		/*IF clothes7_created = 1
 			IF HAS_PICKUP_BEEN_COLLECTED clothes_pickup7
 				GOSUB changing_clothes_part1
 				IF IS_PLAYER_PLAYING player1 
@@ -426,7 +426,7 @@ IF shit_counter = 4
 				ENDIF
 				GOSUB changing_clothes_part2
 			ENDIF
-		ENDIF
+		ENDIF*/
 
 		/*
 		IF clothes10_created = 1
@@ -459,7 +459,7 @@ IF shit_counter = 4
 			ENDIF
 		ENDIF
 		*/
-		IF clothes13_created = 1
+		/*IF clothes13_created = 1
 			IF HAS_PICKUP_BEEN_COLLECTED clothes_pickup13
 				GOSUB changing_clothes_part1
 				IF IS_PLAYER_PLAYING player1 
@@ -468,7 +468,7 @@ IF shit_counter = 4
 				ENDIF
 				GOSUB changing_clothes_part2
 			ENDIF
-		ENDIF
+		ENDIF*/
 	ENDIF
 ENDIF
 

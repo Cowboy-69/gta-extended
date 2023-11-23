@@ -867,6 +867,7 @@ IF takecasetoammu_a4 = 1
 		PRINT_NOW ( ASM4_22 ) 5000 2
 
 		ADD_BLIP_FOR_COORD destinationx_am4 destinationy_am4 destinationz_am4 ammunationblip_a4
+		SET_BLIP_ROUTE ammunationblip_a4 TRUE
 
 
 		//1st car in car park

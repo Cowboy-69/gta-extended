@@ -122,7 +122,7 @@ CLEAR_HELP
 
 clothes_cut_scene2_played = 0
 
-IF NOT IS_CHAR_DEAD scplayer
+/*IF NOT IS_CHAR_DEAD scplayer
 
 	UNDRESS_CHAR scplayer player
 
@@ -132,7 +132,7 @@ IF NOT IS_CHAR_DEAD scplayer
 		DRESS_CHAR scplayer
 	ENDIF
 
-ENDIF
+ENDIF*/
 
 SET_AREA_VISIBLE VIS_LAWYERS 
 
@@ -382,13 +382,14 @@ WAIT 500
 
 DO_FADE 1500 FADE_IN
 
-REMOVE_PICKUP clothes_pickup2 // this was clothes_pickup3, typo, this should be the soiree outfit
+//REMOVE_PICKUP clothes_pickup2 // this was clothes_pickup3, typo, this should be the soiree outfit
 
 SET_PLAYER_MOOD player1 PLAYER_MOOD_PISSED_OFF 60000
 
 PRINT_NOW ( LAW1_1 ) 10000 1  //GET A CHANGE OF CLOTHES
 
 ADD_SPRITE_BLIP_FOR_COORD clothes_shopX clothes_shopY clothes_shopZ RADAR_SPRITE_TSHIRT colar_cuffs_blip
+SET_BLIP_ROUTE colar_cuffs_blip TRUE
 
 ADD_BLIP_FOR_COORD 299.0 -314.6 11.4 lawyer_blip1
 
@@ -1331,7 +1332,7 @@ PLAYER_MADE_PROGRESS 1
 REMOVE_BLIP lawyer_contact_blip
 REMOVE_BLIP	sergio_contact_blip
 bbat_in_stock = 1
-CREATE_CLOTHES_PICKUP 364.2 1086.1 19.0 3 clothes_pickup3
+//CREATE_CLOTHES_PICKUP 364.2 1086.1 19.0 3 clothes_pickup3
 clothes3_created = 1
 START_NEW_SCRIPT cloth2
 ADD_SPRITE_BLIP_FOR_CONTACT_POINT sergioX sergioY sergioZ the_sergio_blip sergio_contact_blip
@@ -1356,9 +1357,9 @@ MARK_MODEL_AS_NO_LONGER_NEEDED GDa
 MARK_MODEL_AS_NO_LONGER_NEEDED barrel4
 MARK_MODEL_AS_NO_LONGER_NEEDED colt45
 
-IF clothes2_created = 1
+/*IF clothes2_created = 1
     CREATE_CLOTHES_PICKUP 97.5 -1133.6 10.4 2 clothes_pickup2
-ENDIF
+ENDIF*/
 
 REMOVE_PICKUP securi_guard1_gun
 REMOVE_PICKUP securi_guard2_gun
@@ -1680,6 +1681,7 @@ IF NOT IS_CHAR_DEAD scplayer
 		DRESS_CHAR scplayer
 	ENDIF
 
+	SET_CHAR_CLOTHING_VARIATION scplayer 0
 ENDIF
 
 CLEAR_AREA 94.9 -1135.0 9.4 1.0 FALSE

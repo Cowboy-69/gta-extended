@@ -1161,6 +1161,8 @@ injured_ped_checks:
 				hospital_blip_flag = 1
 			ENDIF
 			
+			SET_BLIP_ROUTE hospital_blip TRUE
+
 			time_chunk_in_secs = time_chunk / 1000
 			PRINT_WITH_NUMBER_BIG A_TIME time_chunk_in_secs 6000 6	//+~1~ Seconds
 			ped_time_limit += time_chunk
@@ -1178,6 +1180,7 @@ injured_ped_checks:
 	IF ped_var_for_gosub_flag = 4
 		SET_CHAR_OBJ_RUN_TO_COORD ped_var_for_gosub hospital_door_x hospital_door_y
 		IF NOT IS_CHAR_IN_ANY_CAR ped_var_for_gosub	
+			SET_BLIP_ROUTE hospital_blip FALSE
 			SET_CHAR_OBJ_RUN_TO_COORD ped_var_for_gosub hospital_door_x hospital_door_y
 			MARK_CHAR_AS_NO_LONGER_NEEDED ped_var_for_gosub
 			PRINT_BIG A_PASS 3000 5

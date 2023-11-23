@@ -1863,6 +1863,7 @@ IF create_goons = 2
 			REMOVE_BLIP briefcase_am5blip
 			PRINT_NOW ( ASM5_3 ) 7000 2
 			ADD_BLIP_FOR_COORD -1368.395 -1255.998 17.2 goto_am5blip
+			SET_BLIP_ROUTE goto_am5blip TRUE
 			player_has_got_briefcase_am5 = 1
 		ENDIF
 	ENDIF

@@ -343,6 +343,7 @@ IF go_back_to_pizza_hut_flag = 0
 			PRINT_NOW ( PIZ1_33 ) 7000 1 //Return to the restaurant for more orders.
 			REMOVE_BLIP pizza_hut_blip 
 			ADD_BLIP_FOR_COORD pizza_shopx pizza_shopy -100.0 pizza_hut_blip 
+			SET_BLIP_ROUTE pizza_hut_blip TRUE
 			go_back_to_pizza_hut_flag = 1
 		ENDIF
 	ELSE
@@ -368,6 +369,7 @@ IF go_back_to_pizza_hut_flag = 0
 			IF flag_player_not_in_pizza_moped = 0
 				REMOVE_BLIP pizza_hut_blip 
 				ADD_BLIP_FOR_COORD pizza_shopx pizza_shopy -100.0 pizza_hut_blip
+				SET_BLIP_ROUTE pizza_hut_blip TRUE
 
 				IF LOCATE_STOPPED_PLAYER_IN_CAR_3D player1 pizza_shopx pizza_shopy pizza_shopz 5.0 5.0 5.0 TRUE
 					IF NOT IS_CHAR_DEAD customer1 
