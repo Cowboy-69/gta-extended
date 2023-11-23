@@ -4301,34 +4301,34 @@ Tank now available from the Army Barracks!
 Hunter now available from the Army Barracks!
 
 [CLOTH1]
-Soiree outfit delivered to Rafael's on Ocean Beach.
+Soiree outfit delivered to Safehouses. New clothes are available at Gash in The North Point Mall.
 
 [CLOTH2]
 Street outfit delivered to Safehouses.
 
 [CLOTH3]
-Coveralls outfit delivered to Tooled Up in The North Point Mall.
+Coveralls outfit delivered to Safehouses.
 
 [CLOTH4]
-Country Club outfit delivered to The Golf Club in Leaf Links.
+Country Club outfit delivered to Safehouses. New clothes are available at Gash in The North Point Mall.
 
 [CLOTH5]
-Havana outfit delivered to Little Havana Streetwear in Little Havana.
+Havana outfit delivered to Safehouses.
 
 [CLOTH6]
-Cop outfit delivered to Police Station on Washington Beach.
+Cop outfit delivered to Safehouses.
 
 [CLOTH7]
-Casual outfit delivered to Gash in The North Point Mall.
+Casual outfit delivered to Safehouses. New clothes are available at Gash in The North Point Mall.
 
 [CLOTH8]
-Mr Vercetti outfit delivered to Collar & Cuffs on Ocean Beach.
+Mr Vercetti outfit delivered to Safehouses. New clothes are available at Gash in The North Point Mall.
 
 [CLOTH9]
-Tracksuit outfit delivered to Jocksport in Downtown.
+Tracksuit outfit delivered to Safehouses. New clothes are available at Gash in The North Point Mall.
 
 [CLOTH10]
-Bank Job outfit delivered to Malibu Club in Vice Point.
+Bank Job outfit delivered to Safehouses.
 
 [MOB_62A]
 Tommy, is Ricardo Diaz, I want to thank you for looking out for me my man.
@@ -6810,7 +6810,7 @@ ALETHEIA SIMONSON
 JOHN JANSEN
 
 [CUNTY]
-New clothes delivered to the Vercetti Estate!
+New clothes delivered to Safehouses!
 
 [GOODBOY]
 $50 Good Citizen Bonus!
