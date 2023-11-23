@@ -6901,9 +6901,8 @@ CMenuManager::PrintMap(void)
 			m_fMapCenterX + m_fMapSize, m_fMapCenterY + m_fMapSize), CRGBA(255, 255, 255, FadeIn(255)));
 	}
 
-#ifdef IMPROVED_TECH_PART // GPS and property
+#ifdef EX_GPS
 	CRadar::DrawGPS();
-	//CRadar::DrawPropertyBlips();
 #endif
 	CRadar::DrawBlips();
 	if (m_PrefsShowLegends) {

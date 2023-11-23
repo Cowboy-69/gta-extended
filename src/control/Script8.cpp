@@ -28,8 +28,11 @@
 #include "WaterLevel.h"
 #include "World.h"
 #include "Zones.h"
-#ifdef EX_PED_VARIATIONS
+#ifdef EX_PED_VARIATIONS // Script
 #include "TxdStore.h"
+#endif
+#ifdef EX_GPS // Script
+#include "Radar.h"
 #endif
 
 int8 CRunningScript::ProcessCommands1400To1499(int32 command)
@@ -614,7 +617,7 @@ int8 CRunningScript::ProcessCommands1400To1499(int32 command)
 	case COMMAND_CUTSCENE_SCROLL:
 		return 0;
 #endif
-#ifdef EX_PED_VARIATIONS
+#ifdef EX_PED_VARIATIONS // Script
 	case COMMAND_SET_CHAR_CLOTHING_VARIATION:
 	{
 		CollectParameters(&m_nIp, 2);
@@ -626,6 +629,7 @@ int8 CRunningScript::ProcessCommands1400To1499(int32 command)
 		RwTexDictionary* playerTxd = CTxdStore::GetSlot(modelInfo->GetTxdSlot())->texDict;
 		if (playerTxd) {
 			char sTemp[16];
+
 			if (curVariation == 0)
 				sprintf(sTemp, "%s", modelInfo->GetModelName());
 			else
@@ -634,6 +638,8 @@ int8 CRunningScript::ProcessCommands1400To1499(int32 command)
 			pPed->texClothingVariation = RwTexDictionaryFindNamedTexture(playerTxd, sTemp);
 			pPed->curClothingVariation = curVariation;
 			modelInfo->currentClothingVariation = curVariation;
+
+			CWorld::Players[0].m_pSkinTexture = pPed->texClothingVariation;
 		}
 		return 0;
 	}
@@ -646,6 +652,12 @@ int8 CRunningScript::ProcessCommands1400To1499(int32 command)
 		StoreParameters(&m_nIp, 1);
 		return 0;
 	}
+#endif
+#ifdef EX_GPS // Mission blip
+	case COMMAND_SET_BLIP_ROUTE:
+		CollectParameters(&m_nIp, 2);
+		CRadar::SetBlipRoute(ScriptParams[0], ScriptParams[1]);
+		return 0;
 #endif
 	default:
 		script_assert(0);

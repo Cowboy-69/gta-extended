@@ -1323,7 +1323,7 @@ CPickups::RenderPickUpText()
 					}
 				}
 				break;
-#ifdef IMPROVED_TECH_PART // Wardrobe: Removing the lettering from clothing pickups
+#ifdef EX_PED_VARIATIONS // Wardrobe: Removing the lettering from clothing pickups
 			case 1:
 			case 2:
 			case 3:

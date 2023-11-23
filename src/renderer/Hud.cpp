@@ -96,7 +96,7 @@ wchar CHud::m_BigMessage[6][128];
 int16 CHud::m_ItemToFlash;
 bool CHud::m_HideRadar;
 int32 CHud::m_ClockState;
-#ifdef IMPROVED_TECH_PART // GPS
+#ifdef EX_GPS
 bool CHud::m_bDrawRadar;
 #endif
 
@@ -1158,11 +1158,10 @@ void CHud::Draw()
 				rect.Translate(SCREEN_SCALE_X_FIX(0.0f), SCREEN_SCALE_Y_FIX(-2.0f));
 				Sprites[HUD_RADARDISC].Draw(rect, RADARDISC_COLOR);
 			}
-#ifdef IMPROVED_TECH_PART // GPS
+#ifdef EX_GPS
 			m_bDrawRadar = true;
 			CRadar::DrawGPS();
 			m_bDrawRadar = false;
-			//CRadar::DrawPropertyBlips();
 #endif
 			CRadar::DrawBlips();
 		}

@@ -66,6 +66,7 @@
 	#define IMPROVED_MENU_AND_INPUT
 	//#define NEW_MENU
 	#define EX_RADIO_ICONS
+	#define EX_GPS // thank https://github.com/DK22Pac/plugin-sdk/tree/master/examples/GPS
 
 	#define IMPROVED_TECH_PART
 	#define WANTED_PATHS

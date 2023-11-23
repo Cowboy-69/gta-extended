@@ -19,6 +19,9 @@
 #ifdef AUTOSAVE_AND_SAVE_ANYWHERE
 #include "Frontend.h"
 #endif
+#ifdef EX_PED_VARIATIONS // Save/Load
+#include "TxdStore.h"
+#endif
 
 CCPtrNodePool *CPools::ms_pPtrNodePool;
 CEntryInfoNodePool *CPools::ms_pEntryInfoNodePool;
@@ -739,6 +742,23 @@ INITSAVEBUF
 		if (bSaveAnywhere) {
 			pPed->bInVehicle = pBufferPlayer->bInVehicle;
 			pPed->m_pMyVehicle = pBufferPlayer->m_pMyVehicle;
+		}
+#endif
+#ifdef EX_PED_VARIATIONS // Save/Load
+		pPed->curClothingVariation = pBufferPlayer->curClothingVariation;
+
+		CPedModelInfo* modelInfo = (CPedModelInfo*)CModelInfo::GetModelInfo(pPed->GetModelIndex());
+		RwTexDictionary* playerTxd = CTxdStore::GetSlot(modelInfo->GetTxdSlot())->texDict;
+		if (playerTxd) {
+			char sTemp[16];
+			if (pPed->curClothingVariation == 0)
+				sprintf(sTemp, "%s", modelInfo->GetModelName());
+			else
+				sprintf(sTemp, "%s_%i", modelInfo->GetModelName(), pPed->curClothingVariation);
+
+			pPed->texClothingVariation = RwTexDictionaryFindNamedTexture(playerTxd, sTemp);
+			pPed->curClothingVariation = pPed->curClothingVariation;
+			modelInfo->currentClothingVariation = pPed->curClothingVariation;
 		}
 #endif
 		for (int i = 0; i < TOTAL_WEAPON_SLOTS; i++) {

@@ -80,7 +80,7 @@ public:
 	static int16 m_ItemToFlash;
 	static bool m_HideRadar;
 	static int32 m_ClockState;
-#ifdef IMPROVED_TECH_PART // GPS
+#ifdef EX_GPS
 	static bool m_bDrawRadar;
 #endif
 

@@ -255,6 +255,10 @@ public:
 	static CVector TargetMarkerPos;
 #endif
 
+#ifdef EX_GPS // Mission blip
+	static int RouteBlipId;
+#endif
+
 	static void InitFrontEndMap();
 	static void DrawYouAreHereSprite(float, float);
 #ifdef MAP_ENHANCEMENTS
@@ -277,10 +281,10 @@ public:
 	static void DrawRadarSection(int32 x, int32 y);
 	static void DrawRadarSprite(uint16 sprite, float x, float y, uint8 alpha);
 	static void DrawRotatingRadarSprite(CSprite2d* sprite, float x, float y, float angle, int32 alpha);
-#ifdef IMPROVED_TECH_PART // GPS and property
+#ifdef EX_GPS
 	static void DrawGPS();
 	static void Setup2dVertex(RwIm2DVertex& vertex, float x, float y, CRGBA color);
-	static void DrawPropertyBlips();
+	static void SetBlipRoute(int32 i, bool bEnable); // Mission blip
 #endif
 	static int32 GetActualBlipArrayIndex(int32 i);
 	static int32 GetNewUniqueBlipIndex(int32 i);

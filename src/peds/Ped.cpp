@@ -439,6 +439,9 @@ CPed::~CPed(void)
 #endif
 
 #ifdef EX_PED_VARIATIONS
+	if (IsPlayer() && CWorld::Players[0].m_pSkinTexture == texClothingVariation)
+		CWorld::Players[0].m_pSkinTexture = nullptr;
+
 	texClothingVariation = nullptr;
 	texShadeVariation = nullptr;
 #endif

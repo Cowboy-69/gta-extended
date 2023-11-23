@@ -162,6 +162,9 @@ int32 CRadar::RadarZoomOutTimer;
 int CRadar::TargetMarkerId = -1;
 CVector CRadar::TargetMarkerPos;
 #endif
+#ifdef EX_GPS // Mission blip
+int CRadar::RouteBlipId = -1;
+#endif
 
 float CRadar::cachedCos;
 float CRadar::cachedSin;
@@ -264,6 +267,10 @@ void CRadar::ClearBlip(int32 i)
 		ms_RadarTrace[index].m_eBlipType = BLIP_NONE;
 		ms_RadarTrace[index].m_eBlipDisplay = BLIP_DISPLAY_NEITHER;
 		ms_RadarTrace[index].m_eRadarSprite = RADAR_SPRITE_NONE;
+#ifdef EX_GPS // Mission blip
+		if (index == RouteBlipId)
+			RouteBlipId = -1;
+#endif
 	}
 }
 
@@ -910,11 +917,9 @@ void CRadar::DrawRotatingRadarSprite(CSprite2d* sprite, float x, float y, float 
 	sprite->Draw(curPosn[3].x, curPosn[3].y, curPosn[2].x, curPosn[2].y, curPosn[0].x, curPosn[0].y, curPosn[1].x, curPosn[1].y, CRGBA(255, 255, 255, alpha));
 }
 
-#ifdef IMPROVED_TECH_PART // GPS and business blip
+#ifdef EX_GPS
 void CRadar::DrawGPS()
 {
-	// thank https://github.com/DK22Pac/plugin-sdk/tree/master/examples/GPS
-
 	if (!FrontEndMenuManager.m_PrefsGPS)
 		return;
 
@@ -937,107 +942,93 @@ void CRadar::DrawGPS()
 
     if (FindPlayerPed() && (FindPlayerPed()->m_pMyVehicle && FindPlayerPed()->InVehicle() && CHud::m_bDrawRadar || FrontEndMenuManager.m_bMenuMapActive)) {
 		// Mission blip
-		if (CTheScripts::IsPlayerOnAMission()) {
-			for (int blipId = 0; blipId < NUMRADARBLIPS; blipId++) {
-				if (!ms_RadarTrace[blipId].m_bInUse)
-					continue;
+		if (RouteBlipId != -1 && ms_RadarTrace[RouteBlipId].m_bInUse) {
+			CVector destPosn;
 
-				if (ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_NONE &&
-					ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_TSHIRT ||
-					ms_RadarTrace[blipId].m_eBlipType == BLIP_CONTACT_POINT) {
+			switch (ms_RadarTrace[RouteBlipId].m_eBlipType) {
+			case BLIP_CAR: {
+				CEntity *entity = CPools::GetVehiclePool()->GetAt(ms_RadarTrace[RouteBlipId].m_nEntityHandle);
+				if (entity) destPosn = entity->GetPosition();
+				break;
+			}
+			case BLIP_CHAR: {
+				CEntity *entity = CPools::GetPedPool()->GetAt(ms_RadarTrace[RouteBlipId].m_nEntityHandle);
+				if (entity) destPosn = entity->GetPosition();
+				break;
+			}
+			case BLIP_OBJECT: {
+				CEntity *entity = CPools::GetObjectPool()->GetAt(ms_RadarTrace[RouteBlipId].m_nEntityHandle);
+				if (entity) destPosn = entity->GetPosition();
+				break;
+			}
+			default:
+				destPosn = ms_RadarTrace[RouteBlipId].m_vecPos;
+				break;
+			}
 
-					continue;
+			destPosn.z = CWorld::FindGroundZForCoord(destPosn.x, destPosn.y);
+
+			short nodesCount = 0;
+
+			ThePaths.DoPathSearch(0, FindPlayerCoors(), -1, destPosn, resultNodes, &nodesCount, maxNodePoints, nullptr, nil, 500.0f, -1);
+
+			int nodesCountDeleted = 0;
+			if (nodesCount > 0) {
+				for (short i = 0; i < nodesCount; i++) {
+					CVector nodePosn = resultNodes[i]->GetPosition();
+					CVector2D tmpPoint;
+					CRadar::TransformRealWorldPointToRadarSpace(tmpPoint, CVector2D(nodePosn.x, nodePosn.y));
+					if (!CHud::m_bDrawRadar && !FrontEndMenuManager.m_bMenuMapActive)
+						CRadar::TransformRadarPointToScreenSpace(nodePoints[i], tmpPoint);
+					else {
+						if (CRadar::LimitRadarPoint(tmpPoint) >= 1.0f)
+							nodesCountDeleted++;
+
+						CRadar::TransformRadarPointToScreenSpace(nodePoints[i], tmpPoint);
+					}
 				}
 
-				CVector destPosn;
+				if (CHud::m_bDrawRadar && nodesCountDeleted != 0)
+					nodesCount -= nodesCountDeleted - 1;
 
-				switch (ms_RadarTrace[blipId].m_eBlipType) {
-				case BLIP_CAR: {
-					CEntity *entity = CPools::GetVehiclePool()->GetAt(ms_RadarTrace[blipId].m_nEntityHandle);
-					if (entity) destPosn = entity->GetPosition();
-					break;
-				}
-				case BLIP_CHAR: {
-					CEntity *entity = CPools::GetPedPool()->GetAt(ms_RadarTrace[blipId].m_nEntityHandle);
-					if (entity) destPosn = entity->GetPosition();
-					break;
-				}
-				case BLIP_OBJECT: {
-					CEntity *entity = CPools::GetObjectPool()->GetAt(ms_RadarTrace[blipId].m_nEntityHandle);
-					if (entity) destPosn = entity->GetPosition();
-					break;
-				}
-				default:
-					destPosn = ms_RadarTrace[blipId].m_vecPos;
-					break;
-				}
+				RwRenderStateSet(rwRENDERSTATETEXTURERASTER, NULL);
 
-				destPosn.z = CWorld::FindGroundZForCoord(destPosn.x, destPosn.y);
-
-				short nodesCount = 0;
-
-				ThePaths.DoPathSearch(0, FindPlayerCoors(), -1, destPosn, resultNodes, &nodesCount, maxNodePoints, nullptr, nil, 500.0f, -1);
-
-				int nodesCountDeleted = 0;
-				if (nodesCount > 0) {
-					for (short i = 0; i < nodesCount; i++) {
-						CVector nodePosn = resultNodes[i]->GetPosition();
-						CVector2D tmpPoint;
-						CRadar::TransformRealWorldPointToRadarSpace(tmpPoint, CVector2D(nodePosn.x, nodePosn.y));
-						if (!CHud::m_bDrawRadar && !FrontEndMenuManager.m_bMenuMapActive)
-							CRadar::TransformRadarPointToScreenSpace(nodePoints[i], tmpPoint);
-						else {
-							if (CRadar::LimitRadarPoint(tmpPoint) >= 1.0f)
-								nodesCountDeleted++;
-
-							CRadar::TransformRadarPointToScreenSpace(nodePoints[i], tmpPoint);
+				unsigned int vertIndex = 0;
+				for (short i = 0; i < (nodesCount - 1); i++) {
+					CVector2D point[4], shift[2];
+					CVector2D dir = nodePoints[i + 1] - nodePoints[i];
+					float angle = atan2(dir.y, dir.x);
+					if (!CHud::m_bDrawRadar && !FrontEndMenuManager.m_bMenuMapActive) {
+						shift[0].x = cosf(angle - 1.5707963f) * 4.0f;
+						shift[0].y = sinf(angle - 1.5707963f) * 4.0f;
+						shift[1].x = cosf(angle + 1.5707963f) * 4.0f;
+						shift[1].y = sinf(angle + 1.5707963f) * 4.0f;
+					} else {
+						float mp = 1.0f;
+						if (!CHud::m_bDrawRadar) {
+							mp = FrontEndMenuManager.m_fMapSize - 140.0f;
+							if (mp < 140.0f)
+								mp = 140.0f;
+							else if (mp > 960.0f)
+								mp = 960.0f;
+							mp = mp / 960.0f + 0.4f;
 						}
+						shift[0].x = cosf(angle - 1.5707963f) * 4.0f * mp;
+						shift[0].y = sinf(angle - 1.5707963f) * 4.0f * mp;
+						shift[1].x = cosf(angle + 1.5707963f) * 4.0f * mp;
+						shift[1].y = sinf(angle + 1.5707963f) * 4.0f * mp;
 					}
 
-					if (CHud::m_bDrawRadar && nodesCountDeleted != 0)
-						nodesCount -= nodesCountDeleted - 1;
-
-					RwRenderStateSet(rwRENDERSTATETEXTURERASTER, NULL);
-
-					unsigned int vertIndex = 0;
-					for (short i = 0; i < (nodesCount - 1); i++) {
-						CVector2D point[4], shift[2];
-						CVector2D dir = nodePoints[i + 1] - nodePoints[i];
-						float angle = atan2(dir.y, dir.x);
-						if (!CHud::m_bDrawRadar && !FrontEndMenuManager.m_bMenuMapActive) {
-							shift[0].x = cosf(angle - 1.5707963f) * 4.0f;
-							shift[0].y = sinf(angle - 1.5707963f) * 4.0f;
-							shift[1].x = cosf(angle + 1.5707963f) * 4.0f;
-							shift[1].y = sinf(angle + 1.5707963f) * 4.0f;
-						} else {
-							float mp = 1.0f;
-							if (!CHud::m_bDrawRadar) {
-								mp = FrontEndMenuManager.m_fMapSize - 140.0f;
-								if (mp < 140.0f)
-									mp = 140.0f;
-								else if (mp > 960.0f)
-									mp = 960.0f;
-								mp = mp / 960.0f + 0.4f;
-							}
-							shift[0].x = cosf(angle - 1.5707963f) * 4.0f * mp;
-							shift[0].y = sinf(angle - 1.5707963f) * 4.0f * mp;
-							shift[1].x = cosf(angle + 1.5707963f) * 4.0f * mp;
-							shift[1].y = sinf(angle + 1.5707963f) * 4.0f * mp;
-						}
-
-						uint32 color = GetRadarTraceColour(ms_RadarTrace[blipId].m_nColor, ms_RadarTrace[blipId].m_bDim);
-						CRGBA normalColor = CRGBA((uint8)(color >> 24), (uint8)(color >> 16), (uint8)(color >> 8), 255);
-						Setup2dVertex(lineVerts[vertIndex + 0], nodePoints[i].x + shift[0].x, nodePoints[i].y + shift[0].y, normalColor);
-						Setup2dVertex(lineVerts[vertIndex + 1], nodePoints[i + 1].x + shift[0].x, nodePoints[i + 1].y + shift[0].y, normalColor);
-						Setup2dVertex(lineVerts[vertIndex + 2], nodePoints[i].x + shift[1].x, nodePoints[i].y + shift[1].y, normalColor);
-						Setup2dVertex(lineVerts[vertIndex + 3], nodePoints[i + 1].x + shift[1].x, nodePoints[i + 1].y + shift[1].y, normalColor);
-						vertIndex += 4;
-					}
-
-					RwIm2DRenderPrimitive(rwPRIMTYPETRISTRIP, lineVerts, 4 * (nodesCount - 1));
-
-					break;
+					uint32 color = GetRadarTraceColour(ms_RadarTrace[RouteBlipId].m_nColor, ms_RadarTrace[RouteBlipId].m_bDim);
+					CRGBA normalColor = CRGBA((uint8)(color >> 24), (uint8)(color >> 16), (uint8)(color >> 8), 255);
+					Setup2dVertex(lineVerts[vertIndex + 0], nodePoints[i].x + shift[0].x, nodePoints[i].y + shift[0].y, normalColor);
+					Setup2dVertex(lineVerts[vertIndex + 1], nodePoints[i + 1].x + shift[0].x, nodePoints[i + 1].y + shift[0].y, normalColor);
+					Setup2dVertex(lineVerts[vertIndex + 2], nodePoints[i].x + shift[1].x, nodePoints[i].y + shift[1].y, normalColor);
+					Setup2dVertex(lineVerts[vertIndex + 3], nodePoints[i + 1].x + shift[1].x, nodePoints[i + 1].y + shift[1].y, normalColor);
+					vertIndex += 4;
 				}
+
+				RwIm2DRenderPrimitive(rwPRIMTYPETRISTRIP, lineVerts, 4 * (nodesCount - 1));
 			}
 		}
 
@@ -1125,27 +1116,17 @@ void CRadar::Setup2dVertex(RwIm2DVertex& vertex, float x, float y, CRGBA color)
 	vertex.color = RWRGBALONG(color.r, color.g, color.b, color.a);
 }
 
-void CRadar::DrawPropertyBlips()
+void CRadar::SetBlipRoute(int32 i, bool bEnable)
 {
-	// TEMPORARY
+	if (bEnable) {
+		int index = GetActualBlipArrayIndex(i);
 
-	if (CTheScripts::IsPlayerOnAMission())
-		return;
+		if (index == -1)
+			return;
 
-	for (int i = 0; i < NUMPICKUPS; i++) {
-		if (CPickups::aPickUps[i].m_eType != PICKUP_PROPERTY_FORSALE)
-			continue;
-
-		CVector2D out;
-		CVector2D in;
-		TransformRealWorldPointToRadarSpace(in, CPickups::aPickUps[i].m_vecPos);
-		float dist = LimitRadarPoint(in);
-
-		if (dist > 1.0f && !FrontEndMenuManager.m_bMenuMapActive)
-			continue;
-
-		TransformRadarPointToScreenSpace(out, in);
-		DrawRadarSprite(RADAR_SPRITE_HOUSE_FOR_SALE, out.x, out.y, CalculateBlipAlpha(dist));
+		RouteBlipId = index;
+	} else {
+		RouteBlipId = -1;
 	}
 }
 #endif

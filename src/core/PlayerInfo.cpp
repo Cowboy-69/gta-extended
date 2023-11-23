@@ -935,6 +935,11 @@ void
 CPlayerInfo::DeletePlayerSkin()
 {
 	if (m_pSkinTexture) {
+#ifdef EX_PED_VARIATIONS // Player
+		if (m_pPed && m_pSkinTexture == m_pPed->texClothingVariation)
+			m_pPed->texClothingVariation = nil;
+#endif
+
 		RwTextureDestroy(m_pSkinTexture);
 		m_pSkinTexture = nil;
 	}
