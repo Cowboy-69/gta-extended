@@ -1801,9 +1801,9 @@ CPathFind::TestCoorsCloseness(CVector target, uint8 type, CVector start)
 		DoPathSearch(type, start, -1, target, nil, &DummyResult2, 0, nil, &dist, 50.0f, -1);
 #ifdef IMPROVED_TECH_PART // increased spawn range
 	if (type == PATH_CAR)
-		return dist < 500.0f * TheCamera.GenerationDistMultiplier;
+		return dist < 180.0f * TheCamera.GenerationDistMultiplier;
 	else
-		return dist < 400.0f * TheCamera.GenerationDistMultiplier;
+		return dist < 130.0f * TheCamera.GenerationDistMultiplier;
 #else
 #ifdef FIX_BUGS
 	// dist has GenerationDistMultiplier as a factor, so our reference dist should have it too

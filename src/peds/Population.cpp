@@ -30,7 +30,7 @@
 #include "WaterLevel.h"
 
 #ifdef IMPROVED_TECH_PART // increased spawn range
-#define MIN_CREATION_DIST		(CGame::IsInInterior() || CCutsceneMgr::IsRunning() || CDarkel::FrenzyOnGoing() ? 40.0f : 90.0f)
+#define MIN_CREATION_DIST		(CGame::IsInInterior() || CCutsceneMgr::IsRunning() || CDarkel::FrenzyOnGoing() ? 40.0f : 70.0f)
 #define CREATION_RANGE			(CGame::IsInInterior() || CCutsceneMgr::IsRunning() || CDarkel::FrenzyOnGoing() ? 10.0f : 40.0f)
 #else
 #define MIN_CREATION_DIST		40.0f // not for start of the game (look at the GeneratePedsAtStartOfGame)

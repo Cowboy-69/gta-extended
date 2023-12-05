@@ -225,7 +225,7 @@ bool CCarGenerator::CheckIfWithinRangeOfAnyPlayers()
 	CVector2D direction = FindPlayerCentreOfWorld(CWorld::PlayerInFocus) - m_vecPos;
 	float distance = direction.Magnitude();
 #ifdef IMPROVED_TECH_PART // increased spawn range
-	float farclip = 250.0f * TheCamera.GenerationDistMultiplier;
+	float farclip = 150.0f * TheCamera.GenerationDistMultiplier;
 #else
 	float farclip = 110.0f * TheCamera.GenerationDistMultiplier;
 #endif

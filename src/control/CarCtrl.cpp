@@ -44,7 +44,7 @@
 #endif
 
 #ifdef IMPROVED_TECH_PART // increased spawn range
-#define DISTANCE_TO_SPAWN_ROADBLOCK_PEDS (100.0f)
+#define DISTANCE_TO_SPAWN_ROADBLOCK_PEDS (80.0f)
 #else
 #define DISTANCE_TO_SPAWN_ROADBLOCK_PEDS (51.0f)
 #endif
@@ -88,10 +88,10 @@
 #define PROBABILITY_OF_PASSENGER_IN_VEHICLE (0.125f)
 
 #ifdef IMPROVED_TECH_PART // increased spawn range
-#define ONSCREEN_DESPAWN_RANGE (CGame::IsInInterior() || CCutsceneMgr::IsRunning() || CDarkel::FrenzyOnGoing() ? 120.0f : 350.0f)
-#define MINIMAL_DISTANCE_TO_SPAWN_ONSCREEN (CGame::IsInInterior() || CCutsceneMgr::IsRunning() || CDarkel::FrenzyOnGoing() ? 100.0f : 150.0f)
+#define ONSCREEN_DESPAWN_RANGE (CGame::IsInInterior() || CCutsceneMgr::IsRunning() || CDarkel::FrenzyOnGoing() ? 120.0f : 160.0f)
+#define MINIMAL_DISTANCE_TO_SPAWN_ONSCREEN (CGame::IsInInterior() || CCutsceneMgr::IsRunning() || CDarkel::FrenzyOnGoing() ? 100.0f : 140.0f)
 #define REQUEST_ONSCREEN_DISTANCE ((ONSCREEN_DESPAWN_RANGE + MINIMAL_DISTANCE_TO_SPAWN_ONSCREEN) / 2)
-#define OFFSCREEN_DESPAWN_RANGE (CGame::IsInInterior() || CCutsceneMgr::IsRunning() || CDarkel::FrenzyOnGoing() ? 40.0f : 100.0f)
+#define OFFSCREEN_DESPAWN_RANGE (CGame::IsInInterior() || CCutsceneMgr::IsRunning() || CDarkel::FrenzyOnGoing() ? 40.0f : 80.0f)
 #define EXTENDED_RANGE_DESPAWN_MULTIPLIER (1.5f)
 #else
 #define ONSCREEN_DESPAWN_RANGE (120.0f)
