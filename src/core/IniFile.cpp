@@ -8,8 +8,8 @@
 #include "Population.h"
 
 #ifdef IMPROVED_TECH_PART // increased spawn range
-float CIniFile::PedNumberMultiplier = 2.5f;
-float CIniFile::CarNumberMultiplier = 2.5f;
+float CIniFile::PedNumberMultiplier = 1.5f;
+float CIniFile::CarNumberMultiplier = 1.5f;
 #else
 float CIniFile::PedNumberMultiplier = 0.6f;
 float CIniFile::CarNumberMultiplier = 0.6f;
