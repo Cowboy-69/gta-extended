@@ -38,6 +38,10 @@
 #include "GenericGameStorage.h"
 #endif
 
+#ifdef TRIANGLE_FOR_MOUSE_RECRUIT
+#include "Sprite.h"
+#endif
+
 #define PAD_MOVE_TO_GAME_WORLD_MOVE 60.0f
 
 bool CPlayerPed::bDontAllowWeaponChange;
@@ -123,6 +127,10 @@ CPlayerPed::CPlayerPed(void) : CPed(PEDTYPE_PLAYER1)
 
 #ifdef FIRING_AND_AIMING
 	bIsPlayerAiming = false;
+#endif
+
+#ifdef TRIANGLE_FOR_MOUSE_RECRUIT
+	m_pThirdPersonMouseTarget = nullptr;
 #endif
 
 #ifdef SWIMMING
@@ -2556,6 +2564,10 @@ CPlayerPed::ProcessControl(void)
 	}
 #endif
 
+#if defined TRIANGLE_FOR_MOUSE_RECRUIT && defined(FIRING_AND_AIMING)
+	Find3rdPersonMouseTarget();
+#endif
+
 #ifdef FIRING_AND_AIMING
 	if (bIsPlayerAiming && (!IsPedInControl() && m_nPedState != PED_ROLL || m_nPedState == PED_FIGHT)) {
 		bIsPlayerAiming = false;
@@ -3248,4 +3260,94 @@ CPlayerPed::Load(uint8*& buf)
 }
 #undef CopyFromBuf
 #undef CopyToBuf
+#endif
+
+#ifdef TRIANGLE_FOR_MOUSE_RECRUIT
+void
+CPlayerPed::Find3rdPersonMouseTarget(void) {
+	if (!bIsPlayerAiming || InVehicle() || m_bHasLockOnTarget)
+		goto end;
+
+	auto cam = TheCamera.GetCam();
+	CVector source;
+	CVector target;
+	CEntity* e = NULL;
+	CColPoint point = {};
+	const eWeaponType weaponType = GetWeapon()->m_eWeaponType;
+	CWeaponInfo* info = CWeaponInfo::GetWeaponInfo(weaponType);
+
+	TheCamera.Find3rdPersonCamTargetVector(info->m_fRange, cam->Source, source, target);
+	if (CWorld::ProcessLineOfSight(source, target, point, e, false, false, true, false, false, false)) {
+		if (e->GetType() == ENTITY_TYPE_PED) {
+			CPed* target = static_cast<CPed*>(e);
+			if (target && target != this && target->m_nPedState != PED_DEAD) {
+				if (m_pThirdPersonMouseTarget || m_pThirdPersonMouseTarget != target) {
+					m_pThirdPersonMouseTarget = target;
+				}
+			}
+		}
+		return;
+	}
+
+end:
+	m_pThirdPersonMouseTarget = nullptr;
+}
+
+void 
+CPlayerPed::DrawTriangleForMouseRecruitPed(void) {
+	if (TheCamera.m_uiTransitionState != 0)
+		return;
+
+	RwRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, reinterpret_cast<void*>(TRUE));
+	RwRenderStateSet(rwRENDERSTATESRCBLEND, reinterpret_cast<void*>(rwBLENDSRCALPHA));
+	RwRenderStateSet(rwRENDERSTATEDESTBLEND, reinterpret_cast<void*>(rwBLENDINVSRCALPHA));
+	RwRenderStateSet(rwRENDERSTATEFOGENABLE, reinterpret_cast<void*>(FALSE));
+	RwRenderStateSet(rwRENDERSTATEZWRITEENABLE, reinterpret_cast<void*>(FALSE));
+	RwRenderStateSet(rwRENDERSTATEZTESTENABLE, reinterpret_cast<void*>(FALSE));
+
+	CPed* target = m_pThirdPersonMouseTarget;
+	if (target && OurPedCanSeeThisOne(target, true)) {
+		RwV3d in;
+		RwV3d out;
+		float w, h;
+
+		in.x = target->GetPosition().x;
+		in.y = target->GetPosition().y;
+		in.z = target->GetPosition().z;
+		target->m_pedIK.GetComponentPosition(in, 1);
+		in.z += 1.0f;
+
+		float health = target->m_fHealth / 100.0f;
+		CRGBA col = CRGBA((1.0f - health) * 255, health * 255, 0, 150);
+
+		if (health <= 0.0f)
+			col = CRGBA(0, 0, 0, 255);
+
+		if (CSprite::CalcScreenCoors(in, &out, &w, &h, false)) {
+			auto rotateVertices = [](CVector2D* rect, float x, float y, float angle) {
+				float xold, yold;
+				float _cos = cosf(angle);
+				float _sin = sinf(angle);
+				for (unsigned int i = 0; i < 4; i++) {
+					xold = rect[i].x;
+					yold = rect[i].y;
+					rect[i].x = x + (xold - x) * _cos + (yold - y) * _sin;
+					rect[i].y = y - (xold - x) * _sin + (yold - y) * _cos;
+				}
+			};
+
+			auto drawTriangle = [&](float x, float y, float w, float h, CVector2D center, float angle, CRGBA const& col) {
+				CVector2D posn[4];
+				posn[1].x = x - (w * 0.5f); posn[1].y = y - (h * 0.5f); posn[0].x = x + (w * 0.5f); posn[0].y = y - (h * 0.5f);
+				posn[3].x = x; posn[3].y = y + (h * 0.5f);	posn[2].x = x; posn[2].y = y + (h * 0.5f);
+
+				rotateVertices(posn, x + (w * center.x), y + (h * center.y), angle);
+				CSprite2d::Draw2DPolygon(posn[0].x, posn[0].y, posn[1].x, posn[1].y, posn[2].x, posn[2].y, posn[3].x, posn[3].y, CRGBA(col));
+			};
+
+			float dist = Clamp(w / 128.0f, 0.0f, 1.0f);
+			drawTriangle(out.x, out.y, SCREEN_SCALE_Y(20.0f * dist), SCREEN_SCALE_Y(10.0f * dist), CVector2D(0.0f, 0.0f), DEGTORAD(180.0f), col);
+		}
+	}
+}
 #endif

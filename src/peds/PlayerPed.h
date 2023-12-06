@@ -85,6 +85,10 @@ public:
 	bool bIsAutoAiming;
 #endif
 
+#ifdef TRIANGLE_FOR_MOUSE_RECRUIT
+	CPed* m_pThirdPersonMouseTarget;
+#endif
+
 	CPlayerPed();
 	~CPlayerPed();
 	void SetMoveAnim() { };
@@ -164,6 +168,11 @@ public:
 #endif
 
 	static const uint32 nSaveStructSize;
+
+#ifdef TRIANGLE_FOR_MOUSE_RECRUIT
+	void Find3rdPersonMouseTarget(void);
+	void DrawTriangleForMouseRecruitPed(void);
+#endif
 };
 
 //VALIDATE_SIZE(CPlayerPed, 0x5F0);

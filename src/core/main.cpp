@@ -1471,6 +1471,14 @@ RenderEffects(void)
 	CPointLights::RenderFogEffect();
 	CMovingThings::Render();
 	CRenderer::RenderFirstPersonVehicle();
+
+#ifdef TRIANGLE_FOR_MOUSE_RECRUIT
+	if (!CReplay::IsPlayingBack() && !CPad::GetPad(0)->DisablePlayerControls) {
+		auto playa = FindPlayerPed();
+		playa->DrawTriangleForMouseRecruitPed();
+	}
+#endif
+
 	POP_RENDERGROUP();
 }
 

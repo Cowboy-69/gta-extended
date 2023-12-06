@@ -63,6 +63,7 @@
 	#define FIRING_AND_AIMING
 	#define FIRST_PERSON
 
+	#define TRIANGLE_FOR_MOUSE_RECRUIT
 	#define IMPROVED_MENU_AND_INPUT
 	//#define NEW_MENU
 	#define EX_RADIO_ICONS
