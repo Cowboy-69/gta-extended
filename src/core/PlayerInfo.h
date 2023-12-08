@@ -58,6 +58,9 @@ public:
 	char m_aSkinName[32];
 	RwTexture *m_pSkinTexture;
 #endif
+#ifdef EX_CAN_SHUT_DOWN_CAR
+	uint32 m_nTimeVehicleEngineOff;
+#endif
 
 	void MakePlayerSafe(bool);
 	void AwardMoneyForExplosion(CVehicle *vehicle);	

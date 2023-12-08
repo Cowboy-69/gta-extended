@@ -488,6 +488,28 @@ CPed::FinishedAttackCB(CAnimBlendAssociation *attackAssoc, void *arg)
 		ped->ClearAttack();
 }
 
+#ifdef EX_RELOAD // FinishedReloadCB
+void
+CPed::FinishedReloadCB(CAnimBlendAssociation *reloadAssoc, void *arg)
+{
+	CPed *ped = (CPed*)arg;
+	CWeaponInfo *weapon = CWeaponInfo::GetWeaponInfo(ped->GetWeapon()->m_eWeaponType);
+	
+	if (!ped->IsPlayer())
+		return;
+
+	if (ped->DyingOrDead())
+		return;
+
+	if (ped->bIsAimingGun && CPad::GetPad(0)->GetTarget()) {
+		CAnimBlendAssociation *fireAssoc = CAnimManager::BlendAnimation(ped->GetClump(), ASSOCGRP_STD, weapon->m_AnimToPlay, 8.0f);
+		fireAssoc->SetFinishCallback(FinishedAttackCB, ped);
+	} else if (!CPad::GetPad(0)->GetTarget()) {
+		ped->ClearPointGunAt();
+	}
+}
+#endif
+
 uint8
 CPed::CheckForPointBlankPeds(CPed *pedToVerify)
 {
@@ -737,7 +759,11 @@ CPed::Attack(void)
 					CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ourWeapon->m_Anim2ToPlay, 8.0f);
 			}
 #ifdef VC_PED_PORTS
+#ifdef EX_AIMING // Continue aiming after firing while aiming
+		} else if (IsPlayer() && (m_pPointGunAt || CPad::GetPad(0)->GetTarget()) && bIsAimingGun && GetWeapon()->m_eWeaponState != WEAPONSTATE_RELOADING) {
+#else
 		} else if (IsPlayer() && m_pPointGunAt && bIsAimingGun && GetWeapon()->m_eWeaponState != WEAPONSTATE_RELOADING) {
+#endif
 			weaponAnimAssoc->SetCurrentTime(ourWeapon->m_fAnimLoopEnd);
 			weaponAnimAssoc->flags &= ~ASSOC_RUNNING;
 			SetPointGunAt(m_pPointGunAt);
@@ -2065,10 +2091,24 @@ CPed::InflictDamage(CEntity *damagedBy, eWeaponType method, float damage, ePedPi
 	int random;
 
 	if (player == this) {
+#ifdef EX_CHEATS // INVINCIBLE
+		if (player->bInvincibleCheat)
+			return false;
+#endif
+
 		if (!player->m_bCanBeDamaged)
 			return false;
 
 		player->AnnoyPlayerPed(false);
+
+#ifdef EX_VIBRATION // InflictDamage
+		CPad::GetPad(0)->StartShake(100, 55, 55);
+#endif
+
+#ifdef EX_FEATURES_INI // HealthRegenerationUpToHalf
+		if (bHealthRegenerationUpToHalf)
+			FindPlayerPed()->m_nHealthRegenerationTime = CTimer::GetTimeInMilliseconds();
+#endif
 	}
 
 	if (DyingOrDead())
@@ -2222,7 +2262,16 @@ CPed::InflictDamage(CEntity *damagedBy, eWeaponType method, float damage, ePedPi
 					} else
 						dieAnim = ANIM_STD_KO_FRONT;
 
+#ifdef EX_DAMAGE // Make headshots possible with non-heavy weapons
+					if (pedPiece == PEDPIECE_HEAD && !IsPlayer()/* && CharCreatedBy != MISSION_CHAR*/) {
+						willLinger = true;
+						headShot = true;
+					} else {
+						willLinger = false;
+					}
+#else
 					willLinger = false;
+#endif
 				} else {
 					switch (pedPiece) {
 						case PEDPIECE_TORSO:
@@ -3061,7 +3110,11 @@ CPed::KillPedWithCar(CVehicle *car, float impulse)
 			} else {
 				shakeFreq = 250.0f;
 			}
+#ifdef EX_VIBRATION // KillPedWithCar
+			CPad::GetPad(0)->StartShake(40000 / shakeFreq, shakeFreq, shakeFreq);
+#else
 			CPad::GetPad(0)->StartShake(40000 / shakeFreq, shakeFreq);
+#endif
 		}
 		bIsStanding = false;
 		damageDir = GetLocalDirection(-m_vecMoveSpeed);

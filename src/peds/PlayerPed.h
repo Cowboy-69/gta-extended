@@ -43,6 +43,9 @@ public:
 #ifdef VC_PED_PORTS
 	static bool bDontAllowWeaponChange;
 #endif
+#ifdef EX_FEATURES_INI // HealthRegenerationUpToHalf 
+	int m_nHealthRegenerationTime;
+#endif
 
 	CPlayerPed();
 	~CPlayerPed();
@@ -88,6 +91,11 @@ public:
 #ifdef COMPATIBLE_SAVES
 	virtual void Save(uint8*& buf);
 	virtual void Load(uint8*& buf);
+#endif
+
+#ifdef EX_CHEATS
+	static bool bInvincibleCheat;
+	static bool bNoWantedCheat;
 #endif
 
 	static const uint32 nSaveStructSize;

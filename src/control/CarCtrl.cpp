@@ -532,10 +532,18 @@ CCarCtrl::GenerateOneRandomCar()
 	case NINES:
 	case GANG8:
 	case GANG9:
+#ifdef EX_CHEATS // AIRWAYS
+		pVehicle->SetStatus(CAutomobile::bAirWaysCheat ? STATUS_PHYSICS : STATUS_SIMPLE);
+#else
 		pVehicle->SetStatus(STATUS_SIMPLE);
+#endif
 		break;
 	case COPS:
+#ifdef EX_CHEATS // AIRWAYS
+		pVehicle->SetStatus((pVehicle->AutoPilot.m_nCarMission == MISSION_CRUISE && !CAutomobile::bAirWaysCheat) ? STATUS_SIMPLE : STATUS_PHYSICS);
+#else
 		pVehicle->SetStatus((pVehicle->AutoPilot.m_nCarMission == MISSION_CRUISE) ? STATUS_SIMPLE : STATUS_PHYSICS);
+#endif
 		pVehicle->ChangeLawEnforcerState(1);
 		break;
 	default:

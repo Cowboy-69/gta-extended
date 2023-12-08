@@ -33,6 +33,9 @@ public:
 	static void LoadPedPathNode(const char *line, int id, int node);
 	static void LoadCarPathNode(const char *line, int id, int node);
 	static void Load2dEffect(const char *line);
+#ifdef EX_VEHICLE_LOADER
+	static void LoadAnotherVehicleObject(const char* line);
+#endif
 
 	static void LoadScene(const char *filename);
 	static void LoadObjectInstance(const char *line);

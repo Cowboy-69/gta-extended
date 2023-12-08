@@ -1733,6 +1733,11 @@ int8 CRunningScript::ProcessCommands900To999(int32 command)
 			script_assert(pInfo->GetModelType() == MITYPE_VEHICLE);
 			CVehicleModelInfo* pVehicleInfo = (CVehicleModelInfo*)pInfo;
 			if (pVehicleInfo->m_vehicleType == VEHICLE_TYPE_CAR) {
+#ifdef EX_VEHICLE_LOADER
+				if (model >= MI_FIRST_NEW_VEHICLE)
+					model = -1;
+				else
+#endif
 				switch (model) {
 				case MI_LANDSTAL:
 				case MI_LINERUN:

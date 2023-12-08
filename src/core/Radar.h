@@ -146,6 +146,9 @@ public:
 	static CSprite2d *RadarSprites[RADAR_SPRITE_COUNT];
 	static float cachedCos;
 	static float cachedSin;
+#ifdef EX_RADAR_ZOOM
+	static int32 RadarZoomOutTimer;
+#endif
 #ifdef MENU_MAP
 	static CSprite2d WaypointSprite;
 	static int TargetMarkerId;
@@ -172,6 +175,10 @@ public:
 	static void DrawRadarSection(int32 x, int32 y);
 	static void DrawRadarSprite(uint16 sprite, float x, float y, uint8 alpha);
 	static void DrawRotatingRadarSprite(CSprite2d* sprite, float x, float y, float angle, int32 alpha);
+#ifdef EX_GPS
+	static void DrawGPS();
+	static void Setup2dVertex(RwIm2DVertex& vertex, float x, float y, CRGBA color);
+#endif
 	static int32 GetActualBlipArrayIndex(int32 i);
 	static int32 GetNewUniqueBlipIndex(int32 i);
 	static uint32 GetRadarTraceColour(uint32 color, bool bright);

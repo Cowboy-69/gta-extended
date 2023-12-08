@@ -336,6 +336,22 @@ void re3_debug(const char *format, ...);
 void re3_trace(const char *filename, unsigned int lineno, const char *func, const char *format, ...);
 void re3_assert(const char *expr, const char *filename, unsigned int lineno, const char *func);
 void re3_usererror(const char *format, ...);
+#ifdef EX_UTILS
+float InterpFloat(float currentValue, float newValue, float interpSpeed);
+CVector InterpVector(CVector currentValue, CVector newValue, float interpSpeed);
+#endif
+#ifdef EX_FEATURES_INI
+extern bool bVehiclesDontCatchFireWhenTurningOver;
+extern bool bHealthRegenerationUpToHalf;
+extern bool bWantedStarsHideOnScreenWhenThereIsNoSearch;
+extern bool bRemoveMoneyZerosInTheHud;
+extern bool bPlayerDoesntBounceAwayFromMovingCar;
+extern bool bCameraShakeInVehicleAtHighSpeed;
+extern bool bMilitaryFiringFromTankAtPlayer;
+extern bool bDisableBulletTraces;
+extern bool bRemoveLightCubesFromCars;
+extern CRGBA WaypointColor;
+#endif
 
 #define DEBUGBREAK() __debugbreak();
 

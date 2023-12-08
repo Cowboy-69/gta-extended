@@ -184,6 +184,48 @@ CustomFrontendOptionsPopulate(void)
 #define MINI_CASE_SENSITIVE
 #include "ini.h"
 
+#ifdef EX_FEATURES_INI
+mINI::INIFile featuresIni("features.ini");
+mINI::INIStructure featuresCfg;
+
+uint8 bInitFeaturesIni = featuresIni.read(featuresCfg);
+
+uint16 ReadAndGetFeature(const char* key)
+{
+	mINI::INIMap<std::string> section = featuresCfg.get("Features");
+	if (section.has(key)) {
+		char* endPtr;
+		return strtol(section.get(key).c_str(), &endPtr, 0);
+	}
+	return 0;
+}
+
+CRGBA ReadAndGetWaypointColor(const char* key)
+{
+	CRGBA color = CRGBA(180, 24, 24, 255);
+
+	mINI::INIMap<std::string> section = featuresCfg.get("Features");
+	if (section.has(key)) {
+		uint32 red, green, blue;
+		sscanf(section.get(key).c_str(), "%i, %i, %i", &red, &green, &blue);
+		color = CRGBA(red, green, blue, 255);
+		return color;
+	}
+	return color;
+}
+
+extern bool bVehiclesDontCatchFireWhenTurningOver = ReadAndGetFeature("VehiclesDontCatchFireWhenTurningOver");
+extern bool bHealthRegenerationUpToHalf = ReadAndGetFeature("HealthRegenerationUpToHalf");
+extern bool bWantedStarsHideOnScreenWhenThereIsNoSearch = ReadAndGetFeature("WantedStarsHideOnScreenWhenThereIsNoSearch");
+extern bool bRemoveMoneyZerosInTheHud = ReadAndGetFeature("RemoveMoneyZerosInTheHud");
+extern bool bPlayerDoesntBounceAwayFromMovingCar = ReadAndGetFeature("PlayerDoesntBounceAwayFromMovingCar");
+extern bool bCameraShakeInVehicleAtHighSpeed = ReadAndGetFeature("CameraShakeInVehicleAtHighSpeed");
+extern bool bMilitaryFiringFromTankAtPlayer = ReadAndGetFeature("MilitaryFiringFromTankAtPlayer");
+extern bool bDisableBulletTraces = ReadAndGetFeature("DisableBulletTraces");
+extern bool bRemoveLightCubesFromCars = ReadAndGetFeature("RemoveLightCubesFromCars");
+CRGBA WaypointColor = ReadAndGetWaypointColor("WaypointColorRGB");
+#endif
+
 mINI::INIFile ini("re3.ini");
 mINI::INIStructure cfg;
 
@@ -488,7 +530,30 @@ bool LoadINISettings()
 	ReadIniIfExists("Controller", "HorizantalMouseSens", &TheCamera.m_fMouseAccelHorzntl);
 	ReadIniIfExists("Controller", "InvertMouseVertically", &MousePointerStateHelper.bInvertVertically);
 	ReadIniIfExists("Controller", "DisableMouseSteering", &CVehicle::m_bDisableMouseSteering);
+#ifdef EX_CONTROL // reVC.ini
+	ReadIniIfExists("Controller", "InvertVertically", &FrontEndMenuManager.m_PrefsInvertVertically);
+	ReadIniIfExists("Controller", "Autoaim", &FrontEndMenuManager.m_PrefsAutoaim);
+	ReadIniIfExists("Controller", "LeftStickDeadzone", &FrontEndMenuManager.m_PrefsLeftStickDeadzone);
+	ReadIniIfExists("Controller", "RightStickDeadzone", &FrontEndMenuManager.m_PrefsRightStickDeadzone);
+	ReadIniIfExists("Controller", "VibrationForce", &FrontEndMenuManager.m_PrefsVibrationForce);
+	ReadIniIfExists("Controller", "PadLookSensX", &FrontEndMenuManager.m_PrefsPadLookSensX);
+	ReadIniIfExists("Controller", "PadAimSensX", &FrontEndMenuManager.m_PrefsPadAimSensX);
+	ReadIniIfExists("Controller", "PadLookSensY", &FrontEndMenuManager.m_PrefsPadLookSensY);
+	ReadIniIfExists("Controller", "PadAimSensY", &FrontEndMenuManager.m_PrefsPadAimSensY);
+	ReadIniIfExists("Controller", "MouseLookSensX", &FrontEndMenuManager.m_PrefsMouseLookSensX);
+	ReadIniIfExists("Controller", "MouseAimSensX", &FrontEndMenuManager.m_PrefsMouseAimSensX);
+	ReadIniIfExists("Controller", "MouseLookSensY", &FrontEndMenuManager.m_PrefsMouseLookSensY);
+	ReadIniIfExists("Controller", "MouseAimSensY", &FrontEndMenuManager.m_PrefsMouseAimSensY);
+#endif
+#ifdef EX_GPS // reVC.ini
+	ReadIniIfExists("Display", "GPS", &FrontEndMenuManager.m_PrefsGPS);
+#else
 	ReadIniIfExists("Controller", "Vibration", &FrontEndMenuManager.m_PrefsUseVibration);
+#endif
+#ifdef EX_FIRST_PERSON // reVC.ini
+	ReadIniIfExists("Controller", "FOV_FirstPerson", &FrontEndMenuManager.m_PrefsFOV_FP);
+	ReadIniIfExists("Controller", "AutocenterCamInVeh_FirstPerson", &FrontEndMenuManager.m_PrefsAutocenterCamInVeh_FP);
+#endif
 	ReadIniIfExists("Audio", "SfxVolume", &FrontEndMenuManager.m_PrefsSfxVolume);
 	ReadIniIfExists("Audio", "MusicVolume", &FrontEndMenuManager.m_PrefsMusicVolume);
 	ReadIniIfExists("Audio", "Radio", &FrontEndMenuManager.m_PrefsRadioStation);
@@ -520,6 +585,9 @@ bool LoadINISettings()
 #endif
 #ifdef NEW_RENDERER
 	ReadIniIfExists("Rendering", "NewRenderer", &gbNewRenderer);
+#endif
+#ifdef EX_MISC // Saving the Max FPS parameter
+	ReadIniIfExists("Rendering", "MaxFPS", &RsGlobal.maxFPS);
 #endif
 
 #ifdef PROPER_SCALING
@@ -590,7 +658,30 @@ void SaveINISettings()
 	StoreIni("Controller", "HorizantalMouseSens", TheCamera.m_fMouseAccelHorzntl);
 	StoreIni("Controller", "InvertMouseVertically", MousePointerStateHelper.bInvertVertically);
 	StoreIni("Controller", "DisableMouseSteering", CVehicle::m_bDisableMouseSteering);
+#ifdef EX_CONTROL // reVC.ini
+	StoreIni("Controller", "InvertVertically", FrontEndMenuManager.m_PrefsInvertVertically);
+	StoreIni("Controller", "Autoaim", FrontEndMenuManager.m_PrefsAutoaim);
+	StoreIni("Controller", "LeftStickDeadzone", FrontEndMenuManager.m_PrefsLeftStickDeadzone);
+	StoreIni("Controller", "RightStickDeadzone", FrontEndMenuManager.m_PrefsRightStickDeadzone);
+	StoreIni("Controller", "VibrationForce", FrontEndMenuManager.m_PrefsVibrationForce);
+	StoreIni("Controller", "PadLookSensX", FrontEndMenuManager.m_PrefsPadLookSensX);
+	StoreIni("Controller", "PadAimSensX", FrontEndMenuManager.m_PrefsPadAimSensX);
+	StoreIni("Controller", "PadLookSensY", FrontEndMenuManager.m_PrefsPadLookSensY);
+	StoreIni("Controller", "PadAimSensY", FrontEndMenuManager.m_PrefsPadAimSensY);
+	StoreIni("Controller", "MouseLookSensX", FrontEndMenuManager.m_PrefsMouseLookSensX);
+	StoreIni("Controller", "MouseAimSensX", FrontEndMenuManager.m_PrefsMouseAimSensX);
+	StoreIni("Controller", "MouseLookSensY", FrontEndMenuManager.m_PrefsMouseLookSensY);
+	StoreIni("Controller", "MouseAimSensY", FrontEndMenuManager.m_PrefsMouseAimSensY);
+#endif
+#ifdef EX_GPS // reVC.ini
+	StoreIni("Display", "GPS", FrontEndMenuManager.m_PrefsGPS);
+#else
 	StoreIni("Controller", "Vibration", FrontEndMenuManager.m_PrefsUseVibration);
+#endif
+#ifdef EX_FIRST_PERSON // reVC.ini
+	StoreIni("Controller", "FOV_FirstPerson", FrontEndMenuManager.m_PrefsFOV_FP);
+	StoreIni("Controller", "AutocenterCamInVeh_FirstPerson", FrontEndMenuManager.m_PrefsAutocenterCamInVeh_FP);
+#endif
 	StoreIni("Audio", "SfxVolume", FrontEndMenuManager.m_PrefsSfxVolume);
 	StoreIni("Audio", "MusicVolume", FrontEndMenuManager.m_PrefsMusicVolume);
 	StoreIni("Audio", "Radio", FrontEndMenuManager.m_PrefsRadioStation);
@@ -622,6 +713,9 @@ void SaveINISettings()
 #endif
 #ifdef NEW_RENDERER
 	StoreIni("Rendering", "NewRenderer", gbNewRenderer);
+#endif
+#ifdef EX_MISC // Saving the Max FPS parameter
+	StoreIni("Rendering", "MaxFPS", RsGlobal.maxFPS);
 #endif
 
 #ifdef PROPER_SCALING	
@@ -686,6 +780,11 @@ void OnlyRenderWheelsCheat();
 void ChittyChittyBangBangCheat();
 void StrongGripCheat();
 void NastyLimbsCheat();
+#ifdef EX_CHEATS
+void InvincibleCheat();
+void AirWaysCheat();
+void NoWantedCheat();
+#endif
 
 DebugMenuEntry *carCol1;
 DebugMenuEntry *carCol2;
@@ -698,12 +797,14 @@ SpawnCar(int id)
 	CStreaming::LoadAllRequestedModels(false);
 	if(CStreaming::HasModelLoaded(id)){
 		playerpos = FindPlayerCoors();
+#ifndef EX_MISC // Vehicles created with the help of cheat codes are spawned in front of the player
 		int node;
 		if(!CModelInfo::IsBoatModel(id)){
 			node = ThePaths.FindNodeClosestToCoors(playerpos, 0, 100.0f, false, false);
 			if(node < 0)
 				return;
 		}
+#endif
 
 		CVehicle *v;
 		if(CModelInfo::IsBoatModel(id))
@@ -717,6 +818,11 @@ SpawnCar(int id)
 		if(carCol2)
 			DebugMenuEntrySetAddress(carCol2, &v->m_currentColour2);
 
+#ifdef EX_MISC // Vehicles created with the help of cheat codes are spawned in front of the player
+		v->SetPosition(FindPlayerPed()->GetPosition() + CVector(0.0f, 0.0f, 2.5f) + FindPlayerPed()->GetForward() * 5.0f);
+		CVector leftVector = -FindPlayerPed()->GetRight();
+		v->SetOrientation(0.0f, 0.0f, leftVector.Heading());
+#else
 		if(CModelInfo::IsBoatModel(id))
 			v->SetPosition(TheCamera.GetPosition() + TheCamera.GetForward()*15.0f);
 		else
@@ -724,6 +830,7 @@ SpawnCar(int id)
 
 		v->GetMatrix().GetPosition().z += 4.0f;
 		v->SetOrientation(0.0f, 0.0f, 3.49f);
+#endif
 		v->SetStatus(STATUS_ABANDONED);
 		v->m_nDoorLock = CARLOCK_UNLOCKED;
 		CWorld::Add(v);
@@ -914,7 +1021,36 @@ DebugMenuPopulate(void)
 		DebugMenuAddCmd("Cheats", "Chitty chitty bang bang", ChittyChittyBangBangCheat);
 		DebugMenuAddCmd("Cheats", "Strong grip", StrongGripCheat);
 		DebugMenuAddCmd("Cheats", "Nasty limbs", NastyLimbsCheat);
+#ifdef EX_CHEATS
+		DebugMenuAddCmd("Cheats", "Invincible", InvincibleCheat);
+		DebugMenuAddCmd("Cheats", "AirWays", AirWaysCheat);
+		DebugMenuAddCmd("Cheats", "No wanted", NoWantedCheat);
+#endif
 
+#ifdef EX_VEHICLE_LOADER
+		static int spawnCarId = MI_LANDSTAL;
+		e = DebugMenuAddVar("Spawn", "Select default car name", &spawnCarId, nil, 1, MI_LANDSTAL, MI_GHOST, carnames);
+		DebugMenuEntrySetWrap(e, true);
+		DebugMenuAddCmd("Spawn", "Spawn default car", [](){
+			if(spawnCarId == MI_TRAIN ||
+			   spawnCarId == MI_CHOPPER ||
+			   spawnCarId == MI_AIRTRAIN ||
+			   spawnCarId == MI_DEADDODO ||
+			   spawnCarId == MI_ESCAPE)
+				return;
+			SpawnCar(spawnCarId);
+		});
+
+		static int spawnCarID = MI_FIRST_NEW_VEHICLE;
+		e = DebugMenuAddVar("Spawn", "Select new car ID", &spawnCarID, nil, 1, MI_FIRST_NEW_VEHICLE, MI_LAST_NEW_VEHICLE, nil);
+		DebugMenuEntrySetWrap(e, true);
+		DebugMenuAddCmd("Spawn", "Spawn new car", []() { 
+			if (!CModelInfo::GetModelInfo(spawnCarID))
+				return;
+
+			SpawnCar(spawnCarID); 
+		});
+#else
 		static int spawnCarId = MI_LANDSTAL;
 		e = DebugMenuAddVar("Spawn", "Spawn Car ID", &spawnCarId, nil, 1, MI_LANDSTAL, MI_GHOST, carnames);
 		DebugMenuEntrySetWrap(e, true);
@@ -927,6 +1063,7 @@ DebugMenuPopulate(void)
 				return;
 			SpawnCar(spawnCarId);
 		});
+#endif
 		static uint8 dummy;
 		carCol1 = DebugMenuAddVar("Spawn", "First colour", &dummy, nil, 1, 0, 255, nil);
 		carCol2 = DebugMenuAddVar("Spawn", "Second colour", &dummy, nil, 1, 0, 255, nil);
@@ -1087,9 +1224,11 @@ extern bool gbRenderWorld2;
 
 		extern bool PrintDebugCode;
 		extern int16 DebugCamMode;
+#ifndef EX_CONTROL // Remove free cam and mouse cam switching
 		DebugMenuAddVarBool8("Cam", "Use mouse Cam", &CCamera::m_bUseMouse3rdPerson, nil);
 #ifdef FREE_CAM
 		DebugMenuAddVarBool8("Cam", "Free Cam", &CCamera::bFreeCam, nil);
+#endif
 #endif
 		DebugMenuAddVarBool8("Cam", "Print Debug Code", &PrintDebugCode, nil);
 		DebugMenuAddVar("Cam", "Cam Mode", &DebugCamMode, nil, 1, 0, CCam::MODE_EDITOR, nil);
@@ -1230,4 +1369,35 @@ void re3_usererror(const char *format, ...)
 
 #ifdef VALIDATE_SAVE_SIZE
 int32 _saveBufCount;
+#endif
+
+#ifdef EX_UTILS
+float InterpFloat(float currentValue, float newValue, float interpSpeed)
+{
+	if (currentValue == newValue)
+		return currentValue;
+
+	float distance = newValue - currentValue;
+
+	float deltaSeconds = CTimer::GetTimeStepInSeconds();
+	float deltaSpeed = deltaSeconds * interpSpeed;
+
+	return currentValue + distance * deltaSpeed;
+}
+
+CVector InterpVector(CVector currentValue, CVector newValue, float interpSpeed)
+{
+	if (currentValue == newValue)
+		return currentValue;
+
+	CVector distance = newValue - currentValue;
+
+	float distanceMagnitude = distance.Magnitude();
+
+	float deltaSeconds = CTimer::GetTimeStepInSeconds();
+	float deltaSpeed = deltaSeconds * interpSpeed;
+
+	CVector deltaNormal = distance / distanceMagnitude;
+	return currentValue + deltaNormal * deltaSpeed;
+}
 #endif

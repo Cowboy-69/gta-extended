@@ -565,6 +565,11 @@ cAudioManager::SetupSuspectLastSeenReport()
 					main_color = gCarColourTable[color1][1];
 					color_pre_modifier = gCarColourTable[color1][0];
 					color_post_modifier = gCarColourTable[color1][2];
+#ifdef EX_VEHICLE_LOADER
+					if (veh->GetModelIndex() >= MI_FIRST_NEW_VEHICLE)
+						sample = veh->GetModelInfo()->m_policeRadioIndex;
+					else
+#endif
 					switch (veh->GetModelIndex()) {
 #ifdef FIX_BUGS
 					case MI_COLUMB:

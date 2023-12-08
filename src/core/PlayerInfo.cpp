@@ -68,6 +68,9 @@ CPlayerInfo::Clear(void)
 	m_bGetOutOfHospitalFree = false;
 	m_nPreviousTimeRewardedForExplosion = 0;
 	m_nExplosionsSinceLastReward = 0;
+#ifdef EX_CAN_SHUT_DOWN_CAR
+	m_nTimeVehicleEngineOff = 0;
+#endif
 }
 
 void
@@ -140,7 +143,11 @@ CPlayerInfo::Process(void)
 
 						// This condition will always return true, else block was probably WIP Miami code.
 						if (veh->m_vehType != VEHICLE_TYPE_BIKE || veh->m_nDoorLock == CARLOCK_LOCKED_PLAYER_INSIDE) {
+#ifdef EX_CHEATS // INVINCIBLE: Making it possible to get out of a blown up car
+							if ((veh->GetStatus() != STATUS_WRECKED || m_pPed->bInvincibleCheat) && veh->GetStatus() != STATUS_TRAIN_MOVING && veh->m_nDoorLock != CARLOCK_LOCKED_PLAYER_INSIDE) {
+#else
 							if (veh->GetStatus() != STATUS_WRECKED && veh->GetStatus() != STATUS_TRAIN_MOVING && veh->m_nDoorLock != CARLOCK_LOCKED_PLAYER_INSIDE) {
+#endif
 								if (veh->m_vecMoveSpeed.Magnitude() < 0.17f && CTimer::GetTimeScale() >= 0.5f && !veh->bIsInWater) {
 									m_pPed->SetObjective(OBJECTIVE_LEAVE_CAR, veh);
 								}
@@ -257,7 +264,11 @@ CPlayerInfo::Process(void)
 			}
 		}
 	}
+#ifdef EX_FEATURES_INI // VehiclesDontCatchFireWhenTurningOver
+	if (!bVehiclesDontCatchFireWhenTurningOver && !(CTimer::GetFrameCounter() & 31)) {
+#else
 	if (!(CTimer::GetFrameCounter() & 31)) {
+#endif
 		CVehicle *veh = FindPlayerVehicle();
 		if (veh && m_pPed->bInVehicle && veh->GetUp().z < 0.0f
 			&& veh->m_vecMoveSpeed.Magnitude() < 0.05f && veh->IsCar() && !veh->bIsInWater) {
@@ -292,6 +303,15 @@ CPlayerInfo::Process(void)
 	} else {
 		CStats::DistanceTravelledOnFoot += FindPlayerPed()->m_fDistanceTravelled;
 	}
+
+#ifdef EX_CAN_SHUT_DOWN_CAR // Implementation
+	if (m_pPed->InVehicle()) {
+		if (CPad::GetPad(0)->GetExitVehicle() && m_nTimeVehicleEngineOff < CTimer::GetTimeInMilliseconds())
+			m_nTimeVehicleEngineOff = CTimer::GetTimeInMilliseconds() + 500;
+		else if (!CPad::GetPad(0)->GetExitVehicle())
+			m_nTimeVehicleEngineOff = 0;
+	}
+#endif
 }
 
 bool

@@ -53,6 +53,10 @@ RwObject *GetCurrentAtomicObjectCB(RwObject *object, void *data);
 
 bool CAutomobile::m_sAllTaxiLights;
 
+#ifdef EX_CHEATS
+bool CAutomobile::bAirWaysCheat;
+#endif
+
 const uint32 CAutomobile::nSaveStructSize =
 #ifdef COMPATIBLE_SAVES
 	1448;
@@ -77,7 +81,17 @@ CAutomobile::CAutomobile(int32 id, uint8 CreatedBy)
 
 	SetModelIndex(id);
 
+#ifdef EX_VEHICLE_LOADER
+	if (GetModelIndex() >= MI_FIRST_NEW_VEHICLE) {
+		pVehicleSample = &mi->vehicleSampleData;
+		pHandling = &mi->handlingData;
+	} else {
+		pVehicleSample = nullptr;
+		pHandling = mod_HandlingManager.GetHandlingData((tVehicleType)mi->m_handlingId);
+	}
+#else
 	pHandling = mod_HandlingManager.GetHandlingData((tVehicleType)mi->m_handlingId);
+#endif
 
 	m_auto_unused1 = 20.0f;
 	m_auto_unused2 = 0;
@@ -402,7 +416,14 @@ CAutomobile::ProcessControl(void)
 		m_fBrakePedal = 0.2f;
 		bIsHandbrakeOn = false;
 
+#ifdef EX_VEHICLE // Steer angle save after exit from vehicle
+		if (m_fSteerAngle < 0.0f)
+			m_fSteerAngle = Max(m_fSteerAngle, -DEGTORAD(pHandling->fSteeringLock));
+		else
+			m_fSteerAngle = Min(m_fSteerAngle, DEGTORAD(pHandling->fSteeringLock));
+#else
 		m_fSteerAngle = 0.0f;
+#endif
 		m_fGasPedal = 0.0f;
 		m_nCarHornTimer = 0;
 		break;
@@ -411,7 +432,14 @@ CAutomobile::ProcessControl(void)
 		m_fBrakePedal = 0.05f;
 		bIsHandbrakeOn = true;
 
+#ifdef EX_VEHICLE // Steer angle save after exit from vehicle
+		if (m_fSteerAngle < 0.0f)
+			m_fSteerAngle = Max(m_fSteerAngle, -DEGTORAD(pHandling->fSteeringLock));
+		else
+			m_fSteerAngle = Min(m_fSteerAngle, DEGTORAD(pHandling->fSteeringLock));
+#else
 		m_fSteerAngle = 0.0f;
+#endif
 		m_fGasPedal = 0.0f;
 		m_nCarHornTimer = 0;
 		break;
@@ -420,7 +448,14 @@ CAutomobile::ProcessControl(void)
 		m_fBrakePedal = 1.0f;
 		bIsHandbrakeOn = true;
 
+#ifdef EX_VEHICLE // Steer angle save after exit from vehicle
+		if (m_fSteerAngle < 0.0f)
+			m_fSteerAngle = Max(m_fSteerAngle, -DEGTORAD(pHandling->fSteeringLock));
+		else
+			m_fSteerAngle = Min(m_fSteerAngle, DEGTORAD(pHandling->fSteeringLock));
+#else
 		m_fSteerAngle = 0.0f;
+#endif
 		m_fGasPedal = 0.0f;
 		m_nCarHornTimer = 0;
 		break;
@@ -432,6 +467,11 @@ CAutomobile::ProcessControl(void)
 	   Abs(m_vecMoveSpeed.x) < 0.05f &&
 	   Abs(m_vecMoveSpeed.y) < 0.05f)
 		m_vecTurnSpeed *= Pow(0.95f, CTimer::GetTimeStep());
+
+#ifdef EX_CHEATS // AIRWAYS
+	if (bAirWaysCheat && !bRenderScorched)
+		DoHoverAboveSurface();
+#endif
 
 	// Skip physics if object is found to have been static recently
 	bool skipPhysics = false;
@@ -765,7 +805,11 @@ CAutomobile::ProcessControl(void)
 			CVector wheelRight = Multiply3x3(GetMatrix(), CVector(c, s, 0.0f));
 
 			if(m_aWheelTimer[CARWHEEL_FRONT_LEFT] > 0.0f){
+#ifdef EX_VEHICLE_LOADER // HasFrontRearWheelDrive
+				if(mod_HandlingManager.HasFrontWheelDrive(pHandling))
+#else
 				if(mod_HandlingManager.HasFrontWheelDrive(pHandling->nIdentifier))
+#endif
 					fThrust = acceleration;
 				else
 					fThrust = 0.0f;
@@ -799,7 +843,11 @@ CAutomobile::ProcessControl(void)
 			}
 
 			if(m_aWheelTimer[CARWHEEL_FRONT_RIGHT] > 0.0f){
+#ifdef EX_VEHICLE_LOADER // HasFrontRearWheelDrive
+				if(mod_HandlingManager.HasFrontWheelDrive(pHandling))
+#else
 				if(mod_HandlingManager.HasFrontWheelDrive(pHandling->nIdentifier))
+#endif
 					fThrust = acceleration;
 				else
 					fThrust = 0.0f;
@@ -836,7 +884,11 @@ CAutomobile::ProcessControl(void)
 		// Process front wheels off ground
 
 		if(m_aWheelTimer[CARWHEEL_FRONT_LEFT] <= 0.0f){
+#ifdef EX_VEHICLE_LOADER // HasFrontRearWheelDrive
+			if(mod_HandlingManager.HasFrontWheelDrive(pHandling) && acceleration != 0.0f){
+#else
 			if(mod_HandlingManager.HasFrontWheelDrive(pHandling->nIdentifier) && acceleration != 0.0f){
+#endif
 				if(acceleration > 0.0f){
 					if(m_aWheelSpeed[CARWHEEL_FRONT_LEFT] < 2.0f)
 						m_aWheelSpeed[CARWHEEL_FRONT_LEFT] -= 0.2f;
@@ -850,7 +902,11 @@ CAutomobile::ProcessControl(void)
 			m_aWheelRotation[CARWHEEL_FRONT_LEFT] += m_aWheelSpeed[CARWHEEL_FRONT_LEFT];
 		}
 		if(m_aWheelTimer[CARWHEEL_FRONT_RIGHT] <= 0.0f){
+#ifdef EX_VEHICLE_LOADER // HasFrontRearWheelDrive
+			if(mod_HandlingManager.HasFrontWheelDrive(pHandling) && acceleration != 0.0f){
+#else
 			if(mod_HandlingManager.HasFrontWheelDrive(pHandling->nIdentifier) && acceleration != 0.0f){
+#endif
 				if(acceleration > 0.0f){
 					if(m_aWheelSpeed[CARWHEEL_FRONT_RIGHT] < 2.0f)
 						m_aWheelSpeed[CARWHEEL_FRONT_RIGHT] -= 0.2f;
@@ -880,7 +936,11 @@ CAutomobile::ProcessControl(void)
 #endif
 
 			if(m_aWheelTimer[CARWHEEL_REAR_LEFT] > 0.0f){
+#ifdef EX_VEHICLE_LOADER // HasFrontRearWheelDrive
+				if(mod_HandlingManager.HasRearWheelDrive(pHandling))
+#else
 				if(mod_HandlingManager.HasRearWheelDrive(pHandling->nIdentifier))
+#endif
 					fThrust = acceleration;
 				else
 					fThrust = 0.0f;
@@ -914,7 +974,11 @@ CAutomobile::ProcessControl(void)
 			}
 
 			if(m_aWheelTimer[CARWHEEL_REAR_RIGHT] > 0.0f){
+#ifdef EX_VEHICLE_LOADER // HasFrontRearWheelDrive
+				if(mod_HandlingManager.HasRearWheelDrive(pHandling))
+#else
 				if(mod_HandlingManager.HasRearWheelDrive(pHandling->nIdentifier))
+#endif
 					fThrust = acceleration;
 				else
 					fThrust = 0.0f;
@@ -951,7 +1015,11 @@ CAutomobile::ProcessControl(void)
 		// Process rear wheels off ground
 
 		if(m_aWheelTimer[CARWHEEL_REAR_LEFT] <= 0.0f){
+#ifdef EX_VEHICLE_LOADER // HasFrontRearWheelDrive
+			if(mod_HandlingManager.HasRearWheelDrive(pHandling) && acceleration != 0.0f){
+#else
 			if(mod_HandlingManager.HasRearWheelDrive(pHandling->nIdentifier) && acceleration != 0.0f){
+#endif
 				if(acceleration > 0.0f){
 					if(m_aWheelSpeed[CARWHEEL_REAR_LEFT] < 2.0f)
 						m_aWheelSpeed[CARWHEEL_REAR_LEFT] -= 0.2f;
@@ -965,7 +1033,11 @@ CAutomobile::ProcessControl(void)
 			m_aWheelRotation[CARWHEEL_REAR_LEFT] += m_aWheelSpeed[CARWHEEL_REAR_LEFT];
 		}
 		if(m_aWheelTimer[CARWHEEL_REAR_RIGHT] <= 0.0f){
+#ifdef EX_VEHICLE_LOADER // HasFrontRearWheelDrive
+			if(mod_HandlingManager.HasRearWheelDrive(pHandling) && acceleration != 0.0f){
+#else
 			if(mod_HandlingManager.HasRearWheelDrive(pHandling->nIdentifier) && acceleration != 0.0f){
+#endif
 				if(acceleration > 0.0f){
 					if(m_aWheelSpeed[CARWHEEL_REAR_RIGHT] < 2.0f)
 						m_aWheelSpeed[CARWHEEL_REAR_RIGHT] -= 0.2f;
@@ -1157,10 +1229,18 @@ CAutomobile::ProcessControl(void)
 			speed = Sqrt(speed);
 			if(suspShake > 0.0f){
 				uint8 freq = Min(200.0f*suspShake*speed*2000.0f/m_fMass + 100.0f, 250.0f);
+#ifdef EX_VIBRATION // Car suspension
+				CPad::GetPad(0)->StartShake(20000.0f * CTimer::GetTimeStep() / freq, freq, freq);
+#else
 				CPad::GetPad(0)->StartShake(20000.0f*CTimer::GetTimeStep()/freq, freq);
+#endif
 			}else{
 				uint8 freq = Min(200.0f*surfShake*speed*2000.0f/m_fMass + 40.0f, 150.0f);
+#ifdef EX_VIBRATION // Car suspension
+				CPad::GetPad(0)->StartShake(5000.0f * CTimer::GetTimeStep() / freq, freq, freq);
+#else
 				CPad::GetPad(0)->StartShake(5000.0f*CTimer::GetTimeStep()/freq, freq);
+#endif
 			}
 		}
 	}
@@ -1491,32 +1571,61 @@ CAutomobile::PreRender(void)
 	case MI_ENFORCER:
 		if(m_bSirenOrAlarm){
 			CVector pos1, pos2;
+#ifdef EX_PARTICLE // Second siren for Ambulance
+			CVector pos3, pos4; // Second siren
+			float forwardAngle = 0.0f;
+			float backwardAngle = 0.0f;
+#endif
 			uint8 r1, g1, b1;
 			uint8 r2, g2, b2;
 			uint8 r, g, b;
 
 			switch(GetModelIndex()){
 			case MI_FIRETRUCK:
+#ifdef EX_PARTICLE // Fix Firetruck particles
+				pos1 = CVector(0.9f, 3.18f, 1.45f);
+				pos2 = CVector(-0.9f, 3.18f, 1.45f);
+#else
 				pos1 = CVector(1.1f,  1.7f, 2.0f);
 				pos2 = CVector(-1.1f, 1.7f, 2.0f);
+#endif
 				r1 = 255; g1 = 0; b1 = 0;
 				r2 = 255; g2 = 255; b2 = 0;
 				break;
 			case MI_AMBULAN:
+#ifdef EX_PARTICLE // Fix Ambulance particles and second siren
+				forwardAngle = 0.35f;
+				backwardAngle = -0.1f;
+				pos1 = CVector(0.8f, 0.7f, 1.4f);
+				pos2 = CVector(-0.8f, 0.7f, 1.4f);
+				pos3 = CVector(0.65f, -3.86f, 1.45f);
+				pos4 = CVector(-0.65f, -3.86f, 1.45f);
+#else
 				pos1 = CVector(1.1f,  0.9f, 1.6f);
 				pos2 = CVector(-1.1f, 0.9f, 1.6f);
+#endif
 				r1 = 255; g1 = 0; b1 = 0;
 				r2 = 255; g2 = 255; b2 = 255;
 				break;
 			case MI_POLICE:
+#ifdef EX_PARTICLE // Fix Police particles
+				pos1 = CVector(0.6f, -0.4f, 0.95f);
+				pos2 = CVector(-0.6f, -0.4f, 0.95f);
+#else
 				pos1 = CVector(0.7f,  -0.4f, 1.0f);
 				pos2 = CVector(-0.7f, -0.4f, 1.0f);
+#endif
 				r1 = 255; g1 = 0; b1 = 0;
 				r2 = 0; g2 = 0; b2 = 255;
 				break;
 			case MI_ENFORCER:
+#ifdef EX_PARTICLE // Fix Enforcer particles
+				pos1 = CVector(0.6f, 1.01f, 1.45f);
+				pos2 = CVector(-0.6f, 1.01f, 1.45f);
+#else
 				pos1 = CVector(1.1f,  0.8f, 1.2f);
 				pos2 = CVector(-1.1f, 0.8f, 1.2f);
+#endif
 				r1 = 255; g1 = 0; b1 = 0;
 				r2 = 0; g2 = 0; b2 = 255;
 				break;
@@ -1560,6 +1669,97 @@ CAutomobile::PreRender(void)
 			pos1 = GetMatrix() * pos1;
 			pos2 = GetMatrix() * pos2;
 
+#ifdef EX_PARTICLE // Second siren for Ambulance
+			bool showAllSirens = true;
+
+			CVector posTwo = GetPosition();
+			CVector distBetweenCameraAndCar;
+			float cameraAngle = 0.0f;
+			if (GetModelIndex() == MI_AMBULAN) {
+				pos3 = GetMatrix() * pos3;
+				pos4 = GetMatrix() * pos4;
+
+				distBetweenCameraAndCar = GetPosition() - TheCamera.GetPosition();
+				distBetweenCameraAndCar.Normalise();
+				cameraAngle = DotProduct2D(GetForward(), distBetweenCameraAndCar);
+				showAllSirens = DotProduct(GetUp(), distBetweenCameraAndCar) < -0.5f || (cameraAngle < forwardAngle && cameraAngle > backwardAngle);
+
+				for (i = 0; i < 4; i++) {
+					uint8 sirenTimer = ((CTimer::GetTimeInMilliseconds() + (i << 6)) >> 8) & 3;
+					pos = (pos1 * i + pos2 * (3.0f - i)) / 3.0f;
+					posTwo = (pos3 * i + pos4 * (3.0f - i)) / 3.0f;
+					switch (sirenTimer) {
+					case 0:
+						if (cameraAngle < forwardAngle || showAllSirens)
+							CCoronas::RegisterCorona((uintptr)this + 21 + i,
+								r1, g1, b1, 255,
+								pos, 0.4f, 50.0f,
+								CCoronas::TYPE_STAR,
+								i == 1 && !showAllSirens ? CCoronas::FLARE_HEADLIGHTS : CCoronas::FLARE_NONE,
+								CCoronas::REFLECTION_OFF, CCoronas::LOSCHECK_OFF, CCoronas::STREAK_OFF, 0.0f);
+
+						if (cameraAngle > backwardAngle || showAllSirens)
+							CCoronas::RegisterCorona((uintptr)this + 21 + i,
+								r1, g1, b1, 255,
+								posTwo, 0.4f, 50.0f,
+								CCoronas::TYPE_STAR,
+								i == 1 && !showAllSirens ? CCoronas::FLARE_HEADLIGHTS : CCoronas::FLARE_NONE,
+								CCoronas::REFLECTION_OFF, CCoronas::LOSCHECK_OFF, CCoronas::STREAK_OFF, 0.0f);
+						break;
+					case 2:
+						if (cameraAngle < forwardAngle || showAllSirens)
+							CCoronas::RegisterCorona((uintptr)this + 21 + i,
+								r2, g2, b2, 255,
+								pos, 0.4f, 50.0f,
+								CCoronas::TYPE_STAR,
+								CCoronas::FLARE_NONE,
+								CCoronas::REFLECTION_OFF, CCoronas::LOSCHECK_OFF, CCoronas::STREAK_OFF, 0.0f);
+
+						if (cameraAngle > backwardAngle || showAllSirens)
+							CCoronas::RegisterCorona((uintptr)this + 21 + i,
+								r2, g2, b2, 255,
+								posTwo, 0.4f, 50.0f,
+								CCoronas::TYPE_STAR,
+								CCoronas::FLARE_NONE,
+								CCoronas::REFLECTION_OFF, CCoronas::LOSCHECK_OFF, CCoronas::STREAK_OFF, 0.0f);
+						break;
+					default:
+						if (cameraAngle <= forwardAngle || showAllSirens)
+							CCoronas::UpdateCoronaCoors((uintptr)this + 21 + i, pos, 50.0f, 0.0f);
+						else if (cameraAngle >= backwardAngle)
+							CCoronas::UpdateCoronaCoors((uintptr)this + 21 + i, posTwo, 50.0f, 0.0f);
+						break;
+					}
+				}
+			} else {
+				for(i = 0; i < 4; i++){
+					uint8 sirenTimer = ((CTimer::GetTimeInMilliseconds() + (i<<6))>>8) & 3;
+					pos = (pos1*i + pos2*(3.0f-i))/3.0f;
+					switch(sirenTimer){
+					case 0:
+						CCoronas::RegisterCorona((uintptr)this + 21 + i,
+							r1, g1, b1, 255,
+							pos, 0.4f, 50.0f,
+							CCoronas::TYPE_STAR,
+							i == 1 ? CCoronas::FLARE_HEADLIGHTS : CCoronas::FLARE_NONE,
+							CCoronas::REFLECTION_OFF, CCoronas::LOSCHECK_OFF, CCoronas::STREAK_OFF, 0.0f);
+						break;
+					case 2:
+						CCoronas::RegisterCorona((uintptr)this + 21 + i,
+							r2, g2, b2, 255,
+							pos, 0.4f, 50.0f,
+							CCoronas::TYPE_STAR,
+							CCoronas::FLARE_NONE,
+							CCoronas::REFLECTION_OFF, CCoronas::LOSCHECK_OFF, CCoronas::STREAK_OFF, 0.0f);
+						break;
+					default:
+						CCoronas::UpdateCoronaCoors((uintptr)this + 21 + i, pos, 50.0f, 0.0f);
+						break;
+					}
+				}
+			}
+			
+#else
 			for(i = 0; i < 4; i++){
 				uint8 sirenTimer = ((CTimer::GetTimeInMilliseconds() + (i<<6))>>8) & 3;
 				pos = (pos1*i + pos2*(3.0f-i))/3.0f;
@@ -1586,6 +1786,7 @@ CAutomobile::PreRender(void)
 					break;
 				}
 			}
+#endif
 		}
 		break;
 
@@ -1606,6 +1807,21 @@ CAutomobile::PreRender(void)
 		break;
 
 	case MI_TAXI:
+#ifdef EX_PARTICLE // Fix Taxi particles
+		if (bTaxiLight) {
+			CVector pos = GetPosition() + GetUp() * 0.85f - GetForward() * 0.3f;
+			CCoronas::RegisterCorona((uintptr)this + 21,
+				128, 128, 0, 255,
+				pos, 0.8f, 50.0f,
+				CCoronas::TYPE_NORMAL,
+				CCoronas::FLARE_NONE,
+				CCoronas::REFLECTION_ON, CCoronas::LOSCHECK_OFF, CCoronas::STREAK_OFF, 0.0f);
+			CPointLights::AddLight(CPointLights::LIGHT_POINT,
+				pos, CVector(0.0f, 0.0f, 0.0f), 10.0f,
+				1.0f, 1.0f, 0.5f, CPointLights::FOG_NONE, true);
+		}
+		break;
+#endif
 	case MI_CABBIE:
 	case MI_BORGNINE:
 		if(bTaxiLight){
@@ -1636,7 +1852,11 @@ CAutomobile::PreRender(void)
 		m_randomSeed/50000.0f < CWeather::Foggyness ||
 		m_randomSeed/50000.0f < CWeather::WetRoads;
 	if(shouldLightsBeOn != bLightsOn && GetStatus() != STATUS_WRECKED){
+#ifdef EX_CAN_SHUT_DOWN_CAR // Implementation
+		if(GetStatus() == STATUS_ABANDONED || GetStatus() == STATUS_PLAYER_DISABLED){
+#else
 		if(GetStatus() == STATUS_ABANDONED){
+#endif
 			// Turn off lights on abandoned vehicles only when we they're far away
 			if(bLightsOn &&
 			   Abs(TheCamera.GetPosition().x - GetPosition().x) + Abs(TheCamera.GetPosition().y - GetPosition().y) > 100.0f)
@@ -1678,7 +1898,11 @@ CAutomobile::PreRender(void)
 		lightL -= GetRight()*2.0f*headLightPos.x;
 
 		// Headlight coronas
+#ifdef EX_PARTICLE // Headlights are not visible if the camera is behind the car
+		if (DotProduct(lightR-TheCamera.GetPosition(), GetForward()) < 0.0f) {
+#else
 		if(behindness < 0.0f){
+#endif
 			// In front of car
 			float intensity = -0.5f*behindness + 0.3f;
 			float size = 1.0f - behindness;
@@ -1755,10 +1979,19 @@ CAutomobile::PreRender(void)
 		}
 
 		// bright lights
+#ifdef EX_FEATURES_INI // RemoveLightCubesFromCars
+		if (!bRemoveLightCubesFromCars) {
+			if (Damage.GetLightStatus(VEHLIGHT_FRONT_LEFT) == LIGHT_STATUS_OK && !bNoBrightHeadLights)
+				CBrightLights::RegisterOne(lightL, GetUp(), GetRight(), GetForward(), pHandling->FrontLights + BRIGHTLIGHT_FRONT);
+			if (Damage.GetLightStatus(VEHLIGHT_FRONT_RIGHT) == LIGHT_STATUS_OK && !bNoBrightHeadLights)
+				CBrightLights::RegisterOne(lightR, GetUp(), GetRight(), GetForward(), pHandling->FrontLights + BRIGHTLIGHT_FRONT);
+		}
+#else
 		if(Damage.GetLightStatus(VEHLIGHT_FRONT_LEFT) == LIGHT_STATUS_OK && !bNoBrightHeadLights)
 			CBrightLights::RegisterOne(lightL, GetUp(), GetRight(), GetForward(), pHandling->FrontLights + BRIGHTLIGHT_FRONT);
 		if(Damage.GetLightStatus(VEHLIGHT_FRONT_RIGHT) == LIGHT_STATUS_OK && !bNoBrightHeadLights)
 			CBrightLights::RegisterOne(lightR, GetUp(), GetRight(), GetForward(), pHandling->FrontLights + BRIGHTLIGHT_FRONT);
+#endif
 
 		// Taillights
 
@@ -1768,7 +2001,11 @@ CAutomobile::PreRender(void)
 		lightL -= GetRight()*2.0f*tailLightPos.x;
 
 		// Taillight coronas
+#ifdef EX_PARTICLE // Taillights are not visible if the camera is behind the car
+		if(DotProduct(lightR-TheCamera.GetPosition(), GetForward()) > 0.0f){
+#else
 		if(behindness > 0.0f){
+#endif
 			// Behind car
 			float intensity = (behindness + 1.0f)*0.4f;
 			float size = (behindness + 1.0f)*0.5f;
@@ -1827,10 +2064,19 @@ CAutomobile::PreRender(void)
 		}
 
 		// bright lights
+#ifdef EX_FEATURES_INI // RemoveLightCubesFromCars
+		if (!bRemoveLightCubesFromCars) {
+			if (Damage.GetLightStatus(VEHLIGHT_REAR_LEFT) == LIGHT_STATUS_OK)
+				CBrightLights::RegisterOne(lightL, GetUp(), GetRight(), GetForward(), pHandling->RearLights + BRIGHTLIGHT_REAR);
+			if (Damage.GetLightStatus(VEHLIGHT_REAR_RIGHT) == LIGHT_STATUS_OK)
+				CBrightLights::RegisterOne(lightR, GetUp(), GetRight(), GetForward(), pHandling->RearLights + BRIGHTLIGHT_REAR);
+		}
+#else
 		if(Damage.GetLightStatus(VEHLIGHT_REAR_LEFT) == LIGHT_STATUS_OK)
 			CBrightLights::RegisterOne(lightL, GetUp(), GetRight(), GetForward(), pHandling->RearLights + BRIGHTLIGHT_REAR);
 		if(Damage.GetLightStatus(VEHLIGHT_REAR_RIGHT) == LIGHT_STATUS_OK)
 			CBrightLights::RegisterOne(lightR, GetUp(), GetRight(), GetForward(), pHandling->RearLights + BRIGHTLIGHT_REAR);
+#endif
 
 		// Light shadows
 		if(!alarmOff){
@@ -1982,6 +2228,10 @@ CAutomobile::Render(void)
 		mat.SetRotate(m_aWheelRotation[CARWHEEL_REAR_RIGHT], 0.0f, 0.3f*Sin(m_aWheelRotation[CARWHEEL_REAR_RIGHT]));
 	else
 		mat.SetRotateX(m_aWheelRotation[CARWHEEL_REAR_RIGHT]);
+#ifdef EX_CHEATS // AIRWAYS
+	if (bAirWaysCheat)
+		mat.RotateY(-HALFPI);
+#endif
 	mat.Scale(mi->m_wheelScale);
 	mat.Translate(pos);
 	mat.UpdateRW();
@@ -1997,6 +2247,10 @@ CAutomobile::Render(void)
 		mat.SetRotate(-m_aWheelRotation[CARWHEEL_REAR_LEFT], 0.0f, PI+0.3f*Sin(-m_aWheelRotation[CARWHEEL_REAR_LEFT]));
 	else
 		mat.SetRotate(-m_aWheelRotation[CARWHEEL_REAR_LEFT], 0.0f, PI);
+#ifdef EX_CHEATS // AIRWAYS
+	if (bAirWaysCheat)
+		mat.RotateY(HALFPI);
+#endif
 	mat.Scale(mi->m_wheelScale);
 	mat.Translate(pos);
 	mat.UpdateRW();
@@ -2013,6 +2267,10 @@ CAutomobile::Render(void)
 			mat.SetRotate(m_aWheelRotation[CARWHEEL_REAR_RIGHT], 0.0f, 0.3f*Sin(m_aWheelRotation[CARWHEEL_REAR_RIGHT]));
 		else
 			mat.SetRotateX(m_aWheelRotation[CARWHEEL_REAR_RIGHT]);
+#ifdef EX_CHEATS // AIRWAYS
+		if (bAirWaysCheat)
+			mat.RotateY(HALFPI);
+#endif
 		mat.Scale(mi->m_wheelScale);
 		mat.Translate(pos);
 		mat.UpdateRW();
@@ -2030,6 +2288,10 @@ CAutomobile::Render(void)
 			mat.SetRotate(-m_aWheelRotation[CARWHEEL_REAR_LEFT], 0.0f, PI+0.3f*Sin(-m_aWheelRotation[CARWHEEL_REAR_LEFT]));
 		else
 			mat.SetRotate(-m_aWheelRotation[CARWHEEL_REAR_LEFT], 0.0f, PI);
+#ifdef EX_CHEATS // AIRWAYS
+		if (bAirWaysCheat)
+			mat.RotateY(-HALFPI);
+#endif
 		mat.Scale(mi->m_wheelScale);
 		mat.Translate(pos);
 		mat.UpdateRW();
@@ -2114,6 +2376,10 @@ CAutomobile::Render(void)
 			mat.SetRotate(m_aWheelRotation[CARWHEEL_FRONT_RIGHT], 0.0f, m_fSteerAngle+0.3f*Sin(m_aWheelRotation[CARWHEEL_FRONT_RIGHT]));
 		else
 			mat.SetRotate(m_aWheelRotation[CARWHEEL_FRONT_RIGHT], 0.0f, m_fSteerAngle);
+#ifdef EX_CHEATS // AIRWAYS
+		if (bAirWaysCheat)
+			mat.RotateY(-HALFPI);
+#endif
 		mat.Scale(mi->m_wheelScale);
 		mat.Translate(pos);
 		mat.UpdateRW();
@@ -2129,6 +2395,10 @@ CAutomobile::Render(void)
 			mat.SetRotate(-m_aWheelRotation[CARWHEEL_FRONT_LEFT], 0.0f, PI+m_fSteerAngle+0.3f*Sin(-m_aWheelRotation[CARWHEEL_FRONT_LEFT]));
 		else
 			mat.SetRotate(-m_aWheelRotation[CARWHEEL_FRONT_LEFT], 0.0f, PI+m_fSteerAngle);
+#ifdef EX_CHEATS // AIRWAYS
+		if (bAirWaysCheat)
+			mat.RotateY(HALFPI);
+#endif
 		mat.Scale(mi->m_wheelScale);
 		mat.Translate(pos);
 		mat.UpdateRW();
@@ -2144,6 +2414,17 @@ CAutomobile::Render(void)
 
 		mi->SetVehicleColour(m_currentColour1, m_currentColour2);
 	}
+
+#ifdef EX_VEHICLE // SwitchVehicleToRealPhysics when the car is next to the player
+	if (GetStatus() == STATUS_SIMPLE && FindPlayerVehicle() != this) {
+		float radiusSqr = 750.0f;
+		float distanceSqr = (GetPosition() - FindPlayerCoors()).MagnitudeSqr();
+		if (distanceSqr < radiusSqr) {
+			SetStatus(STATUS_PHYSICS);
+			CCarCtrl::SwitchVehicleToRealPhysics(this);
+		}
+	}
+#endif
 
 	if(!CVehicle::bWheelsOnlyCheat)
 		CEntity::Render();
@@ -2452,12 +2733,61 @@ CAutomobile::TankControl(void)
 	CVector gunEnd(0.0f, 1.813f, 2.979f);
 	CVector baseToEnd = gunEnd - turrentBase;
 
+#ifdef EX_FEATURES_INI // MilitaryFiringFromTankAtPlayer
+	if (bMilitaryFiringFromTankAtPlayer && !pDriver || !bMilitaryFiringFromTankAtPlayer && this != FindPlayerVehicle())
+#else
 	if(this != FindPlayerVehicle())
+#endif
 		return;
 	if(CWorld::Players[CWorld::PlayerInFocus].m_WBState != WBSTATE_PLAYING)
 		return;
 
 	// Rotate turret
+#ifdef EX_FEATURES_INI // MilitaryFiringFromTankAtPlayer
+	bool bAICanShoot = false;
+	if (bMilitaryFiringFromTankAtPlayer && this != FindPlayerVehicle() && pDriver && 
+		pDriver->GetModelIndex() == MI_ARMY && FindPlayerPed()->m_pWanted->GetWantedLevel() > 5) {
+
+		if (Distance(FindPlayerCoors(), GetPosition()) < 100.0f && CWorld::GetIsLineOfSightClear(FindPlayerCoors(), GetPosition() + turrentBase, true, false, false, false, false, true, true)) {
+			CVector direction = FindPlayerCoors() - GetPosition();
+			direction.Normalise2D();
+
+			CVector hi = Multiply3x3(direction, GetMatrix());
+			float angleToFace = hi.Heading();
+
+			if (angleToFace <= m_fCarGunLR + PI) {
+				if (angleToFace < m_fCarGunLR - PI)
+					angleToFace = angleToFace + TWOPI;
+			} else {
+				angleToFace = angleToFace - TWOPI;
+			}
+
+			if (Abs(m_fCarGunLR - angleToFace) < 0.2f && (!FindPlayerVehicle() || FindPlayerVehicle() && FindPlayerVehicle()->GetModelIndex() != MI_RHINO))
+				bAICanShoot = CTimer::GetTimeInMilliseconds() > CWorld::Players[CWorld::PlayerInFocus].m_nTimeTankShotGun + 4000;
+
+			float neededTurn = angleToFace - m_fCarGunLR;
+			float turnPerFrame = CTimer::GetTimeStep() * 0.01f;
+			if (neededTurn <= turnPerFrame) {
+				if (neededTurn < -turnPerFrame)
+					angleToFace = m_fCarGunLR - turnPerFrame;
+			} else {
+				angleToFace = turnPerFrame + m_fCarGunLR;
+			}
+
+			if (m_fCarGunLR != angleToFace)
+				DMAudio.PlayOneShot(m_audioEntityId, SOUND_CAR_TANK_TURRET_ROTATE, Abs(angleToFace - m_fCarGunLR));
+
+			m_fCarGunLR = angleToFace;
+
+			if (m_fCarGunLR < -PI) {
+				m_fCarGunLR += TWOPI;
+			} else if (m_fCarGunLR > PI) {
+				m_fCarGunLR -= TWOPI;
+			}
+		}
+	}
+#endif
+
 	float prevAngle = m_fCarGunLR;
 #ifdef FREE_CAM
 	if(!CCamera::bFreeCam)
@@ -2472,8 +2802,13 @@ CAutomobile::TankControl(void)
 		DMAudio.PlayOneShot(m_audioEntityId, SOUND_CAR_TANK_TURRET_ROTATE, Abs(m_fCarGunLR - prevAngle));
 
 	// Shoot
+#ifdef EX_FEATURES_INI // MilitaryFiringFromTankAtPlayer
+	bool bPlayerCanShoot = CPad::GetPad(0)->CarGunJustDown() && CTimer::GetTimeInMilliseconds() > CWorld::Players[CWorld::PlayerInFocus].m_nTimeTankShotGun + 800;
+	if((!bMilitaryFiringFromTankAtPlayer && bPlayerCanShoot || bMilitaryFiringFromTankAtPlayer && (this == FindPlayerVehicle() && bPlayerCanShoot || bAICanShoot))) {
+#else
 	if(CPad::GetPad(0)->CarGunJustDown() &&
 	   CTimer::GetTimeInMilliseconds() > CWorld::Players[CWorld::PlayerInFocus].m_nTimeTankShotGun + 800){
+#endif
 		CWorld::Players[CWorld::PlayerInFocus].m_nTimeTankShotGun = CTimer::GetTimeInMilliseconds();
 
 		// more like -sin(angle), cos(angle), i.e. rotated (0,1,0)
@@ -2493,14 +2828,22 @@ CAutomobile::TankControl(void)
 		m_vecMoveSpeed -= 0.06f*turretDir;
 		m_vecMoveSpeed.z += 0.05f;
 
+#ifdef EX_FEATURES_INI // MilitaryFiringFromTankAtPlayer
+		CWeapon::DoTankDoomAiming(this, pDriver, &point1, &point2);
+#else
 		CWeapon::DoTankDoomAiming(FindPlayerVehicle(), FindPlayerPed(), &point1, &point2);
+#endif
 		CColPoint colpoint;
 		CEntity *entity = nil;
 		CWorld::ProcessLineOfSight(point1, point2, colpoint, entity, true, true, true, true, true, true, false);
 		if(entity)
 			point2 = colpoint.point - 0.04f*(colpoint.point - point1);
 
+#ifdef EX_FEATURES_INI // MilitaryFiringFromTankAtPlayer
+		CExplosion::AddExplosion(nil, pDriver, EXPLOSION_TANK_GRENADE, point2, 0);
+#else
 		CExplosion::AddExplosion(nil, FindPlayerPed(), EXPLOSION_TANK_GRENADE, point2, 0);
+#endif
 
 		// Add particles on the way to the explosion;
 		float shotDist = (point2 - point1).Magnitude();
@@ -3066,6 +3409,13 @@ CAutomobile::DoDriveByShootings(void)
 			lookingRight = true;
 	}
 
+#ifdef EX_MISC // Hide/show weapon in vehicle
+	if (lookingLeft || lookingRight)
+		pDriver->AddWeaponModel(weapon->GetInfo()->m_nModelId);
+	else
+		pDriver->RemoveWeaponModel(weapon->GetInfo()->m_nModelId);
+#endif
+
 	if(lookingLeft || lookingRight){
 		if(lookingLeft){
 			anim = RpAnimBlendClumpGetAssociation(pDriver->GetClump(), ANIM_STD_CAR_DRIVEBY_RIGHT);
@@ -3111,6 +3461,81 @@ CAutomobile::DoDriveByShootings(void)
 		ProcessOpenDoor(CAR_DOOR_RF, ANIM_STD_NUM, m_weaponDoorTimerRight);
 	}
 }
+
+#ifdef EX_CHEATS // AIRWAYS
+void CAutomobile::DoHoverAboveSurface(void)
+{
+	bAffectedByGravity = false;
+
+	for (int i = 0; i < 4; i++) {
+		m_aWheelColPoints[i].surfaceB = SURFACE_DEFAULT;
+	}
+
+	bool bPlayerVehicle = FindPlayerVehicle() == this;
+
+	CVector upVector;
+
+	float waterLevel;
+	CColPoint hitPoint;
+	CEntity* hitEntity;
+	if ((bPlayerVehicle && !CPad::GetPad(0)->GetCarGunUpDown() || !bPlayerVehicle) &&
+		CWorld::ProcessLineOfSight(GetPosition(), GetPosition() - GetUp() * 5.0f, hitPoint, hitEntity, true, false, false, false, false, false, true) ||
+		CWorld::ProcessLineOfSight(GetPosition(), GetPosition() - CVector(0.0f, 0.0f, 3.0f), hitPoint, hitEntity, true, false, false, false, false, false, true)) {
+
+		float height = m_vecMoveSpeed.Magnitude2D() < 0.1f ? 0.9f : 1.5f;
+		float dist = (GetPosition().z - height) - hitPoint.point.z;
+		dist *= 20.0f;
+		ApplyMoveForce(CVector(0.0f, 0.0f, 20.0f - dist));
+
+		upVector = -hitPoint.normal;
+	} else if (CWaterLevel::GetWaterLevel(GetPosition(), &waterLevel, false) && GetPosition().z < (waterLevel + 3.0f)) {
+		float dist = (GetPosition().z - 1.0f) - waterLevel;
+		dist *= 20.0f;
+		ApplyMoveForce(CVector(0.0f, 0.0f, 20.0f - dist));
+
+		upVector = GetUp();
+		if (GetUp().z > 0.0f)
+			upVector.z = -upVector.z;
+	} else {
+		float loweringForce = 30.0f;
+		ApplyMoveForce(CVector(0.0f, 0.0f, -1.0f) * loweringForce * bIsHandbrakeOn);
+
+		upVector = GetUp();
+		if (GetUp().z > 0.0f)
+			upVector.z = -upVector.z;
+		else
+			ApplyTurnForce(upVector * 20.0f, GetRight());
+	}
+
+	float movementForce = pHandling->Transmission.fMaxVelocity * 80.0f;
+	float pitchForce = 50.0f;
+	float yawForce = pHandling->fMass / 60.0f;
+
+	ApplyMoveForce(-m_vecMoveSpeed * 100.0f);
+	m_vecTurnSpeed *= 0.9f;
+
+	CVector centerOfMass = Multiply3x3(GetMatrix(), m_vecCentreOfMass);
+
+	if (bPlayerVehicle) {
+		CPad* pad = CPad::GetPad(0);
+		
+		ApplyTurnForce(GetRight() * yawForce * pad->GetSteeringLeftRight() / 255, GetForward() + centerOfMass);
+		ApplyTurnForce(-GetUp() * 17.0f * pad->GetSteeringLeftRight() / 255, GetRight() + centerOfMass);
+
+		ApplyTurnForce(GetUp() * pitchForce * -pad->GetCarGunUpDown() / 255, GetForward() + centerOfMass);
+		ApplyTurnForce(GetUp() * pitchForce * pad->GetSteeringUpDown() / 255, GetForward() + centerOfMass);
+
+		ApplyMoveForce(GetForward() * movementForce * pad->GetAccelerate() / 255);
+		ApplyMoveForce(-GetForward() * movementForce * pad->GetBrake() / 255);
+	} else {
+		ApplyTurnForce(GetRight() * yawForce * -m_fSteerAngle, GetForward() + centerOfMass);
+		ApplyMoveForce(GetForward() * movementForce * m_fGasPedal);
+
+	}
+
+	ApplyTurnForce(GetUp() * 50.0f, upVector + centerOfMass);
+}
+#endif
 
 int32
 CAutomobile::RcbanditCheckHitWheels(void)
@@ -3240,7 +3665,11 @@ CAutomobile::VehicleDamage(float impulse, uint16 damagedPiece)
 		return;
 
 	// damage flipped over car
+#ifdef EX_FEATURES_INI // VehiclesDontCatchFireWhenTurningOver
+	if(!bVehiclesDontCatchFireWhenTurningOver && GetUp().z < 0.0f && this != FindPlayerVehicle()){
+#else
 	if(GetUp().z < 0.0f && this != FindPlayerVehicle()){
+#endif
 		if(bNotDamagedUpsideDown || GetStatus() == STATUS_PLAYER_REMOTE || bIsInWater)
 			return;
 		m_fHealth -= 4.0f*CTimer::GetTimeStep();
@@ -3256,7 +3685,11 @@ CAutomobile::VehicleDamage(float impulse, uint16 damagedPiece)
 
 		if(GetStatus() == STATUS_PLAYER && impulse > 50.0f){
 			uint8 freq = Min(0.4f*impulse*2000.0f/m_fMass + 100.0f, 250.0f);
+#ifdef EX_VIBRATION // VehicleDamage
+			CPad::GetPad(0)->StartShake(40000/freq, freq, freq);
+#else
 			CPad::GetPad(0)->StartShake(40000/freq, freq);
+#endif
 		}
 
 		if(bOnlyDamagedByPlayer){
@@ -3280,6 +3713,40 @@ CAutomobile::VehicleDamage(float impulse, uint16 damagedPiece)
 
 		if(GetUp().z > 0.0f || m_vecMoveSpeed.MagnitudeSqr() > 0.1f){
 			float impulseMult = bMoreResistantToDamage ? 0.5f : 4.0f;
+#ifdef EX_VEHICLE // The wheels fall off when you hit it hard
+			if (impulse * pHandling->fCollisionDamageMultiplier > 900.0f ||
+				m_pDamageEntity && m_pDamageEntity->IsVehicle() && (((CVehicle*)m_pDamageEntity)->m_fDamageImpulse + impulse) * pHandling->fCollisionDamageMultiplier > 1000.0f) {
+
+				switch (damagedPiece) {
+					case CAR_PIECE_BUMP_FRONT: {
+						CVector2D leftWheelPos2D = CVector2D(m_aWheelColPoints[0].point.x, m_aWheelColPoints[0].point.y);
+						CVector2D rightWheelPos2D = CVector2D(m_aWheelColPoints[2].point.x, m_aWheelColPoints[2].point.y);
+						CVector2D impulsePos2D = CVector2D(GetPosition().x + m_vecDamageNormal.x, GetPosition().y + m_vecDamageNormal.y);
+						if (DistanceSqr2D(impulsePos2D, leftWheelPos2D.x, leftWheelPos2D.y) < DistanceSqr2D(impulsePos2D, rightWheelPos2D.x, rightWheelPos2D.y))
+							SetWheelMissing(CARWHEEL_FRONT_RIGHT);
+						else
+							SetWheelMissing(CARWHEEL_FRONT_LEFT);
+						break;
+					}
+					case CAR_PIECE_WING_LF:
+						SetWheelMissing(CARWHEEL_FRONT_LEFT);
+						break;
+					case CAR_PIECE_WING_RF:
+						SetWheelMissing(CARWHEEL_FRONT_LEFT);
+						break;
+					case CAR_PIECE_BUMP_REAR: {
+						CVector2D leftWheelPos2D = CVector2D(m_aWheelColPoints[1].point.x, m_aWheelColPoints[1].point.y);
+						CVector2D rightWheelPos2D = CVector2D(m_aWheelColPoints[3].point.x, m_aWheelColPoints[3].point.y);
+						CVector2D impulsePos2D = CVector2D(GetPosition().x + m_vecDamageNormal.x, GetPosition().y + m_vecDamageNormal.y);
+						if (DistanceSqr2D(impulsePos2D, leftWheelPos2D.x, leftWheelPos2D.y) > DistanceSqr2D(impulsePos2D, rightWheelPos2D.x, rightWheelPos2D.y))
+							SetWheelMissing(CARWHEEL_REAR_RIGHT);
+						else
+							SetWheelMissing(CARWHEEL_REAR_LEFT);
+						break;
+					}
+				}
+			}
+#endif
 
 			switch(damagedPiece){
 			case CAR_PIECE_BUMP_FRONT:
@@ -3923,6 +4390,11 @@ CAutomobile::BlowUpCar(CEntity *culprit)
 		CExplosion::AddExplosion(this, culprit, EXPLOSION_CAR_QUICK, GetPosition(), 0);
 	else
 		CExplosion::AddExplosion(this, culprit, EXPLOSION_CAR, GetPosition(), 0);
+
+#ifdef EX_CHEATS // AIRWAYS
+	if (bAirWaysCheat)
+		bAffectedByGravity = true;
+#endif
 }
 
 bool
@@ -4274,7 +4746,11 @@ CPed::MakeTyresMuddySectorList(CPtrList &list)
 									veh->ApplyTurnForce(CVector(0.0f, 0.0f, 50.0f), vehAndWheelDist);
 
 									if (veh == FindPlayerVehicle()) {
+#ifdef EX_VIBRATION // MakeTyresMuddy
+										CPad::GetPad(0)->StartShake(300, 0, 70);
+#else
 										CPad::GetPad(0)->StartShake(300, 70);
+#endif
 									}
 								}
 							}
@@ -4354,6 +4830,21 @@ CAutomobile::ProcessSwingingDoor(int32 component, eDoors door)
 	mat.SetRotate(axes[0], axes[1], axes[2]);
 	mat.Translate(pos);
 	mat.UpdateRW();
+
+#ifdef EX_VEHICLE // Open hood falls off at high speed
+	if(door == DOOR_BONNET && Doors[door].m_nDoorState == DOORST_OPEN && DotProduct(m_vecMoveSpeed, GetForward()) > 0.4f){
+		CObject *comp = SpawnFlyingComponent(CAR_BONNET, COMPGROUP_BONNET);
+		SetComponentVisibility(m_aCarNodes[CAR_BONNET], ATOMIC_FLAG_NONE);
+		Damage.SetDoorStatus(DOOR_BONNET, DOOR_STATUS_MISSING);
+		if(comp){
+			if(CGeneral::GetRandomNumber() & 1)
+				comp->m_vecMoveSpeed = 0.4f*m_vecMoveSpeed + 0.1f*GetRight() + 0.5f*GetUp();
+			else
+				comp->m_vecMoveSpeed = 0.4f*m_vecMoveSpeed - 0.1f*GetRight() + 0.5f*GetUp();
+			comp->ApplyTurnForce(10.0f*GetUp(), GetForward());
+		}
+	}
+#endif
 }
 
 void
@@ -4648,6 +5139,41 @@ CAutomobile::SetDoorDamage(int32 component, eDoors door, bool noFlyingComponents
 	}
 }
 
+#ifdef EX_VEHICLE // The wheels fall off when you hit it hard
+void CAutomobile::SetWheelMissing(int32 wheel)
+{
+	if (Damage.m_wheelStatus[wheel] == WHEEL_STATUS_MISSING)
+		return;
+
+	Damage.m_wheelStatus[wheel] = WHEEL_STATUS_MISSING;
+	RpAtomic* atomic = nil;
+
+	switch (wheel)
+	{
+		case CARWHEEL_FRONT_LEFT:
+			SpawnFlyingComponent(CAR_WHEEL_LF, COMPGROUP_WHEEL);
+			RwFrameForAllObjects(m_aCarNodes[CAR_WHEEL_LF], GetCurrentAtomicObjectCB, &atomic);
+			if (atomic) RpAtomicSetFlags(atomic, 0);
+			break;
+		case CARWHEEL_REAR_LEFT:
+			SpawnFlyingComponent(CAR_WHEEL_LB, COMPGROUP_WHEEL);
+			RwFrameForAllObjects(m_aCarNodes[CAR_WHEEL_LB], GetCurrentAtomicObjectCB, &atomic);
+			if (atomic) RpAtomicSetFlags(atomic, 0);
+			break;
+		case CARWHEEL_FRONT_RIGHT:
+			SpawnFlyingComponent(CAR_WHEEL_RF, COMPGROUP_WHEEL);
+			RwFrameForAllObjects(m_aCarNodes[CAR_WHEEL_RF], GetCurrentAtomicObjectCB, &atomic);
+			if (atomic) RpAtomicSetFlags(atomic, 0);
+			break;
+		case CARWHEEL_REAR_RIGHT:
+			SpawnFlyingComponent(CAR_WHEEL_RB, COMPGROUP_WHEEL);
+			RwFrameForAllObjects(m_aCarNodes[CAR_WHEEL_RB], GetCurrentAtomicObjectCB, &atomic);
+			if (atomic) RpAtomicSetFlags(atomic, 0);
+			break;
+	}
+	
+}
+#endif
 
 static RwObject*
 SetVehicleAtomicVisibilityCB(RwObject *object, void *data)

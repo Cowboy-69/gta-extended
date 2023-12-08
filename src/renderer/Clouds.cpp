@@ -135,15 +135,38 @@ CClouds::Render(void)
 	RwRenderStateSet(rwRENDERSTATEDESTBLEND, (void*)rwBLENDONE);
 	CSprite::InitSpriteBuffer();
 
+#ifdef MOVING_MOON
+	float minute = CClock::GetHours()*60 + CClock::GetMinutes() + CClock::GetSeconds()/60.0f;
+#else
 	int minute = CClock::GetHours()*60 + CClock::GetMinutes();
+#endif
 	RwV3d campos = TheCamera.GetPosition();
 
 	// Moon
+#ifdef MOVING_MOON
+	float moonfadeout;
+
+	float smoothBrightnessAdjust = 1.9f;
+	if ((int)minute > 1100)
+		moonfadeout = Abs(minute - 1100.0f) / smoothBrightnessAdjust;
+	else if ((int)minute < 240)
+		moonfadeout = 180.0f;
+	else
+		moonfadeout = 180.0f - Abs(minute - 240.0f) * smoothBrightnessAdjust;
+
+	if ((int)moonfadeout > 0.0f && (int)moonfadeout < 340) {
+		float coverage = Max(CWeather::Foggyness, CWeather::CloudCoverage);
+		int brightness = (1.0f - coverage) * ((int)moonfadeout);
+		CVector sunCoors = CTimeCycle::GetSunDirection();
+		sunCoors *= 150.0f;
+		RwV3d pos = -sunCoors;
+#else
 	int moonfadeout = Abs(minute - 180);	// fully visible at 3AM
 	if(moonfadeout < 180){			// fade in/out 3 hours
 		float coverage = Max(CWeather::Foggyness, CWeather::CloudCoverage);
 		int brightness = (1.0f - coverage) * (180 - moonfadeout);
 		RwV3d pos = { 0.0f, -100.0f, 15.0f };
+#endif
 		RwV3dAdd(&worldpos, &campos, &pos);
 		if(CSprite::CalcScreenCoors(worldpos, &screenpos, &szx, &szy, false)){
 			RwRenderStateSet(rwRENDERSTATETEXTURERASTER, RwTextureGetRaster(gpCoronaTexture[2]));

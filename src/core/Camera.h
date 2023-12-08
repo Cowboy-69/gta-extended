@@ -23,6 +23,9 @@ enum
 	CAM_ZOOM_2,
 	CAM_ZOOM_3,
 	CAM_ZOOM_TOPDOWN,
+#ifdef EX_FIRST_PERSON
+	CAM_ZOOM_REAL_1ST_PERSON,
+#endif
 	CAM_ZOOM_CINEMATIC,
 };
 
@@ -92,6 +95,9 @@ public:
 		MODE_FIGHT_CAM_RUNABOUT,
 		MODE_EDITOR,
 		MODE_HELICANNON_1STPERSON, // vice city leftover
+#ifdef EX_FIRST_PERSON
+		MODE_REAL_1ST_PERSON,
+#endif
 	};
 
 	bool    bBelowMinDist; //used for follow ped mode
@@ -106,6 +112,9 @@ public:
 	bool    LookingRight;
 	bool    ResetStatics; //for interpolation type stuff to work
 	bool    Rotating;
+#ifdef EX_FIRST_PERSON
+	bool	m_bFixed1stPersonCamInVeh;
+#endif
 
 	int16   Mode;                   // CameraMode
 	uint32  m_uiFinishTime;
@@ -161,6 +170,10 @@ public:
 	float   CA_MIN_DISTANCE;
 	float   CA_MAX_DISTANCE;
 	float   SpeedVar;
+
+#ifdef EX_AIMING
+	float AimingFOV;
+#endif
 
 	CVector m_cvecSourceSpeedOverOneFrame;
 	CVector m_cvecTargetSpeedOverOneFrame;
@@ -241,6 +254,10 @@ public:
 	void ProcessPedsDeadBaby(void);
 	bool ProcessArrestCamOne(void);
 	bool ProcessArrestCamTwo(void);
+#ifdef EX_FIRST_PERSON
+	void Process_Real_1st_Person(const CVector& CameraTarget, float, float, float);
+	void LimitAngleBetaRelativelyTwoAngles(CVector normalizedRelativeVector, float leftLimitingAngle, float rightLimitingAngle);
+#endif
 
 	/* Some of the unused PS2 cams */
 	void Process_Chris_With_Binding_PlusRotation(const CVector &CameraTarget, float, float, float);
@@ -479,7 +496,6 @@ public:
 	float m_fMouseAccelVertical;// acceleration multiplier for 1st person controls
 	float m_f3rdPersonCHairMultX;
 	float m_f3rdPersonCHairMultY;
-
 
 	CCam Cams[3];
 	CGarage *pToGarageWeAreIn;

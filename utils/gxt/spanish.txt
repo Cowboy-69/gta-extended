@@ -8137,11 +8137,11 @@ TIPO DE MANDO
 [FEC_CCF]
 CONFIGURACIÓN
 
-[FEC_CF1]
-AJUSTE 1
+[FEC_CF1]   
+CLÁSICO
 
-[FEC_CF2]
-AJUSTE 2
+[FEC_CF2]   
+ESTÁNDAR
 
 [FEC_CF3]
 AJUSTE 3
@@ -8169,6 +8169,100 @@ PED DENSITY
 
 [FEM_CAR]
 CAR DENSITY
+
+{______________________________Liberty Extended______________________________}
+[FEC_AIM]   
+APUNTAR AUTO
+
+[FEC_LSX]   
+MIRA LA SENSIBILIDAD X
+
+[FEC_LSY]   
+MIRA LA SENSIBILIDAD Y
+
+[FEC_ASX]   
+APUNTAR LA SENSIBILIDAD X
+
+[FEC_ASY]   
+APUNTAR LA SENSIBILIDAD Y
+
+[FEC_IVL]   
+INVERTIR VERTICALMENTE
+
+[FEC_LZN]   
+ZONA MUERTA DEL STICK IZQUIERDO
+
+[FEC_RZN]   
+ZONA MUERTA DEL STICK DERECHO
+
+[FEC_VBF]   
+FUERZA DE VIBRACIÓN
+
+[FEC_PRS]   
+Estación de radio anterior
+
+[FEC_NRS]   
+Próxima emisora de radio
+
+[FEC_RTC]   
+Girar cámara
+
+[FET_AGC]   
+CONFIGURACIÓN DEL MANDO
+
+[FET_AGS]   
+CONFIGURACIÓN DEL MANDO
+
+[FEC_FOV]   
+CAMPO DE VISIÓN
+
+[FEC_ACV]   
+AUTOCENTRADO EN VEHÍCULO
+
+[FEC_RVD]   
+VEHÍCULO RELATIVO MIENTRAS CONDUCE POR
+
+[FEC_DOM]   
+DOOM Modo
+
+[FEC_WAL]
+Caminar
+
+[FEC_RZO]
+Zoom radar
+
+[FEC_REL]
+Recargar arma
+
+[FED_GPS]
+GPS
+
+[FEC_ATK]
+Ataque
+
+[FET_SGP]
+Guardar fotos en una galería
+
+[FES_SAV]
+No puedes guardar la partida en este momento. Para guardar la partida, no debes estar en una misión, no moverte ni tener un nivel buscado.
+
+[FET_AUT]
+Autosave
+
+[FEM_SL9]
+Archivo de autoguardado no disponible
+
+[FEO_OTH]
+Otros ajustes
+
+[FEC_LTS]
+Intermitentes a la izquierda
+
+[FEC_RTS]
+Intermitentes a la derecha
+
+[FEC_EML]
+Luces de emergencia
 
 { end of file }
 

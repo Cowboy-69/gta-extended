@@ -252,9 +252,16 @@ void CControllerConfigManager::InitDefaultControlConfiguration()
 	SetControllerKeyAssociatedWithAction    (VEHICLE_FIREWEAPON,                  rsPADINS,   KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (VEHICLE_FIREWEAPON,                  rsLCTRL,    OPTIONAL_EXTRA);
 #endif
+
+#ifdef EX_CONTROL // Default weapon switch to Q and E for the keyboard
+	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_LEFT,               'Q',		  KEYBOARD);
+
+	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_RIGHT,              'E',		  OPTIONAL_EXTRA);
+#else
 	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_LEFT,               rsPADDEL,   KEYBOARD);
 
 	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_RIGHT,              rsPADENTER, OPTIONAL_EXTRA); // BUG: must be KEYBOARD ?
+#endif
 																		          
 	SetControllerKeyAssociatedWithAction    (PED_LOCK_TARGET,                     rsDEL,      KEYBOARD);
 																		          
@@ -302,7 +309,24 @@ void CControllerConfigManager::InitDefaultControlConfiguration()
 	SetControllerKeyAssociatedWithAction    (VEHICLE_TURRETDOWN,                  rsPADRIGHT, KEYBOARD);
 										    
 	SetControllerKeyAssociatedWithAction    (CAMERA_CHANGE_VIEW_ALL_SITUATIONS,   rsHOME,     KEYBOARD);
+
+#ifdef EX_CONTROL // InitDefaultControlConfiguration
+	SetControllerKeyAssociatedWithAction    (CAMERA_CHANGE_VIEW_ALL_SITUATIONS,   'V',        OPTIONAL_EXTRA);
+#else
 	SetControllerKeyAssociatedWithAction    (CAMERA_CHANGE_VIEW_ALL_SITUATIONS,   'C',        OPTIONAL_EXTRA);
+#endif
+
+#ifdef EX_PC_WALK // InitDefaultControlConfiguration
+	SetControllerKeyAssociatedWithAction(PED_WALK, rsLALT, KEYBOARD);
+#endif
+
+#ifdef EX_RADAR_ZOOM // InitDefaultControlConfiguration
+	SetControllerKeyAssociatedWithAction(RADAR_ZOOM_OUT, 'T', KEYBOARD);
+#endif
+
+#ifdef EX_RELOAD // InitDefaultControlConfiguration
+	SetControllerKeyAssociatedWithAction(PED_RELOAD, 'R', KEYBOARD);
+#endif
 
 	for (int32 i = 0; i < MAX_SIMS; i++)
 	{
@@ -345,6 +369,12 @@ void CControllerConfigManager::InitDefaultControlConfigMouse(CMouseControllerSta
 		SetMouseButtonAssociatedWithAction(PED_CYCLE_WEAPON_RIGHT,       5);
 
 		SetMouseButtonAssociatedWithAction(VEHICLE_CHANGE_RADIO_STATION, 4);
+
+#ifdef EX_CONTROL // Default change of the sniper rifle zoom on the mouse wheel
+		SetMouseButtonAssociatedWithAction(PED_SNIPER_ZOOM_IN, 4);
+
+		SetMouseButtonAssociatedWithAction(PED_SNIPER_ZOOM_OUT, 5);
+#endif
 	}
 }
 
@@ -538,6 +568,15 @@ void CControllerConfigManager::InitialiseControllerActionNameArray()
 	SETACTIONNAME(TOGGLE_DPAD);
 	SETACTIONNAME(SWITCH_DEBUG_CAM_ON);
 	SETACTIONNAME(TAKE_SCREEN_SHOT);
+#ifdef EX_PC_WALK // SETACTIONNAME
+	SETACTIONNAME(PED_WALK);
+#endif
+#ifdef EX_RADAR_ZOOM // SETACTIONNAME
+	SETACTIONNAME(RADAR_ZOOM_OUT);
+#endif
+#ifdef EX_RELOAD // SETACTIONNAME
+	SETACTIONNAME(PED_RELOAD);
+#endif
 
 #undef SETACTIONNAME
 }
@@ -835,6 +874,32 @@ void CControllerConfigManager::AffectControllerStateOn_ButtonDown_Driving(int32 
 		else
 			state.RightStickY = -128;
 	}
+
+#ifdef EX_CONTROL // AffectControllerStateOn_ButtonDown_Driving: Smooth turning of the wheels
+	if (button == GetControllerKeyAssociatedWithAction(GO_LEFT, type))
+	{
+		if (state.DPadRight || m_aSimCheckers[SIM_X1][type])
+		{
+			m_aSimCheckers[SIM_X1][type] = true;
+			state.DPadLeft = 0;
+			state.DPadRight = 0;
+		}
+		else
+			state.DPadLeft = 255;
+	}
+
+	if (button == GetControllerKeyAssociatedWithAction(GO_RIGHT, type))
+	{
+		if (state.DPadLeft || m_aSimCheckers[SIM_X1][type])
+		{
+			m_aSimCheckers[SIM_X1][type] = true;
+			state.DPadLeft = 0;
+			state.DPadRight = 0;
+		}
+		else
+			state.DPadRight = 255;
+	}
+#endif
 }
 
 void CControllerConfigManager::AffectControllerStateOn_ButtonDown_FirstPersonOnly(int32 button, eControllerType type, CControllerState &state)
@@ -857,6 +922,14 @@ void CControllerConfigManager::AffectControllerStateOn_ButtonDown_ThirdPersonOnl
 		state.RightShoulder2 = 255;
 	if (button == GetControllerKeyAssociatedWithAction(PED_SPRINT, type))
 		state.Cross = 255;
+#ifdef EX_PC_WALK // AffectControllerStateOn_ButtonDown_ThirdPersonOnly
+	if (button == GetControllerKeyAssociatedWithAction(PED_WALK, type))
+		state.bWalk = 255;
+#endif
+#ifdef EX_RELOAD // AffectControllerStateOn_ButtonDown_ThirdPersonOnly
+	if (button == GetControllerKeyAssociatedWithAction(PED_RELOAD, type))
+		state.Circle = 255;
+#endif
 	
 	if (CMenuManager::m_ControlMethod == CONTROL_CLASSIC)
 	{
@@ -875,11 +948,26 @@ void CControllerConfigManager::AffectControllerStateOn_ButtonDown_FirstAndThirdP
 
 #ifdef BIND_VEHICLE_FIREWEAPON
 	if (button == GetControllerKeyAssociatedWithAction(PED_FIREWEAPON, type))
+#ifdef EX_CONTROL // AffectControllerStateOn_ButtonDown_FirstAndThirdPersonOnly
+		state.LeftShoulder1 = 255;
+#else
 		state.Circle = 255;
+#endif
 #endif
 	if (button == GetControllerKeyAssociatedWithAction(PED_LOCK_TARGET, type))
 		state.RightShoulder1 = 255;
 
+#ifdef EX_CONTROL // AffectControllerStateOn_ButtonDown_FirstAndThirdPersonOnly
+	if (button == GetControllerKeyAssociatedWithAction(GO_FORWARD, type))
+	{
+		state.LeftStickY = -255;
+	}
+
+	if (button == GetControllerKeyAssociatedWithAction(GO_BACK, type))
+	{
+		state.LeftStickY = 255;
+	}
+#else
 	if (button == GetControllerKeyAssociatedWithAction(GO_FORWARD, type))
 	{
 		if (state.DPadDown || m_aSimCheckers[SIM_Y1][type])
@@ -903,6 +991,19 @@ void CControllerConfigManager::AffectControllerStateOn_ButtonDown_FirstAndThirdP
 		else
 			state.DPadDown = 255;
 	}
+#endif
+
+#ifdef EX_CONTROL // AffectControllerStateOn_ButtonDown_FirstAndThirdPersonOnly: Smooth turning of the wheels
+	if (button == GetControllerKeyAssociatedWithAction(GO_LEFT, type))
+	{
+		state.LeftStickX = -255;
+	}
+
+	if (button == GetControllerKeyAssociatedWithAction(GO_RIGHT, type))
+	{
+		state.LeftStickX = 255;
+	}
+#endif
 
 	if (button == GetControllerKeyAssociatedWithAction(PED_1RST_PERSON_LOOK_LEFT, type))
 	{
@@ -964,6 +1065,7 @@ void CControllerConfigManager::AffectControllerStateOn_ButtonDown_AllStates(int3
 		state.Circle = 255;
 #endif
 
+#ifndef EX_CONTROL // AffectControllerStateOn_ButtonDown_AllStates: Smooth turning of the wheels
 	if (button == GetControllerKeyAssociatedWithAction(GO_LEFT, type))
 	{
 		if (state.DPadRight || m_aSimCheckers[SIM_X1][type])
@@ -987,6 +1089,7 @@ void CControllerConfigManager::AffectControllerStateOn_ButtonDown_AllStates(int3
 		else
 			state.DPadRight = 255;
 	}
+#endif
 
 	if (button == GetControllerKeyAssociatedWithAction(NETWORK_TALK, type))
 		state.NetworkTalk = 255;
@@ -996,6 +1099,10 @@ void CControllerConfigManager::AffectControllerStateOn_ButtonDown_VehicleAndThir
 {
 	if (button == GetControllerKeyAssociatedWithAction(VEHICLE_ENTER_EXIT, type))
 		state.Triangle = 255;
+#ifdef EX_RADAR_ZOOM // AffectControllerStateOn_ButtonDown_VehicleAndThirdPersonOnly
+	if (button == GetControllerKeyAssociatedWithAction(RADAR_ZOOM_OUT, type))
+		state.DPadUp = 255;
+#endif
 }
 
 void CControllerConfigManager::UpdateJoyInConfigMenus_ButtonUp(int32 button, int32 padnumber)
@@ -1769,6 +1876,15 @@ void CControllerConfigManager::DeleteMatchingVehicle_3rdPersonControls(e_Control
 	if (!GetIsKeyBlank(key, type))
 	{
 		CLEAR_ACTION_IF_NEEDED(VEHICLE_ENTER_EXIT);
+#ifdef EX_PC_WALK // CLEAR_ACTION_IF_NEEDED
+		CLEAR_ACTION_IF_NEEDED(PED_WALK);
+#endif
+#ifdef EX_RADAR_ZOOM // CLEAR_ACTION_IF_NEEDED
+		CLEAR_ACTION_IF_NEEDED(RADAR_ZOOM_OUT);
+#endif
+#ifdef EX_RELOAD // CLEAR_ACTION_IF_NEEDED
+		CLEAR_ACTION_IF_NEEDED(PED_RELOAD);
+#endif
 	}
 }
 
@@ -1822,6 +1938,15 @@ bool CControllerConfigManager::IsAnyVehicleActionAssignedToMouseKey(int32 key)
 		CHECK_ACTION(TOGGLE_DPAD);
 		CHECK_ACTION(TAKE_SCREEN_SHOT);
 		CHECK_ACTION(SHOW_MOUSE_POINTER_TOGGLE);
+#ifdef EX_PC_WALK // CHECK_ACTION
+		CHECK_ACTION(PED_WALK);
+#endif
+#ifdef EX_RADAR_ZOOM // CHECK_ACTION
+		CHECK_ACTION(RADAR_ZOOM_OUT);
+#endif
+#ifdef EX_RELOAD // CHECK_ACTION
+		CHECK_ACTION(PED_RELOAD);
+#endif
 	}
 	return false;
 }
@@ -1928,6 +2053,12 @@ e_ControllerActionType CControllerConfigManager::GetActionType(e_ControllerActio
 	case PED_CYCLE_TARGET_LEFT:
 	case PED_CYCLE_TARGET_RIGHT:
 	case PED_CENTER_CAMERA_BEHIND_PLAYER:
+#ifdef EX_PC_WALK // GetActionType
+	case PED_WALK:
+#endif
+#ifdef EX_RELOAD // GetActionType
+	case PED_RELOAD:
+#endif
 		return ACTIONTYPE_3RDPERSON;
 		break;
 
@@ -1951,6 +2082,9 @@ e_ControllerActionType CControllerConfigManager::GetActionType(e_ControllerActio
 		break;
 
 	case VEHICLE_ENTER_EXIT:
+#ifdef EX_RADAR_ZOOM // GetActionType
+	case RADAR_ZOOM_OUT:
+#endif
 		return ACTIONTYPE_VEHICLE_3RDPERSON;
 		break;
 

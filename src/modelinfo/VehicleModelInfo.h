@@ -1,6 +1,9 @@
 #pragma once
 
 #include "ClumpModelInfo.h"
+#ifdef EX_VEHICLE_LOADER
+#include "HandlingMgr.h"
+#endif
 
 enum {
 	NUM_FIRST_MATERIALS = 26,
@@ -76,6 +79,18 @@ enum {
 	NUM_VEHICLE_POSITIONS = 10
 };
 
+#ifdef EX_VEHICLE_LOADER
+struct tAnotherVehicleSampleData {
+	int16 m_nAccelerationSampleIndex;
+	uint8 m_nBank;
+	int16 m_nHornSample;
+	int32 m_nHornFrequency;
+	uint8 m_nSirenOrAlarmSample;
+	int32 m_nSirenOrAlarmFrequency;
+	uint8 m_bDoorType;
+};
+#endif
+
 class CVehicleModelInfo : public CClumpModelInfo
 {
 public:
@@ -106,6 +121,13 @@ public:
 	RwTexture *m_envMap;
 	RpAtomic *m_comps[6];
 	int32 m_numComps;
+
+#ifdef EX_VEHICLE_LOADER
+	tAnotherVehicleSampleData vehicleSampleData;
+	uint16 m_policeRadioIndex;
+	tHandlingData handlingData;
+	wchar m_fullGameName[32];
+#endif
 
 	static int8 ms_compsToUse[2];
 	static int8 ms_compsUsed[2];

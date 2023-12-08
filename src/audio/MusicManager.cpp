@@ -527,11 +527,19 @@ cMusicManager::ServiceGameMode()
 #endif
 				}
 #ifdef RADIO_SCROLL_TO_PREV_STATION
+#ifdef EX_CONTROL // PrevStationJustDown
+				else if(!CPad::GetPad(0)->ArePlayerControlsDisabled() && (CPad::GetPad(0)->GetMouseWheelDownJustDown() || CPad::GetPad(0)->GetMouseWheelUpJustDown() || CPad::GetPad(0)->PrevStationJustDown())) {
+#else
 				else if(!CPad::GetPad(0)->ArePlayerControlsDisabled() && (CPad::GetPad(0)->GetMouseWheelDownJustDown() || CPad::GetPad(0)->GetMouseWheelUpJustDown())) {
+#endif
 					int scrollNext = ControlsManager.GetControllerKeyAssociatedWithAction(VEHICLE_CHANGE_RADIO_STATION, MOUSE);
 					int scrollPrev = scrollNext == rsMOUSEWHEELUPBUTTON ? rsMOUSEWHEELDOWNBUTTON : scrollNext == rsMOUSEWHEELDOWNBUTTON ? rsMOUSEWHEELUPBUTTON : -1;
 
+#ifdef EX_CONTROL // PrevStationJustDown
+					if (scrollPrev != -1 && !ControlsManager.IsAnyVehicleActionAssignedToMouseKey(scrollPrev) || (CPad::GetPad(0)->IsAffectedByController && CPad::GetPad(0)->PrevStationJustDown())) {
+#else
 					if (scrollPrev != -1 && !ControlsManager.IsAnyVehicleActionAssignedToMouseKey(scrollPrev)) {
+#endif
 						gRetuneCounter = 30;
 						gNumRetunePresses--;
 						AudioManager.PlayOneShot(AudioManager.m_nFrontEndEntity, SOUND_FRONTEND_RADIO_CHANGE, 1.0f);

@@ -24,6 +24,9 @@ public:
 	int16 Square, Triangle, Cross, Circle;
 	int16 LeftShock, RightShock;
 	int16 NetworkTalk;
+#ifdef EX_PC_WALK
+	int16 bWalk;
+#endif
 	float GetLeftStickX(void) { return LeftStickX/32767.0f; };
 	float GetLeftStickY(void) { return LeftStickY/32767.0f; };
 	float GetRightStickX(void) { return RightStickX/32767.0f; };
@@ -148,9 +151,18 @@ public:
 	CControllerState PCTempMouseState;
 	// straight out of my IDB
 	int16 Phase;
+#ifdef EX_CONTROL // Modern controls for the default gamepad
+	int16 Mode = 1;
+#else
 	int16 Mode;
-	int16 ShakeDur;
+#endif
+#ifdef EX_VIBRATION
+	uint8 ShakeLowFreq;
+	uint8 ShakeHighFreq;
+#else
 	uint8 ShakeFreq;
+#endif
+	int16 ShakeDur;
 	bool bHornHistory[HORNHISTORY_SIZE];
 	uint8 iCurrHornHistory;
 	uint8 DisablePlayerControls;
@@ -190,8 +202,13 @@ public:
 	void ClearMouseHistory();
 	void UpdateMouse();
 	CControllerState ReconcileTwoControllersInput(CControllerState const &State1, CControllerState const &State2);
+#ifdef EX_VIBRATION
+	void StartShake(int16 nDur, uint8 nLowFreq, uint8 nHighFreq);
+	void StartShake_Distance(int16 nDur, uint8 nLowFreq, uint8 nHighFreq, float fX, float fY, float fz);
+#else
 	void StartShake(int16 nDur, uint8 nFreq);
 	void StartShake_Distance(int16 nDur, uint8 nFreq, float fX, float fY, float fz);
+#endif
 	void StartShake_Train(float fX, float fY);
 #ifdef GTA_PS2_STUFF
 	void AddToCheatString(char c);
@@ -235,6 +252,20 @@ public:
 	bool CycleCameraModeUpJustDown(void);
 	bool CycleCameraModeDownJustDown(void);
 	bool ChangeStationJustDown(void);
+#ifdef EX_CONTROL // PrevStationJustDown
+	bool PrevStationJustDown(void);
+#endif
+#ifdef EX_PC_WALK // GetPedWalk
+	bool GetPedWalk(void);
+#endif
+#ifdef EX_RADAR_ZOOM // GetRadarZoomOut
+	bool GetRadarZoomOut(void);
+#endif
+#ifdef EX_RELOAD
+	bool WeaponReloadJustDown(void);
+	bool GetMeleeWeapon(void);
+	bool MeleeWeaponJustDown(void);
+#endif
 	bool CycleWeaponLeftJustDown(void);
 	bool CycleWeaponRightJustDown(void);
 	bool GetTarget(void);

@@ -62,6 +62,15 @@ enum e_ControllerAction
 	SWITCH_DEBUG_CAM_ON,
 	TAKE_SCREEN_SHOT,
 	SHOW_MOUSE_POINTER_TOGGLE,
+#ifdef EX_PC_WALK // e_ControllerAction
+	PED_WALK,
+#endif
+#ifdef EX_RADAR_ZOOM // e_ControllerAction
+	RADAR_ZOOM_OUT,
+#endif
+#ifdef EX_RELOAD // e_ControllerAction
+	PED_RELOAD,
+#endif
 	MAX_CONTROLLERACTIONS,
 };
 

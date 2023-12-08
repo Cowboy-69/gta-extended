@@ -1900,8 +1900,14 @@ CPed::ProcessObjective(void)
 							else if (m_pMyVehicle->IsBoat())
 								SetExitBoat(m_pMyVehicle);
 #endif
+#ifdef EX_CAN_SHUT_DOWN_CAR // Implementation
+							else if (!IsPlayer() || FindPlayerPed()->GetPlayerInfoForThisPlayerPed()->m_nTimeVehicleEngineOff < CTimer::GetTimeInMilliseconds()) {
+								SetExitCar(m_pMyVehicle, 0);
+							}
+#else
 							else
 								SetExitCar(m_pMyVehicle, 0);
+#endif
 						}
 					} else {
 						RestorePreviousObjective();
@@ -2137,8 +2143,15 @@ CPed::ReactToAttack(CEntity *attacker)
 {
 	if (IsPlayer() && attacker->IsPed()) {
 		InformMyGangOfAttack(attacker);
+#ifdef EX_FIRST_PERSON // ReactToAttack
+		if (TheCamera.Cams[TheCamera.ActiveCam].Mode != CCam::MODE_REAL_1ST_PERSON) {
+			SetLookFlag(attacker, true);
+			SetLookTimer(700);
+		}
+#else
 		SetLookFlag(attacker, true);
 		SetLookTimer(700);
+#endif
 		return;
 	}
 
@@ -4044,6 +4057,13 @@ CPed::SetExitCar(CVehicle *veh, uint32 wantedDoorNode)
 			else
 				veh->SetStatus(STATUS_ABANDONED);
 		}
+
+#ifdef EX_CAN_SHUT_DOWN_CAR // Implementation
+		if (veh->pDriver == this && IsPlayer() && FindPlayerPed()->GetPlayerInfoForThisPlayerPed()->m_nTimeVehicleEngineOff != 0) {
+			veh->bEngineOn = false;
+			veh->bLightsOn = false;
+		}
+#endif
 	}
 }
 

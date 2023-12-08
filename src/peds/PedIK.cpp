@@ -180,6 +180,43 @@ CPedIK::MoveLimb(LimbOrientation &limb, float targetYaw, float targetPitch, Limb
 {
 	LimbMoveStatus result = ONE_ANGLE_COULDNT_BE_SET_EXACTLY;
 
+#ifdef EX_AIMING // // Fixes for player twitching when aiming (from reVC)
+	// yaw
+
+	if(Abs(limb.yaw-targetYaw) < moveInfo.yawD){
+		limb.yaw = targetYaw;
+		result = ANGLES_SET_EXACTLY;
+	}else{
+		if (limb.yaw > targetYaw) {
+			limb.yaw -= moveInfo.yawD;
+		} else if (limb.yaw < targetYaw) {
+			limb.yaw += moveInfo.yawD;
+		}
+	}
+
+	if (limb.yaw > moveInfo.maxYaw || limb.yaw < moveInfo.minYaw) {
+		limb.yaw = Clamp(limb.yaw, moveInfo.minYaw, moveInfo.maxYaw);
+		result = ANGLES_SET_TO_MAX;
+	}
+
+	// pitch
+
+	if (Abs(limb.pitch - targetPitch) < moveInfo.pitchD){
+		limb.pitch = targetPitch;
+	}else{
+		if (limb.pitch > targetPitch) {
+			limb.pitch -= moveInfo.pitchD;
+		} else if (limb.pitch < targetPitch) {
+			limb.pitch += moveInfo.pitchD;
+		}
+		result = ONE_ANGLE_COULDNT_BE_SET_EXACTLY;
+	}
+
+	if (limb.pitch > moveInfo.maxPitch || limb.pitch < moveInfo.minPitch) {
+		limb.pitch = Clamp(limb.pitch, moveInfo.minPitch, moveInfo.maxPitch);
+		result = ANGLES_SET_TO_MAX;
+	}
+#else
 	// yaw
 
 	if (limb.yaw > targetYaw) {
@@ -215,6 +252,7 @@ CPedIK::MoveLimb(LimbOrientation &limb, float targetYaw, float targetPitch, Limb
 		limb.pitch = Clamp(limb.pitch, moveInfo.minPitch, moveInfo.maxPitch);
 		result = ANGLES_SET_TO_MAX;
 	}
+#endif
 	return result;
 }
 

@@ -280,7 +280,11 @@ int8 CRunningScript::ProcessCommands300To399(int32 command)
 		TheCamera.Restore();
 		return 0;
 	case COMMAND_SHAKE_PAD:
+#ifdef EX_VIBRATION // Script
+		CPad::GetPad(ScriptParams[0])->StartShake(ScriptParams[1], ScriptParams[2], ScriptParams[2]);
+#else
 		CPad::GetPad(ScriptParams[0])->StartShake(ScriptParams[1], ScriptParams[2]);
+#endif
 		return 0;
 	case COMMAND_SET_ZONE_PED_INFO:
 	{

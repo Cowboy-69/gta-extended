@@ -223,9 +223,20 @@ CEventList::ReportCrimeForEvent(eEventType type, intptr crimeId, bool copsDontCa
 	CVector playerPedCoors = FindPlayerPed()->GetPosition();
 	CVector playerCoors = FindPlayerCoors();
 
+#ifdef EX_AI // Cops respond to offenses from a greater distance
+	if(CWanted::WorkOutPolicePresence(playerCoors, 28.0f) != 0){
+#else
 	if(CWanted::WorkOutPolicePresence(playerCoors, 14.0f) != 0){
+#endif
 		FindPlayerPed()->m_pWanted->RegisterCrime_Immediately(crime, playerPedCoors, crimeId, copsDontCare);
+#ifdef EX_AI // If the player shoots next to a cop, the player will get two stars (if he already has one)
+		if (type == EVENT_GUNSHOT && FindPlayerPed()->m_pWanted->GetWantedLevel() == 1 && CWanted::WorkOutPolicePresence(playerCoors, 10.0f) != 0)
+			FindPlayerPed()->SetWantedLevelNoDrop(2);
+		else
+			FindPlayerPed()->m_pWanted->SetWantedLevelNoDrop(1);
+#else
 		FindPlayerPed()->m_pWanted->SetWantedLevelNoDrop(1);
+#endif
 	}else
 		FindPlayerPed()->m_pWanted->RegisterCrime(crime, playerPedCoors, crimeId, copsDontCare);
 

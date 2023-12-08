@@ -1301,6 +1301,43 @@ cAudioManager::ProcessVehicleEngine(cVehicleParams& params)
 				}
 				m_sQueueSample.m_nVolume = ComputeVolume(Vol, VEHICLE_ENGINE_MAX_DIST, m_sQueueSample.m_fDistance);
 				if (m_sQueueSample.m_nVolume > 0) {
+#ifdef EX_VEHICLE_LOADER
+					if (automobile->GetStatus() == STATUS_SIMPLE) {
+						if (modificator < 0.02f) {
+							if (params.m_pVehicle->GetModelIndex() >= MI_FIRST_NEW_VEHICLE)
+								m_sQueueSample.m_nSampleIndex = params.m_pVehicle->pVehicleSample->m_nBank - CAR_SFX_BANKS_OFFSET + SFX_CAR_IDLE_1;
+							else
+								m_sQueueSample.m_nSampleIndex = aVehicleSettings[params.m_nIndex].m_nBank - CAR_SFX_BANKS_OFFSET + SFX_CAR_IDLE_1;
+
+							freq = modificator * 10000 + 22050;
+							m_sQueueSample.m_nCounter = 52;
+						} else {
+							if (params.m_pVehicle->GetModelIndex() >= MI_FIRST_NEW_VEHICLE)
+								m_sQueueSample.m_nSampleIndex = params.m_pVehicle->pVehicleSample->m_nAccelerationSampleIndex;
+							else
+								m_sQueueSample.m_nSampleIndex = aVehicleSettings[params.m_nIndex].m_nAccelerationSampleIndex;
+
+							m_sQueueSample.m_nCounter = 2;
+						}
+					} else {
+						if (automobile->m_fGasPedal < 0.05f) {
+							if (params.m_pVehicle->GetModelIndex() >= MI_FIRST_NEW_VEHICLE)
+								m_sQueueSample.m_nSampleIndex = params.m_pVehicle->pVehicleSample->m_nBank - CAR_SFX_BANKS_OFFSET + SFX_CAR_IDLE_1;
+							else
+								m_sQueueSample.m_nSampleIndex = aVehicleSettings[params.m_nIndex].m_nBank - CAR_SFX_BANKS_OFFSET + SFX_CAR_IDLE_1;
+
+							freq = modificator * 10000 + 22050;
+							m_sQueueSample.m_nCounter = 52;
+						} else {
+							if (params.m_pVehicle->GetModelIndex() >= MI_FIRST_NEW_VEHICLE)
+								m_sQueueSample.m_nSampleIndex = params.m_pVehicle->pVehicleSample->m_nAccelerationSampleIndex;
+							else
+								m_sQueueSample.m_nSampleIndex = aVehicleSettings[params.m_nIndex].m_nAccelerationSampleIndex;
+
+							m_sQueueSample.m_nCounter = 2;
+						}
+					}
+#else
 					if (automobile->GetStatus() == STATUS_SIMPLE) {
 						if (modificator < 0.02f) {
 							m_sQueueSample.m_nSampleIndex = aVehicleSettings[params.m_nIndex].m_nBank - CAR_SFX_BANKS_OFFSET + SFX_CAR_IDLE_1;
@@ -1320,6 +1357,7 @@ cAudioManager::ProcessVehicleEngine(cVehicleParams& params)
 							m_sQueueSample.m_nCounter = 2;
 						}
 					}
+#endif
 					m_sQueueSample.m_nBankIndex = SFX_BANK_0;
 					m_sQueueSample.m_bIs2D = FALSE;
 					m_sQueueSample.m_nPriority = 3;
@@ -1564,6 +1602,11 @@ cAudioManager::ProcessPlayersVehicleEngine(cVehicleParams& params, CAutomobile *
 	} else
 		freqModifier = 0;
 
+#ifdef EX_VEHICLE_LOADER
+	if (params.m_pVehicle->GetModelIndex() >= MI_FIRST_NEW_VEHICLE)
+		engineSoundType = params.m_pVehicle->pVehicleSample->m_nBank;
+	else
+#endif
 	engineSoundType = aVehicleSettings[params.m_nIndex].m_nBank;
 	soundOffset = 3 * (engineSoundType - CAR_SFX_BANKS_OFFSET);
 	if (accelerateState > 0) {
@@ -1873,10 +1916,20 @@ cAudioManager::ProcessVehicleHorn(cVehicleParams& params)
 			m_sQueueSample.m_nVolume = ComputeVolume(VEHICLE_HORN_VOLUME, VEHICLE_HORN_MAX_DIST, m_sQueueSample.m_fDistance);
 			if (m_sQueueSample.m_nVolume > 0) {
 				m_sQueueSample.m_nCounter = 4;
+#ifdef EX_VEHICLE_LOADER
+				if (params.m_pVehicle->GetModelIndex() >= MI_FIRST_NEW_VEHICLE)
+					m_sQueueSample.m_nSampleIndex = params.m_pVehicle->pVehicleSample->m_nHornSample;
+				else
+#endif
 				m_sQueueSample.m_nSampleIndex = aVehicleSettings[params.m_nIndex].m_nHornSample;
 				m_sQueueSample.m_nBankIndex = SFX_BANK_0;
 				m_sQueueSample.m_bIs2D = FALSE;
 				m_sQueueSample.m_nPriority = 2;
+#ifdef EX_VEHICLE_LOADER
+				if (params.m_pVehicle->GetModelIndex() >= MI_FIRST_NEW_VEHICLE)
+					m_sQueueSample.m_nFrequency = params.m_pVehicle->pVehicleSample->m_nHornFrequency;
+				else
+#endif
 				m_sQueueSample.m_nFrequency = aVehicleSettings[params.m_nIndex].m_nHornFrequency;
 				m_sQueueSample.m_nLoopCount = 0;
 				SET_EMITTING_VOLUME(VEHICLE_HORN_VOLUME);
@@ -1946,12 +1999,32 @@ cAudioManager::ProcessVehicleSirenOrAlarm(cVehicleParams& params)
 							m_sQueueSample.m_nFrequency = SampleManager.GetSampleBaseFrequency(SFX_SIREN_FAST);
 						m_sQueueSample.m_nCounter = 60;
 					} else {
+#ifdef EX_VEHICLE_LOADER
+						if (params.m_pVehicle->GetModelIndex() >= MI_FIRST_NEW_VEHICLE) {
+							m_sQueueSample.m_nSampleIndex = params.m_pVehicle->pVehicleSample->m_nSirenOrAlarmSample;
+							m_sQueueSample.m_nFrequency = params.m_pVehicle->pVehicleSample->m_nSirenOrAlarmFrequency;
+						} else {
+							m_sQueueSample.m_nSampleIndex = aVehicleSettings[params.m_nIndex].m_nSirenOrAlarmSample;
+							m_sQueueSample.m_nFrequency = aVehicleSettings[params.m_nIndex].m_nSirenOrAlarmFrequency;
+						}
+#else
+						m_sQueueSample.m_nSampleIndex = aVehicleSettings[params.m_nIndex].m_nSirenOrAlarmSample;
+						m_sQueueSample.m_nFrequency = aVehicleSettings[params.m_nIndex].m_nSirenOrAlarmFrequency;
+#endif
+					}
+				} else {
+#ifdef EX_VEHICLE_LOADER
+					if (params.m_pVehicle->GetModelIndex() >= MI_FIRST_NEW_VEHICLE) {
+						m_sQueueSample.m_nSampleIndex = params.m_pVehicle->pVehicleSample->m_nSirenOrAlarmSample;
+						m_sQueueSample.m_nFrequency = params.m_pVehicle->pVehicleSample->m_nSirenOrAlarmFrequency;
+					} else {
 						m_sQueueSample.m_nSampleIndex = aVehicleSettings[params.m_nIndex].m_nSirenOrAlarmSample;
 						m_sQueueSample.m_nFrequency = aVehicleSettings[params.m_nIndex].m_nSirenOrAlarmFrequency;
 					}
-				} else {
+#else
 					m_sQueueSample.m_nSampleIndex = aVehicleSettings[params.m_nIndex].m_nSirenOrAlarmSample;
 					m_sQueueSample.m_nFrequency = aVehicleSettings[params.m_nIndex].m_nSirenOrAlarmFrequency;
+#endif
 				}
 				m_sQueueSample.m_nBankIndex = SFX_BANK_0;
 				m_sQueueSample.m_bIs2D = FALSE;
@@ -2218,6 +2291,41 @@ cAudioManager::ProcessVehicleOneShots(cVehicleParams& params)
 		case SOUND_CAR_DOOR_OPEN_BACK_RIGHT:
 			maxDist = SQR(VEHICLE_ONE_SHOT_DOOR_MAX_DIST);
 			Vol = m_anRandomTable[1] % (MAX_VOLUME - VEHICLE_ONE_SHOT_DOOR_CLOSE_VOLUME) + VEHICLE_ONE_SHOT_DOOR_CLOSE_VOLUME;
+#ifdef EX_VEHICLE_LOADER
+			if (params.m_pVehicle->GetModelIndex() >= MI_FIRST_NEW_VEHICLE) {
+				switch (params.m_pVehicle->pVehicleSample->m_bDoorType) {
+				case OLD_DOOR:
+					m_sQueueSample.m_nSampleIndex = SFX_OLD_CAR_DOOR_OPEN;
+					break;
+				case NEW_DOOR:
+				default:
+					m_sQueueSample.m_nSampleIndex = SFX_NEW_CAR_DOOR_OPEN;
+					break;
+				case TRUCK_DOOR:
+					m_sQueueSample.m_nSampleIndex = SFX_TRUCK_DOOR_OPEN;
+					break;
+				case BUS_DOOR:
+					m_sQueueSample.m_nSampleIndex = SFX_AIR_BRAKES;
+					break;
+				}
+			} else {
+				switch (aVehicleSettings[params.m_nIndex].m_bDoorType) {
+				case OLD_DOOR:
+					m_sQueueSample.m_nSampleIndex = SFX_OLD_CAR_DOOR_OPEN;
+					break;
+				case NEW_DOOR:
+				default:
+					m_sQueueSample.m_nSampleIndex = SFX_NEW_CAR_DOOR_OPEN;
+					break;
+				case TRUCK_DOOR:
+					m_sQueueSample.m_nSampleIndex = SFX_TRUCK_DOOR_OPEN;
+					break;
+				case BUS_DOOR:
+					m_sQueueSample.m_nSampleIndex = SFX_AIR_BRAKES;
+					break;
+				}
+			}
+#else
 			switch (aVehicleSettings[params.m_nIndex].m_bDoorType) {
 			case OLD_DOOR:
 				m_sQueueSample.m_nSampleIndex = SFX_OLD_CAR_DOOR_OPEN;
@@ -2233,6 +2341,7 @@ cAudioManager::ProcessVehicleOneShots(cVehicleParams& params)
 				m_sQueueSample.m_nSampleIndex = SFX_AIR_BRAKES;
 				break;
 			}
+#endif
 			m_sQueueSample.m_nBankIndex = SFX_BANK_0;
 #ifdef THIS_IS_STUPID
 			m_sQueueSample.m_nCounter = m_asAudioEntities[m_sQueueSample.m_nEntityIndex].m_awAudioEvent[i] + 10;
@@ -2254,6 +2363,41 @@ cAudioManager::ProcessVehicleOneShots(cVehicleParams& params)
 		case SOUND_CAR_DOOR_CLOSE_BACK_RIGHT:
 			maxDist = SQR(VEHICLE_ONE_SHOT_DOOR_MAX_DIST);
 			Vol = m_anRandomTable[2] % (MAX_VOLUME - VEHICLE_ONE_SHOT_DOOR_OPEN_VOLUME) + VEHICLE_ONE_SHOT_DOOR_OPEN_VOLUME;
+#ifdef EX_VEHICLE_LOADER
+			if (params.m_pVehicle->GetModelIndex() >= MI_FIRST_NEW_VEHICLE) {
+				switch (params.m_pVehicle->pVehicleSample->m_bDoorType) {
+				case OLD_DOOR:
+					m_sQueueSample.m_nSampleIndex = SFX_OLD_CAR_DOOR_CLOSE;
+					break;
+				case NEW_DOOR:
+				default:
+					m_sQueueSample.m_nSampleIndex = SFX_NEW_CAR_DOOR_CLOSE;
+					break;
+				case TRUCK_DOOR:
+					m_sQueueSample.m_nSampleIndex = SFX_TRUCK_DOOR_CLOSE;
+					break;
+				case BUS_DOOR:
+					m_sQueueSample.m_nSampleIndex = SFX_AIR_BRAKES;
+					break;
+				}
+			} else {
+				switch (aVehicleSettings[params.m_nIndex].m_bDoorType) {
+				case OLD_DOOR:
+					m_sQueueSample.m_nSampleIndex = SFX_OLD_CAR_DOOR_CLOSE;
+					break;
+				case NEW_DOOR:
+				default:
+					m_sQueueSample.m_nSampleIndex = SFX_NEW_CAR_DOOR_CLOSE;
+					break;
+				case TRUCK_DOOR:
+					m_sQueueSample.m_nSampleIndex = SFX_TRUCK_DOOR_CLOSE;
+					break;
+				case BUS_DOOR:
+					m_sQueueSample.m_nSampleIndex = SFX_AIR_BRAKES;
+					break;
+				}
+			}
+#else
 			switch (aVehicleSettings[params.m_nIndex].m_bDoorType) {
 			case OLD_DOOR:
 				m_sQueueSample.m_nSampleIndex = SFX_OLD_CAR_DOOR_CLOSE;
@@ -2269,6 +2413,7 @@ cAudioManager::ProcessVehicleOneShots(cVehicleParams& params)
 				m_sQueueSample.m_nSampleIndex = SFX_AIR_BRAKES;
 				break;
 			}
+#endif
 			m_sQueueSample.m_nBankIndex = SFX_BANK_0;
 #ifdef THIS_IS_STUPID
 			m_sQueueSample.m_nCounter = m_asAudioEntities[m_sQueueSample.m_nEntityIndex].m_awAudioEvent[i] + 22;

@@ -9,6 +9,12 @@ enum eLevelName {
 	NUM_LEVELS
 };
 
+#ifdef LIBERTY_EX // Liberty Extended version
+enum eLibertyExtendedVersion {
+	LIBERTYEX_VER_1_0,
+};
+#endif
+
 class CGame
 {
 public:
@@ -24,6 +30,10 @@ public:
 	static bool noProstitutes;
 	static bool playingIntro;
 	static char aDatFile[32];
+
+#ifdef LIBERTY_EX // Liberty Extended version
+	static uint8 libertyExtendedVersion; // eLibertyExtendedVersion
+#endif
 
 	static bool InitialiseOnceBeforeRW(void);
 	static bool InitialiseRenderWare(void);

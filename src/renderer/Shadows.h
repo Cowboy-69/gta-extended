@@ -2,8 +2,13 @@
 
 #define MAX_STOREDSHADOWS    48
 #define MAX_POLYBUNCHES      300
+#ifdef EX_PARTICLE // Increased limits
+#define MAX_STATICSHADOWS    64 * 2
+#define MAX_PERMAMENTSHADOWS 48 * 2
+#else
 #define MAX_STATICSHADOWS    64
 #define MAX_PERMAMENTSHADOWS 48
+#endif
 
 
 class CEntity;

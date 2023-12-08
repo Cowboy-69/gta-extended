@@ -357,7 +357,11 @@ void CHud::Draw()
 		/*
 			Draw Crosshairs
 		*/
+#ifdef EX_AIMING // Display crosshairs only when aiming manually
+		if (FindPlayerPed()->bIsAimingGun && !FindPlayerPed()->m_pPointGunAt &&
+#else
 		if (TheCamera.Cams[TheCamera.ActiveCam].Using3rdPersonMouseCam() &&
+#endif
 		    (!CPad::GetPad(0)->GetLookBehindForPed() || TheCamera.m_bPlayerIsInGarage) || Mode == CCam::MODE_1STPERSON_RUNABOUT) {
 			if (FindPlayerPed() && !FindPlayerPed()->EnteringCar()) {
 				if ((WeaponType >= WEAPONTYPE_COLT45 && WeaponType <= WEAPONTYPE_M16) || WeaponType == WEAPONTYPE_FLAMETHROWER)
@@ -382,7 +386,11 @@ void CHud::Draw()
 			float fMultBright = SpriteBrightness / 30.0f * (0.25f * fStep + 0.75f);
 			CRect rect;
 #ifdef GTA_PC
+#ifdef EX_AIMING // Display crosshairs only when aiming
+			if (DrawCrossHairPC) {
+#else
 			if (DrawCrossHairPC && TheCamera.Cams[TheCamera.ActiveCam].Using3rdPersonMouseCam()) {
+#endif
 				float f3rdX = SCREEN_WIDTH * TheCamera.m_f3rdPersonCHairMultX;
 				float f3rdY = SCREEN_HEIGHT * TheCamera.m_f3rdPersonCHairMultY;
 #ifdef ASPECT_RATIO_SCALE
@@ -494,7 +502,11 @@ void CHud::Draw()
 		wchar sPrint[16];
 		wchar sPrintIcon[16];
 		char sTemp[16];
-
+#ifdef EX_FEATURES_INI // RemoveMoneyZerosInTheHud
+		if (bRemoveMoneyZerosInTheHud)
+			sprintf(sTemp, "$%01d", CWorld::Players[CWorld::PlayerInFocus].m_nVisibleMoney);
+		else
+#endif
 		sprintf(sTemp, "$%08d", CWorld::Players[CWorld::PlayerInFocus].m_nVisibleMoney);
 		AsciiToUnicode(sTemp, sPrint);
 
@@ -645,6 +657,36 @@ void CHud::Draw()
 		/*
 			DrawWantedLevel
 		*/
+#ifdef EX_FEATURES_INI // WantedStarsHideOnScreenWhenThereIsNoSearch
+		if (bWantedStarsHideOnScreenWhenThereIsNoSearch && FindPlayerPed()->m_pWanted->GetWantedLevel() > 0 || !bWantedStarsHideOnScreenWhenThereIsNoSearch) {
+			CFont::SetBackgroundOff();
+			CFont::SetScale(SCREEN_SCALE_X(0.8f), SCREEN_SCALE_Y(1.35f));
+			CFont::SetJustifyOff();
+			CFont::SetCentreOff();
+			CFont::SetRightJustifyOff();
+			CFont::SetPropOn();
+			CFont::SetFontStyle(FONT_HEADING);
+
+			AsciiToUnicode("]", sPrintIcon);
+		
+			float fStarsX = SCREEN_SCALE_FROM_RIGHT(STARS_X);
+
+			for (int i = 0; i < 6; i++) {
+				CFont::SetColor(CRGBA(0, 0, 0, 255));
+				CFont::PrintString(fStarsX + SCREEN_SCALE_X_FIX(2.0f), SCREEN_SCALE_Y(87.0f) + SCREEN_SCALE_Y_FIX(2.0f), sPrintIcon);
+
+				if (FindPlayerPed()->m_pWanted->GetWantedLevel() > i
+					&& (CTimer::GetTimeInMilliseconds() > FindPlayerPed()->m_pWanted->m_nLastWantedLevelChange
+						+ 2000 || FRAMECOUNTER & 4)) {
+
+					CFont::SetColor(WANTED_COLOR);
+					CFont::PrintString(fStarsX, SCREEN_SCALE_Y(87.0f), sPrintIcon);
+				}
+			
+				fStarsX -= SCREEN_SCALE_X(23.0f);
+			}
+		}
+#else
 		CFont::SetBackgroundOff();
 		CFont::SetScale(SCREEN_SCALE_X(0.8f), SCREEN_SCALE_Y(1.35f));
 		CFont::SetJustifyOff();
@@ -671,6 +713,7 @@ void CHud::Draw()
 			
 			fStarsX -= SCREEN_SCALE_X(23.0f);
 		}
+#endif
 
 		/*
 			DrawZoneName
@@ -1078,6 +1121,9 @@ void CHud::Draw()
 	#endif
 #endif
 			Sprites[HUD_RADARDISC].Draw(rect, RADARDISC_COLOR);
+#ifdef EX_GPS
+			CRadar::DrawGPS();
+#endif
 			CRadar::DrawBlips();
 		}
 	}

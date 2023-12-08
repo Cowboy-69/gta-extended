@@ -58,7 +58,11 @@ RwTexture *gpCoronaTexture[9] = { nil, nil, nil, nil, nil, nil, nil, nil, nil };
 float CCoronas::LightsMult = 1.0f;
 float CCoronas::SunScreenX;
 float CCoronas::SunScreenY;
+#ifdef EX_PARTICLE // Small Moon by default
+bool CCoronas::bSmallMoon = true;
+#else
 bool CCoronas::bSmallMoon;
+#endif
 bool CCoronas::SunBlockedByClouds;
 int CCoronas::bChangeBrightnessImmediately;
 

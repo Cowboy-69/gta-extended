@@ -183,7 +183,11 @@ void CWeather::Update(void)
 	}
 	if (WhenToPlayLightningSound && CTimer::GetTimeInMilliseconds() > WhenToPlayLightningSound) {
 		DMAudio.PlayOneShot(SoundHandle, SOUND_LIGHTNING, LightningDuration);
+#ifdef EX_VIBRATION // Lightning/Thunderstorm
+		CPad::GetPad(0)->StartShake(40 * LightningDuration + 100, 2 * LightningDuration + 80, 2 * LightningDuration + 80);
+#else
 		CPad::GetPad(0)->StartShake(40 * LightningDuration + 100, 2 * LightningDuration + 80);
+#endif
 		WhenToPlayLightningSound = 0;
 	}
 
@@ -462,6 +466,12 @@ void CWeather::RenderRainStreaks(void)
 {
 	if (CTimer::GetIsCodePaused())
 		return;
+
+#ifdef EX_FIRST_PERSON // Taking out the rain during the first-person view while sitting in a car with a roof
+	if (TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON && FindPlayerVehicle() && FindPlayerVehicle()->CarHasRoof())
+		return;
+#endif
+
 	int base_intensity = (64.0f - CTimeCycle::GetFogReduction()) / 64.0f * int(255 * Rain);
 	if (base_intensity == 0)
 		return;

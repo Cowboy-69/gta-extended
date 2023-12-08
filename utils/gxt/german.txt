@@ -8155,11 +8155,11 @@ GAMEPAD-TYP
 [FEC_CCF]
 KONFIGURATION
 
-[FEC_CF1]
-KONFIGURATION 1
+[FEC_CF1]   
+KLASSISCH
 
-[FEC_CF2]
-KONFIGURATION 2
+[FEC_CF2]   
+STANDARD
 
 [FEC_CF3]
 KONFIGURATION 3
@@ -8187,6 +8187,100 @@ PED DENSITY
 
 [FEM_CAR]
 CAR DENSITY
+
+{______________________________Liberty Extended______________________________}
+[FEC_AIM]   
+AUTOMATISCHES ZIELEN
+
+[FEC_LSX]   
+BLICKEMPFINDLICHKEIT X
+
+[FEC_LSY]   
+BLICKEMPFINDLICHKEIT Y
+
+[FEC_ASX]   
+ZIELEMPFINDLICHKEIT X
+
+[FEC_ASY]   
+ZIELEMPFINDLICHKEIT Y
+
+[FEC_IVL]   
+VERTIKAL UMKEHREN
+
+[FEC_LZN]   
+TOTZONE DES LINKEN KNÜPPELS
+
+[FEC_RZN]   
+TOTZONE DES RECHTEN KNÜPPELS
+
+[FEC_VBF]   
+VIBRATIONSKRAFT
+
+[FEC_PRS]   
+Vorheriger Radiosender
+
+[FEC_NRS]   
+Nächster Radiosender
+
+[FEC_RTC]   
+Kamera drehen
+
+[FET_AGC]   
+GAMEPAD-KONFIGURATION
+
+[FET_AGS]   
+GAMEPAD-EINSTELLUNGEN
+
+[FEC_FOV]   
+SICHTFELD
+
+[FEC_ACV]   
+AUTOMATISCHE ZENTRIERUNG IM FAHRZEUG
+
+[FEC_RVD]   
+RELATIVES FAHRZEUG BEIM VORBEIFAHREN
+
+[FEC_DOM]   
+DOOM Modus
+
+[FEC_WAL]
+Spaziergang
+
+[FEC_RZO]
+Radar-Zoom
+
+[FEC_REL]
+Waffe nachladen
+
+[FED_GPS]
+GPS
+
+[FEC_ATK]
+Angriff
+
+[FET_SGP]
+Galerie Fotos speichern
+
+[FES_SAV]
+Sie können das Spiel zu diesem Zeitpunkt nicht speichern. Um das Spiel zu speichern, dürfen Sie sich nicht in einer Mission befinden, sich nicht bewegen oder eine gesuchte Stufe haben.
+
+[FET_AUT]
+Autospeichern
+
+[FEM_SL9]
+Autosave-Datei nicht vorhanden
+
+[FEO_OTH]
+Andere Einstellungen
+
+[FEC_LTS]
+Linke Blinker
+
+[FEC_RTS]
+Rechte Blinker
+
+[FEC_EML]
+Notbeleuchtung
 
 [DUMMY]
 THIS LABEL NEEDS TO BE HERE !!!

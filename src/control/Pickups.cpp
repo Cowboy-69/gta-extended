@@ -193,7 +193,11 @@ CPickup::Update(CPlayerPed *player, CVehicle *vehicle, int playerId)
 
 		// if we didn't then we've got nothing to do
 		if (isPickupTouched && CanBePickedUp(player)) {
+#ifdef EX_VIBRATION // Pickup
+			CPad::GetPad(0)->StartShake(120, 0, 100);
+#else
 			CPad::GetPad(0)->StartShake(120, 100);
+#endif
 			switch (m_eType)
 			{
 			case PICKUP_IN_SHOP:

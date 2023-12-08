@@ -743,6 +743,9 @@ public:
 	static void PedSetInTrainCB(CAnimBlendAssociation *assoc, void *arg);
 	static void PedSetOutTrainCB(CAnimBlendAssociation *assoc, void *arg);
 	static void FinishedAttackCB(CAnimBlendAssociation *assoc, void *arg);
+#ifdef EX_RELOAD // FinishedReloadCB
+	static void FinishedReloadCB(CAnimBlendAssociation* assoc, void* arg);
+#endif
 	static void FinishFightMoveCB(CAnimBlendAssociation *assoc, void *arg);
 	static void PedAnimDoorCloseRollingCB(CAnimBlendAssociation *assoc, void *arg);
 	static void FinishJumpCB(CAnimBlendAssociation *assoc, void *arg);

@@ -21,6 +21,9 @@
 #include "custompipes.h"
 #include "postfx.h"
 #include "screendroplets.h"
+#ifdef EX_FIRST_PERSON
+#include "Vehicle.h"
+#endif
 
 // for 640
 #define MAXSIZE 15
@@ -419,8 +422,19 @@ ScreenDroplets::ProcessCameraMovement(void)
 	bool isTopDown = mode == CCam::MODE_TOPDOWN || mode == CCam::MODE_GTACLASSIC || mode == CCam::MODE_TOP_DOWN_PED;
 	bool isLookingInDirection = FindPlayerVehicle() && mode == CCam::MODE_1STPERSON &&
 		(CPad::GetPad(0)->GetLookBehindForCar() || CPad::GetPad(0)->GetLookLeft() || CPad::GetPad(0)->GetLookRight());
+#ifdef EX_FIRST_PERSON // Show/hide screen droplets in vehicle
+	if (FindPlayerVehicle() && TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON) {
+		CVehicle* veh = FindPlayerVehicle();
+		ms_enabled = !veh->CarHasRoof();
+		ms_movingEnabled = !veh->CarHasRoof();
+	} else {
+		ms_enabled = !isTopDown && !isLookingInDirection;
+		ms_movingEnabled = !isTopDown && !isLookingInDirection;
+	}
+#else
 	ms_enabled = !isTopDown && !isLookingInDirection;
 	ms_movingEnabled = !isTopDown && !isLookingInDirection;
+#endif
 
 	// 0 when looking stright up, 180 when looking up or down
 	ms_camUpAngle = RADTODEG(Acos(Clamp(camUp.z, -1.0f, 1.0f)));

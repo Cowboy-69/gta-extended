@@ -307,7 +307,11 @@ CExplosion::AddExplosion(CEntity *explodingEntity, CEntity *culprit, eExplosionT
 		CWorld::TriggerExplosion(pos, explosion.m_fRadius, explosion.m_fPower, culprit, (type == EXPLOSION_ROCKET || type == EXPLOSION_CAR_QUICK || type == EXPLOSION_MINE || type == EXPLOSION_BARREL || type == EXPLOSION_TANK_GRENADE || type == EXPLOSION_HELI_BOMB));
 
 	TheCamera.CamShake(0.6f, pos.x, pos.y, pos.z);
+#ifdef EX_VIBRATION // Explosion
+	CPad::GetPad(0)->StartShake_Distance(500, 128, 128, pos.x, pos.y, pos.z);
+#else
 	CPad::GetPad(0)->StartShake_Distance(300, 128, pos.x, pos.y, pos.z);
+#endif
 	return true;
 }
 

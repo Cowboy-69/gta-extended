@@ -374,7 +374,11 @@ CWanted::Update(void)
 		if (m_nWantedLevel > 1) {
 			m_nLastUpdateTime = CTimer::GetTimeInMilliseconds();
 		} else {
+#ifdef EX_AI // Cops respond to offenses from a greater distance
+			float radius = 36.0f;
+#else
 			float radius = 18.0f;
+#endif
 			CVector playerPos = FindPlayerCoors();
 			if (WorkOutPolicePresence(playerPos, radius) == 0) {
 				m_nLastUpdateTime = CTimer::GetTimeInMilliseconds();
@@ -418,6 +422,11 @@ CWanted::Update(void)
 			}
 		}
 	}
+
+#ifdef EX_CHEATS // AEZAKMI
+	if (m_nWantedLevel > 0 && FindPlayerPed()->bNoWantedCheat)
+		SetWantedLevel(0);
+#endif
 }
 
 void

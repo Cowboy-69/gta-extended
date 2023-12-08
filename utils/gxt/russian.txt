@@ -2520,7 +2520,7 @@ F~1~
 Вперед
 
 [FEC_FPC]
-Вид от первого лица
+ВИД ОТ ПЕРВОГО ЛИЦА
 
 [FEC_FPO]
 Оружие человека
@@ -2743,7 +2743,7 @@ NUMLOCK
 Пауза
 
 [FEC_PED]
-Управление героем
+УПРАВЛЕНИЕ ГЕРОЕМ
 
 [FEC_PFR]
 Выстрел из оружия
@@ -2941,10 +2941,10 @@ Toggle Pad Game/Debug
 СТРЕЛКА ВВЕРХ
 
 [FEC_VEH]
-Управление машиной
+УПРАВЛЕНИЕ МАШИНОЙ
 
 [FEC_VES]
-Управление машиной
+УПРАВЛЕНИЕ МАШИНОЙ
 
 [FEC_WAR]
 Внимание!
@@ -7985,13 +7985,13 @@ PS2 ALPHA TEST
 
 { Linux joy detection }
 [FEC_JOD]
-DETECT JOYSTICK
+ОБНАРУЖЕНИЕ ДЖОЙСТИКА
 
 [FEC_JPR]
-Press any key on the joystick of your choice that you want to use on the game, and it will be selected.
+Нажмите любую клавишу на джойстике, который вы хотите использовать в игре, и он будет выбран.
 
 [FEC_JDE]
-Detected joystick
+Обнаруженный джойстик
 
 { mission restart }
 [FET_RMS]
@@ -8079,10 +8079,10 @@ DUALSHOCK 4
 КОНФИГУРАЦИЯ
 
 [FEC_CF1]
-СХЕМА 1
+КЛАССИЧЕСКАЯ
 
 [FEC_CF2]
-СХЕМА 2
+СОВРЕМЕННАЯ
 
 [FEC_CF3]
 СХЕМА 3
@@ -8110,6 +8110,88 @@ PED DENSITY
 
 [FEM_CAR]
 CAR DENSITY
+
+{______________________________Liberty Extended______________________________}
+[FEC_AIM]
+АВТОПРИЦЕЛИВАНИЕ
+
+[FEC_LSX]
+ЧУСТВ. ОБЗОРА ПО X
+
+[FEC_LSY]   
+ЧУСТВ. ОБЗОРА ПО Y
+
+[FEC_ASX]   
+ЧУСТВ. ПРИЦЕЛИВАНИЯ ПО X
+
+[FEC_ASY]   
+ЧУСТВ. ПРИЦЕЛИВАНИЯ ПО Y
+
+[FEC_IVL]   
+ИНВЕРТИРОВАТЬ ПО ВЕРТИКАЛИ
+
+[FEC_LZN]   
+МЕРТВАЯ ЗОНА ЛЕВОГО СТИКА
+
+[FEC_RZN]   
+МЕРТВАЯ ЗОНА ПРАВОГО СТИКА
+
+[FEC_VBF]   
+СИЛА ВИБРАЦИИ
+
+[FEC_PRS]   
+Пред. радиостанция
+
+[FEC_NRS]   
+След. радиостанция
+
+[FEC_RTC]   
+Вращение камеры
+
+[FET_AGC]   
+КОНФИГУРАЦИЯ ГЕЙМПАДА
+
+[FET_AGS]   
+НАСТРОЙКИ ГЕЙМПАДА
+
+[FEC_FOV]   
+ПОЛЕ ЗРЕНИЯ
+
+[FEC_ACV]   
+АВТОЦЕНТРОВКА В ТРАНСПОРТЕ
+
+[FEC_RVD]   
+ОТНОСИТЕЛЬНО ТРАНСПОРТА ВО ВРЕМЯ СТРЕЛЬБЫ
+
+[FEC_DOM]   
+DOOM Mode
+
+[FEC_WAL]
+Ходьба
+
+[FEC_RZO]
+Зум радара
+
+[FEC_REL]
+Перезарядить оружие
+
+[FED_GPS]
+GPS
+
+[FEC_ATK]
+Атака
+
+[FES_SAV]
+You cannot save the game at this time. To save the game, you must not be on a mission, not move or have a wanted level.
+
+[FET_AUT]
+Autosave
+
+[FEM_SL9]
+Autosave File Not Present
+
+[FEO_OTH]
+OTHER SETTINGS
 
 { end of file }
 

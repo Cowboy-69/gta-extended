@@ -99,8 +99,19 @@ void
 CCurrentVehicle::Display()
 {
 	wchar *text = nil;
+#ifdef EX_VEHICLE_LOADER
+	if (m_pCurrentVehicle != nil) {
+		if (m_pCurrentVehicle->m_modelIndex >= MI_FIRST_NEW_VEHICLE) {
+			CHud::SetVehicleName(((CVehicleModelInfo*)CModelInfo::GetModelInfo(m_pCurrentVehicle->GetModelIndex()))->m_fullGameName);
+			return;
+		} else {
+			text = TheText.Get(((CVehicleModelInfo*)CModelInfo::GetModelInfo(m_pCurrentVehicle->GetModelIndex()))->m_gameName);
+		}
+	}
+#else
 	if (m_pCurrentVehicle != nil)
 		text = TheText.Get(((CVehicleModelInfo*)CModelInfo::GetModelInfo(m_pCurrentVehicle->GetModelIndex()))->m_gameName);
+#endif
 	CHud::SetVehicleName(text);
 }
 

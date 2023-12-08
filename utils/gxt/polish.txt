@@ -8077,10 +8077,10 @@ GAMEPAD TYPE
 KONFIGURACJA
 	
 [FEC_CF1]
-SETUP1
+KLASYCZNY
 	
 [FEC_CF2]
-SETUP2
+NOWOCZESNE
 	
 [FEC_CF3]
 SETUP3
@@ -8108,6 +8108,88 @@ PED DENSITY
 
 [FEM_CAR]
 CAR DENSITY
+
+{______________________________Liberty Extended______________________________}
+[FEC_AIM]
+AUTOMATYCZNE CELOWANIE
+
+[FEC_LSX]
+CZUŁOŚĆ SPOJRZENIA X
+
+[FEC_LSY]   
+CZUŁOŚĆ SPOJRZENIA Y
+
+[FEC_ASX]   
+CZUŁOŚĆ CELOWANIA X
+
+[FEC_ASY]   
+CZUŁOŚĆ CELOWANIA Y
+
+[FEC_IVL]   
+ODWRÓĆ PIONOWO
+
+[FEC_LZN]   
+STREFA MARTWA LEWEGO DRĄŻKA
+
+[FEC_RZN]   
+STREFA MARTWA PRAWEGO DRĄŻKA
+
+[FEC_VBF]   
+SIŁA WIBRACJI
+
+[FEC_PRS]   
+Poprzednia stacja radiowa
+
+[FEC_NRS]   
+Następna stacja radiowa
+
+[FEC_RTC]   
+Obrót kamery
+
+[FET_AGC]   
+KONFIGURACJA GAMEPADA
+
+[FET_AGS]   
+USTAWIENIA GAMEPADA
+
+[FEC_FOV]   
+POLE WIDZENIA
+
+[FEC_ACV]   
+AUTOMATYCZNE CENTROWANIE W POJEŹDZIE
+
+[FEC_RVD]   
+POJAZD KREWNEGO PODCZAS PRZEJAZDU
+
+[FEC_DOM]   
+DOOM Mode
+
+[FEC_WAL]
+Spacer
+
+[FEC_RZO]
+Powiększenie radaru
+
+[FEC_REL]
+Przeładować broń
+
+[FED_GPS]
+GPS
+
+[FEC_ATK]
+Atak
+
+[FES_SAV]
+W tym momencie nie możesz zapisać gry. Aby zapisać grę, nie możesz być na misji, nie możesz się ruszać ani mieć poziomu poszukiwanego.
+
+[FET_AUT]
+Autozapis
+
+[FEM_SL9]
+Brak pliku automatycznego zapisu
+
+[FEO_OTH]
+Inne ustawienia
 
 { end of file }	
 	

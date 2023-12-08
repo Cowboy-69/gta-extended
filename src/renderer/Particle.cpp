@@ -1242,7 +1242,11 @@ void CParticle::Update()
 												0.1f, 0.0f, 0.0f, -0.1f,
 												255,
 												255, 0, 0,
+#ifdef EX_PARTICLE // Increased life span of blood particles
+												4.0f, (CGeneral::GetRandomNumber() & 4095) + 20000, 1.0f);
+#else
 												4.0f, (CGeneral::GetRandomNumber() & 4095) + 2000, 1.0f);
+#endif
 									}
 									else if ( randVal == 2 )
 									{
@@ -1250,7 +1254,11 @@ void CParticle::Update()
 												0.2f, 0.0f, 0.0f, -0.2f,
 												255,
 												255, 0, 0,
+#ifdef EX_PARTICLE // Increased life span of blood particles
+												4.0f, (CGeneral::GetRandomNumber() & 4095) + 28000, 1.0f);
+#else
 												4.0f, (CGeneral::GetRandomNumber() & 4095) + 8000, 1.0f);
+#endif
 									}
 									continue;
 								}

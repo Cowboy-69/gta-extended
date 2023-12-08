@@ -52,7 +52,16 @@ CBoat::CBoat(int mi, uint8 owner) : CVehicle(owner)
 	m_fMovingRotation = 0.0f;
 	SetModelIndex(mi);
 
+#ifdef EX_VEHICLE_LOADER
+	if (GetModelIndex() >= MI_FIRST_NEW_VEHICLE) {
+		pVehicleSample = &minfo->vehicleSampleData;
+		pHandling = &minfo->handlingData;
+	} else {
+		pHandling = mod_HandlingManager.GetHandlingData((tVehicleType)minfo->m_handlingId);
+	}
+#else
 	pHandling = mod_HandlingManager.GetHandlingData((tVehicleType)minfo->m_handlingId);
+#endif
 	minfo->ChooseVehicleColour(m_currentColour1, m_currentColour2);
 
 	m_fMass = pHandling->fMass;

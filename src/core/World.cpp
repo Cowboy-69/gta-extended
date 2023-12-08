@@ -2046,6 +2046,25 @@ CWorld::TriggerExplosionSectorList(CPtrList &list, const CVector &position, floa
 			CObject *pObject = (CObject *)pEntity;
 			CVehicle *pVehicle = (CVehicle *)pEntity;
 			if(!pEntity->bExplosionProof && (!pEntity->IsPed() || !pPed->bInVehicle)) {
+#ifdef EX_DAMAGE // The explosion doesn't damage peds/vehicles if there is an obstacle between them and the explosion
+				if (fMagnitude > 1.5f) {
+					if (pEntity->IsPed() && !CWorld::GetIsLineOfSightClear(pPed->GetPosition(), position, true, false, false, false, false, true))
+						continue;
+
+					if (pEntity->IsVehicle() && pVehicle->IsBike()) {
+						if (!CWorld::GetIsLineOfSightClear(pEntity->GetPosition(), position, true, false, false, false, false, true))
+							continue;
+					} else if (pEntity->IsVehicle()) {
+						if (!CWorld::GetIsLineOfSightClear(pEntity->GetPosition() + pEntity->GetForward() * 1.5f, position, true, false, false, false, false, true) &&
+							!CWorld::GetIsLineOfSightClear(pEntity->GetPosition(), position, true, false, false, false, false, true) &&
+							!CWorld::GetIsLineOfSightClear(pEntity->GetPosition() - pEntity->GetForward() * 1.5f, position, true, false, false, false, false, true))
+							continue;
+					}
+
+					if (pEntity->IsObject() && !CWorld::GetIsLineOfSightClear(pObject->GetPosition(), position, true, false, false, false, false, true))
+						continue;
+				}
+#endif
 				if(pEntity->GetIsStatic()) {
 					if(pEntity->IsObject()) {
 						if (fPower > pObject->m_fUprootLimit || IsFence(pObject->GetModelIndex())) {

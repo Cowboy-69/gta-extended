@@ -147,6 +147,9 @@ public:
 	void VehicleDamage(float impulse, uint16 damagedPiece);
 	void ProcessBuoyancy(void);
 	void DoDriveByShootings(void);
+#ifdef EX_CHEATS // AIRWAYS
+	void DoHoverAboveSurface(void);
+#endif
 	int32 RcbanditCheckHitWheels(void);
 	int32 RcbanditCheck1CarWheels(CPtrList &list);
 	void PlaceOnRoadProperly(void);
@@ -168,6 +171,9 @@ public:
 	void SetPanelDamage(int32 component, ePanels panel, bool noFlyingComponents = false);
 	void SetBumperDamage(int32 component, ePanels panel, bool noFlyingComponents = false);
 	void SetDoorDamage(int32 component, eDoors door, bool noFlyingComponents = false);
+#ifdef EX_VEHICLE // The wheels fall off when you hit it hard
+	void SetWheelMissing(int32 wheel);
+#endif
 
 	void Fix(void);
 	void SetComponentVisibility(RwFrame *frame, uint32 flags);
@@ -181,6 +187,11 @@ public:
 	virtual void Save(uint8*& buf);
 	virtual void Load(uint8*& buf);
 #endif
+
+#ifdef EX_CHEATS // AIRWAYS
+	static bool bAirWaysCheat;
+#endif
+
 	static const uint32 nSaveStructSize;
 
 	static void SetAllTaxiLights(bool set);

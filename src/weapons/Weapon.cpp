@@ -31,6 +31,12 @@
 #include "WeaponInfo.h"
 #include "World.h"
 #include "SaveBuf.h"
+#ifdef MOVING_MOON
+#include "Timecycle.h"
+#endif
+#ifdef EX_CONTROL
+#include "Frontend.h"
+#endif
 
 uint16 gReloadSampleTime[WEAPONTYPE_LAST_WEAPONTYPE] =
 {
@@ -557,7 +563,12 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 		prev_heading = ((CPed*)shooter)->m_fRotationCur;
 	}
 
+#ifdef EX_CONTROL // Autoaim
+	if (shooter->IsPed() && ((CPed*)shooter)->m_pPointGunAt && !((CPed*)shooter)->IsPlayer() ||
+		(shooter->IsPed() && ((CPed*)shooter)->IsPlayer() && ((CPed*)shooter)->m_pPointGunAt && CPad::GetPad(0)->IsAffectedByController && FrontEndMenuManager.m_PrefsAutoaim))
+#else
 	if ( shooter->IsPed() && ((CPed *)shooter)->m_pPointGunAt )
+#endif
 	{
 		CPed *shooterPed = (CPed *)shooter;
 		if ( shooterPed->m_pedIK.m_flags & CPedIK::GUN_POINTED_SUCCESSFULLY )
@@ -611,7 +622,11 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 		ahead.Normalise();
 #endif
 	}
+#ifdef EX_AIMING // Correct shooting when aiming with a gamepad
+	else if ( shooter == FindPlayerPed() )
+#else
 	else if ( shooter == FindPlayerPed() && TheCamera.Cams[0].Using3rdPersonMouseCam()  )
+#endif
 	{
 		CVector src, trgt;
 #ifdef FREE_CAM
@@ -969,7 +984,11 @@ CWeapon::DoBulletImpact(CEntity *shooter, CEntity *victim,
 							if ( victimPed->IsPlayer() )
 							{
 								CPlayerPed *victimPlayer = (CPlayerPed *)victimPed;
+#ifdef EX_FIRST_PERSON // ANIM_STD_HITBYGUN_FRONT does not work on the player during the first-person view
 								if ( victimPlayer->m_nHitAnimDelayTimer < CTimer::GetTimeInMilliseconds() )
+#else
+								if ( victimPlayer->m_nHitAnimDelayTimer < CTimer::GetTimeInMilliseconds() )
+#endif
 								{
 									victimPed->ClearAttackByRemovingAnim();
 
@@ -1174,7 +1193,11 @@ CWeapon::DoBulletImpact(CEntity *shooter, CEntity *victim,
 		CBulletTraces::AddTrace(source, target);
 
 	if ( shooter == FindPlayerPed() )
+#ifdef EX_VIBRATION // DoBulletImpact
+		CPad::GetPad(0)->StartShake_Distance(100, 0, 128, FindPlayerPed()->GetPosition().x, FindPlayerPed()->GetPosition().y, FindPlayerPed()->GetPosition().z);
+#else
 		CPad::GetPad(0)->StartShake_Distance(240, 128, FindPlayerPed()->GetPosition().x, FindPlayerPed()->GetPosition().y, FindPlayerPed()->GetPosition().z);
+#endif
 
 	BlowUpExplosiveThings(victim);
 }
@@ -1451,7 +1474,11 @@ CWeapon::FireShotgun(CEntity *shooter, CVector *fireSource)
 	}
 
 	if ( shooter == FindPlayerPed() )
+#ifdef EX_VIBRATION // FireShotgun
+		CPad::GetPad(0)->StartShake_Distance(240, 0, 128, FindPlayerPed()->GetPosition().x, FindPlayerPed()->GetPosition().y, FindPlayerPed()->GetPosition().z);
+#else
 		CPad::GetPad(0)->StartShake_Distance(240, 128, FindPlayerPed()->GetPosition().x, FindPlayerPed()->GetPosition().y, FindPlayerPed()->GetPosition().z);
+#endif
 
 	return true;
 }
@@ -1526,6 +1553,10 @@ CWeapon::FireProjectile(CEntity *shooter, CVector *fireSource, float power)
 	else
 		CProjectileInfo::AddProjectile(shooter, m_eWeaponType, *fireSource, power);
 
+#ifdef EX_AI // FireProjectile: Shot event
+	CEventList::RegisterEvent(EVENT_GUNSHOT, EVENT_ENTITY_PED, shooter, (CPed*)shooter, 1000);
+#endif
+
 	return true;
 }
 
@@ -1587,6 +1618,10 @@ CWeapon::FireAreaEffect(CEntity *shooter, CVector *fireSource)
 	CShotInfo::AddShot(shooter, m_eWeaponType, *fireSource, target);
 	CWeapon::GenerateFlameThrowerParticles(*fireSource, dir);
 
+#ifdef EX_AI // FireAreaEffect: Shot event
+	CEventList::RegisterEvent(EVENT_GUNSHOT, EVENT_ENTITY_PED, shooter, (CPed*)shooter, 1000);
+#endif
+
 	return true;
 }
 
@@ -1616,7 +1651,12 @@ CWeapon::FireSniper(CEntity *shooter)
 	CVector source = cam->Source;
 	CVector dir    = cam->Front;
 
+#ifdef MOVING_MOON
+	CVector moonDirection = -CTimeCycle::GetSunDirection();
+	if (DotProduct(dir, CVector(moonDirection.x, moonDirection.y, moonDirection.z)) > 0.997f)
+#else
 	if ( DotProduct(dir, CVector(0.0f, -0.9894f, 0.145f)) > 0.997f )
+#endif
 		CCoronas::bSmallMoon = !CCoronas::bSmallMoon;
 
 	dir.Normalise();
@@ -1629,13 +1669,24 @@ CWeapon::FireSniper(CEntity *shooter)
 
 	if ( shooter == FindPlayerPed() )
 	{
+#ifdef EX_VIBRATION // FireSniper
+		CPad::GetPad(0)->StartShake_Distance(240, 0, 128,
+			FindPlayerPed()->GetPosition().x,
+			FindPlayerPed()->GetPosition().y,
+			FindPlayerPed()->GetPosition().z);
+#else
 		CPad::GetPad(0)->StartShake_Distance(240, 128,
 			FindPlayerPed()->GetPosition().x,
 			FindPlayerPed()->GetPosition().y,
 			FindPlayerPed()->GetPosition().z);
+#endif
 
 		CamShakeNoPos(&TheCamera, 0.2f);
 	}
+
+#ifdef EX_AI // FireSniper: Shot event
+	CEventList::RegisterEvent(EVENT_GUNSHOT, EVENT_ENTITY_PED, shooter, (CPed*)shooter, 1000);
+#endif
 
 	return true;
 }
@@ -1695,7 +1746,11 @@ CWeapon::FireM16_1stPerson(CEntity *shooter)
 #ifdef FIX_BUGS
 		CStats::InstantHitsFiredByPlayer++;
 #endif
+#ifdef EX_VIBRATION // FireM16_1stPerson
+		CPad::GetPad(0)->StartShake_Distance(240, 0, 128, FindPlayerPed()->GetPosition().x, FindPlayerPed()->GetPosition().y, FindPlayerPed()->GetPosition().z);
+#else
 		CPad::GetPad(0)->StartShake_Distance(240, 128, FindPlayerPed()->GetPosition().x, FindPlayerPed()->GetPosition().y, FindPlayerPed()->GetPosition().z);
+#endif
 
 		if ( m_eWeaponType == WEAPONTYPE_M16 )
 		{
@@ -1708,6 +1763,10 @@ CWeapon::FireM16_1stPerson(CEntity *shooter)
 			TheCamera.Cams[TheCamera.ActiveCam].Alpha += float((CGeneral::GetRandomNumber() & 127) - 64) * 0.0001f;
 		}
 	}
+
+#ifdef EX_AI // FireM16_1stPerson: Shot event
+	CEventList::RegisterEvent(EVENT_GUNSHOT, EVENT_ENTITY_PED, shooter, (CPed*)shooter, 1000);
+#endif
 
 	return true;
 }
@@ -1870,7 +1929,11 @@ CWeapon::FireInstantHitFromCar(CAutomobile *shooter, bool left)
 	}
 
 	if ( shooter == FindPlayerVehicle() )
+#ifdef EX_VIBRATION // FireInstantHitFromCar
+		CPad::GetPad(0)->StartShake_Distance(240, 0, 128, FindPlayerVehicle()->GetPosition().x, FindPlayerVehicle()->GetPosition().y, FindPlayerVehicle()->GetPosition().z);
+#else
 		CPad::GetPad(0)->StartShake_Distance(240, 128, FindPlayerVehicle()->GetPosition().x, FindPlayerVehicle()->GetPosition().y, FindPlayerVehicle()->GetPosition().z);
+#endif
 
 	return true;
 }

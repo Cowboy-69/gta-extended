@@ -19,6 +19,12 @@
 #include "SaveBuf.h"
 #include "Streaming.h"
 #include "SpecialFX.h"
+#ifdef EX_RADAR_ZOOM
+#include "Pad.h"
+#endif
+#ifdef EX_GPS
+#include "PathFind.h"
+#endif
 
 float CRadar::m_radarRange;
 sRadarTrace CRadar::ms_RadarTrace[NUMRADARBLIPS];
@@ -101,6 +107,10 @@ CVector CRadar::TargetMarkerPos;
 // taken from VC
 float CRadar::cachedCos;
 float CRadar::cachedSin;
+
+#ifdef EX_RADAR_ZOOM
+int32 CRadar::RadarZoomOutTimer;
+#endif
 
 void ClipRadarTileCoords(int32 &x, int32 &y)
 {
@@ -777,6 +787,27 @@ void CRadar::DrawMap()
 #if 1 // from VC
 		CalculateCachedSinCos();
 #endif
+#ifdef EX_RADAR_ZOOM // Implementation
+		if (CPad::GetPad(0)->GetRadarZoomOut())
+			RadarZoomOutTimer = CTimer::GetTimeInMilliseconds();
+
+		if (CTimer::GetTimeInMilliseconds() < RadarZoomOutTimer + 2000) {
+			float maxRange = FindPlayerVehicle() ? RADAR_MAX_RANGE + 150.0f : RADAR_MAX_RANGE;
+			m_radarRange = InterpFloat(m_radarRange, maxRange, 5.0);
+		} else {
+			if (FindPlayerVehicle()) {
+				float speed = FindPlayerSpeed().Magnitude();
+				if (speed < RADAR_MIN_SPEED)
+					m_radarRange = InterpFloat(m_radarRange, RADAR_MIN_RANGE, 5.0);
+				else if (speed < RADAR_MAX_SPEED) {
+					int newRadarRange = (speed - RADAR_MIN_SPEED)/(RADAR_MAX_SPEED-RADAR_MIN_SPEED) * (RADAR_MAX_RANGE-RADAR_MIN_RANGE) + RADAR_MIN_RANGE;
+					m_radarRange = InterpFloat(m_radarRange, newRadarRange, 5.0f);
+				} else
+					m_radarRange = InterpFloat(m_radarRange, RADAR_MAX_RANGE, 5.0);
+			} else
+				m_radarRange = InterpFloat(m_radarRange, RADAR_MIN_RANGE, 5.0);
+		}
+#else
 		if (FindPlayerVehicle()) {
 			float speed = FindPlayerSpeed().Magnitude();
 			if (speed < RADAR_MIN_SPEED)
@@ -788,6 +819,7 @@ void CRadar::DrawMap()
 		}
 		else
 			m_radarRange = RADAR_MIN_RANGE;
+#endif
 
 		vec2DRadarOrigin = CVector2D(FindPlayerCentreOfWorld_NoSniperShift());
 		DrawRadarMap();
@@ -944,6 +976,172 @@ void CRadar::DrawRotatingRadarSprite(CSprite2d* sprite, float x, float y, float 
 
 	sprite->Draw(curPosn[3].x, curPosn[3].y, curPosn[2].x, curPosn[2].y, curPosn[0].x, curPosn[0].y, curPosn[1].x, curPosn[1].y, CRGBA(255, 255, 255, alpha));
 }
+
+#ifdef EX_GPS // Implementation
+void CRadar::DrawGPS()
+{
+	// thank plugin-sdk\examples\GPS
+
+	if (!FrontEndMenuManager.m_PrefsGPS)
+		return;
+
+	CVehicle* vehicle = FindPlayerVehicle();
+	if (vehicle && (vehicle->IsBoat() || vehicle->IsPlane() || vehicle->GetModelIndex() == MI_RCBANDIT))
+		return;
+
+	const uint16 maxNodePoints = 500;
+	static CPathNode* resultNodes[maxNodePoints];
+	static CVector2D nodePoints[maxNodePoints];
+	static RwIm2DVertex lineVerts[maxNodePoints * 4];
+
+    if (FindPlayerPed() && (FindPlayerPed()->m_pMyVehicle && FindPlayerPed()->InVehicle())) {
+		// Mission blip
+		if (CTheScripts::IsPlayerOnAMission()) {
+			for (int blipId = 0; blipId < NUMRADARBLIPS; blipId++) {
+				if (!ms_RadarTrace[blipId].m_bInUse)
+					continue;
+
+				if (ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_NONE || ms_RadarTrace[blipId].m_eBlipType == BLIP_CONTACT_POINT)
+					continue;
+
+				CVector destPosn;
+
+				switch (ms_RadarTrace[blipId].m_eBlipType) {
+				case BLIP_CAR: {
+					CEntity *entity = CPools::GetVehiclePool()->GetAt(ms_RadarTrace[blipId].m_nEntityHandle);
+					if (entity) destPosn = entity->GetPosition();
+					break;
+				}
+				case BLIP_CHAR: {
+					CEntity *entity = CPools::GetPedPool()->GetAt(ms_RadarTrace[blipId].m_nEntityHandle);
+					if (entity) destPosn = entity->GetPosition();
+					break;
+				}
+				case BLIP_OBJECT: {
+					CEntity *entity = CPools::GetObjectPool()->GetAt(ms_RadarTrace[blipId].m_nEntityHandle);
+					if (entity) destPosn = entity->GetPosition();
+					break;
+				}
+				default:
+					destPosn = ms_RadarTrace[blipId].m_vecPos;
+					break;
+				}
+
+				destPosn.z = CWorld::FindGroundZForCoord(destPosn.x, destPosn.y);
+
+				short nodesCount = 0;
+
+				ThePaths.DoPathSearch(0, FindPlayerCoors(), -1, destPosn, resultNodes, &nodesCount, maxNodePoints, nullptr, nil, 500.0f, -1);
+
+				int nodesCountDeleted = 0;
+				if (nodesCount > 0) {
+					for (short i = 0; i < nodesCount; i++) {
+						CVector nodePosn = resultNodes[i]->GetPosition();
+						CVector2D tmpPoint;
+						CRadar::TransformRealWorldPointToRadarSpace(tmpPoint, CVector2D(nodePosn.x, nodePosn.y));
+						if (CRadar::LimitRadarPoint(tmpPoint) >= 1.0f)
+							nodesCountDeleted++;
+
+						CRadar::TransformRadarPointToScreenSpace(nodePoints[i], tmpPoint);
+					}
+
+					if (nodesCountDeleted != 0)
+						nodesCount -= nodesCountDeleted - 1;
+
+					RwRenderStateSet(rwRENDERSTATETEXTURERASTER, NULL);
+
+					unsigned int vertIndex = 0;
+					for (short i = 0; i < (nodesCount - 1); i++) {
+						CVector2D point[4], shift[2];
+						CVector2D dir = nodePoints[i + 1] - nodePoints[i];
+						float angle = atan2(dir.y, dir.x);
+						float mp = 1.0f;
+						shift[0].x = cosf(angle - 1.5707963f) * 4.0f * mp;
+						shift[0].y = sinf(angle - 1.5707963f) * 4.0f * mp;
+						shift[1].x = cosf(angle + 1.5707963f) * 4.0f * mp;
+						shift[1].y = sinf(angle + 1.5707963f) * 4.0f * mp;
+
+						uint32 color = GetRadarTraceColour(ms_RadarTrace[blipId].m_nColor, ms_RadarTrace[blipId].m_bDim);
+						CRGBA normalColor = CRGBA((uint8)(color >> 24), (uint8)(color >> 16), (uint8)(color >> 8), 255);
+						Setup2dVertex(lineVerts[vertIndex + 0], nodePoints[i].x + shift[0].x, nodePoints[i].y + shift[0].y, normalColor);
+						Setup2dVertex(lineVerts[vertIndex + 1], nodePoints[i + 1].x + shift[0].x, nodePoints[i + 1].y + shift[0].y, normalColor);
+						Setup2dVertex(lineVerts[vertIndex + 2], nodePoints[i].x + shift[1].x, nodePoints[i].y + shift[1].y, normalColor);
+						Setup2dVertex(lineVerts[vertIndex + 3], nodePoints[i + 1].x + shift[1].x, nodePoints[i + 1].y + shift[1].y, normalColor);
+						vertIndex += 4;
+					}
+
+					RwIm2DRenderPrimitive(rwPRIMTYPETRISTRIP, lineVerts, 4 * (nodesCount - 1));
+
+					break;
+				}
+			}
+		}
+
+		// Waypoint
+		if (TargetMarkerId != -1) {
+			if (Distance(FindPlayerCoors(), TargetMarkerPos) < 30.0f) {
+				CRadar::ClearBlip(TargetMarkerId);
+				TargetMarkerId = -1;
+			}
+
+			CVector destPosn = TargetMarkerPos;
+			destPosn.z = CWorld::FindGroundZForCoord(destPosn.x, destPosn.y);
+
+			short nodesCount = 0;
+
+			ThePaths.DoPathSearch(0, FindPlayerCoors(), -1, destPosn, resultNodes, &nodesCount, maxNodePoints, nullptr, nil, 500.0f, -1);
+
+			int nodesCountDeleted = 0;
+			if (nodesCount > 0) {
+				for (short i = 0; i < nodesCount; i++) {
+					CVector nodePosn = resultNodes[i]->GetPosition();
+					CVector2D tmpPoint;
+					CRadar::TransformRealWorldPointToRadarSpace(tmpPoint, CVector2D(nodePosn.x, nodePosn.y));
+					if (CRadar::LimitRadarPoint(tmpPoint) >= 1.0f)
+						nodesCountDeleted++;
+
+					CRadar::TransformRadarPointToScreenSpace(nodePoints[i], tmpPoint);
+				}
+
+				if (nodesCountDeleted != 0)
+					nodesCount -= nodesCountDeleted - 1;
+
+				RwRenderStateSet(rwRENDERSTATETEXTURERASTER, NULL);
+
+				unsigned int vertIndex = 0;
+				for (short i = 0; i < (nodesCount - 1); i++) {
+					CVector2D point[4], shift[2];
+					CVector2D dir = nodePoints[i + 1] - nodePoints[i];
+					float angle = atan2(dir.y, dir.x);
+					float mp = 1.0f;
+					shift[0].x = cosf(angle - 1.5707963f) * 4.0f * mp;
+					shift[0].y = sinf(angle - 1.5707963f) * 4.0f * mp;
+					shift[1].x = cosf(angle + 1.5707963f) * 4.0f * mp;
+					shift[1].y = sinf(angle + 1.5707963f) * 4.0f * mp;
+
+					Setup2dVertex(lineVerts[vertIndex + 0], nodePoints[i].x + shift[0].x, nodePoints[i].y + shift[0].y, WaypointColor);
+					Setup2dVertex(lineVerts[vertIndex + 1], nodePoints[i + 1].x + shift[0].x, nodePoints[i + 1].y + shift[0].y, WaypointColor);
+					Setup2dVertex(lineVerts[vertIndex + 2], nodePoints[i].x + shift[1].x, nodePoints[i].y + shift[1].y, WaypointColor);
+					Setup2dVertex(lineVerts[vertIndex + 3], nodePoints[i + 1].x + shift[1].x, nodePoints[i + 1].y + shift[1].y, WaypointColor);
+					vertIndex += 4;
+				}
+
+				RwIm2DRenderPrimitive(rwPRIMTYPETRISTRIP, lineVerts, 4 * (nodesCount - 1));
+			}
+		}
+    }
+}
+
+void CRadar::Setup2dVertex(RwIm2DVertex& vertex, float x, float y, CRGBA color)
+{
+	vertex.x = x;
+	vertex.y = y;
+	vertex.u = vertex.v = 0.0f;
+	vertex.z = RwIm2DGetNearScreenZ() + 0.0001f;
+	vertex.w = 1.11111116f;
+	vertex.color = RWRGBALONG(color.r, color.g, color.b, color.a);
+}
+#endif
 
 int32 CRadar::GetActualBlipArrayIndex(int32 i)
 {

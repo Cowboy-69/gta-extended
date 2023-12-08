@@ -25,6 +25,9 @@
 #include "CdStream.h"
 #include "FileLoader.h"
 #include "MemoryHeap.h"
+#ifdef EX_VEHICLE_LOADER
+#include "AudioSamples.h"
+#endif
 
 char CFileLoader::ms_line[256];
 
@@ -973,7 +976,10 @@ CFileLoader::LoadObjectTypes(const char *filename)
 		CARS,
 		PEDS,
 		PATH,
-		TWODFX
+		TWODFX,
+#ifdef EX_VEHICLE_LOADER
+		NEWCARS,
+#endif
 	};
 	char *line;
 	int fd;
@@ -1001,6 +1007,9 @@ CFileLoader::LoadObjectTypes(const char *filename)
 			else if(isLine4(line, 'p','e','d','s')) section = PEDS;
 			else if(isLine4(line, 'p','a','t','h')) section = PATH;
 			else if(isLine4(line, '2','d','f','x')) section = TWODFX;
+#ifdef EX_VEHICLE_LOADER
+			else if (isLine4(line, 'n', 'e', 'w', 'c')) section = NEWCARS;
+#endif
 		}else if(isLine3(line, 'e','n','d')){
 			section = section == MLO ? OBJS : NONE;
 		}else switch(section){
@@ -1046,6 +1055,11 @@ CFileLoader::LoadObjectTypes(const char *filename)
 		case TWODFX:
 			Load2dEffect(line);
 			break;
+#ifdef EX_VEHICLE_LOADER
+		case NEWCARS:
+			LoadAnotherVehicleObject(line);
+			break;
+#endif
 		}
 	}
 	CFileMgr::CloseFile(fd);
@@ -1472,6 +1486,198 @@ CFileLoader::Load2dEffect(const char *line)
 
 	CTxdStore::PopCurrentTxd();
 }
+
+#ifdef EX_VEHICLE_LOADER
+void CFileLoader::LoadAnotherVehicleObject(const char* line)
+{
+	char param[10];
+	int id;
+	CVehicleModelInfo* mi;
+
+	sscanf(line, "%s", &param);
+	if (strcmp(param, "default") == 0) {
+		char model[24], txd[24];
+		char type[8], handlingId[16], gamename[32], vehclass[12];
+		uint32 frequency, comprules;
+		int32 level, misc;
+		float wheelScale;
+		char* p;
+		char policeRadio[13];
+
+		sscanf(line, "%s %d %s %s %s %s %s %s %d %d %x %d %f %s",
+			&param, &id, model, txd,
+			type, handlingId, gamename, vehclass,
+			&frequency, &level, &comprules, &misc, &wheelScale, policeRadio);
+
+		mi = CModelInfo::AddVehicleModel(id);
+		mi->SetModelName(model);
+		mi->SetTexDictionary(txd);
+		mi->m_level = level;
+		mi->m_compRules = comprules;
+
+		for (p = gamename; *p; p++)
+			if (*p == '_') *p = ' ';
+		for (int i = 0; i < 32; i++)
+			mi->m_fullGameName[i] = gamename[i];
+
+		if(strcmp(type, "car") == 0){
+			mi->m_wheelId = misc;
+			mi->m_wheelScale = wheelScale;
+			mi->m_vehicleType = VEHICLE_TYPE_CAR;
+		}else if(strcmp(type, "boat") == 0){
+			mi->m_vehicleType = VEHICLE_TYPE_BOAT;
+		}else if(strcmp(type, "train") == 0){
+			mi->m_vehicleType = VEHICLE_TYPE_TRAIN;
+		}else if(strcmp(type, "heli") == 0){
+			mi->m_vehicleType = VEHICLE_TYPE_HELI;
+		}else if(strcmp(type, "plane") == 0){
+			mi->m_planeLodId = misc;
+			mi->m_wheelScale = 1.0f;
+			mi->m_vehicleType = VEHICLE_TYPE_PLANE;
+		}else if(strcmp(type, "bike") == 0){
+			mi->m_bikeSteerAngle = misc;
+			mi->m_wheelScale = wheelScale;
+			mi->m_vehicleType = VEHICLE_TYPE_BIKE;
+		}else
+			assert(0);
+
+		if (strcmp(policeRadio, "boat") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_BOAT;
+		else if (strcmp(policeRadio, "sportscar") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_SPORTS_CAR;
+		else if (strcmp(policeRadio, "tank") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_TANK;
+		else if (strcmp(policeRadio, "bus") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_BUS;
+		else if (strcmp(policeRadio, "cruiser") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_CRUISER;
+		else if (strcmp(policeRadio, "firetruck") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_FIRE_TRUCK;
+		else if (strcmp(policeRadio, "van") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_VAN;
+		else if (strcmp(policeRadio, "truck") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_TRUCK;
+		else if (strcmp(policeRadio, "ambulance") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_AMBULANCE;
+		else if (strcmp(policeRadio, "taxi") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_TAXI;
+		else if (strcmp(policeRadio, "pickup") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_PICKUP;
+		else if (strcmp(policeRadio, "icecream") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_ICE_CREAM_VAN;
+		else if (strcmp(policeRadio, "buggy") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_BUGGY;
+		else if (strcmp(policeRadio, "policecar") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_POLICE_CAR;
+		else if (strcmp(policeRadio, "saloon") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_SALOON;
+		else if (strcmp(policeRadio, "twodoor") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_2_DOOR;
+		else if (strcmp(policeRadio, "limo") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_LIMO;
+		else if (strcmp(policeRadio, "convertible") == 0)
+			mi->m_policeRadioIndex = SFX_POLICE_RADIO_CONVERTIBLE;
+		else
+			mi->m_policeRadioIndex = 0;
+
+		if(strcmp(vehclass, "poorfamily") == 0){
+			mi->m_vehicleClass = CCarCtrl::POOR;
+			while(frequency-- > 0)
+				CCarCtrl::AddToCarArray(id, CCarCtrl::POOR);
+		}else if(strcmp(vehclass, "richfamily") == 0){
+			mi->m_vehicleClass = CCarCtrl::RICH;
+			while(frequency-- > 0)
+				CCarCtrl::AddToCarArray(id, CCarCtrl::RICH);
+		}else if(strcmp(vehclass, "executive") == 0){
+			mi->m_vehicleClass = CCarCtrl::EXEC;
+			while(frequency-- > 0)
+				CCarCtrl::AddToCarArray(id, CCarCtrl::EXEC);
+		}else if(strcmp(vehclass, "worker") == 0){
+			mi->m_vehicleClass = CCarCtrl::WORKER;
+			while(frequency-- > 0)
+				CCarCtrl::AddToCarArray(id, CCarCtrl::WORKER);
+		}else if(strcmp(vehclass, "special") == 0){
+			mi->m_vehicleClass = CCarCtrl::SPECIAL;
+			while(frequency-- > 0)
+				CCarCtrl::AddToCarArray(id, CCarCtrl::SPECIAL);
+		}else if(strcmp(vehclass, "big") == 0){
+			mi->m_vehicleClass = CCarCtrl::BIG;
+			while(frequency-- > 0)
+				CCarCtrl::AddToCarArray(id, CCarCtrl::BIG);
+		}else if(strcmp(vehclass, "taxi") == 0){
+			mi->m_vehicleClass = CCarCtrl::TAXI;
+			while(frequency-- > 0)
+				CCarCtrl::AddToCarArray(id, CCarCtrl::TAXI);
+		}
+	} else if (strcmp(param, "handling") == 0) {
+		char *start, *end;
+		char handlingLine[300];
+		char delim[4];
+		char* word;
+		int field;
+		int keepGoing;
+
+		strcpy(handlingLine, line);
+
+		field = 0;
+		strcpy(delim, " \t");
+		for(word = strtok(handlingLine, delim); word; word = strtok(nil, delim)){
+			switch(field){
+			case  1: mi = (CVehicleModelInfo*)CModelInfo::GetModelInfo(atof(word)); break;
+			case  2: mi->handlingData.fMass = atof(word); break;
+			case  3: mi->handlingData.Dimension.x = atof(word); break;
+			case  4: mi->handlingData.Dimension.y = atof(word); break;
+			case  5: mi->handlingData.Dimension.z = atof(word); break;
+			case  6: mi->handlingData.CentreOfMass.x = atof(word); break;
+			case  7: mi->handlingData.CentreOfMass.y = atof(word); break;
+			case  8: mi->handlingData.CentreOfMass.z = atof(word); break;
+			case  9: mi->handlingData.nPercentSubmerged = atoi(word); break;
+			case 10: mi->handlingData.fTractionMultiplier = atof(word); break;
+			case 11: mi->handlingData.fTractionLoss = atof(word); break;
+			case 12: mi->handlingData.fTractionBias = atof(word); break;
+			case 13: mi->handlingData.Transmission.nNumberOfGears = atoi(word); break;
+			case 14: mi->handlingData.Transmission.fMaxVelocity = atof(word); break;
+			case 15: mi->handlingData.Transmission.fEngineAcceleration = atof(word) * 0.4; break;
+			case 16: mi->handlingData.Transmission.nDriveType = word[0]; break;
+			case 17: mi->handlingData.Transmission.nEngineType = word[0]; break;
+			case 18: mi->handlingData.fBrakeDeceleration = atof(word); break;
+			case 19: mi->handlingData.fBrakeBias = atof(word); break;
+			case 20: mi->handlingData.bABS = !!atoi(word); break;
+			case 21: mi->handlingData.fSteeringLock = atof(word); break;
+			case 22: mi->handlingData.fSuspensionForceLevel = atof(word); break;
+			case 23: mi->handlingData.fSuspensionDampingLevel = atof(word); break;
+			case 24: mi->handlingData.fSeatOffsetDistance = atof(word); break;
+			case 25: mi->handlingData.fCollisionDamageMultiplier = atof(word); break;
+			case 26: mi->handlingData.nMonetaryValue = atoi(word); break;
+			case 27: mi->handlingData.fSuspensionUpperLimit = atof(word); break;
+			case 28: mi->handlingData.fSuspensionLowerLimit = atof(word); break;
+			case 29: mi->handlingData.fSuspensionBias = atof(word); break;
+			case 30:
+				sscanf(word, "%x", &mi->handlingData.Flags);
+				mi->handlingData.Transmission.Flags = mi->handlingData.Flags;
+				break;
+			case 31: mi->handlingData.FrontLights = atoi(word); break;
+			case 32: mi->handlingData.RearLights = atoi(word); break;
+			}
+			field++;
+		}
+		mod_HandlingManager.ConvertDataToGameUnits(&mi->handlingData);
+	} else if (strcmp(param, "sounds") == 0) {
+		sscanf(line, "%s %d",
+			&param, &id);
+
+		mi = (CVehicleModelInfo*)CModelInfo::GetModelInfo(id);
+
+		sscanf(line, "%s %d %d %d %d %d %d %d %d",
+			&param, &id,
+			&mi->vehicleSampleData.m_nAccelerationSampleIndex, &mi->vehicleSampleData.m_nBank, &mi->vehicleSampleData.m_nHornSample,
+			&mi->vehicleSampleData.m_nHornFrequency, &mi->vehicleSampleData.m_nSirenOrAlarmSample,
+			&mi->vehicleSampleData.m_nSirenOrAlarmFrequency, &mi->vehicleSampleData.m_bDoorType);
+	}
+
+	// loading carcols into VehicleModelInfo.cpp, LoadVehicleColours
+}
+#endif
 
 void
 CFileLoader::LoadScene(const char *filename)

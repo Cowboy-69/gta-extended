@@ -960,8 +960,28 @@ FinishFuckUCB(CAnimBlendAssociation *animAssoc, void *arg)
 {
 	CPed *ped = (CPed*)arg;
 
+#ifdef EX_AI // A player will be given a star if he gives the cop the middle finger
+	if (animAssoc->animId == ANIM_STD_PARTIAL_FUCKU && ped->GetWeapon()->m_eWeaponType == WEAPONTYPE_UNARMED) {
+		ped->RemoveWeaponModel(0);
+
+		if (ped->m_pLookTarget->IsPed()) {
+			CPed* lookPed = (CPed*)ped->m_pLookTarget;
+			if (lookPed->m_nPedType == PEDTYPE_COP && lookPed->OurPedCanSeeThisOne(ped) && ped->OurPedCanSeeThisOne(lookPed) && FindPlayerPed()->m_pWanted->GetWantedLevel() == 0)
+				FindPlayerPed()->SetWantedLevel(1);
+		} else if (ped->m_pLookTarget->IsVehicle()) {
+			CVehicle* lookVeh = (CVehicle*)ped->m_pLookTarget;
+			if (lookVeh->IsLawEnforcementVehicle() && lookVeh->pDriver && lookVeh->pDriver->m_nPedType == PEDTYPE_COP && 
+				lookVeh->AutoPilot.m_nCarMission == MISSION_CRUISE && FindPlayerPed()->m_pWanted->GetWantedLevel() == 0 &&
+				ped->OurPedCanSeeThisOne(lookVeh) && lookVeh->pDriver->OurPedCanSeeThisOne(ped)) {
+
+				FindPlayerPed()->SetWantedLevel(1);
+			}
+		}
+	}
+#else
 	if (animAssoc->animId == ANIM_STD_PARTIAL_FUCKU && ped->GetWeapon()->m_eWeaponType == WEAPONTYPE_UNARMED)
 			ped->RemoveWeaponModel(0);
+#endif
 }
 
 void
@@ -1364,6 +1384,19 @@ CPed::CalculateNewVelocity(void)
 			limitedRotDest -= 2 * PI;
 		}
 
+#ifdef EX_CONTROL // Make player turns a little slower
+		if (IsPlayer()) {
+#ifdef EX_FIRST_PERSON
+			if (TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON && m_nMoveState == PEDMOVE_SPRINT)
+				headAmount *= Abs(CPad::GetPad(0)->GetPedWalkLeftRight()) / 250.0f;
+			else
+				headAmount *= 0.65f;
+#else
+			headAmount *= 0.65f;
+#endif
+		}
+#endif
+
 #ifdef FREE_CAM
 		if (!CCamera::bFreeCam || !TheCamera.Cams[0].Using3rdPersonMouseCam())
 #endif
@@ -1392,7 +1425,15 @@ CPed::CalculateNewVelocity(void)
 		m_moved = m_moved * (1 / 100.0f);
 	}
 
+#ifdef EX_CONTROL // Strafe with a pistol and uzi (gamepad)
+#ifdef EX_FIRST_PERSON // Strafe during first person
+	if ((!TheCamera.Cams[TheCamera.ActiveCam].GetWeaponFirstPersonOn() && !bIsAimingGun && TheCamera.Cams[TheCamera.ActiveCam].Mode != CCam::MODE_REAL_1ST_PERSON)
+#else
+	if ((!TheCamera.Cams[TheCamera.ActiveCam].GetWeaponFirstPersonOn() && !bIsAimingGun)
+#endif
+#else
 	if ((!TheCamera.Cams[TheCamera.ActiveCam].GetWeaponFirstPersonOn() && !TheCamera.Cams[0].Using3rdPersonMouseCam())
+#endif
 		|| FindPlayerPed() != this || !CanStrafeOrMouseControl())
 		return;
 
@@ -1763,6 +1804,26 @@ CPed::ProcessControl(void)
 	BuildPedLists();
 	bIsInWater = false;
 	ProcessBuoyancy();
+
+#ifdef EX_AI // Drivers 'hear' gunshots and explosions
+	if (InVehicle() && m_pMyVehicle->m_fHealth > 0.0f && m_pMyVehicle->AutoPilot.m_nDrivingStyle != DRIVINGSTYLE_AVOID_CARS && m_nPedType != PEDTYPE_COP) {
+		CVehicle* veh = m_pMyVehicle;
+		CPed* shooter = nil;
+		CVector2D explosionPos = GetPosition();
+		if (m_fearFlags & PED_FLAG_EXPLOSION && CheckForExplosions(explosionPos) || m_fearFlags & PED_FLAG_GUN && (shooter = CheckForGunShots())) {
+			if (m_pMyVehicle->VehicleCreatedBy == RANDOM_VEHICLE && !m_pMyVehicle->IsBoat() && 
+				m_pMyVehicle->AutoPilot.m_nCarMission == MISSION_CRUISE && CGeneral::GetRandomNumberInRange(0.0f, 1.0f) > 0.3f) {
+
+				if (veh->GetStatus() == STATUS_SIMPLE || veh->GetStatus() == STATUS_PHYSICS) {
+					CCarCtrl::SwitchVehicleToRealPhysics(veh);
+					veh->AutoPilot.m_nDrivingStyle = DRIVINGSTYLE_AVOID_CARS;
+					veh->AutoPilot.m_nCruiseSpeed = (GAME_SPEED_TO_CARAI_SPEED * 0.65f) * veh->pHandling->Transmission.fMaxCruiseVelocity;
+					veh->SetStatus(STATUS_PHYSICS);
+				}
+			}
+		}
+	}
+#endif
 
 	if (m_nPedState != PED_ARRESTED) {
 		if (m_nPedState == PED_DEAD) {
@@ -3054,6 +3115,15 @@ CPed::ProcessControl(void)
 			m_pCurrentPhysSurface = nil;
 		}
 	}
+
+#ifdef EX_FEATURES_INI // HealthRegenerationUpToHalf
+	if (bHealthRegenerationUpToHalf && IsPlayer() && !DyingOrDead() && m_fHealth < 50.0f &&
+		(FindPlayerPed()->m_fMoveSpeed < 0.1f || InVehicle()) &&
+		CTimer::GetTimeInMilliseconds() > FindPlayerPed()->m_nHealthRegenerationTime + 4500) {
+
+		m_fHealth += 0.1f * CTimer::GetTimeStep();
+	}
+#endif
 }
 
 int32
@@ -3439,7 +3509,11 @@ CPed::PlayFootSteps(void)
 				CShadows::AddPermanentShadow(SHADOWTYPE_DARK, gpBloodPoolTex, &footPos,
 					top.x, top.y,
 					right.x, right.y,
+#ifdef EX_PARTICLE // Increasing the lifetime of blood footprint particles
+					255, 255, 0, 0, 4.0f, 25000.0f, 1.0f);
+#else
 					255, 255, 0, 0, 4.0f, 3000.0f, 1.0f);
+#endif
 
 				if (m_bloodyFootprintCountOrDeathTime <= 20) {
 					m_bloodyFootprintCountOrDeathTime = 0;
@@ -3448,6 +3522,17 @@ CPed::PlayFootSteps(void)
 					m_bloodyFootprintCountOrDeathTime -= 20;
 				}
 			}
+#ifdef EX_PARTICLE // Sand footsteps
+			if (m_nSurfaceTouched == SURFACE_SAND || m_nSurfaceTouched == SURFACE_SAND_BEACH) {
+				CVector2D top(forward * -0.26f);
+				CVector2D right(GetRight() * (stepPart == 1 ? 0.1f : 0.14f));
+
+				CShadows::AddPermanentShadow(SHADOWTYPE_DARK, gpShadowPedTex, &footPos,
+					top.x, top.y,
+					right.x, right.y,
+					120, 250, 250, 50, 4.0f, 25000.0f, 1.0f);
+			}
+#endif
 			if (CWeather::Rain <= 0.1f || CCullZones::CamNoRain() || CCullZones::PlayerNoRain()) {
 				if(IsPlayer())
 					particleProduceFootDust(this, footPos, 0.0f, 4);
@@ -4141,6 +4226,15 @@ CPed::CanSetPedState(void)
 bool
 CPed::CanStrafeOrMouseControl(void)
 {
+#ifdef EX_CONTROL // Strafe with a pistol and uzi
+	if (bIsAimingGun && GetWeapon()->GetInfo()->IsFlagSet(WEAPONFLAG_CANAIM_WITHARM))
+		return true;
+#endif
+#ifdef EX_FIRST_PERSON // Strafe during first person
+	if (IsPedInControl() && TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON && m_nPedState != PED_SEEK_CAR && m_nPedState != PED_SEEK_IN_BOAT &&
+		(m_nMoveState != PEDMOVE_SPRINT || !CPad::GetPad(0)->IsAffectedByController))
+		return true;
+#endif
 #ifdef FREE_CAM
 	if (CCamera::bFreeCam)
 		return false;
@@ -4486,6 +4580,12 @@ CPed::PedSetInCarCB(CAnimBlendAssociation *animAssoc, void *arg)
 
 	if (veh->IsBoat()) {
 		if (ped->IsPlayer()) {
+#ifdef EX_FIRST_PERSON // Correct camera positioning after the player is in the boat
+			if (TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON) {
+				TheCamera.Cams[TheCamera.ActiveCam].Beta = -HALFPI;
+				TheCamera.Cams[TheCamera.ActiveCam].m_bFixed1stPersonCamInVeh = false;
+			}
+#endif
 #if defined VC_PED_PORTS || defined FIX_BUGS
 			CCarCtrl::RegisterVehicleOfInterest(veh);
 #endif
@@ -4513,6 +4613,12 @@ CPed::PedSetInCarCB(CAnimBlendAssociation *animAssoc, void *arg)
 		veh->m_nAlarmState = 15000;
 
 	if (ped->IsPlayer()) {
+#ifdef EX_FIRST_PERSON // Correct camera positioning after the player is in the car
+		if (TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON) {
+			TheCamera.Cams[TheCamera.ActiveCam].Beta = -HALFPI;
+			TheCamera.Cams[TheCamera.ActiveCam].m_bFixed1stPersonCamInVeh = false;
+		}
+#endif
 		if (ped->m_objective == OBJECTIVE_ENTER_CAR_AS_DRIVER) {
 			if (veh->GetStatus() == STATUS_SIMPLE) {
 				veh->m_vecMoveSpeed = CVector(0.0f, 0.0f, 0.0f);
@@ -4854,6 +4960,24 @@ CPed::PreRender(void)
 			RwV3d zero = { 0.0f, 0.0f, 0.0f };
 			RwMatrixScale(head, &zero, rwCOMBINEPRECONCAT);
 		}
+	}
+#endif
+
+#ifdef EX_FIRST_PERSON // Removing the player's head during the first-person view
+	if (IsPlayer()) {
+		RwFrame* frame = m_pFrames[PED_HEAD]->frame;
+		RwMatrix* frameMat = RwFrameGetMatrix(frame);
+		RwV3d scale;
+		if (TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON && !TheCamera.Cams[TheCamera.ActiveCam].LookingBehind) {
+			scale.x = 0.0f;
+			scale.y = 0.0f;
+			scale.z = 0.0f;
+		} else {
+			scale.x = 1.0f;
+			scale.y = 1.0f;
+			scale.z = 1.0f;
+		}
+		RwMatrixScale(frameMat, &scale, rwCOMBINEPRECONCAT);
 	}
 #endif
 
@@ -6412,6 +6536,11 @@ CPed::FinishDieAnimCB(CAnimBlendAssociation *animAssoc, void *arg)
 void
 CPed::SetDead(void)
 {
+#ifdef EX_CHEATS // INVINCIBLE
+	if (IsPlayer() && FindPlayerPed()->bInvincibleCheat && m_fHealth > 0.0f)
+		return;
+#endif
+
 	bUsesCollision = false;
 
 	m_fHealth = 0.0f;

@@ -835,6 +835,9 @@ ProcessSlowMode(void)
 	int16 R3 = CPad::GetPad(0)->NewState.RightShock;
 	int16 networktalk = CPad::GetPad(0)->NewState.NetworkTalk;
 	int16 stop = true;
+#ifdef EX_PC_WALK // ProcessSlowMode
+	int16 walk = CPad::GetPad(0)->NewState.bWalk;
+#endif
 	
 	do
 	{
@@ -879,6 +882,9 @@ ProcessSlowMode(void)
 	CPad::GetPad(0)->OldState.LeftShock = L3;
 	CPad::GetPad(0)->OldState.RightShock = R3;
 	CPad::GetPad(0)->OldState.NetworkTalk = networktalk;
+#ifdef EX_PC_WALK // ProcessSlowMode
+	CPad::GetPad(0)->OldState.bWalk = walk;
+#endif
 	CPad::GetPad(0)->NewState.LeftStickX = lX;
 	CPad::GetPad(0)->NewState.LeftStickY = lY;
 	CPad::GetPad(0)->NewState.RightStickX = rX;
@@ -900,6 +906,9 @@ ProcessSlowMode(void)
 	CPad::GetPad(0)->NewState.LeftShock = L3;
 	CPad::GetPad(0)->NewState.RightShock = R3;
 	CPad::GetPad(0)->NewState.NetworkTalk = networktalk;
+#ifdef EX_PC_WALK // ProcessSlowMode
+	CPad::GetPad(0)->NewState.bWalk = walk;
+#endif
 }
 
 

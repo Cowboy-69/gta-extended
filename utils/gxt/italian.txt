@@ -8167,11 +8167,11 @@ GAMEPAD TYPE
 [FEC_CCF]
 CONFIGURAZIONE
 
-[FEC_CF1]
-CONFIGURAZIONE 1
+[FEC_CF1]   
+CLASSICO
 
-[FEC_CF2]
-CONFIGURAZIONE 2
+[FEC_CF2]   
+STANDARD
 
 [FEC_CF3]
 CONFIGURAZIONE 3
@@ -8199,6 +8199,100 @@ PED DENSITY
 
 [FEM_CAR]
 CAR DENSITY
+
+{______________________________Liberty Extended______________________________}
+[FEC_AIM]   
+PUNTAMENTO AUTO
+
+[FEC_LSX]   
+GUARDA SENSIBILITÀ X
+
+[FEC_LSY]   
+GUARDA SENSIBILITÀ Y
+
+[FEC_ASX]   
+SENSIBILITÀ DI MIRA X
+
+[FEC_ASY]   
+SENSIBILITÀ DI MIRA Y
+
+[FEC_IVL]   
+INVERTI VERTICALMENTE
+
+[FEC_LZN]   
+ZONA MORTA DELLO STICK SINISTRO
+
+[FEC_RZN]   
+ZONA MORTA DELLO STICK DESTRO
+
+[FEC_VBF]   
+FORZA DI VIBRAZIONE
+
+[FEC_PRS]   
+Stazione radio precedente
+
+[FEC_NRS]   
+Prossima stazione radio
+
+[FEC_RTC]   
+Ruota camera
+
+[FET_AGC]   
+CONFIGURAZIONE DEL GAMEPAD
+
+[FET_AGS]   
+IMPOSTAZIONI DEL GAMEPAD
+
+[FEC_FOV]   
+CAMPO VISIVO
+
+[FEC_ACV]   
+AUTOCENTRAGGIO NEL VEICOLO
+
+[FEC_RVD]   
+VEICOLO RELATIVO DURANTE LA GUIDA
+
+[FEC_DOM]   
+DOOM Modalità
+
+[FEC_WAL]
+Camminare
+
+[FEC_RZO]
+Zoom radar
+
+[FEC_REL]
+Ricaricare l'arma
+
+[FED_GPS]
+GPS
+
+[FEC_ATK]
+Attacco
+
+[FET_SGP]
+SALVARE LE FOTO IN UNA GALLERIA
+
+[FES_SAV]
+Non è possibile salvare la partita in questo momento. Per salvare la partita, non si deve essere in missione, non ci si deve muovere o si deve avere un livello di ricercato.
+
+[FET_AUT]
+Salvataggio automatico
+
+[FEM_SL9]
+File di autosalvataggio non presente
+
+[FEO_OTH]
+Altre impostazioni
+
+[FEC_LTS]
+Segnali di svolta a sinistra
+
+[FEC_RTS]
+Segnali di svolta a destra
+
+[FEC_EML]
+Luci di emergenza
 
 [DUMMY]
 THIS LABEL NEEDS TO BE HERE !!!

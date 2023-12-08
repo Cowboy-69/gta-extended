@@ -283,6 +283,11 @@ void CBulletTraces::Init(void)
 
 void CBulletTraces::AddTrace(CVector* vecStart, CVector* vecTarget)
 {
+#ifdef EX_FEATURES_INI // DisableBulletTraces
+	if (bDisableBulletTraces)
+		return;
+#endif
+
 	int index;
 	for (index = 0; index < NUMBULLETTRACES; index++) {
 		if (!aTraces[index].m_bInUse)

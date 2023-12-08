@@ -2399,7 +2399,7 @@ Attack or Fire weapon
 Run
 
 [FEC_FPC]
-First person camera
+FIRST PERSON CAMERA
 
 [FEC_LL]
 Look left
@@ -6893,10 +6893,10 @@ This one cost me fifty dollars...
 Control Configuration
 
 [FEC_PED]
-Controls On Foot
+CONTROLS ON FOOT
 
 [FEC_VEH]
-Controls In Vehicle
+CONTROLS IN VEHICLE
 
 [FEC_FPR]
 Controls For First Person
@@ -8071,10 +8071,10 @@ GAMEPAD TYPE
 CONFIGURATION
 
 [FEC_CF1]
-SETUP 1
+CLASSIC
 
 [FEC_CF2]
-SETUP 2
+MODERN
 
 [FEC_CF3]
 SETUP 3
@@ -8102,6 +8102,88 @@ PED DENSITY
 
 [FEM_CAR]
 CAR DENSITY
+
+{______________________________Liberty Extended______________________________}
+[FEC_AIM]
+AUTO AIMING
+
+[FEC_LSX]
+LOOK SENSITIVITY X
+
+[FEC_LSY]   
+LOOK SENSITIVITY Y
+
+[FEC_ASX]   
+AIMING SENSITIVITY X
+
+[FEC_ASY]   
+AIMING SENSITIVITY Y
+
+[FEC_IVL]   
+INVERT VERTICALLY
+
+[FEC_LZN]   
+LEFT STICK DEADZONE
+
+[FEC_RZN]   
+RIGHT STICK DEADZONE
+
+[FEC_VBF]   
+VIBRATION FORCE
+
+[FEC_PRS]   
+Previous radio station
+
+[FEC_NRS]   
+Next radio station
+
+[FEC_RTC]   
+Rotate camera
+
+[FET_AGC]   
+GAMEPAD CONFIGURATION
+
+[FET_AGS]   
+GAMEPAD SETTINGS
+
+[FEC_FOV]   
+FIELD OF VIEW
+
+[FEC_ACV]   
+AUTO-CENTERING IN VEHICLE
+
+[FEC_RVD]   
+RELATIVE VEHICLE WHILE DRIVEBY
+
+[FEC_DOM]   
+DOOM Mode
+
+[FEC_WAL]
+Walk
+
+[FEC_RZO]
+Radar zoom
+
+[FEC_REL]
+Reload weapon
+
+[FED_GPS]
+GPS
+
+[FEC_ATK]
+Attack
+
+[FES_SAV]
+You cannot save the game at this time. To save the game, you must not be on a mission, not move or have a wanted level.
+
+[FET_AUT]
+Autosave
+
+[FEM_SL9]
+Autosave File Not Present
+
+[FEO_OTH]
+OTHER SETTINGS
 
 { end of file }
 

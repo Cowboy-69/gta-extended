@@ -39,7 +39,11 @@
 #include "Zones.h"
 
 #define BLOCK_COUNT 20
+#ifdef LIBERTY_EX // Save/Load
+#define SIZE_OF_SIMPLEVARS 0xC0
+#else
 #define SIZE_OF_SIMPLEVARS 0xBC
+#endif
 
 const uint32 SIZE_OF_ONE_GAME_IN_BYTES = 201729;
 
@@ -186,6 +190,9 @@ GenericSave(int file)
 	WriteDataToBufferPointer(buf, TheCamera.CarZoomIndicator);
 	WriteDataToBufferPointer(buf, TheCamera.PedZoomIndicator);
 #endif
+#ifdef LIBERTY_EX // Liberty Extended version
+	WriteDataToBufferPointer(buf, CGame::libertyExtendedVersion);
+#endif
 	assert(buf - work_buff == SIZE_OF_SIMPLEVARS);
 
 	// Save scripts, block is nested within the same block as simple vars for some reason
@@ -316,6 +323,9 @@ GenericLoad()
 #else
 	ReadDataFromBufferPointer(buf, TheCamera.CarZoomIndicator);
 	ReadDataFromBufferPointer(buf, TheCamera.PedZoomIndicator);
+#endif
+#ifdef LIBERTY_EX // Liberty Extended version
+	ReadDataFromBufferPointer(buf, CGame::libertyExtendedVersion);
 #endif
 	assert(buf - work_buff == SIZE_OF_SIMPLEVARS);
 #ifdef MISSION_REPLAY

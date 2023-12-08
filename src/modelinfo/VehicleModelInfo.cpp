@@ -514,7 +514,11 @@ CVehicleModelInfo::PreprocessHierarchy(void)
 		if(desc[i].flags & VEHICLE_FLAG_ADD_WHEEL){
 			if(m_wheelId == -1)
 				RwFrameDestroy(assoc.frame);
+#ifdef EX_VEHICLE_LOADER // Custom wheels
+			else if (m_wheelId != 89){
+#else
 			else{
+#endif
 				RwV3d scale;
 				atomic = (RpAtomic*)CModelInfo::GetModelInfo(m_wheelId)->CreateInstance();
 				RwFrameDestroy(RpAtomicGetFrame(atomic));
@@ -952,6 +956,58 @@ CVehicleModelInfo::LoadVehicleColours(void)
 	}
 
 	CFileMgr::CloseFile(fd);
+
+#ifdef EX_VEHICLE_LOADER // Loading car colors
+	char param[10];
+	int id = 0;
+	int anotherColors[64];
+
+	CFileMgr::ChangeDir("\\LibertyEx\\NewVehicles\\");
+	fd = CFileMgr::OpenFile("NEWVEHICLES.IDE", "r");
+	CFileMgr::ChangeDir("\\");
+
+	while(CFileMgr::ReadLine(fd, line, sizeof(line))){
+		for(start = 0; ; start++)
+			if(line[start] > ' ' || line[start] == '\0' || line[start] == '\n')
+				break;
+
+		for(end = start; ; end++){
+			if(line[end] == '\0' || line[end] == '\n')
+				break;
+			if(line[end] == ',' || line[end] == '\r')
+				line[end] = ' ';
+		}
+		line[end] = '\0';
+
+		if(line[start] == '#' || line[start] == '\0')
+			continue;
+
+		if (line[0] != 'c')
+			continue;
+
+		n = sscanf(&line[start],
+			"%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
+			param,
+			&id,
+			&colors[0], &colors[1],
+			&colors[2], &colors[3],
+			&colors[4], &colors[5],
+			&colors[6], &colors[7],
+			&colors[8], &colors[9],
+			&colors[10], &colors[11],
+			&colors[12], &colors[13],
+			&colors[14], &colors[15]);
+		CVehicleModelInfo *mi = (CVehicleModelInfo*)CModelInfo::GetModelInfo(id);
+		assert(mi);
+		mi->m_numColours = (n-1)/2;
+		for(i = 0; i < mi->m_numColours; i++){
+			mi->m_colours1[i] = colors[i*2 + 0];
+			mi->m_colours2[i] = colors[i*2 + 1];
+		}
+	}
+
+	CFileMgr::CloseFile(fd);
+#endif
 }
 
 void
@@ -1039,7 +1095,11 @@ CVehicleModelInfo::SetEnvironmentMap(void)
 	if(m_envMap != ms_pEnvironmentMaps[0]){
 		m_envMap = ms_pEnvironmentMaps[0];
 		RpClumpForAllAtomics(m_clump, SetEnvironmentMapCB, m_envMap);
+#ifdef EX_VEHICLE_LOADER // Custom wheels
+		if(m_wheelId != -1 && m_wheelId != 89){
+#else
 		if(m_wheelId != -1){
+#endif
 			wheelmi = (CSimpleModelInfo*)CModelInfo::GetModelInfo(m_wheelId);
 			for(i = 0; i < wheelmi->m_numAtomics; i++)
 				SetEnvironmentMapCB(wheelmi->m_atomics[i], m_envMap);

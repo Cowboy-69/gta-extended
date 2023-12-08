@@ -220,7 +220,11 @@ CTimeCycle::Update(void)
 	int h2 = (h1+1)%24;
 	int w1 = CWeather::OldWeatherType;
 	int w2 = CWeather::NewWeatherType;
+#ifdef EX_PARTICLE // Smooth movement of the timecycle
+	float timeInterp = (CClock::GetMinutes() + CClock::GetSeconds()/60.0f)/60.0f;
+#else
 	float timeInterp = CClock::GetMinutes()/60.0f;
+#endif
 	// coefficients for a bilinear interpolation
 	float c0 = (1.0f-timeInterp) * (1.0f-CWeather::InterpolationValue);
 	float c1 = timeInterp * (1.0f-CWeather::InterpolationValue);
@@ -297,7 +301,11 @@ CTimeCycle::Update(void)
 
 	m_CurrentStoredValue = (m_CurrentStoredValue+1)&0xF;
 
+#ifdef EX_PARTICLE // Smooth movement of the Sun
+	float sunAngle = 2*PI*(CClock::GetSeconds()/60.0f + CClock::GetMinutes() + CClock::GetHours()*60)/(24*60);
+#else
 	float sunAngle = 2*PI*(CClock::GetMinutes() + CClock::GetHours()*60)/(24*60);
+#endif
 	CVector &sunPos = GetSunDirection();
 	sunPos.x = Sin(sunAngle);
 	sunPos.y = 1.0f;

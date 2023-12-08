@@ -129,6 +129,9 @@ public:
 	float m_fGasPedal;
 	float m_fBrakePedal;
 	uint8 VehicleCreatedBy;
+#ifdef EX_VEHICLE_LOADER
+	tAnotherVehicleSampleData* pVehicleSample;
+#endif
 
 	// cf. https://github.com/DK22Pac/plugin-sdk/blob/master/plugin_sa/game_sa/CVehicle.h from R*
 	uint8 bIsLawEnforcer: 1; // Is this guy chasing the player at the moment
