@@ -82,6 +82,8 @@
 	#define EX_VEHICLE_LOADER
 	#define EX_FEATURES_INI
 	#define EX_CHEATS
+	#define EX_BORDERLESS_WINDOW
+
 	#define EX_UTILS // Useful tools
 
 #endif

@@ -37,7 +37,11 @@
 #ifdef CUSTOM_FRONTEND_OPTIONS
 
 #if defined(IMPROVED_VIDEOMODE) && !defined(GTA_HANDHELD)
+#ifdef EX_BORDERLESS_WINDOW
+	#define VIDEOMODE_SELECTOR MENUACTION_CFO_SELECT, "FEM_SCF", { new CCFOSelect((int8*)&FrontEndMenuManager.m_nPrefsWindowed, "VideoMode", "Windowed", screenModes, 3, true, ScreenModeAfterChange, true) },
+#else
 	#define VIDEOMODE_SELECTOR MENUACTION_CFO_SELECT, "FEM_SCF", { new CCFOSelect((int8*)&FrontEndMenuManager.m_nPrefsWindowed, "VideoMode", "Windowed", screenModes, 2, true, ScreenModeAfterChange, true) },
+#endif
 #else
 	#define VIDEOMODE_SELECTOR
 #endif
@@ -302,7 +306,11 @@ wchar* MultiSamplingDraw(bool *disabled, bool userHovering) {
 #endif
 
 #ifdef IMPROVED_VIDEOMODE
+#ifdef EX_BORDERLESS_WINDOW
+const char* screenModes[] = { "FED_FLS", "FED_WND", "FED_BRL"};
+#else
 const char* screenModes[] = { "FED_FLS", "FED_WND" };
+#endif
 void ScreenModeAfterChange(int8 before, int8 after)
 {
 	_psSelectScreenVM(FrontEndMenuManager.m_nPrefsVideoMode); // apply same resolution

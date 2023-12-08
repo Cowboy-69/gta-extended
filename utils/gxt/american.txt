@@ -8185,6 +8185,9 @@ Autosave File Not Present
 [FEO_OTH]
 OTHER SETTINGS
 
+[FED_BRL]
+BORDERLESS
+
 { end of file }
 
 [DUMMY]

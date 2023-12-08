@@ -1621,13 +1621,27 @@ psSelectDevice()
 		rect.left = rect.top = 0;
 		rect.right = FrontEndMenuManager.m_nPrefsWidth;
 		rect.bottom = FrontEndMenuManager.m_nPrefsHeight;
+#ifdef EX_BORDERLESS_WINDOW
+		if (FrontEndMenuManager.m_nPrefsWindowed == 1)
+			AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
+		else // 2, borderless
+			AdjustWindowRect(&rect, WS_VISIBLE, FALSE);
+#else
 		AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);
+#endif
 
 		// center it
 		int spaceX = GetSystemMetrics(SM_CXSCREEN) - (rect.right-rect.left);
 		int spaceY = GetSystemMetrics(SM_CYSCREEN) - (rect.bottom-rect.top);
 
+#ifdef EX_BORDERLESS_WINDOW
+		if (FrontEndMenuManager.m_nPrefsWindowed == 1)
+			SetWindowLong(PSGLOBAL(window), GWL_STYLE, WS_VISIBLE | WS_OVERLAPPEDWINDOW);
+		else // 2, borderless
+			SetWindowLong(PSGLOBAL(window), GWL_STYLE, WS_VISIBLE);
+#else
 		SetWindowLong(PSGLOBAL(window), GWL_STYLE, WS_VISIBLE | WS_OVERLAPPEDWINDOW);
+#endif
 		SetWindowPos(PSGLOBAL(window), HWND_NOTOPMOST, spaceX/2, spaceY/2,
 			(rect.right - rect.left),
 			(rect.bottom - rect.top), 0);
