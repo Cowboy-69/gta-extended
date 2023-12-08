@@ -4167,7 +4167,11 @@ CMenuManager::LoadAllTextures()
 		frontendTxdSlot = CTxdStore::AddTxdSlot("frontend");
 
 	printf("LOAD frontend\n");
+#ifdef LIBERTY_EX // LibertyExtended folder - frontend.txd
+	CTxdStore::LoadTxd(frontendTxdSlot, "LibertyExtended/MODELS/FRONTEND.TXD");
+#else
 	CTxdStore::LoadTxd(frontendTxdSlot, "MODELS/FRONTEND.TXD");
+#endif
 	CTxdStore::AddRef(frontendTxdSlot);
 	CTxdStore::SetCurrentTxd(frontendTxdSlot);
 #if GTA_VERSION < GTA3_PC_11
@@ -4190,7 +4194,11 @@ CMenuManager::LoadAllTextures()
 		menuTxdSlot = CTxdStore::AddTxdSlot("menu");
 
 	printf("LOAD sprite\n");
+#ifdef LIBERTY_EX // LibertyExtended folder - menu.txd
+	CTxdStore::LoadTxd(menuTxdSlot, "LibertyExtended/MODELS/MENU.TXD");
+#else
 	CTxdStore::LoadTxd(menuTxdSlot, "MODELS/MENU.TXD");
+#endif
 	CTxdStore::AddRef(menuTxdSlot);
 	CTxdStore::SetCurrentTxd(menuTxdSlot);
 
@@ -4226,11 +4234,19 @@ CMenuManager::LoadAllTextures()
 #ifdef GAMEPAD_MENU
 const char* controllerTypesPaths[] = {
 	nil,
+#ifdef LIBERTY_EX // LibertyExtended folder - Controller types
+	"LibertyExtended/MODELS/FRONTEND_DS3.TXD",
+	"LibertyExtended/MODELS/FRONTEND_DS4.TXD",
+	"LibertyExtended/MODELS/FRONTEND_X360.TXD",
+	"LibertyExtended/MODELS/FRONTEND_XONE.TXD",
+	"LibertyExtended/MODELS/FRONTEND_NSW.TXD",
+#else
 	"MODELS/FRONTEND_DS3.TXD",
 	"MODELS/FRONTEND_DS4.TXD",
 	"MODELS/FRONTEND_X360.TXD",
 	"MODELS/FRONTEND_XONE.TXD",
 	"MODELS/FRONTEND_NSW.TXD",
+#endif
 };
 
 void
@@ -4238,6 +4254,19 @@ CMenuManager::LoadController(int8 type)
 {
 	switch (type)
 	{
+#ifdef LIBERTY_EX // LibertyExtended folder - Gamepad buttons
+	case CONTROLLER_DUALSHOCK2:
+	case CONTROLLER_DUALSHOCK3:
+	case CONTROLLER_DUALSHOCK4:
+		CFont::LoadButtons("LibertyExtended/MODELS/PS3BTNS.TXD");
+		break;
+	case CONTROLLER_NINTENDO_SWITCH:
+		CFont::LoadButtons("LibertyExtended/MODELS/NSWBTNS.TXD");
+		break;
+	default:
+		CFont::LoadButtons("LibertyExtended/MODELS/X360BTNS.TXD");
+		break;
+#else
 	case CONTROLLER_DUALSHOCK2:
 	case CONTROLLER_DUALSHOCK3:
 	case CONTROLLER_DUALSHOCK4:
@@ -4249,6 +4278,7 @@ CMenuManager::LoadController(int8 type)
 	default:
 		CFont::LoadButtons("MODELS/X360BTNS.TXD");
 		break;
+#endif
 	}
 
 	// Unload current textures

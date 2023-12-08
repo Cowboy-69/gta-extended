@@ -207,7 +207,11 @@ const char *_psGetUserFilesFolder()
 	return szUserFiles;
 #else
 	static CHAR szUserFiles[256];
+#ifdef LIBERTY_EX // LibertyExtended folder - userfiles
+	strcpy(szUserFiles, "LibertyExtended\\userfiles");
+#else
 	strcpy(szUserFiles, "userfiles");
+#endif
 	_psCreateFolder(szUserFiles);
 	return szUserFiles;
 #endif

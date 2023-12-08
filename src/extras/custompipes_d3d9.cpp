@@ -140,7 +140,11 @@ vehicleRenderCB(rw::Atomic *atomic, rw::d3d9::InstanceDataHeader *header)
 void
 CreateVehiclePipe(void)
 {
+#ifdef LIBERTY_EX // LibertyExtended folder - carTweakingTable.dat (neo)
+	if(CFileMgr::LoadFile("LibertyExtended/neo/carTweakingTable.dat", work_buff, sizeof(work_buff), "r") <= 0)
+#else
 	if(CFileMgr::LoadFile("neo/carTweakingTable.dat", work_buff, sizeof(work_buff), "r") <= 0)
+#endif
 		printf("Error: couldn't open 'neo/carTweakingTable.dat'\n");
 	else{
 		char *fp = (char*)work_buff;
@@ -255,7 +259,11 @@ worldRenderCB(rw::Atomic *atomic, rw::d3d9::InstanceDataHeader *header)
 void
 CreateWorldPipe(void)
 {
+#ifdef LIBERTY_EX // LibertyExtended folder - worldTweakingTable.dat (neo)
+	if(CFileMgr::LoadFile("LibertyExtended/neo/worldTweakingTable.dat", work_buff, sizeof(work_buff), "r") <= 0)
+#else
 	if(CFileMgr::LoadFile("neo/worldTweakingTable.dat", work_buff, sizeof(work_buff), "r") <= 0)
+#endif
 		printf("Error: couldn't open 'neo/worldTweakingTable.dat'\n");
 	else
 		ReadTweakValueTable((char*)work_buff, WorldLightmapBlend);
@@ -502,7 +510,11 @@ rimSkinRenderCB(rw::Atomic *atomic, rw::d3d9::InstanceDataHeader *header)
 void
 CreateRimLightPipes(void)
 {
+#ifdef LIBERTY_EX // LibertyExtended folder - rimTweakingTable.dat (neo)
+	if(CFileMgr::LoadFile("LibertyExtended/neo/rimTweakingTable.dat", work_buff, sizeof(work_buff), "r") <= 0)
+#else
 	if(CFileMgr::LoadFile("neo/rimTweakingTable.dat", work_buff, sizeof(work_buff), "r") <= 0)
+#endif
 		printf("Error: couldn't open 'neo/rimTweakingTable.dat'\n");
 	else{
 		char *fp = (char*)work_buff;

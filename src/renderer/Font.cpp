@@ -295,6 +295,22 @@ CFont::Initialise(void)
 	Slot = slot;
 	switch (LanguageSet)
 	{
+#ifdef LIBERTY_EX // LibertyExtended folder - fonts
+	case FONT_LANGSET_EFIGS:
+	default:
+		//CTxdStore::LoadTxd(slot, "LibertyExtended/MODELS/FONTS.TXD");
+		CTxdStore::LoadTxd(slot, "MODELS/FONTS.TXD");
+		break;
+	case FONT_LANGSET_POLISH:
+		CTxdStore::LoadTxd(slot, "LibertyExtended/MODELS/FONTS_P.TXD");
+		break;
+	case FONT_LANGSET_RUSSIAN:
+		CTxdStore::LoadTxd(slot, "LibertyExtended/MODELS/FONTS_R.TXD");
+		break;
+	case FONT_LANGSET_JAPANESE:
+		CTxdStore::LoadTxd(slot, "LibertyExtended/MODELS/FONTS_J.TXD");
+		break;
+#else
 	case FONT_LANGSET_EFIGS:
 	default:
 		CTxdStore::LoadTxd(slot, "MODELS/FONTS.TXD");
@@ -308,6 +324,7 @@ CFont::Initialise(void)
 	case FONT_LANGSET_JAPANESE:
 		CTxdStore::LoadTxd(slot, "MODELS/FONTS_J.TXD");
 		break;
+#endif
 	}
 #else
 	CTxdStore::LoadTxd(slot, "MODELS/FONTS.TXD");
@@ -414,6 +431,22 @@ CFont::ReloadFonts(uint8 set)
 		CTxdStore::RemoveTxd(Slot);
 		switch (set)
 		{
+#ifdef LIBERTY_EX // LibertyExtended folder - fonts
+		case FONT_LANGSET_EFIGS:
+		default:
+			//CTxdStore::LoadTxd(Slot, "LibertyExtended/MODELS/FONTS.TXD");
+			CTxdStore::LoadTxd(Slot, "MODELS/FONTS.TXD");
+			break;
+		case FONT_LANGSET_POLISH:
+			CTxdStore::LoadTxd(Slot, "LibertyExtended/MODELS/FONTS_P.TXD");
+			break;
+		case FONT_LANGSET_RUSSIAN:
+			CTxdStore::LoadTxd(Slot, "LibertyExtended/MODELS/FONTS_R.TXD");
+			break;
+		case FONT_LANGSET_JAPANESE:
+			CTxdStore::LoadTxd(Slot, "LibertyExtended/MODELS/FONTS_J.TXD");
+			break;
+#else
 		case FONT_LANGSET_EFIGS:
 		default:
 			CTxdStore::LoadTxd(Slot, "MODELS/FONTS.TXD");
@@ -427,6 +460,7 @@ CFont::ReloadFonts(uint8 set)
 		case FONT_LANGSET_JAPANESE:
 			CTxdStore::LoadTxd(Slot, "MODELS/FONTS_J.TXD");
 			break;
+#endif
 		}
 		CTxdStore::SetCurrentTxd(Slot);
 		Sprite[0].SetTexture("font2", "font2_mask");

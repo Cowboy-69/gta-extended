@@ -69,7 +69,11 @@ CAnimViewer::Initialise(void) {
 	int hudSlot = CTxdStore::AddTxdSlot("hud");
 	CTxdStore::LoadTxd(hudSlot, "MODELS/HUD.TXD");
 	int particleSlot = CTxdStore::AddTxdSlot("particle");
+#ifdef LIBERTY_EX // LibertyExtended folder - particle.txd
+	CTxdStore::LoadTxd(particleSlot, "LibertyExtended/MODELS/PARTICLE.TXD");
+#else
 	CTxdStore::LoadTxd(particleSlot, "MODELS/PARTICLE.TXD");
+#endif
 	CTxdStore::SetCurrentTxd(animTxdSlot);
 	CPools::Initialise();
 	CReferences::Init();

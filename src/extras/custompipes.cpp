@@ -466,7 +466,11 @@ AttachRimPipe(rw::Clump *clump)
 void
 CustomPipeInit(void)
 {
+#ifdef LIBERTY_EX // LibertyExtended folder - neo.txd
+	RwStream *stream = RwStreamOpen(rwSTREAMFILENAME, rwSTREAMREAD, "LibertyExtended/neo/neo.txd");
+#else
 	RwStream *stream = RwStreamOpen(rwSTREAMFILENAME, rwSTREAMREAD, "neo/neo.txd");
+#endif
 	if(stream == nil)
 		printf("Error: couldn't open 'neo/neo.txd'\n");
 	else{

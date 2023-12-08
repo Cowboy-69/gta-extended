@@ -140,7 +140,11 @@ CreateVehiclePipe(void)
 	using namespace rw;
 	using namespace rw::gl3;
 
+#ifdef LIBERTY_EX // LibertyExtended folder - carTweakingTable.dat (neo)
+	if(CFileMgr::LoadFile("LibertyExtended/neo/carTweakingTable.dat", work_buff, sizeof(work_buff), "r") <= 0)
+#else
 	if(CFileMgr::LoadFile("neo/carTweakingTable.dat", work_buff, sizeof(work_buff), "r") <= 0)
+#endif
 		printf("Error: couldn't open 'neo/carTweakingTable.dat'\n");
 	else{
 		char *fp = (char*)work_buff;
@@ -249,7 +253,11 @@ CreateWorldPipe(void)
 	using namespace rw;
 	using namespace rw::gl3;
 
+#ifdef LIBERTY_EX // LibertyExtended folder - worldTweakingTable.dat (neo)
+	if(CFileMgr::LoadFile("LibertyExtended/neo/worldTweakingTable.dat", work_buff, sizeof(work_buff), "r") <= 0)
+#else
 	if(CFileMgr::LoadFile("neo/worldTweakingTable.dat", work_buff, sizeof(work_buff), "r") <= 0)
+#endif
 		printf("Error: couldn't open 'neo/worldTweakingTable.dat'\n");
 	else
 		ReadTweakValueTable((char*)work_buff, WorldLightmapBlend);
@@ -501,7 +509,11 @@ CreateRimLightPipes(void)
 {
 	using namespace rw::gl3;
 
+#ifdef LIBERTY_EX // LibertyExtended folder - rimTweakingTable.dat (neo)
+	if(CFileMgr::LoadFile("LibertyExtended/neo/rimTweakingTable.dat", work_buff, sizeof(work_buff), "r") <= 0)
+#else
 	if(CFileMgr::LoadFile("neo/rimTweakingTable.dat", work_buff, sizeof(work_buff), "r") <= 0)
+#endif
 		printf("Error: couldn't open 'neo/rimTweakingTable.dat'\n");
 	else{
 		char *fp = (char*)work_buff;

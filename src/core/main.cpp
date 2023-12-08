@@ -1809,7 +1809,11 @@ void
 InitialiseGame(void)
 {
 	LoadingScreen(nil, nil, "loadsc0");
+#ifdef LIBERTY_EX // LibertyExtended folder - gta3.dat
+	CGame::Initialise("LibertyExtended\\DATA\\GTA3.DAT");
+#else
 	CGame::Initialise("DATA\\GTA3.DAT");
+#endif
 }
 
 RsEventStatus

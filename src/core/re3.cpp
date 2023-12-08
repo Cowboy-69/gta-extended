@@ -129,7 +129,11 @@ CustomFrontendOptionsPopulate(void)
 #ifdef EXTENDED_PIPELINES
 	const char *vehPipelineNames[] = { "FED_MFX", "FED_NEO" };
 	const char *off_on[] = { "FEM_OFF", "FEM_ON" };
+#ifdef LIBERTY_EX // LibertyExtended folder - neo.dat
+	fd = CFileMgr::OpenFile("LibertyExtended/neo/neo.txd","r");
+#else
 	fd = CFileMgr::OpenFile("neo/neo.txd","r");
+#endif
 	if (fd) {
 #ifdef GRAPHICS_MENU_OPTIONS
 		FrontendOptionSetCursor(MENUPAGE_GRAPHICS_SETTINGS, -3, false);
@@ -152,24 +156,39 @@ CustomFrontendOptionsPopulate(void)
 #ifdef MORE_LANGUAGES
 	int fd2;
 	FrontendOptionSetCursor(MENUPAGE_LANGUAGE_SETTINGS, 5, false);
+#ifdef LIBERTY_EX // LibertyExtended folder - polish.gxt and fonts_p.txd
+	if (fd = CFileMgr::OpenFile("LibertyExtended/text/polish.gxt","r")) {
+		if (fd2 = CFileMgr::OpenFile("LibertyExtended/models/fonts_p.txd","r")) {
+#else
 	if (fd = CFileMgr::OpenFile("text/polish.gxt","r")) {
 		if (fd2 = CFileMgr::OpenFile("models/fonts_p.txd","r")) {
+#endif
 			FrontendOptionAddDynamic("FEL_POL", nil, nil, LangPolSelect, nil, nil);
 			CFileMgr::CloseFile(fd2);
 		}
 		CFileMgr::CloseFile(fd);
 	}
 
+#ifdef LIBERTY_EX // LibertyExtended folder - russian.gxt and fonts_r.txd
+	if (fd = CFileMgr::OpenFile("LibertyExtended/text/russian.gxt","r")) {
+		if (fd2 = CFileMgr::OpenFile("LibertyExtended/models/fonts_r.txd","r")) {
+#else
 	if (fd = CFileMgr::OpenFile("text/russian.gxt","r")) {
 		if (fd2 = CFileMgr::OpenFile("models/fonts_r.txd","r")) {
+#endif
 			FrontendOptionAddDynamic("FEL_RUS", nil, nil, LangRusSelect, nil, nil);
 			CFileMgr::CloseFile(fd2);
 		}
 		CFileMgr::CloseFile(fd);
 	}
 
+#ifdef LIBERTY_EX // LibertyExtended folder - japanese.gxt and fonts_j.txd
+	if (fd = CFileMgr::OpenFile("LibertyExtended/text/japanese.gxt","r")) {
+		if (fd2 = CFileMgr::OpenFile("LibertyExtended/models/fonts_j.txd","r")) {
+#else
 	if (fd = CFileMgr::OpenFile("text/japanese.gxt","r")) {
 		if (fd2 = CFileMgr::OpenFile("models/fonts_j.txd","r")) {
+#endif
 			FrontendOptionAddDynamic("FEL_JAP", nil, nil, LangJapSelect, nil, nil);
 			CFileMgr::CloseFile(fd2);
 		}
@@ -185,7 +204,11 @@ CustomFrontendOptionsPopulate(void)
 #include "ini.h"
 
 #ifdef EX_FEATURES_INI
+#ifdef LIBERTY_EX // LibertyExtended folder - features.ini
+mINI::INIFile featuresIni("LibertyExtended/features.ini");
+#else
 mINI::INIFile featuresIni("features.ini");
+#endif
 mINI::INIStructure featuresCfg;
 
 uint8 bInitFeaturesIni = featuresIni.read(featuresCfg);

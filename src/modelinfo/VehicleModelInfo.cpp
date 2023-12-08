@@ -962,7 +962,7 @@ CVehicleModelInfo::LoadVehicleColours(void)
 	int id = 0;
 	int anotherColors[64];
 
-	CFileMgr::ChangeDir("\\LibertyEx\\NewVehicles\\");
+	CFileMgr::ChangeDir("LibertyExtended\\NewVehicles\\");
 	fd = CFileMgr::OpenFile("NEWVEHICLES.IDE", "r");
 	CFileMgr::ChangeDir("\\");
 

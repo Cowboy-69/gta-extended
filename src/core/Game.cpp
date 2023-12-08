@@ -434,7 +434,11 @@ bool CGame::Initialise(const char* datFile)
 
 	LoadingScreen("Loading the Game", "Loading particles", nil);
 	int particleTxdSlot = CTxdStore::AddTxdSlot("particle");
+#ifdef LIBERTY_EX // LibertyExtended folder - particle.txd
+	CTxdStore::LoadTxd(particleTxdSlot, "LibertyExtended/MODELS/PARTICLE.TXD");
+#else
 	CTxdStore::LoadTxd(particleTxdSlot, "MODELS/PARTICLE.TXD");
+#endif
 	CTxdStore::AddRef(particleTxdSlot);
 	CTxdStore::SetCurrentTxd(gameTxdSlot);
 	LoadingScreen("Loading the Game", "Setup game variables", nil);
@@ -508,7 +512,11 @@ bool CGame::Initialise(const char* datFile)
 
 	CdStreamAddImage("MODELS\\GTA3.IMG");
 
+#ifdef LIBERTY_EX // LibertyExtended folder - default.dat
+	CFileLoader::LoadLevel("LibertyExtended\\DATA\\DEFAULT.DAT");
+#else
 	CFileLoader::LoadLevel("DATA\\DEFAULT.DAT");
+#endif
 	CFileLoader::LoadLevel(datFile);
 #else
 	CPedStats::Initialise();	// InitialiseOnceAfterRW

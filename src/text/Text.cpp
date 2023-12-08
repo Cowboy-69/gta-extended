@@ -29,6 +29,37 @@ CText::Load(void)
 	Unload();
 	filedata = new uint8[0x40000];
 
+#ifdef LIBERTY_EX // LibertyExtended folder - gxt
+	CFileMgr::SetDir("LibertyExtended");
+	switch(CMenuManager::m_PrefsLanguage){
+	case CMenuManager::LANGUAGE_AMERICAN:
+		sprintf(filename, "TEXT/AMERICAN.GXT");
+		break;
+	case CMenuManager::LANGUAGE_FRENCH:
+		sprintf(filename, "TEXT/FRENCH.GXT");
+		break;
+	case CMenuManager::LANGUAGE_GERMAN:
+		sprintf(filename, "TEXT/GERMAN.GXT");
+		break;
+	case CMenuManager::LANGUAGE_ITALIAN:
+		sprintf(filename, "TEXT/ITALIAN.GXT");
+		break;
+	case CMenuManager::LANGUAGE_SPANISH:
+		sprintf(filename, "TEXT/SPANISH.GXT");
+		break;
+#ifdef MORE_LANGUAGES
+	case CMenuManager::LANGUAGE_POLISH:
+		sprintf(filename, "TEXT/POLISH.GXT");
+		break;
+	case CMenuManager::LANGUAGE_RUSSIAN:
+		sprintf(filename, "TEXT/RUSSIAN.GXT");
+		break;
+	case CMenuManager::LANGUAGE_JAPANESE:
+		sprintf(filename, "TEXT/JAPANESE.GXT");
+		break;
+#endif
+	}
+#else
 	CFileMgr::SetDir("TEXT");
 	switch(CMenuManager::m_PrefsLanguage){
 	case CMenuManager::LANGUAGE_AMERICAN:
@@ -58,6 +89,7 @@ CText::Load(void)
 		break;
 #endif
 	}
+#endif
 
 	length = CFileMgr::LoadFile(filename, filedata, 0x40000, "rb");
 	CFileMgr::SetDir("");
