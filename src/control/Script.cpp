@@ -37,6 +37,9 @@
 #include "Wanted.h"
 #include "Weather.h"
 #include "Zones.h"
+#ifdef MODLOADER // main.scm
+#include "modloader.h"
+#endif
 
 uint8 CTheScripts::ScriptSpace[SIZE_SCRIPT_SPACE];
 CRunningScript CTheScripts::ScriptsArray[MAX_NUM_SCRIPTS];
@@ -504,11 +507,19 @@ int CTheScripts::OpenScript()
 {
 	CFileMgr::ChangeDir("\\");
 	switch (ScriptToLoad) {
+#ifdef MODLOADER // main.scm
+	case 0: return ModLoader_MainScm("data\\main.scm", "rb");
+#else
 	case 0: return CFileMgr::OpenFile("data\\main.scm", "rb");
+#endif
 	case 1: return CFileMgr::OpenFile("data\\main_freeroam.scm", "rb");
 	case 2: return CFileMgr::OpenFile("data\\main_d.scm", "rb");
 	}
+#ifdef MODLOADER // main.scm
+	return ModLoader_MainScm("data\\main.scm", "rb");
+#else
 	return CFileMgr::OpenFile("data\\main.scm", "rb");
+#endif
 }
 #endif
 

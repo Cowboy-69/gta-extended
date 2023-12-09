@@ -11,6 +11,9 @@
 #include "Streaming.h"
 #include "CutsceneHead.h"
 #include "CdStream.h"
+#ifdef MODLOADER
+#include "modloader.h"
+#endif
 
 #ifdef GTA_PS2_STUFF
 // this is a total hack to switch between PC and PS2 code
@@ -186,7 +189,11 @@ CCutsceneHead::PlayAnimation(const char *animName)
 	sprintf(gString, "%s.anm", animName);
 
 	if(CCutsceneMgr::ms_pCutsceneDir->FindItem(gString, offset, size)){
+#ifdef MODLOADER
+		stream = RwStreamOpen(rwSTREAMFILENAME, rwSTREAMREAD, ModLoader_GetCdStreamPath_Unsafe("ANIM\\CUTS.IMG"));
+#else
 		stream = RwStreamOpen(rwSTREAMFILENAME, rwSTREAMREAD, "ANIM\\CUTS.IMG");
+#endif
 		assert(stream);
 
 		CStreaming::MakeSpaceFor(size * CDSTREAM_SECTOR_SIZE);
@@ -208,7 +215,11 @@ CCutsceneHead::PlayAnimation(const char *animName)
 		sprintf(gString, "%s.ska", animName);
 
 		if(CCutsceneMgr::ms_pCutsceneDir->FindItem(gString, offset, size)){
+#ifdef MODLOADER
+			stream = RwStreamOpen(rwSTREAMFILENAME, rwSTREAMREAD, ModLoader_GetCdStreamPath_Unsafe("ANIM\\CUTS.IMG"));
+#else
 			stream = RwStreamOpen(rwSTREAMFILENAME, rwSTREAMREAD, "ANIM\\CUTS.IMG");
+#endif
 			assert(stream);
 
 			CStreaming::MakeSpaceFor(size * CDSTREAM_SECTOR_SIZE);

@@ -4,6 +4,9 @@
 #include "FileMgr.h"
 #include "Physical.h"
 #include "HandlingMgr.h"
+#ifdef MODLOADER
+#include "modloader.h"
+#endif
 
 cHandlingDataMgr mod_HandlingManager;
 
@@ -97,7 +100,11 @@ cHandlingDataMgr::LoadHandlingData(void)
 	tHandlingData *handling;
 
 	CFileMgr::SetDir("DATA");
+#ifdef MODLOADER
+	ModLoader_HandlingCfg(HandlingFilename, work_buff, sizeof(work_buff), "r");
+#else
 	CFileMgr::LoadFile(HandlingFilename, work_buff, sizeof(work_buff), "r");
+#endif
 	CFileMgr::SetDir("");
 
 	start = (char*)work_buff;

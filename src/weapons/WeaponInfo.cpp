@@ -6,6 +6,9 @@
 #include "AnimManager.h"
 #include "AnimBlendAssociation.h"
 #include "Weapon.h"
+#ifdef MODLOADER // weapon.dat
+#include "modloader.h"
+#endif
 
 static CWeaponInfo aWeaponInfo[WEAPONTYPE_TOTALWEAPONS];
 
@@ -64,7 +67,11 @@ CWeaponInfo::LoadWeaponData(void)
 	int lp, linelen;
 		
 	CFileMgr::SetDir("DATA");
+#ifdef MODLOADER // weapon.dat
+	buflen = ModLoader_WeaponDat("WEAPON.DAT", work_buff, sizeof(work_buff), "r");
+#else
 	buflen = CFileMgr::LoadFile("WEAPON.DAT", work_buff, sizeof(work_buff), "r");
+#endif
 	CFileMgr::SetDir("");
 
 	for (bp = 0; bp < buflen; ) {

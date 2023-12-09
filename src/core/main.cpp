@@ -75,6 +75,9 @@
 #ifdef USE_OUR_VERSIONING
 #include "GitSHA1.h"
 #endif
+#ifdef MODLOADER
+#include "modloader.h"
+#endif
 
 GlobalScene Scene;
 
@@ -582,7 +585,11 @@ LoadSplash(const char *name)
 			splash.Delete();
 		if(txd)
 			CTxdStore::RemoveTxd(splashTxdId);
+#ifdef MODLOADER // LoadSplash
+		CTxdStore::LoadTxd(splashTxdId, ModLoader_RegisterAndGetSplashFile_Unsafe(filename));
+#else
 		CTxdStore::LoadTxd(splashTxdId, filename);
+#endif
 		CTxdStore::AddRef(splashTxdId);
 		CTxdStore::PushCurrentTxd();
 		CTxdStore::SetCurrentTxd(splashTxdId);
@@ -1571,6 +1578,10 @@ Render2dStuffAfterFade(void)
 void
 Idle(void *arg)
 {
+#ifdef MODLOADER
+	ModLoader_Tick();
+#endif
+
 #ifdef ASPECT_RATIO_SCALE
 	CDraw::SetAspectRatio(CDraw::FindAspectRatio());
 #endif
@@ -1773,6 +1784,10 @@ popret:	POP_MEMID();	// MEMID_RENDER
 void
 FrontendIdle(void)
 {
+#ifdef MODLOADER
+	ModLoader_Tick();
+#endif
+
 #ifdef ASPECT_RATIO_SCALE
 	CDraw::SetAspectRatio(CDraw::FindAspectRatio());
 #endif
@@ -1809,11 +1824,7 @@ void
 InitialiseGame(void)
 {
 	LoadingScreen(nil, nil, "loadsc0");
-#ifdef LIBERTY_EX // LibertyExtended folder - gta3.dat
-	CGame::Initialise("LibertyExtended\\DATA\\GTA3.DAT");
-#else
 	CGame::Initialise("DATA\\GTA3.DAT");
-#endif
 }
 
 RsEventStatus

@@ -10,6 +10,9 @@
 #include "AnimBlendAssociation.h"
 #include "AnimBlendAssocGroup.h"
 #include "AnimManager.h"
+#ifdef MODLOADER // ped.ifp
+#include "modloader.h"
+#endif
 
 CAnimBlock CAnimManager::ms_aAnimBlocks[NUMANIMBLOCKS];
 CAnimBlendHierarchy CAnimManager::ms_aAnimations[NUMANIMATIONS];
@@ -789,7 +792,11 @@ void
 CAnimManager::LoadAnimFile(const char *filename)
 {
 	int fd;
+#ifdef MODLOADER // ped.ifp
+	fd = ModLoader_PedIfp(filename, "rb");
+#else
 	fd = CFileMgr::OpenFile(filename, "rb");
+#endif
 	assert(fd > 0);
 	LoadAnimFile(fd, true);
 	CFileMgr::CloseFile(fd);

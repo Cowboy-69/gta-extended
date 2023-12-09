@@ -23,6 +23,9 @@
 #include "Script.h"
 #include "Shadows.h"
 #include "Bike.h"
+#ifdef MODLOADER
+#include "modloader.h"
+#endif
 
 #define MIN_CREATION_DIST		40.0f // not for start of the game (look at the GeneratePedsAtStartOfGame)
 #define CREATION_RANGE			10.0f // added over the MIN_CREATION_DIST.
@@ -146,7 +149,11 @@ CPopulation::LoadPedGroups()
 	char modelName[256];
 
 	CFileMgr::ChangeDir("\\DATA\\");
+#ifdef MODLOADER
+	fd = ModLoader_PedGrpDat("PEDGRP.DAT", "r");
+#else
 	fd = CFileMgr::OpenFile("PEDGRP.DAT", "r");
+#endif
 	CFileMgr::ChangeDir("\\");
 	while (CFileMgr::ReadLine(fd, line, sizeof(line))) {
 		int end;

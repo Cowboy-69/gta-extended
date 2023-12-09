@@ -38,6 +38,9 @@
 #include "Radar.h"
 #include "Hud.h"
 #include "debugmenu.h"
+#ifdef MODLOADER // hud.txd, particle.txd
+#include "modloader.h"
+#endif
 
 int CAnimViewer::animTxdSlot = 0;
 CEntity *CAnimViewer::pTarget = nil;
@@ -67,12 +70,24 @@ CAnimViewer::Initialise(void) {
 	animTxdSlot = CTxdStore::AddTxdSlot("generic");
 	CTxdStore::Create(animTxdSlot);
 	int hudSlot = CTxdStore::AddTxdSlot("hud");
+#ifdef MODLOADER // hud.txd
+	ModLoader_HudTxd(hudSlot, "MODELS/HUD.TXD");
+#else
 	CTxdStore::LoadTxd(hudSlot, "MODELS/HUD.TXD");
+#endif
 	int particleSlot = CTxdStore::AddTxdSlot("particle");
 #ifdef LIBERTY_EX // LibertyExtended folder - particle.txd
+#ifdef MODLOADER // particle.txd
+	ModLoader_ParticleTxd(particleSlot, "LibertyExtended/MODELS/PARTICLE.TXD");
+#else
 	CTxdStore::LoadTxd(particleSlot, "LibertyExtended/MODELS/PARTICLE.TXD");
+#endif
+#else
+#ifdef MODLOADER // particle.txd
+	ModLoader_ParticleTxd(particleSlot, "MODELS/PARTICLE.TXD");
 #else
 	CTxdStore::LoadTxd(particleSlot, "MODELS/PARTICLE.TXD");
+#endif
 #endif
 	CTxdStore::SetCurrentTxd(animTxdSlot);
 	CPools::Initialise();

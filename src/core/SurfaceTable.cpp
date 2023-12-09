@@ -5,6 +5,9 @@
 #include "Weather.h"
 #include "Collision.h"
 #include "SurfaceTable.h"
+#ifdef MODLOADER // surface.dat
+#include "modloader.h"
+#endif
 
 float CSurfaceTable::ms_aAdhesiveLimitTable[NUMADHESIVEGROUPS][NUMADHESIVEGROUPS];
 
@@ -17,7 +20,11 @@ CSurfaceTable::Initialise(Const char *filename)
 	float adhesiveLimit;
 
 	CFileMgr::SetDir("");
+#ifdef MODLOADER // surface.dat
+	ModLoader_SurfaceDat(filename, work_buff, sizeof(work_buff), "r");
+#else
 	CFileMgr::LoadFile(filename, work_buff, sizeof(work_buff), "r");
+#endif
 
 	line = (char*)work_buff;
 	for(lineno = 0; lineno < NUMADHESIVEGROUPS; lineno++){

@@ -20,6 +20,9 @@
 #include "TxdStore.h"
 #include "User.h"
 #include "World.h"
+#ifdef MODLOADER // hud.txd
+#include "modloader.h"
+#endif
 
 #ifdef PS2_HUD
 #define MONEY_X 100.0f
@@ -188,7 +191,11 @@ void CHud::Initialise()
 	m_Wants_To_Draw_3dMarkers = true;
 
 	int HudTXD = CTxdStore::AddTxdSlot("hud");
+#ifdef MODLOADER // hud.txd
+	ModLoader_HudTxd(HudTXD, "MODELS/HUD.TXD");
+#else
 	CTxdStore::LoadTxd(HudTXD, "MODELS/HUD.TXD");
+#endif
 	CTxdStore::AddRef(HudTXD);
 	CTxdStore::PopCurrentTxd();
 	CTxdStore::SetCurrentTxd(HudTXD);

@@ -11,6 +11,9 @@
 #ifdef USE_ADVANCED_SCRIPT_DEBUG_OUTPUT
 #include <stdarg.h>
 #endif
+#ifdef MODLOADER
+#include "modloader.h"
+#endif
 
 #ifdef USE_ADVANCED_SCRIPT_DEBUG_OUTPUT
 
@@ -1427,7 +1430,11 @@ CTheScripts::SwitchToMission(int32 mission)
 	int handle = OpenScript();
 #else
 	CFileMgr::ChangeDir("\\");
+#ifdef MODLOADER // main.scm
+	int handle = ModLoader_MainScm("data\\main.scm", "rb");
+#else
 	int handle = CFileMgr::OpenFile("data\\main.scm", "rb");
+#endif
 #endif
 	CFileMgr::Seek(handle, offset, 0);
 	CFileMgr::Read(handle, (const char*)&CTheScripts::ScriptSpace[SIZE_MAIN_SCRIPT], SIZE_MISSION_SCRIPT);

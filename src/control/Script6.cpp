@@ -32,6 +32,9 @@
 #include "Weather.h"
 #include "Zones.h"
 #include "main.h"
+#ifdef MODLOADER // main.scm
+#include "modloader.h"
+#endif
 
 // NB: on PS2 this file did not exist; ProcessCommands1000To1099 was in Script5.cpp and ProcessCommands1100To1199 was only added on PC
 // however to avoid redundant copies of code, Script6.cpp is used with PS2 defines
@@ -308,7 +311,11 @@ int8 CRunningScript::ProcessCommands1000To1099(int32 command)
 		int handle = CTheScripts::OpenScript();
 #else
 		CFileMgr::ChangeDir("\\");
+#ifdef MODLOADER // main.scm
+		int handle = ModLoader_MainScm("data\\main.scm", "rb");
+#else
 		int handle = CFileMgr::OpenFile("data\\main.scm", "rb");
+#endif
 #endif
 		CFileMgr::Seek(handle, offset, 0);
 		CFileMgr::Read(handle, (const char*)&CTheScripts::ScriptSpace[SIZE_MAIN_SCRIPT], SIZE_MISSION_SCRIPT);

@@ -21,6 +21,9 @@
 #include "Camera.h"
 #include "Shadows.h"
 #include "main.h"
+#ifdef MODLOADER // arrow.dff, zonecylb.dff
+#include "modloader.h"
+#endif
 
 RwIm3DVertex StreakVertices[4];
 RwImVertexIndex StreakIndexList[12];
@@ -485,8 +488,13 @@ C3dMarkers::Init()
 	CTxdStore::PushCurrentTxd();
 	CTxdStore::SetCurrentTxd(txdSlot);
 	CFileMgr::ChangeDir("\\");
+#ifdef MODLOADER // arrow.dff, zonecylb.dff
+	m_pRpClumpArray[MARKERTYPE_ARROW] = (RpClump*)ModLoader_ArrowDff("models/generic/arrow.dff");
+	m_pRpClumpArray[MARKERTYPE_CYLINDER] = (RpClump*)ModLoader_ZonecylbDff("models/generic/zonecylb.dff");
+#else
 	m_pRpClumpArray[MARKERTYPE_ARROW] = CFileLoader::LoadAtomicFile2Return("models/generic/arrow.dff");
 	m_pRpClumpArray[MARKERTYPE_CYLINDER] = CFileLoader::LoadAtomicFile2Return("models/generic/zonecylb.dff");
+#endif
 	CTxdStore::PopCurrentTxd();
 }
 

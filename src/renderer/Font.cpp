@@ -6,6 +6,9 @@
 #ifdef BUTTON_ICONS
 #include "FileMgr.h"
 #endif
+#ifdef MODLOADER // fonts.txd, fonts_p.txd, fonts_r.txd, fonts_j.txd
+#include "modloader.h"
+#endif
 
 void
 AsciiToUnicode(const char *src, wchar *dst)
@@ -296,6 +299,21 @@ CFont::Initialise(void)
 	switch (LanguageSet)
 	{
 #ifdef LIBERTY_EX // LibertyExtended folder - fonts
+#ifdef MODLOADER // fonts.txd, fonts_p.txd, fonts_r.txd, fonts_j.txd
+	case FONT_LANGSET_EFIGS:
+	default:
+		ModLoader_FontsTxd(slot, "MODELS/FONTS.TXD");
+		break;
+	case FONT_LANGSET_POLISH:
+		ModLoader_FontsTxd(slot, "LibertyExtended/MODELS/FONTS_P.TXD");
+		break;
+	case FONT_LANGSET_RUSSIAN:
+		ModLoader_FontsTxd(slot, "LibertyExtended/MODELS/FONTS_R.TXD");
+		break;
+	case FONT_LANGSET_JAPANESE:
+		ModLoader_FontsTxd(slot, "LibertyExtended/MODELS/FONTS_J.TXD");
+		break;
+#else
 	case FONT_LANGSET_EFIGS:
 	default:
 		//CTxdStore::LoadTxd(slot, "LibertyExtended/MODELS/FONTS.TXD");
@@ -309,6 +327,22 @@ CFont::Initialise(void)
 		break;
 	case FONT_LANGSET_JAPANESE:
 		CTxdStore::LoadTxd(slot, "LibertyExtended/MODELS/FONTS_J.TXD");
+		break;
+#endif
+#else
+#ifdef MODLOADER // fonts.txd, fonts_p.txd, fonts_r.txd, fonts_j.txd
+	case FONT_LANGSET_EFIGS:
+	default:
+		ModLoader_FontsTxd(slot, "MODELS/FONTS.TXD");
+		break;
+	case FONT_LANGSET_POLISH:
+		ModLoader_FontsTxd(slot, "MODELS/FONTS_P.TXD");
+		break;
+	case FONT_LANGSET_RUSSIAN:
+		ModLoader_FontsTxd(slot, "MODELS/FONTS_R.TXD");
+		break;
+	case FONT_LANGSET_JAPANESE:
+		ModLoader_FontsTxd(slot, "MODELS/FONTS_J.TXD");
 		break;
 #else
 	case FONT_LANGSET_EFIGS:
@@ -325,9 +359,14 @@ CFont::Initialise(void)
 		CTxdStore::LoadTxd(slot, "MODELS/FONTS_J.TXD");
 		break;
 #endif
+#endif
 	}
 #else
+#ifdef MODLOADER // fonts.txd
+	ModLoader_FontsTxd(slot, "MODELS/FONTS.TXD");
+#else
 	CTxdStore::LoadTxd(slot, "MODELS/FONTS.TXD");
+#endif
 #endif
 	CTxdStore::AddRef(slot);
 	CTxdStore::PushCurrentTxd();
@@ -432,6 +471,36 @@ CFont::ReloadFonts(uint8 set)
 		switch (set)
 		{
 #ifdef LIBERTY_EX // LibertyExtended folder - fonts
+#ifdef MODLOADER // fonts.txd, fonts_p.txd, fonts_r.txd, fonts_j.txd
+		case FONT_LANGSET_EFIGS:
+		default:
+			ModLoader_FontsTxd(Slot, "MODELS/FONTS.TXD");
+			break;
+		case FONT_LANGSET_POLISH:
+			ModLoader_FontsTxd(Slot, "LibertyExtended/MODELS/FONTS_P.TXD");
+			break;
+		case FONT_LANGSET_RUSSIAN:
+			ModLoader_FontsTxd(Slot, "LibertyExtended/MODELS/FONTS_R.TXD");
+			break;
+		case FONT_LANGSET_JAPANESE:
+			ModLoader_FontsTxd(Slot, "LibertyExtended/MODELS/FONTS_J.TXD");
+			break;
+#else
+#ifdef MODLOADER // fonts.txd, fonts_p.txd, fonts_r.txd, fonts_j.txd
+		case FONT_LANGSET_EFIGS:
+		default:
+			ModLoader_FontsTxd(Slot, "MODELS/FONTS.TXD");
+			break;
+		case FONT_LANGSET_POLISH:
+			ModLoader_FontsTxd(Slot, "MODELS/FONTS_P.TXD");
+			break;
+		case FONT_LANGSET_RUSSIAN:
+			ModLoader_FontsTxd(Slot, "MODELS/FONTS_R.TXD");
+			break;
+		case FONT_LANGSET_JAPANESE:
+			ModLoader_FontsTxd(Slot, "MODELS/FONTS_J.TXD");
+			break;
+#else
 		case FONT_LANGSET_EFIGS:
 		default:
 			//CTxdStore::LoadTxd(Slot, "LibertyExtended/MODELS/FONTS.TXD");
@@ -446,6 +515,8 @@ CFont::ReloadFonts(uint8 set)
 		case FONT_LANGSET_JAPANESE:
 			CTxdStore::LoadTxd(Slot, "LibertyExtended/MODELS/FONTS_J.TXD");
 			break;
+#endif
+#endif
 #else
 		case FONT_LANGSET_EFIGS:
 		default:

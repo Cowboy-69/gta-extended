@@ -34,6 +34,9 @@
 #include "Messages.h"
 #include "FileLoader.h"
 #include "frontendoption.h"
+#ifdef MODLOADER // frontend.txd, menu.txd
+#include "modloader.h"
+#endif
 
 // Game has colors inlined in code.
 // For easier modification we collect them here:
@@ -4168,9 +4171,17 @@ CMenuManager::LoadAllTextures()
 
 	printf("LOAD frontend\n");
 #ifdef LIBERTY_EX // LibertyExtended folder - frontend.txd
+#ifdef MODLOADER // frontend.txd
+	ModLoader_FrontendTxd(frontendTxdSlot, "LibertyExtended/MODELS/FRONTEND.TXD");
+#else
 	CTxdStore::LoadTxd(frontendTxdSlot, "LibertyExtended/MODELS/FRONTEND.TXD");
+#endif
+#else
+#ifdef MODLOADER // frontend.txd
+	ModLoader_FrontendTxd(frontendTxdSlot, "MODELS/FRONTEND.TXD");
 #else
 	CTxdStore::LoadTxd(frontendTxdSlot, "MODELS/FRONTEND.TXD");
+#endif
 #endif
 	CTxdStore::AddRef(frontendTxdSlot);
 	CTxdStore::SetCurrentTxd(frontendTxdSlot);
@@ -4195,9 +4206,17 @@ CMenuManager::LoadAllTextures()
 
 	printf("LOAD sprite\n");
 #ifdef LIBERTY_EX // LibertyExtended folder - menu.txd
+#ifdef MODLOADER // menu.txd
+	ModLoader_MenuTxd(menuTxdSlot, "LibertyExtended/MODELS/MENU.TXD");
+#else
 	CTxdStore::LoadTxd(menuTxdSlot, "LibertyExtended/MODELS/MENU.TXD");
+#endif
+#else
+#ifdef MODLOADER // menu.txd
+	ModLoader_MenuTxd(menuTxdSlot, "MODELS/MENU.TXD");
 #else
 	CTxdStore::LoadTxd(menuTxdSlot, "MODELS/MENU.TXD");
+#endif
 #endif
 	CTxdStore::AddRef(menuTxdSlot);
 	CTxdStore::SetCurrentTxd(menuTxdSlot);

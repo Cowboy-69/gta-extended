@@ -3,6 +3,9 @@
 #include "main.h"
 #include "FileMgr.h"
 #include "ParticleMgr.h"
+#ifdef MODLOADER // particle.cfg
+#include "modloader.h"
+#endif
 
 cParticleSystemMgr mod_ParticleSystemManager;
 
@@ -24,11 +27,20 @@ void cParticleSystemMgr::Initialise()
 void cParticleSystemMgr::LoadParticleData()
 {
 #ifdef LIBERTY_EX // LibertyExtended folder - particle.cfg
+#ifdef MODLOADER // particle.cfg
+	CFileMgr::SetDir("LibertyExtended");
+	ModLoader_ParticleCfg("data\\particle.cfg", work_buff, ARRAY_SIZE(work_buff), "r");
+#else
 	CFileMgr::SetDir("LibertyExtended");
 	CFileMgr::LoadFile("data\\particle.cfg", work_buff, ARRAY_SIZE(work_buff), "r");
+#endif
 #else
 	CFileMgr::SetDir("DATA");
+#ifdef MODLOADER // particle.cfg
+	ModLoader_ParticleCfg(ParticleFilename, work_buff, ARRAY_SIZE(work_buff), "r");
+#else
 	CFileMgr::LoadFile(ParticleFilename, work_buff, ARRAY_SIZE(work_buff), "r");
+#endif
 #endif
 	CFileMgr::SetDir("");
 	

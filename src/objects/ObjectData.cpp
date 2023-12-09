@@ -5,6 +5,9 @@
 #include "Object.h"
 #include "FileMgr.h"
 #include "ObjectData.h"
+#ifdef MODLOADER // object.dat
+#include "modloader.h"
+#endif
 
 CObjectInfo CObjectData::ms_aObjectInfo[NUMOBJECTINFO];
 
@@ -20,7 +23,11 @@ CObjectData::Initialise(const char *filename)
 	CBaseModelInfo *mi;
 
 	CFileMgr::SetDir("");
+#ifdef MODLOADER // object.dat
+	ModLoader_ObjectDat(filename, work_buff, sizeof(work_buff), "r");
+#else
 	CFileMgr::LoadFile(filename, work_buff, sizeof(work_buff), "r");
+#endif
 
 	id = 0;
 	p = (char*)work_buff;

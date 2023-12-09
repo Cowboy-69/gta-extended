@@ -15,6 +15,10 @@
 #include "Debug.h"
 #include "Renderer.h"
 
+#ifdef MODLOADER
+#include "modloader.h"
+#endif
+
 int32     CCullZones::NumCullZones;
 CCullZone CCullZones::aZones[NUMCULLZONES];
 int32     CCullZones::NumAttributeZones;
@@ -64,7 +68,11 @@ CCullZones::ResolveVisibilities(void)
 	int fd;
 
 	CFileMgr::SetDir("");
+#ifdef MODLOADER
+	fd = ModLoader_CullzoneDat("DATA\\cullzone.dat", "rb");
+#else
 	fd = CFileMgr::OpenFile("DATA\\cullzone.dat", "rb");
+#endif
 	if(fd > 0){
 		CFileMgr::Read(fd, (char*)&NumCullZones, sizeof(NumCullZones));
 		CFileMgr::Read(fd, (char*)aZones, sizeof(aZones));

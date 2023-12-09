@@ -84,6 +84,8 @@
 	#define EX_CHEATS
 	#define EX_BORDERLESS_WINDOW
 
+	#define MODLOADER // https://github.com/thelink2012/modloader
+
 	#define EX_UTILS // Useful tools
 
 #endif
@@ -92,7 +94,11 @@ enum Config {
 	NUMPLAYERS = 1,	// 4 on PS2
 
 	NUMCDIMAGES = 12, // gta3.img duplicates (not used on PC)
+#ifdef LIBERTY_EX // Game limits
+	MAX_CDIMAGES = 30, // additional cdimages
+#else
 	MAX_CDIMAGES = 8, // additional cdimages
+#endif
 	MAX_CDCHANNELS = 5,
 
 #ifdef LIBERTY_EX // Game limits
@@ -103,11 +109,7 @@ enum Config {
 #ifdef VANILLA_DEFINES
 	TXDSTORESIZE = 850,
 #else
-#ifdef LIBERTY_EX // Game limits
-	TXDSTORESIZE = 1124,	// for Xbox map
-#else
 	TXDSTORESIZE = 1024,	// for Xbox map
-#endif
 #endif
 	EXTRADIRSIZE = 128,
 	CUTSCENEDIRSIZE = 512,
@@ -590,4 +592,14 @@ enum Config {
 #endif
 #if defined(AUDIO_REFLECTIONS) && GTA_VERSION < GTA3_PC_10
 #error AUDIO_REFLECTIONS cannot work with versions below GTA3_PC_10
+#endif
+
+#ifdef MODLOADER
+#undef USE_TXD_CDIMAGE
+#undef ONE_THREAD_PER_CHANNEL
+#undef FLUSHABLE_STREAMING
+
+#if !defined(_WIN32) || defined(__LP64__) || defined(_WIN64)
+#error Mod Loader is currently only supported in win-x86 builds
+#endif
 #endif

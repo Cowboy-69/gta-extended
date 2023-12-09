@@ -22,6 +22,9 @@
 #include "Automobile.h"
 #include "WaterLevel.h"
 #include "World.h"
+#ifdef MODLOADER
+#include "modloader.h"
+#endif
 
 uint16 nPlayerInComboMove;
 
@@ -1762,7 +1765,11 @@ CPed::LoadFightData(void)
 	size_t bp, buflen;
 	int lp, linelen;
 
+#ifdef MODLOADER
+	buflen = ModLoader_FistfiteDat("DATA\\fistfite.dat", work_buff, sizeof(work_buff), "r");
+#else
 	buflen = CFileMgr::LoadFile("DATA\\fistfite.dat", work_buff, sizeof(work_buff), "r");
+#endif
 
 	for (bp = 0; bp < buflen; ) {
 		// read file line by line

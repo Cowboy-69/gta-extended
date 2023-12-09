@@ -14,6 +14,9 @@
 #include "HandlingMgr.h"
 #include "Train.h"
 #include "AudioScriptObject.h"
+#ifdef MODLOADER // tracks.dat (1, 2)
+#include "modloader.h"
+#endif
 
 static CTrainNode* pTrackNodes;
 static int16 NumTrackNodes;
@@ -509,7 +512,11 @@ CTrain::ReadAndInterpretTrackFile(Const char *filename, CTrainNode **nodes, int1
 	if(*nodes == nil){
 		readingFile = true;
 
+#ifdef MODLOADER // tracks.dat (1, 2)
+		ModLoader_TracksDat(filename, work_buff, sizeof(work_buff), "r");
+#else
 		CFileMgr::LoadFile(filename, work_buff, sizeof(work_buff), "r");
+#endif
 		*gString = '\0';
 		for(bp = 0, lp = 0; work_buff[bp] != '\n'; bp++, lp++)
 			gString[lp] = work_buff[bp];

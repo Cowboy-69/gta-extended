@@ -6,6 +6,9 @@
 #include "rwcore.h"
 #include "RwHelper.h"
 #include "MemoryMgr.h"
+#ifdef MODLOADER
+#include "modloader.h"
+#endif
 
 struct CdReadInfo
 {
@@ -201,6 +204,13 @@ CdStreamRead(int32 channel, void *buffer, uint32 offset, uint32 size)
 	
 	ASSERT( _GET_INDEX(offset) < MAX_CDIMAGES );
 	HANDLE hImage = gImgFiles[_GET_INDEX(offset)];
+#ifdef MODLOADER
+	{
+		HANDLE hCustomFile = ModLoader_AcquireNextModelFileHandle();
+		if (hCustomFile != INVALID_HANDLE_VALUE)
+			hImage = hCustomFile;
+	}
+#endif
 	ASSERT( hImage != nil );
 	
 	
@@ -397,6 +407,11 @@ WINAPI CdStreamThread(LPVOID lpThreadParameter)
 {
 	debug("Created cdstream thread\n");
 	
+#ifdef MODLOADER
+	if (ModLoader_CdStreamThread())
+		return 0;
+#endif
+
 	while ( true )
 	{
 		WaitForSingleObject(gCdStreamSema, INFINITE);
@@ -484,7 +499,11 @@ CdStreamAddImage(char const *path)
 	
 	SetLastError(0);
 	
+#ifdef MODLOADER
+	gImgFiles[gNumImages] = CreateFile(ModLoader_GetCdStreamPath_Unsafe(path),
+#else
 	gImgFiles[gNumImages] = CreateFile(path,
+#endif
 	                                   GENERIC_READ,
 	                                   FILE_SHARE_READ,
 	                                   nil,

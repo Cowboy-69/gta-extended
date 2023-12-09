@@ -90,6 +90,9 @@
 #ifdef USE_TEXTURE_POOL
 #include "TexturePools.h"
 #endif
+#ifdef MODLOADER
+#include "modloader.h"
+#endif
 
 eLevelName CGame::currLevel;
 bool CGame::bDemoMode = true;
@@ -435,9 +438,17 @@ bool CGame::Initialise(const char* datFile)
 	LoadingScreen("Loading the Game", "Loading particles", nil);
 	int particleTxdSlot = CTxdStore::AddTxdSlot("particle");
 #ifdef LIBERTY_EX // LibertyExtended folder - particle.txd
+#ifdef MODLOADER // particle.txd
+	ModLoader_ParticleTxd(particleTxdSlot, "LibertyExtended/MODELS/PARTICLE.TXD");
+#else
 	CTxdStore::LoadTxd(particleTxdSlot, "LibertyExtended/MODELS/PARTICLE.TXD");
+#endif
+#else
+#ifdef MODLOADER // particle.txd
+	ModLoader_ParticleTxd(particleTxdSlot, "MODELS/PARTICLE.TXD");
 #else
 	CTxdStore::LoadTxd(particleTxdSlot, "MODELS/PARTICLE.TXD");
+#endif
 #endif
 	CTxdStore::AddRef(particleTxdSlot);
 	CTxdStore::SetCurrentTxd(gameTxdSlot);
@@ -512,6 +523,9 @@ bool CGame::Initialise(const char* datFile)
 
 	CdStreamAddImage("MODELS\\GTA3.IMG");
 
+#ifdef LIBERTY_EX // LibertyExtended folder - LibertyEx.dat
+	CFileLoader::LoadLevel("LibertyExtended\\DATA\\LibertyEx.DAT");
+#endif
 #ifdef LIBERTY_EX // LibertyExtended folder - default.dat
 	CFileLoader::LoadLevel("LibertyExtended\\DATA\\DEFAULT.DAT");
 #else

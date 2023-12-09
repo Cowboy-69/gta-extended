@@ -7,6 +7,9 @@
 #include "Frontend.h"
 #include "Messages.h"
 #include "Text.h"
+#ifdef MODLOADER // GXT
+#include "modloader.h"
+#endif
 
 wchar WideErrorString[25];
 
@@ -91,7 +94,11 @@ CText::Load(void)
 	}
 #endif
 
+#ifdef MODLOADER // GXT
+	length = CFileMgr::LoadFile(ModLoader_RegisterAndGetGxtFile_Unsafe(filename), filedata, 0x40000, "rb");
+#else
 	length = CFileMgr::LoadFile(filename, filedata, 0x40000, "rb");
+#endif
 	CFileMgr::SetDir("");
 
 	offset = 0;

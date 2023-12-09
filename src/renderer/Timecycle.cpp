@@ -9,6 +9,9 @@
 #include "CutsceneMgr.h"
 #include "FileMgr.h"
 #include "Timecycle.h"
+#ifdef MODLOADER // timecyc.dat
+#include "modloader.h"
+#endif
 
 int32 CTimeCycle::m_nAmbientRed[NUMHOURS][NUMWEATHERS];
 int32 CTimeCycle::m_nAmbientGreen[NUMHOURS][NUMWEATHERS];
@@ -131,7 +134,11 @@ CTimeCycle::Initialise(void)
 	debug("Intialising CTimeCycle...\n");
 
 	CFileMgr::SetDir("DATA");
+#ifdef MODLOADER // timecyc.dat
+	ModLoader_TimecycleDat("TIMECYC.DAT", work_buff, sizeof(work_buff), "rb");
+#else
 	CFileMgr::LoadFile("TIMECYC.DAT", work_buff, sizeof(work_buff), "rb");
+#endif
 	CFileMgr::SetDir("");
 
 	line[0] = '\0';
