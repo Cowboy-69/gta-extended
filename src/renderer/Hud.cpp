@@ -561,6 +561,15 @@ void CHud::Draw()
 		/*
 			DrawWeaponIcon
 		*/
+#ifdef EX_PARTICLE // Fix for cropped weapon icon
+		Sprites[WeaponType].Draw(
+			CRect(
+				SCREEN_SCALE_FROM_RIGHT(WEAPON_X),
+				SCREEN_SCALE_Y(27.0f),
+				SCREEN_SCALE_FROM_RIGHT(WEAPON_X)+SCREEN_SCALE_X(64.0f),
+				SCREEN_SCALE_Y(27.0f)+SCREEN_SCALE_Y(64.0f)),
+			CRGBA(255, 255, 255, 255));
+#else
 		Sprites[WeaponType].Draw(
 			CRect(
 				SCREEN_SCALE_FROM_RIGHT(WEAPON_X),
@@ -576,6 +585,7 @@ void CHud::Draw()
 			1.0f,
 			1.0f,
 			1.0f);
+#endif
 		
 		CFont::SetBackgroundOff();
 		CFont::SetScale(SCREEN_SCALE_X(0.4f), SCREEN_SCALE_Y(0.6f));
