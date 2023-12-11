@@ -66,11 +66,20 @@ CWeaponInfo::LoadWeaponData(void)
 	size_t bp, buflen;
 	int lp, linelen;
 		
+#ifdef LIBERTY_EX // LibertyExtended folder - weapon.dat
+	CFileMgr::SetDir("LibertyExtended");
+#ifdef MODLOADER // weapon.dat
+	buflen = ModLoader_WeaponDat("DATA\\WEAPON.DAT", work_buff, sizeof(work_buff), "r");
+#else
+	buflen = CFileMgr::LoadFile("DATA\\WEAPON.DAT", work_buff, sizeof(work_buff), "r");
+#endif
+#else
 	CFileMgr::SetDir("DATA");
 #ifdef MODLOADER // weapon.dat
 	buflen = ModLoader_WeaponDat("WEAPON.DAT", work_buff, sizeof(work_buff), "r");
 #else
 	buflen = CFileMgr::LoadFile("WEAPON.DAT", work_buff, sizeof(work_buff), "r");
+#endif
 #endif
 	CFileMgr::SetDir("");
 
