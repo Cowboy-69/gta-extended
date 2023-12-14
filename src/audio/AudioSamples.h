@@ -3250,6 +3250,16 @@ enum eSfxSample
 	SFX_MISSION_AMMU_B,
 	SFX_MISSION_AMMU_C,
 #endif
+
+#ifdef EX_SECOND_SAMPLE_BANK // Added samples
+	SFX_SECOND_TEST1,
+	SFX_SECOND_TEST2,
+	SFX_SECOND_TEST3,
+	SFX_SECOND_TEST4,
+
+	// NOTE: If you change the number of samples, don't forget to change the limits below!
+#endif
+
 	TOTAL_AUDIO_SAMPLES,
 	NO_SAMPLE,
 
@@ -3269,5 +3279,10 @@ enum eSfxSample
 #else
 	SAMPLEBANK_PED_END = SFX_AMMU_F,
 	SAMPLEBANK_PED_MAX = SFX_AMMU_F + 1,
+#endif
+
+#ifdef EX_SECOND_SAMPLE_BANK // Limits
+	NEW_SAMPLEBANK_START = SFX_SECOND_TEST1,
+	TOTAL_NEW_AUDIO_SAMPLES = SFX_SECOND_TEST4 - SAMPLEBANK_PED_END,
 #endif
 };

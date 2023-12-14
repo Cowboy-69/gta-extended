@@ -43,6 +43,19 @@ uint8 nChannelVolume[MAXCHANNELS+MAX2DCHANNELS];
 
 uint32 nStreamLength[TOTAL_STREAMED_SOUNDS];
 
+#ifdef EX_SECOND_SAMPLE_BANK // Variables
+char SecondSampleBankDescFilename[] = "LibertyExtended\\AUDIO\\LibertyEx.SDT";
+char SecondSampleBankDataFilename[] = "LibertyExtended\\AUDIO\\LibertyEx.RAW";
+
+FILE* fpSecondSampleDescHandle;
+FILE* fpSecondSampleDataHandle;
+
+int32 nSecondSampleBankDiscStartOffset[1];
+int32 nSecondSampleBankSize[1];
+int32 nSecondSampleBankMemoryStartAddress[1];
+int32 _nSecondSampleDataEndOffset;
+#endif
+
 ///////////////////////////////////////////////////////////////
 struct tMP3Entry
 {
@@ -913,6 +926,17 @@ cSampleManager::Initialise(void)
 			nSampleBankSize[i]               = 0;
 			nSampleBankMemoryStartAddress[i] = 0;
 		}
+
+#ifdef EX_SECOND_SAMPLE_BANK // Init variables
+		fpSecondSampleDescHandle = NULL;
+		fpSecondSampleDataHandle = NULL;
+
+		_nSecondSampleDataEndOffset = 0;
+
+		nSecondSampleBankDiscStartOffset[SFX_BANK_0]    = 0;
+		nSecondSampleBankSize[SFX_BANK_0]               = 0;
+		nSecondSampleBankMemoryStartAddress[SFX_BANK_0] = 0;
+#endif
 	}
 	
 	// pedsfx
@@ -966,6 +990,15 @@ cSampleManager::Initialise(void)
 			Terminate();
 			return FALSE;
 		}
+
+#ifdef EX_SECOND_SAMPLE_BANK // Init
+		nSecondSampleBankMemoryStartAddress[SFX_BANK_0] = (int32)AIL_mem_alloc_lock(nSecondSampleBankSize[SFX_BANK_0]);
+		if ( !nSecondSampleBankMemoryStartAddress[SFX_BANK_0] )
+		{
+			Terminate();
+			return FALSE;
+		}
+#endif
 
 		nSampleBankMemoryStartAddress[SFX_BANK_PED_COMMENTS] = (int32)AIL_mem_alloc_lock(PED_BLOCKSIZE*MAX_PEDSFX);
 		
@@ -1327,6 +1360,14 @@ cSampleManager::Terminate(void)
 		nSampleBankMemoryStartAddress[SFX_BANK_0] = 0;
 	}
 
+#ifdef EX_SECOND_SAMPLE_BANK // Terminate
+	if ( nSecondSampleBankMemoryStartAddress[SFX_BANK_0] != 0 )
+	{
+		AIL_mem_free_lock((void *)nSecondSampleBankMemoryStartAddress[SFX_BANK_0]);
+		nSecondSampleBankMemoryStartAddress[SFX_BANK_0] = 0;
+	}
+#endif
+
 	if ( nSampleBankMemoryStartAddress[SFX_BANK_PED_COMMENTS] != 0 )
 	{
 		AIL_mem_free_lock((void *)nSampleBankMemoryStartAddress[SFX_BANK_PED_COMMENTS]);
@@ -1508,6 +1549,14 @@ cSampleManager::LoadSampleBank(uint8 nBank)
 	
 	if ( fread((void *)nSampleBankMemoryStartAddress[nBank], 1, nSampleBankSize[nBank],fpSampleDataHandle) != nSampleBankSize[nBank] )
 		return FALSE;
+
+#ifdef EX_SECOND_SAMPLE_BANK // Init - LoadSampleBank
+	if ( fseek(fpSecondSampleDataHandle, nSecondSampleBankDiscStartOffset[nBank], SEEK_SET) != 0 )
+		return FALSE;
+	
+	if ( fread((void *)nSecondSampleBankMemoryStartAddress[nBank], 1, nSecondSampleBankSize[nBank],fpSecondSampleDataHandle) != nSecondSampleBankSize[nBank] )
+		return FALSE;
+#endif
 	
 	gBankLoaded[nBank] = LOADING_STATUS_LOADED;
 	
@@ -1785,6 +1834,15 @@ cSampleManager::InitialiseChannel(uint32 nChannel, uint32 nSfx, uint8 nBank)
 		
 		addr = nSampleBankMemoryStartAddress[nBank] + m_aSamples[nSfx].nOffset - m_aSamples[BankStartOffset[nBank]].nOffset;
 	}
+#ifdef EX_SECOND_SAMPLE_BANK // InitialiseChannel
+	else if ( nSfx >= NEW_SAMPLEBANK_START)
+	{
+		if (!IsSampleBankLoaded(nBank))
+			return FALSE;
+
+		addr = nSecondSampleBankMemoryStartAddress[nBank] + m_aSamples[nSfx].nOffset - m_aSamples[BankStartOffset[nBank]].nOffset;
+	}
+#endif
 	else
 	{	
 		int32 i;
@@ -2483,6 +2541,39 @@ cSampleManager::InitialiseSampleBanks(void)
 
 	nSampleBankSize[SFX_BANK_0] = nSampleBankDiscStartOffset[SFX_BANK_PED_COMMENTS] - nSampleBankDiscStartOffset[SFX_BANK_0];
 	nSampleBankSize[SFX_BANK_PED_COMMENTS] = _nSampleDataEndOffset                       - nSampleBankDiscStartOffset[SFX_BANK_PED_COMMENTS];
+
+#ifdef EX_SECOND_SAMPLE_BANK // InitialiseSampleBanks
+	fpSecondSampleDescHandle = fopen(SecondSampleBankDescFilename, "rb");
+	if ( fpSecondSampleDescHandle == NULL )
+		return FALSE;
+	
+	fpSecondSampleDataHandle = fopen(SecondSampleBankDataFilename, "rb");
+	if ( fpSecondSampleDataHandle == NULL )
+	{
+		fclose(fpSecondSampleDescHandle);
+		fpSecondSampleDescHandle = NULL;
+		
+		return FALSE;
+	}
+	
+	fseek(fpSecondSampleDataHandle, 0, SEEK_END);
+	_nSecondSampleDataEndOffset = ftell(fpSecondSampleDataHandle);
+	rewind(fpSecondSampleDataHandle);
+	
+	tSample tempSamples[TOTAL_NEW_AUDIO_SAMPLES];
+	fread(tempSamples, sizeof(tSample), TOTAL_NEW_AUDIO_SAMPLES, fpSecondSampleDescHandle);
+	
+	fclose(fpSecondSampleDescHandle);
+	fpSecondSampleDescHandle = NULL;
+
+	for (int i = 0; i < TOTAL_NEW_AUDIO_SAMPLES; i++) {
+		m_aSamples[NEW_SAMPLEBANK_START + i] = tempSamples[i];
+	}
+
+	nSecondSampleBankDiscStartOffset[nBank] = m_aSamples[NEW_SAMPLEBANK_START].nOffset;
+
+	nSecondSampleBankSize[SFX_BANK_0] = tempSamples[TOTAL_NEW_AUDIO_SAMPLES - 1].nOffset + tempSamples[TOTAL_NEW_AUDIO_SAMPLES - 1].nSize;
+#endif
 	
 	return TRUE;
 }

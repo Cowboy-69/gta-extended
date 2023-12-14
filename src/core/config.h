@@ -84,6 +84,8 @@
 	#define EX_CHEATS
 	#define EX_BORDERLESS_WINDOW
 
+	#define EX_SECOND_SAMPLE_BANK // LibertyEx.RAW and LibertyEx.SDT
+
 	#define MODLOADER // https://github.com/thelink2012/modloader
 
 	#define EX_UTILS // Useful tools
