@@ -35,6 +35,9 @@ uint32 bulletInfoInUse;
 #define NUM_OTHER_SPARKS (8)
 #define BULLET_HIT_FORCE (7.5f)
 #define MAP_BORDER (1960.0f)
+#ifdef EX_BURST_TYRES // Sniper bullet
+#define NUM_TYRE_POP_SMOKES 4
+#endif
 
 CBulletInfo gaBulletInfo[CBulletInfo::NUM_BULLETS];
 bool bPlayerSniperBullet;
@@ -164,6 +167,22 @@ void CBulletInfo::Update(void)
 			}
 			else if (pHitEntity->IsVehicle()) {
 				CVehicle* pVehicle = (CVehicle*)pHitEntity;
+#ifdef EX_BURST_TYRES // Sniper bullet
+				if ( point.pieceB >= CAR_PIECE_WHEEL_LF && point.pieceB <= CAR_PIECE_WHEEL_RR ) {
+					((CVehicle*)pHitEntity)->BurstTyre(point.pieceB, true);
+					for (int j=0; j<NUM_TYRE_POP_SMOKES; j++) {
+						CParticle::AddParticle(PARTICLE_BULLETHIT_SMOKE, point.point, point.normal / 20);
+					}
+				} else {
+					pVehicle->InflictDamage(pBullet->m_pSource, pBullet->m_eWeaponType, pBullet->m_nDamage);
+					if (pBullet->m_eWeaponType == WEAPONTYPE_FLAMETHROWER)
+						gFireManager.StartFire(pVehicle, pBullet->m_pSource, 0.8f, true);
+					else {
+						for (int j = 0; j < NUM_VEHICLE_SPARKS; j++)
+							CParticle::AddParticle(PARTICLE_SPARK, point.point, point.normal / 20);
+					}
+				}
+#else
 				pVehicle->InflictDamage(pBullet->m_pSource, pBullet->m_eWeaponType, pBullet->m_nDamage);
 				if (pBullet->m_eWeaponType == WEAPONTYPE_FLAMETHROWER) // huh?
 					gFireManager.StartFire(pVehicle, pBullet->m_pSource, 0.8f, true);
@@ -171,6 +190,7 @@ void CBulletInfo::Update(void)
 					for (int j = 0; j < NUM_VEHICLE_SPARKS; j++)
 						CParticle::AddParticle(PARTICLE_SPARK, point.point, point.normal / 20);
 				}
+#endif
 #ifdef FIX_BUGS
 				pBullet->m_bInUse = false;
 #ifdef SQUEEZE_PERFORMANCE

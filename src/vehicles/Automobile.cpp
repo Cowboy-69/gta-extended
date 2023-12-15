@@ -46,6 +46,9 @@
 #include "Automobile.h"
 #include "Wanted.h"
 #include "SaveBuf.h"
+#ifdef EX_BURST_TYRES // Stats
+#include "Stats.h"
+#endif
 
 bool bAllCarCheat;	// unused
 
@@ -1200,6 +1203,11 @@ CAutomobile::ProcessControl(void)
 	for(i = 0; i < 4; i++){
 		float suspChange = m_aSuspensionSpringRatioPrev[i] - m_aSuspensionSpringRatio[i];
 		if(suspChange > 0.3f){
+#ifdef EX_BURST_TYRES // SFX_TYRE_BURST_B
+			if(Damage.GetWheelStatus(i) == WHEEL_STATUS_BURST)
+				DMAudio.PlayOneShot(m_audioEntityId, SOUND_CAR_JUMP_2, suspChange);
+			else
+#endif
 			DMAudio.PlayOneShot(m_audioEntityId, SOUND_CAR_JUMP, suspChange);
 			if(suspChange > suspShake)
 				suspShake = suspChange;
@@ -1450,6 +1458,36 @@ CAutomobile::PreRender(void)
 							GetForward().x, GetForward().y,
 							&m_aWheelSkidmarkMuddy[i], &m_aWheelSkidmarkBloody[i]);
 				}
+
+#ifdef EX_BURST_TYRES // Sparks for friction of burst wheels
+				if(Damage.GetWheelStatus(i) == WHEEL_STATUS_BURST && m_aSuspensionSpringRatioPrev[i] < 1.0f){
+					static float speedSq;
+					speedSq = m_vecMoveSpeed.MagnitudeSqr();
+					if(speedSq > SQR(0.1f) &&
+					   m_aWheelColPoints[i].surfaceB != SURFACE_GRASS &&
+					   m_aWheelColPoints[i].surfaceB != SURFACE_MUD_DRY &&
+					   m_aWheelColPoints[i].surfaceB != SURFACE_SAND &&
+					   m_aWheelColPoints[i].surfaceB != SURFACE_SAND_BEACH &&
+					   m_aWheelColPoints[i].surfaceB != SURFACE_WATER){
+						CVector normalSpeed = m_aWheelColPoints[i].normal * DotProduct(m_aWheelColPoints[i].normal, m_vecMoveSpeed);
+						CVector frictionSpeed = m_vecMoveSpeed - normalSpeed;
+						if(i == CARWHEEL_FRONT_LEFT || i == CARWHEEL_REAR_LEFT)
+							frictionSpeed -= 0.05f*GetRight();
+						else
+							frictionSpeed += 0.05f*GetRight();
+						CVector unusedRight = 0.15f*GetRight();
+						CVector sparkDir = 0.25f*frictionSpeed;
+						CParticle::AddParticle(PARTICLE_SPARK_SMALL, m_aWheelColPoints[i].point, sparkDir);
+
+						if(speedSq > 0.04f)
+							CParticle::AddParticle(PARTICLE_SPARK_SMALL, m_aWheelColPoints[i].point, sparkDir);
+						if(speedSq > 0.16f){
+							CParticle::AddParticle(PARTICLE_SPARK_SMALL, m_aWheelColPoints[i].point, sparkDir);
+							CParticle::AddParticle(PARTICLE_SPARK_SMALL, m_aWheelColPoints[i].point, sparkDir);
+						}
+					}
+				}
+#endif
 			}
 		}
 	}
@@ -4407,6 +4445,25 @@ CAutomobile::SetUpWheelColModel(CColModel *colModel)
 	colModel->boundingBox = vehColModel->boundingBox;
 
 	CMatrix mat;
+#ifdef EX_BURST_TYRES // SetUpWheelColModel
+	mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_WHEEL_LF]));
+	colModel->spheres[0].Set(mi->m_wheelScale / 2, mat.GetPosition(), SURFACE_RUBBER, CAR_PIECE_WHEEL_LF);
+	mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_WHEEL_LB]));
+	colModel->spheres[1].Set(mi->m_wheelScale / 2, mat.GetPosition(), SURFACE_RUBBER, CAR_PIECE_WHEEL_LR);
+	mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_WHEEL_RF]));
+	colModel->spheres[2].Set(mi->m_wheelScale / 2, mat.GetPosition(), SURFACE_RUBBER, CAR_PIECE_WHEEL_RF);
+	mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_WHEEL_RB]));
+	colModel->spheres[3].Set(mi->m_wheelScale / 2, mat.GetPosition(), SURFACE_RUBBER, CAR_PIECE_WHEEL_RR);
+
+	if(m_aCarNodes[CAR_WHEEL_LM] != nil && m_aCarNodes[CAR_WHEEL_RM] != nil){
+		mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_WHEEL_LM]));
+		colModel->spheres[4].Set(mi->m_wheelScale / 2, mat.GetPosition(), SURFACE_RUBBER, CAR_PIECE_WHEEL_LR);
+		mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_WHEEL_RM]));
+		colModel->spheres[5].Set(mi->m_wheelScale / 2, mat.GetPosition(), SURFACE_RUBBER, CAR_PIECE_WHEEL_RR);
+		colModel->numSpheres = 6;
+	}else
+		colModel->numSpheres = 4;
+#else
 	mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_WHEEL_LF]));
 	colModel->spheres[0].Set(mi->m_wheelScale, mat.GetPosition(), SURFACE_RUBBER, CAR_PIECE_WHEEL_LF);
 	mat.Attach(RwFrameGetMatrix(m_aCarNodes[CAR_WHEEL_LB]));
@@ -4424,12 +4481,45 @@ CAutomobile::SetUpWheelColModel(CColModel *colModel)
 		colModel->numSpheres = 6;
 	}else
 		colModel->numSpheres = 4;
+#endif
 
 	return true;
 }
 
 float fBurstForceMult = 0.03f;
 
+#ifdef EX_BURST_TYRES
+void
+CAutomobile::BurstTyre(uint8 wheel, bool applyForces)
+{
+	if(GetModelIndex() == MI_RHINO)
+		return;
+
+	switch(wheel){
+	case CAR_PIECE_WHEEL_LF: wheel = CARWHEEL_FRONT_LEFT; break;
+	case CAR_PIECE_WHEEL_RF: wheel = CARWHEEL_FRONT_RIGHT; break;
+	case CAR_PIECE_WHEEL_LR: wheel = CARWHEEL_REAR_LEFT; break;
+	case CAR_PIECE_WHEEL_RR: wheel = CARWHEEL_REAR_RIGHT; break;
+	}
+
+	int status = Damage.GetWheelStatus(wheel);
+	if(status == WHEEL_STATUS_OK){
+		Damage.SetWheelStatus(wheel, WHEEL_STATUS_BURST);
+		CStats::TyresPopped++;
+		DMAudio.PlayOneShot(m_audioEntityId, SOUND_CAR_TYRE_POP, 0.0f);
+
+		if(GetStatus() == STATUS_SIMPLE){
+			SetStatus(STATUS_PHYSICS);
+			CCarCtrl::SwitchVehicleToRealPhysics(this);
+		}
+
+		if(applyForces){
+			ApplyMoveForce(GetRight() * m_fMass * CGeneral::GetRandomNumberInRange(-fBurstForceMult, fBurstForceMult));
+			ApplyTurnForce(GetRight() * m_fTurnMass * CGeneral::GetRandomNumberInRange(-fBurstForceMult, fBurstForceMult), GetForward());
+		}
+	}
+}
+#else
 // this isn't used in III yet
 void
 CAutomobile::BurstTyre(uint8 wheel)
@@ -4454,6 +4544,7 @@ CAutomobile::BurstTyre(uint8 wheel)
 		ApplyTurnForce(GetRight() * m_fTurnMass * CGeneral::GetRandomNumberInRange(-fBurstForceMult, fBurstForceMult), GetForward());
 	}
 }
+#endif
 
 bool
 CAutomobile::IsRoomForPedToLeaveCar(uint32 component, CVector *doorOffset)

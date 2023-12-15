@@ -326,6 +326,23 @@ CWorld::ProcessLineOfSightSectorList(CPtrList &list, const CColLine &line, CColP
 	CEntity *e;
 	CColModel *colmodel;
 
+#ifdef EX_BURST_TYRES // ProcessLineOfSightSectorList
+	bool carTyres = false;
+	CColModel tyreCol;
+	CColSphere tyreSpheres[6];
+	CColPoint tyreColPoint;
+	float tyreDist;
+
+	if (bIncludeCarTyres && list.first && ((CEntity*)list.first->item)->IsVehicle()) {
+		carTyres = true;
+		tyreCol.numTriangles = 0;
+		tyreCol.numBoxes = 0;
+		tyreCol.numLines = 0;
+		tyreCol.spheres = tyreSpheres;
+		tyreCol.numSpheres = ARRAY_SIZE(tyreSpheres);
+	}
+#endif
+
 	if(list.first && bIncludeDeadPeds && ((CEntity *)list.first->item)->IsPed()) deadPeds = true;
 
 	for(node = list.first; node; node = node->next) {
@@ -333,6 +350,9 @@ CWorld::ProcessLineOfSightSectorList(CPtrList &list, const CColLine &line, CColP
 		if(e->m_scanCode != GetCurrentScanCode() && e != pIgnoreEntity && (e->bUsesCollision || deadPeds) &&
 		   !(ignoreSomeObjects && CameraToIgnoreThisObject(e))) {
 			colmodel = nil;
+#ifdef EX_BURST_TYRES // ProcessLineOfSightSectorList
+			tyreDist = mindist;
+#endif
 			e->m_scanCode = GetCurrentScanCode();
 
 			if(e->IsPed()) {
@@ -363,8 +383,23 @@ CWorld::ProcessLineOfSightSectorList(CPtrList &list, const CColLine &line, CColP
 			if(colmodel && CCollision::ProcessLineOfSight(line, e->GetMatrix(), *colmodel, point, mindist,
 			                                              ignoreSeeThrough))
 				entity = e;
+
+#ifdef EX_BURST_TYRES // ProcessLineOfSightSectorList
+			if(carTyres && ((CVehicle*)e)->SetUpWheelColModel(&tyreCol) && CCollision::ProcessLineOfSight(line, e->GetMatrix(), tyreCol, tyreColPoint, tyreDist, false)){
+				float dp1 = DotProduct(line.p1 - line.p0, e->GetRight());
+				float dp2 = DotProduct(point.point - e->GetPosition(), e->GetRight());
+				if(tyreDist < mindist || dp1 < -0.85f && dp2 > 0.0f || dp1 > 0.85f && dp2 < 0.0f){
+					mindist = tyreDist;
+					point = tyreColPoint;
+					entity = e;
+				}
+			}
+#endif
 		}
 	}
+#ifdef EX_BURST_TYRES // ProcessLineOfSightSectorList
+	tyreCol.spheres = nil;
+#endif
 
 	if(mindist < dist) {
 		dist = mindist;

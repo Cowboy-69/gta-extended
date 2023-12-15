@@ -58,7 +58,27 @@
 #define LIBERTY_EX
 #ifdef LIBERTY_EX
 
+	#define EX_UTILS // Useful tools
+
+	#define EX_SECOND_SAMPLE_BANK // LibertyEx.RAW and LibertyEx.SDT
+
+	#define MODLOADER // https://github.com/thelink2012/modloader
+
 	#define EX_CONTROL
+	#define EX_PARTICLE
+	#define EX_DAMAGE
+	#define EX_AI
+	#define EX_VEHICLE
+	#define EX_MISC
+	#define EX_VEHICLE_LOADER
+	#define EX_FEATURES_INI
+	#define EX_CHEATS
+	#define EX_BORDERLESS_WINDOW
+
+	#ifdef EX_PARTICLE
+		#define MOVING_MOON
+	#endif
+
 	#ifdef EX_CONTROL
 		#define EX_VIBRATION // For gamepad
 		#define EX_GPS
@@ -70,25 +90,9 @@
 		#define EX_FIRST_PERSON
 	#endif
 
-	#define EX_PARTICLE
-	#ifdef EX_PARTICLE
-		#define MOVING_MOON
+	#if defined EX_VEHICLE && defined EX_SECOND_SAMPLE_BANK
+		#define EX_BURST_TYRES // from reVC
 	#endif
-
-	#define EX_DAMAGE
-	#define EX_AI
-	#define EX_VEHICLE
-	#define EX_MISC
-	#define EX_VEHICLE_LOADER
-	#define EX_FEATURES_INI
-	#define EX_CHEATS
-	#define EX_BORDERLESS_WINDOW
-
-	#define EX_SECOND_SAMPLE_BANK // LibertyEx.RAW and LibertyEx.SDT
-
-	#define MODLOADER // https://github.com/thelink2012/modloader
-
-	#define EX_UTILS // Useful tools
 
 #endif
 

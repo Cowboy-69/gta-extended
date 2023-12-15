@@ -345,6 +345,9 @@ public:
 	void ProcessRainOnVehicle(cVehicleParams &params);
 	bool8 ProcessReverseGear(cVehicleParams &params);
 	void ProcessModelCarEngine(cVehicleParams &params);
+#ifdef EX_BURST_TYRES
+	bool8 ProcessVehicleFlatTyre(cVehicleParams& params);
+#endif
 	bool8 ProcessVehicleRoadNoise(cVehicleParams &params);
 	bool8 ProcessWetRoadNoise(cVehicleParams &params);
 	bool8 ProcessVehicleEngine(cVehicleParams &params);

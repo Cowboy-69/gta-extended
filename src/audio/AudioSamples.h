@@ -3252,10 +3252,12 @@ enum eSfxSample
 #endif
 
 #ifdef EX_SECOND_SAMPLE_BANK // Added samples
-	SFX_SECOND_TEST1,
-	SFX_SECOND_TEST2,
-	SFX_SECOND_TEST3,
-	SFX_SECOND_TEST4,
+
+#ifdef EX_BURST_TYRES // Added samples
+#endif
+	SFX_TYRE_BURST_B,  // 0
+	SFX_TYRE_BURST,    // 1
+	SFX_TYRE_BURST_L,  // 2
 
 	// NOTE: If you change the number of samples, don't forget to change the limits below!
 #endif
@@ -3282,7 +3284,7 @@ enum eSfxSample
 #endif
 
 #ifdef EX_SECOND_SAMPLE_BANK // Limits
-	NEW_SAMPLEBANK_START = SFX_SECOND_TEST1,
-	TOTAL_NEW_AUDIO_SAMPLES = SFX_SECOND_TEST4 - SAMPLEBANK_PED_END,
+	NEW_SAMPLEBANK_START = SFX_TYRE_BURST_B,
+	TOTAL_NEW_AUDIO_SAMPLES = SFX_TYRE_BURST_L - SAMPLEBANK_PED_END,
 #endif
 };

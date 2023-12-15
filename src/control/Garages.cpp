@@ -403,6 +403,10 @@ void CGarage::Update()
 						FindPlayerVehicle()->GetUp() = -FindPlayerVehicle()->GetUp();
 						FindPlayerVehicle()->GetRight() = -FindPlayerVehicle()->GetRight();
 					}
+#ifdef EX_BURST_TYRES // Fixing the car at Pay'n'Spray
+					for (int32 i = 0; i < 4; i++)
+						((CAutomobile*)FindPlayerVehicle())->Damage.SetWheelStatus(i, WHEEL_STATUS_OK);
+#endif
 					bChangedColour = false;
 					if (!((CAutomobile*)(FindPlayerVehicle()))->bFixedColour) {
 						uint8 colour1, colour2;

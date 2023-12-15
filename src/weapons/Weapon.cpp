@@ -656,7 +656,13 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 #endif
 
 		CWorld::bIncludeDeadPeds = true;
+#ifdef EX_BURST_TYRES // FireInstantHit
+		CWorld::bIncludeCarTyres = true;
+#endif
 		ProcessLineOfSight(src, trgt,point, victim, m_eWeaponType, shooter, true, true, true, true, true, true, false);
+#ifdef EX_BURST_TYRES // FireInstantHit
+		CWorld::bIncludeCarTyres = false;
+#endif
 		CWorld::bIncludeDeadPeds = false;
 
 		int32 rotSpeed = 1;
@@ -1099,6 +1105,24 @@ CWeapon::DoBulletImpact(CEntity *shooter, CEntity *victim,
 				}
 				case ENTITY_TYPE_VEHICLE:
 				{
+#ifdef EX_BURST_TYRES // FireInstantHit
+					if (point->pieceB >= CAR_PIECE_WHEEL_LF && point->pieceB <= CAR_PIECE_WHEEL_RR) {
+						((CVehicle*)victim)->BurstTyre(point->pieceB, true);
+
+						for (int32 i = 0; i < 4; i++)
+							CParticle::AddParticle(PARTICLE_BULLETHIT_SMOKE, point->point, point->normal * 0.05f);
+					}
+					else
+					{
+						((CVehicle *)victim)->InflictDamage(shooter, m_eWeaponType, info->m_nDamage);
+
+						for ( int32 i = 0; i < 16; i++ )
+							CParticle::AddParticle(PARTICLE_SPARK, point->point, point->normal*0.05f);
+						CVector smokePos = point->point;
+
+						CParticle::AddParticle(PARTICLE_BULLETHIT_SMOKE, smokePos, CVector(0.0f, 0.0f, 0.0f));
+					}
+#else
 					((CVehicle *)victim)->InflictDamage(shooter, m_eWeaponType, info->m_nDamage);
 
 					for ( int32 i = 0; i < 16; i++ )
@@ -1113,6 +1137,7 @@ CWeapon::DoBulletImpact(CEntity *shooter, CEntity *victim,
 #endif // !FIX_BUGS
 
 					CParticle::AddParticle(PARTICLE_BULLETHIT_SMOKE, smokePos, CVector(0.0f, 0.0f, 0.0f));
+#endif
 
 					if ( shooter->IsPed() )
 					{
@@ -1279,7 +1304,13 @@ CWeapon::FireShotgun(CEntity *shooter, CVector *fireSource)
 			target *= info->m_fRange;
 			target += source;
 
+#ifdef EX_BURST_TYRES // FireShotgun
+			CWorld::bIncludeCarTyres = true;
+#endif
 			ProcessLineOfSight(source, target, point, victim, m_eWeaponType, shooter, true, true, true, true, true, true, false);
+#ifdef EX_BURST_TYRES // FireShotgun
+			CWorld::bIncludeCarTyres = false;
+#endif
 		}
 		else
 		{
@@ -1370,6 +1401,23 @@ CWeapon::FireShotgun(CEntity *shooter, CVector *fireSource)
 				{
 					case ENTITY_TYPE_VEHICLE:
 					{
+#ifdef EX_BURST_TYRES // FireShotgun
+						if (point.pieceB >= CAR_PIECE_WHEEL_LF && point.pieceB <= CAR_PIECE_WHEEL_RR) {
+							((CVehicle*)victim)->BurstTyre(point.pieceB, true);
+
+							for (int32 i = 0; i < 4; i++)
+								CParticle::AddParticle(PARTICLE_BULLETHIT_SMOKE, point.point, point.normal * 0.05f);
+						} else {
+							((CVehicle *)victim)->InflictDamage(shooter, m_eWeaponType, info->m_nDamage);
+
+							for ( int32 i = 0; i < 16; i++ )
+								CParticle::AddParticle(PARTICLE_SPARK, point.point, point.normal*0.05f);
+
+							CVector smokePos = point.point;
+
+							CParticle::AddParticle(PARTICLE_BULLETHIT_SMOKE, smokePos, CVector(0.0f, 0.0f, 0.0f));
+						}
+#else
 						((CVehicle *)victim)->InflictDamage(shooter, m_eWeaponType, info->m_nDamage);
 
 						for ( int32 i = 0; i < 16; i++ )
@@ -1384,6 +1432,7 @@ CWeapon::FireShotgun(CEntity *shooter, CVector *fireSource)
 #endif
 
 						CParticle::AddParticle(PARTICLE_BULLETHIT_SMOKE, smokePos, CVector(0.0f, 0.0f, 0.0f));
+#endif
 
 						break;
 					}

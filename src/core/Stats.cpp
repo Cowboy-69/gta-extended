@@ -57,6 +57,9 @@ int32 CStats::mmRain;
 int32 CStats::CarsCrushed;
 int32 CStats::FastestTimes[CStats::TOTAL_FASTEST_TIMES];
 int32 CStats::HighestScores[CStats::TOTAL_HIGHEST_SCORES];
+#ifdef EX_BURST_TYRES // Stats
+int32 CStats::TyresPopped;
+#endif
 
 void CStats::Init()
 {
@@ -113,6 +116,9 @@ void CStats::Init()
 	IndustrialPassed = 0;
 	CommercialPassed = 0;
 	SuburbanPassed = 0;
+#ifdef EX_BURST_TYRES // Stats
+	TyresPopped = 0;
+#endif
 }
 
 void CStats::RegisterFastestTime(int32 index, int32 time)
@@ -296,7 +302,12 @@ void CStats::SaveStats(uint8 *buf, uint32 *size)
 		sizeof(HighestScores) +
 		sizeof(KillsSinceLastCheckpoint) +
 		sizeof(TotalLegitimateKills) +
+#ifdef EX_BURST_TYRES // Stats
+		sizeof(LastMissionPassedName) +
+		sizeof(TyresPopped);
+#else
 		sizeof(LastMissionPassedName);
+#endif
 
 #define CopyToBuf(buf, data) memcpy(buf, &data, sizeof(data)); buf += sizeof(data);
 	CopyToBuf(buf, PeopleKilledByPlayer);
@@ -351,6 +362,9 @@ void CStats::SaveStats(uint8 *buf, uint32 *size)
 	CopyToBuf(buf, KillsSinceLastCheckpoint);
 	CopyToBuf(buf, TotalLegitimateKills);
 	CopyToBuf(buf, LastMissionPassedName);
+#ifdef EX_BURST_TYRES // Stats
+	CopyToBuf(buf, TyresPopped);
+#endif
 
 	assert(buf - buf_start == *size);
 #undef CopyToBuf
@@ -414,6 +428,9 @@ void CStats::LoadStats(uint8 *buf, uint32 size)
 	CopyFromBuf(buf, KillsSinceLastCheckpoint);
 	CopyFromBuf(buf, TotalLegitimateKills);
 	CopyFromBuf(buf, LastMissionPassedName);
+#ifdef EX_BURST_TYRES // Stats
+	CopyFromBuf(buf, TyresPopped);
+#endif
 
 	assert(buf - buf_start == size);
 #undef CopyFromBuf

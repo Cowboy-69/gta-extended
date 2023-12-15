@@ -7572,6 +7572,9 @@ CMenuManager::ConstructStatLine(int rowIdx)
 		STAT_LINE_1(int, "PE_WSOT", CStats::PeopleKilledByOthers);
 	}
 	STAT_LINE_1(int, "CAR_EXP", CStats::CarsExploded);
+#ifdef EX_BURST_TYRES // Stats
+	STAT_LINE_1(int, "TYREPOP", CStats::TyresPopped);
+#endif
 	STAT_LINE_1(int, "TM_BUST", CStats::TimesArrested);
 	STAT_LINE_1(int, "TM_DED", CStats::TimesDied);
 	STAT_LINE_1(int, "GNG_WST", CStats::PedsKilledOfThisType[PEDTYPE_GANG9] + CStats::PedsKilledOfThisType[PEDTYPE_GANG8]

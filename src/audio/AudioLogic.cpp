@@ -870,6 +870,14 @@ enum
 #else
 	MISSION_AUDIO_VOLUME = 80,
 #endif
+
+#ifdef EX_BURST_TYRES // Sample settings
+	VEHICLE_ONE_SHOT_CAR_TYRE_POP_MAX_DIST = 60,
+	VEHICLE_ONE_SHOT_CAR_TYRE_POP_VOLUME = 117,
+
+	FLAT_TYRE_MAX_DIST = 60,
+	FLAT_TYRE_VOLUME = 100,
+#endif
 };
 
 #pragma region VEHICLE AUDIO
@@ -933,6 +941,13 @@ cAudioManager::ProcessVehicle(CVehicle *veh)
 				((CAutomobile *)veh)->m_fVelocityChangeForAudio = params.m_fVelocityChange;
 				break;
 			}
+#ifdef EX_BURST_TYRES // ProcessVehicleFlatTyre
+			// if (ProcessVehicleRoadNoise == true)
+			else
+			{
+				ProcessVehicleFlatTyre(params);
+			}
+#endif
 			ProcessReverseGear(params);
 			if (CWeather::WetRoads > 0.0f)
 				ProcessWetRoadNoise(params);
@@ -1111,6 +1126,60 @@ cAudioManager::ProcessModelCarEngine(cVehicleParams& params)
 		}
 	}
 }
+
+#ifdef EX_BURST_TYRES // ProcessVehicleFlatTyre
+bool8
+cAudioManager::ProcessVehicleFlatTyre(cVehicleParams& params)
+{
+	CAutomobile* automobile;
+	bool8 wheelBurst;
+	uint8 Vol;
+
+	float modifier;
+
+	if (params.m_fDistance < SQR(FLAT_TYRE_MAX_DIST)) {
+		switch (params.m_pVehicle->m_vehType) {
+		case VEHICLE_TYPE_CAR:
+			automobile = (CAutomobile*)params.m_pVehicle;
+			wheelBurst = FALSE;
+			for (int i = 0; i < 4; i++)
+				if (automobile->Damage.GetWheelStatus(i) == WHEEL_STATUS_BURST && automobile->m_aWheelTimer[i] > 0.0f)
+					wheelBurst = TRUE;
+			if (!wheelBurst)
+				return TRUE;
+			break;
+		default:
+			return TRUE;
+		}
+		modifier = Min(1.0f, Abs(params.m_fVelocityChange) / (0.3f * params.m_pTransmission->fMaxVelocity));
+		if (modifier > 0.01f) {
+			Vol = (FLAT_TYRE_VOLUME * modifier);
+			CalculateDistance(params.m_bDistanceCalculated, params.m_fDistance);
+			m_sQueueSample.m_nVolume = ComputeVolume(Vol, FLAT_TYRE_MAX_DIST, m_sQueueSample.m_fDistance);
+			if (m_sQueueSample.m_nVolume > 0) {
+				m_sQueueSample.m_nCounter = 95;
+				m_sQueueSample.m_nBankIndex = SFX_BANK_0;
+				m_sQueueSample.m_bIs2D = FALSE;
+				m_sQueueSample.m_nPriority = 5;
+				m_sQueueSample.m_nSampleIndex = SFX_TYRE_BURST_L;
+				m_sQueueSample.m_nFrequency = (5500.0f * modifier) + 8000;
+				m_sQueueSample.m_nLoopCount = 0;
+				SET_EMITTING_VOLUME(Vol);
+				SET_LOOP_OFFSETS(SFX_TYRE_BURST_L)
+				m_sQueueSample.m_fSpeedMultiplier = 2.0f;
+				m_sQueueSample.m_MaxDistance = FLAT_TYRE_MAX_DIST;
+				m_sQueueSample.m_bStatic = FALSE;
+				m_sQueueSample.m_nFramesToPlay = 3;
+				//SET_SOUND_REVERB(TRUE);
+				SET_SOUND_REFLECTION(FALSE);
+				AddSampleToRequestedQueue();
+			}
+		}
+		return TRUE;
+	}
+	return FALSE;
+}
+#endif
 
 bool8
 cAudioManager::ProcessVehicleRoadNoise(cVehicleParams& params)
@@ -2585,11 +2654,25 @@ cAudioManager::ProcessVehicleOneShots(cVehicleParams& params)
 			maxDist = SQR(VEHICLE_ONE_SHOT_BOAT_SLOWDOWN_MAX_DIST);
 			break;
 		case SOUND_CAR_JUMP:
+#ifdef EX_BURST_TYRES // SFX_TYRE_BURST_B
+		case SOUND_CAR_JUMP_2:
+#endif
 		{
 			static uint8 iWheelIndex = 82;
+#ifdef EX_BURST_TYRES // SFX_TYRE_BURST_B
+			maxDist = SQR(VEHICLE_ONE_SHOT_CAR_JUMP_MAX_DIST);
+			if (event == SOUND_CAR_JUMP_2) {
+				m_sQueueSample.m_nSampleIndex = SFX_TYRE_BURST_B;
+				Vol = Max(50, 2 * (60 * m_asAudioEntities[m_sQueueSample.m_nEntityIndex].m_afVolume[i]));
+			} else {
+				m_sQueueSample.m_nSampleIndex = SFX_TYRE_BUMP;
+				Vol = Max(VEHICLE_ONE_SHOT_CAR_JUMP_VOLUME, 2 * (100 * m_asAudioEntities[m_sQueueSample.m_nEntityIndex].m_afVolume[i]));
+			}
+#else
 			Vol = Max(VEHICLE_ONE_SHOT_CAR_JUMP_VOLUME, 2 * (100 * m_asAudioEntities[m_sQueueSample.m_nEntityIndex].m_afVolume[i]));
 			maxDist = SQR(VEHICLE_ONE_SHOT_CAR_JUMP_MAX_DIST);
 			m_sQueueSample.m_nSampleIndex = SFX_TYRE_BUMP;
+#endif
 			m_sQueueSample.m_nBankIndex = SFX_BANK_0;
 			m_sQueueSample.m_nCounter = iWheelIndex++;
 			if (iWheelIndex > 85)
@@ -2696,6 +2779,25 @@ cAudioManager::ProcessVehicleOneShots(cVehicleParams& params)
 			maxDist = SQR(VEHICLE_ONE_SHOT_CAR_TANK_TURRET_MAX_DIST);
 			bLoop = TRUE;
 			break;
+#ifdef EX_BURST_TYRES // SFX_TYRE_BURST
+		case SOUND_CAR_TYRE_POP:
+		{
+			static uint8 WheelIndex = 91;
+			m_sQueueSample.m_nSampleIndex = SFX_TYRE_BURST;
+			m_sQueueSample.m_nBankIndex = SFX_BANK_0;
+			m_sQueueSample.m_nCounter = WheelIndex++;
+			if (WheelIndex > 94)
+				WheelIndex = 91;
+			m_sQueueSample.m_nFrequency = SampleManager.GetSampleBaseFrequency(SFX_TYRE_BURST);
+			m_sQueueSample.m_nFrequency += RandomDisplacement(2000);
+			m_sQueueSample.m_nPriority = 2;
+			m_sQueueSample.m_fSpeedMultiplier = 0.0f;
+			m_sQueueSample.m_MaxDistance = VEHICLE_ONE_SHOT_CAR_TYRE_POP_MAX_DIST;
+			maxDist = SQR(VEHICLE_ONE_SHOT_CAR_TYRE_POP_MAX_DIST);
+			Vol = m_anRandomTable[4] % (MAX_VOLUME-VEHICLE_ONE_SHOT_CAR_TYRE_POP_VOLUME) + VEHICLE_ONE_SHOT_CAR_TYRE_POP_VOLUME;
+			break;
+		}
+#endif
 		default:
 			continue;
 		}

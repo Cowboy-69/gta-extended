@@ -8188,6 +8188,9 @@ OTHER SETTINGS
 [FED_BRL]
 BORDERLESS
 
+[TYREPOP]
+Tires popped with gunfire
+
 { end of file }
 
 [DUMMY]

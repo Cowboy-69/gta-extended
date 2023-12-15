@@ -62,6 +62,9 @@ public:
 	static int32 CarsCrushed;
 	static int32 FastestTimes[TOTAL_FASTEST_TIMES];
 	static int32 HighestScores[TOTAL_HIGHEST_SCORES];
+#ifdef EX_BURST_TYRES // Stats
+	static int32 TyresPopped;
+#endif
 
 public:
 	static void Init(void);

@@ -136,7 +136,11 @@ public:
 	void RemoveRefsToVehicle(CEntity *ent);
 	void BlowUpCar(CEntity *ent);
 	bool SetUpWheelColModel(CColModel *colModel);
+#ifdef EX_BURST_TYRES
+	void BurstTyre(uint8 tyre, bool applyForces);
+#else
 	void BurstTyre(uint8 tyre);
+#endif
 	bool IsRoomForPedToLeaveCar(uint32 component, CVector *doorOffset);
 	float GetHeightAboveRoad(void);
 	void PlayCarHorn(void);

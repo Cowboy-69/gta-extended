@@ -19,6 +19,9 @@
 #include "Fire.h"
 #include "Darkel.h"
 #include "SaveBuf.h"
+#ifdef EX_BURST_TYRES
+#include "Camera.h"
+#endif
 
 bool CVehicle::bWheelsOnlyCheat;
 bool CVehicle::bAllDodosCheat;
@@ -610,8 +613,28 @@ CVehicle::ProcessWheelRotation(tWheelState state, const CVector &fwd, const CVec
 	return angularVelocity * CTimer::GetTimeStep();
 }
 
+#ifdef EX_BURST_TYRES // FindTyreNearestPoint
+int
+CVehicle::FindTyreNearestPoint(float x, float y)
+{
+	CVector pos = CVector(x - GetPosition().x, y - GetPosition().y, 0.0f);
+	float fwd = DotProduct(GetForward(), pos);
+	float right = DotProduct(GetRight(), pos);
+
+	int piece = fwd > 0.0f ?
+			right > 0.0f ? CAR_PIECE_WHEEL_RF : CAR_PIECE_WHEEL_LF :
+			right > 0.0f ? CAR_PIECE_WHEEL_RR : CAR_PIECE_WHEEL_LR;
+
+	return piece - CAR_PIECE_WHEEL_LF;
+}
+#endif
+
 void
+#ifdef EX_BURST_TYRES // Inflict damage
+CVehicle::InflictDamage(CEntity* damagedBy, eWeaponType weaponType, float damage, CVector pos)
+#else
 CVehicle::InflictDamage(CEntity* damagedBy, eWeaponType weaponType, float damage)
+#endif
 {
 	if (!bCanBeDamaged)
 		return;
@@ -655,6 +678,38 @@ CVehicle::InflictDamage(CEntity* damagedBy, eWeaponType weaponType, float damage
 	default:
 		break;
 	}
+
+#ifdef EX_BURST_TYRES // Inflict damage
+	if(damagedBy && damagedBy->IsPed() && IsCar()){
+		int accuracy = 0;
+		switch(weaponType){
+		case WEAPONTYPE_COLT45:
+			accuracy = 10;
+			break;
+		case WEAPONTYPE_SHOTGUN:
+		case WEAPONTYPE_HELICANNON:
+			accuracy = 25;
+			break;
+		case WEAPONTYPE_UZI:
+		case WEAPONTYPE_UZI_DRIVEBY:
+			accuracy = 15;
+			break;
+		case WEAPONTYPE_AK47:
+		case WEAPONTYPE_M16:
+			if(!((CPed*)damagedBy)->IsPlayer())
+				accuracy = 15;
+			break;
+		}
+
+		if(((CPed*)damagedBy)->IsPlayer() && (CCamera::m_bUseMouse3rdPerson || TheCamera.m_bFirstPersonBeingUsed))
+			accuracy = 0;
+
+		if(accuracy != 0 && (CGeneral::GetRandomNumber()&0x7F) < accuracy){
+			BurstTyre(FindTyreNearestPoint(pos.x, pos.y) + CAR_PIECE_WHEEL_LF, true);
+		}
+	}
+#endif
+
 	if (m_fHealth > 0.0f) {
 		if (VehicleCreatedBy == RANDOM_VEHICLE && pDriver &&
 			(GetStatus() == STATUS_SIMPLE || GetStatus() == STATUS_PHYSICS) &&

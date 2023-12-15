@@ -222,7 +222,11 @@ public:
 	virtual void RemoveRefsToVehicle(CEntity *ent) {}
 	virtual void BlowUpCar(CEntity *ent) {}
 	virtual bool SetUpWheelColModel(CColModel *colModel) { return false; }
+#ifdef EX_BURST_TYRES
+	virtual void BurstTyre(uint8 tyre, bool applyForces) {}
+#else
 	virtual void BurstTyre(uint8 tyre) {}
+#endif
 	virtual bool IsRoomForPedToLeaveCar(uint32 component, CVector *forcedDoorPos) { return false;}
 	virtual float GetHeightAboveRoad(void);
 	virtual void PlayCarHorn(void) {}
@@ -246,6 +250,9 @@ public:
 	void ExtinguishCarFire(void);
 	void ProcessDelayedExplosion(void);
 	float ProcessWheelRotation(tWheelState state, const CVector &fwd, const CVector &speed, float radius);
+#ifdef EX_BURST_TYRES
+	int FindTyreNearestPoint(float x, float y);
+#endif
 	bool IsLawEnforcementVehicle(void);
 	void ChangeLawEnforcerState(uint8 enable);
 	bool UsesSiren(uint32 id);
@@ -268,7 +275,11 @@ public:
 	void ProcessCarAlarm(void);
 	bool IsSphereTouchingVehicle(float sx, float sy, float sz, float radius);
 	bool ShufflePassengersToMakeSpace(void);
+#ifdef EX_BURST_TYRES
+	void InflictDamage(CEntity* damagedBy, eWeaponType weaponType, float damage, CVector pos = CVector(0.0f, 0.0f, 0.0f));
+#else
 	void InflictDamage(CEntity *damagedBy, eWeaponType weaponType, float damage);
+#endif
 	void DoFixedMachineGuns(void);
 
 #ifdef FIX_BUGS
