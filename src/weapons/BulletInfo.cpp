@@ -116,6 +116,9 @@ void CBulletInfo::Update(void)
 		CColPoint point;
 		CEntity* pHitEntity;
 		if (CWorld::ProcessLineOfSight(vecOldPos, vecNewPos, point, pHitEntity, true, true, true, true, true, true)) {
+#ifdef EX_BREAKABLE_WINDSHIELDS // Sniper bullet
+			CWeapon::CheckForShootingVehicleOccupant(&pHitEntity, &point, pBullet->m_eWeaponType, vecOldPos, vecNewPos);
+#endif
 			if (pBullet->m_pSource && (pHitEntity->IsPed() || pHitEntity->IsVehicle()))
 				CStats::InstantHitsHitByPlayer++;
 			if (pHitEntity->IsPed()) {

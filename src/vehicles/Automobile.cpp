@@ -49,6 +49,9 @@
 #ifdef EX_BURST_TYRES // Stats
 #include "Stats.h"
 #endif
+#ifdef EX_BREAKABLE_WINDSHIELDS
+#include "Glass.h"
+#endif
 
 bool bAllCarCheat;	// unused
 
@@ -5161,11 +5164,19 @@ CAutomobile::SetPanelDamage(int32 component, ePanels panel, bool noFlyingCompone
 	if(m_aCarNodes[component] == nil)
 		return;
 	if(status == PANEL_STATUS_SMASHED1){
+#ifdef EX_BREAKABLE_WINDSHIELDS // SOUND_CAR_WINDSHIELD_CRACK
+		if (panel == VEHPANEL_WINDSCREEN)
+			DMAudio.PlayOneShot(m_audioEntityId, SOUND_CAR_WINDSHIELD_CRACK, 0.0f);
+#endif
 		// show damaged part
 		SetComponentVisibility(m_aCarNodes[component], ATOMIC_FLAG_DAM);
 	}else if(status == PANEL_STATUS_MISSING){
 		if(!noFlyingComponents)
 			SpawnFlyingComponent(component, COMPGROUP_PANEL);
+#ifdef EX_BREAKABLE_WINDSHIELDS // CarWindscreenShatters
+		else if (panel == VEHPANEL_WINDSCREEN)
+			CGlass::CarWindscreenShatters(this, false);
+#endif
 		// hide both
 		SetComponentVisibility(m_aCarNodes[component], ATOMIC_FLAG_NONE);
 	}

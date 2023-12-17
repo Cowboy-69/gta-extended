@@ -665,6 +665,11 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 #endif
 		CWorld::bIncludeDeadPeds = false;
 
+#ifdef EX_BREAKABLE_WINDSHIELDS // FireInstantHit
+		if (victim)
+			CheckForShootingVehicleOccupant(&victim, &point, m_eWeaponType, src, trgt);
+#endif
+
 		int32 rotSpeed = 1;
 		if ( m_eWeaponType == WEAPONTYPE_M16  )
 			rotSpeed = 4;
@@ -2494,6 +2499,53 @@ CWeapon::ProcessLineOfSight(CVector const &point1, CVector const &point2, CColPo
 {
 	return CWorld::ProcessLineOfSight(point1, point2, point, entity, checkBuildings, checkVehicles, checkPeds, checkObjects, checkDummies, ignoreSeeThrough, ignoreSomeObjects);
 }
+
+#ifdef EX_BREAKABLE_WINDSHIELDS
+void CWeapon::CheckForShootingVehicleOccupant(CEntity** victim, CColPoint* point, eWeaponType weapon, CVector const& source, CVector const& target)
+{
+	if (!(*victim)->IsVehicle())
+		return;
+
+	CColSphere headSphere;
+
+	CVehicle *veh = (CVehicle*)*victim;
+	CColPoint origPoint(*point);
+	float radius = 1.0f;
+	bool found = false;
+	CColLine shootLine(source, target);
+
+	if (veh->IsCar()) {
+		CVector distVec = target - source;
+		if (DotProduct(distVec, veh->GetForward()) < 0.0f && DotProduct(distVec, veh->GetUp()) <= 0.0f) {
+			CColModel *colModel = veh->GetColModel();
+			if (colModel->numTriangles > 0) {
+				bool passesGlass = false;
+				CMatrix invVehMat;
+				Invert(veh->GetMatrix(), invVehMat);
+				shootLine.p0 = invVehMat * shootLine.p0;
+				shootLine.p1 = invVehMat * shootLine.p1;
+				CCollision::CalculateTrianglePlanes(colModel);
+				for (int i = 0; i < colModel->numTriangles; i++) {
+					if (colModel->triangles[i].surface == SURFACE_GLASS &&
+						CCollision::TestLineTriangle(shootLine, colModel->vertices, colModel->triangles[i], colModel->trianglePlanes[i])) {
+						passesGlass = true;
+						break;
+					}
+				}
+				CAutomobile *car = (CAutomobile*)veh;
+
+				if (passesGlass && car->Damage.ProgressPanelDamage(VEHPANEL_WINDSCREEN)) {
+					if (car->Damage.GetPanelStatus(VEHPANEL_WINDSCREEN) == PANEL_STATUS_SMASHED2)
+						car->Damage.ProgressPanelDamage(VEHPANEL_WINDSCREEN);
+
+					car->SetPanelDamage(CAR_WINDSCREEN, VEHPANEL_WINDSCREEN, true);
+					DMAudio.PlayOneShot(veh->m_audioEntityId, SOUND_CAR_WINDSHIELD_CRACK, 0.f);
+				}
+			}
+		}
+	}
+}
+#endif
 
 #ifdef COMPATIBLE_SAVES
 #define CopyFromBuf(buf, data) memcpy(&data, buf, sizeof(data)); SkipSaveBuf(buf, sizeof(data));

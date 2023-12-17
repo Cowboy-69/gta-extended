@@ -68,6 +68,10 @@ public:
 	
 	static bool ProcessLineOfSight(CVector const &point1, CVector const &point2, CColPoint &point, CEntity *&entity, eWeaponType type, CEntity *shooter, bool checkBuildings, bool checkVehicles, bool checkPeds, bool checkObjects, bool checkDummies, bool ignoreSeeThrough, bool ignoreSomeObjects);
 
+#ifdef EX_BREAKABLE_WINDSHIELDS
+	static void CheckForShootingVehicleOccupant(CEntity** victim, CColPoint* point, eWeaponType weapon, CVector const& source, CVector const& target);
+#endif
+
 #ifdef COMPATIBLE_SAVES
 	void Save(uint8*& buf);
 	void Load(uint8*& buf);

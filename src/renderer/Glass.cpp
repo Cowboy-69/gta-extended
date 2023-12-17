@@ -14,6 +14,9 @@
 #include "ModelIndices.h"
 #include "main.h"
 #include "soundlist.h"
+#ifdef EX_BREAKABLE_WINDSHIELDS // Glass particles
+#include "Pools.h"
+#endif
 
 
 uint32 CGlass::NumGlassEntities;
@@ -83,9 +86,19 @@ CFallingGlassPane::Update(void)
 	if ( CTimer::GetTimeInMilliseconds() >= m_nTimer )
 	{
 		// Apply MoveSpeed
+#ifdef EX_BREAKABLE_WINDSHIELDS // Glass particles
+		if ( m_bCarGlass )
+			GetPosition()    += m_vecMoveSpeed * CTimer::GetTimeStep() * 0.35f;
+		else
+#endif
 		GetPosition()    += m_vecMoveSpeed * CTimer::GetTimeStep();
 
 		// Apply Gravity
+#ifdef EX_BREAKABLE_WINDSHIELDS // Glass particles
+		if ( m_bCarGlass )
+			m_vecMoveSpeed.z -= 0.01f          *  CTimer::GetTimeStep();
+		else
+#endif
 		m_vecMoveSpeed.z -= 0.02f         *  CTimer::GetTimeStep();
 
 		// Apply TurnSpeed
@@ -106,6 +119,30 @@ CFallingGlassPane::Update(void)
 
 			RwRGBA color = { 255, 255, 255, 255 };
 
+#ifdef EX_BREAKABLE_WINDSHIELDS // Glass particles
+			if ( !m_bCarGlass )
+			{
+				static int32 nFrameGen = 0;
+
+				for ( int32 i = 0; i < 4; i++ )
+				{
+					dir.x = CGeneral::GetRandomNumberInRange(-0.35f, 0.35f);
+					dir.y = CGeneral::GetRandomNumberInRange(-0.35f, 0.35f);
+					dir.z = CGeneral::GetRandomNumberInRange(0.05f, 0.20f);
+
+					CParticle::AddParticle(PARTICLE_CAR_DEBRIS,
+						pos,
+						dir,
+						nil,
+						CGeneral::GetRandomNumberInRange(0.02f, 0.2f),
+						color,
+						CGeneral::GetRandomNumberInRange(-40, 40),
+						0,
+						++nFrameGen & 3,
+						500);
+				}
+			}
+#else
 			static int32 nFrameGen = 0;
 
 			for ( int32 i = 0; i < 4; i++ )
@@ -125,6 +162,7 @@ CFallingGlassPane::Update(void)
 					++nFrameGen & 3,
 					500);
 			}
+#endif
 		}
 	}
 }
@@ -150,6 +188,11 @@ CFallingGlassPane::Render(void)
 		CGlass::RenderHiLightPolys();
 
 	// HiLight Polys
+
+#ifdef EX_BREAKABLE_WINDSHIELDS // Glass particles
+	if ( m_bCarGlass && color < 64 )
+		color = 64;
+#endif
 
 	RwIm3DVertexSetRGBA (&TempBufferRenderVertices[TempBufferVerticesStoredHiLight + 0], color, color, color, color);
 	RwIm3DVertexSetRGBA (&TempBufferRenderVertices[TempBufferVerticesStoredHiLight + 1], color, color, color, color);
@@ -301,7 +344,11 @@ CGlass::FindFreePane(void)
 
 void
 CGlass::GeneratePanesForWindow(uint32 type, CVector pos, CVector up, CVector right, CVector speed, CVector point,
+#ifdef EX_BREAKABLE_WINDSHIELDS // Glass particles
+								float moveSpeed, bool cracked, bool explosion, int32 stepmul, bool carGlass)
+#else
 								float moveSpeed, bool cracked, bool explosion)
+#endif
 {
 	float upLen    = up.Magnitude();
 	float rightLen = right.Magnitude();
@@ -312,11 +359,19 @@ CGlass::GeneratePanesForWindow(uint32 type, CVector pos, CVector up, CVector rig
 	float rightSteps = rightLen + 0.75f;
 	if ( rightSteps < 1.0f ) rightSteps = 1.0f;
 
+#ifdef EX_BREAKABLE_WINDSHIELDS // Glass particles
+	uint32 ysteps = stepmul * (uint32)upSteps;
+	if ( ysteps > 3 ) ysteps = 3;
+
+	uint32 xsteps = stepmul * (uint32)rightSteps;
+	if ( xsteps > 3 ) xsteps = 3;
+#else
 	uint32 ysteps = (uint32)upSteps;
 	if ( ysteps > 3 ) ysteps = 3;
 
 	uint32 xsteps = (uint32)rightSteps;
 	if ( xsteps > 3 ) xsteps = 3;
+#endif
 
 	if ( explosion )
 	{
@@ -390,6 +445,9 @@ CGlass::GeneratePanesForWindow(uint32 type, CVector pos, CVector up, CVector rig
 					pane->m_fGroundZ = groundZ;
 					pane->m_bShattered = cracked;
 					pane->m_fStep = upLen / float(ysteps);
+#ifdef EX_BREAKABLE_WINDSHIELDS // Glass particles
+					pane->m_bCarGlass = carGlass;
+#endif
 					pane->m_bActive = true;
 				}
 			}
@@ -642,7 +700,11 @@ CGlass::WindowRespondsToCollision(CEntity *entity, float amount, CVector speed, 
 			CVector(minx,      miny,      minz),
 			CVector(0.0f,      0.0f,      maxz-minz),
 			CVector(maxx-minx, maxy-miny, 0.0f),
+#ifdef EX_BREAKABLE_WINDSHIELDS // Glass particles
+			speed, point, 0.1f, !!object->bGlassCracked, explosion, 1, false);
+#else
 			speed, point, 0.1f, !!object->bGlassCracked, explosion);
+#endif
 	}
 	else
 	{
@@ -652,7 +714,11 @@ CGlass::WindowRespondsToCollision(CEntity *entity, float amount, CVector speed, 
 			CVector(minx,      miny,      minz),
 			CVector(0.0f,      0.0f,      maxz-minz),
 			CVector(maxx-minx, maxy-miny, 0.0f),
+#ifdef EX_BREAKABLE_WINDSHIELDS // Glass particles
+			speed, point, 0.1f, !!object->bGlassCracked, explosion, 1, false);
+#else
 			speed, point, 0.1f, !!object->bGlassCracked, explosion);
+#endif
 	}
 
 	object->bGlassBroken = true;
@@ -717,3 +783,286 @@ CGlass::WindowRespondsToExplosion(CEntity *entity, CVector point)
 			object->bGlassCracked = true;
 	}
 }
+
+#ifdef EX_BREAKABLE_WINDSHIELDS // Glass particles
+void
+CGlass::CarWindscreenShatters(CVehicle *vehicle, bool unk)
+{
+	ASSERT(vehicle!=nil);
+	
+	CColModel *col = vehicle->GetColModel();
+	ASSERT(col!=nil);
+	
+	if ( col->numTriangles < 2 )
+		return;
+	
+	CColTriangle *tria = nil;
+	int32 triIndex = -1;
+	CColTriangle *trib = nil;
+			
+	for ( int32 i = 0; i < col->numTriangles; i++ )
+	{
+		CColTriangle *tri = &col->triangles[i];
+		if ( tri->surface == SURFACE_GLASS )
+		{
+			if ( tria )
+			{
+				trib = tri;
+				break;
+			}
+			
+			triIndex = i;
+			tria = tri;
+		}
+	}
+	
+	if ( trib == nil )
+		return;
+	
+	CCollision::CalculateTrianglePlanes(col);
+	
+	CColTrianglePlane *triPlanes = col->trianglePlanes;
+	
+	if ( triPlanes == nil )
+		return;
+	
+	CVector planeNormal;
+	triPlanes[triIndex].GetNormal(planeNormal);
+	planeNormal = Multiply3x3(vehicle->GetMatrix(), planeNormal);
+	
+	CVector vec1 = CrossProduct(vehicle->GetRight(), planeNormal);
+	vec1.Normalise();
+	
+	CVector vec2 = CrossProduct(planeNormal, vehicle->GetUp());
+	vec2.Normalise();
+	
+	CVector v[6];
+	float proj1[6];
+	float proj2[6];
+	
+	v[0] = col->vertices[tria->a].Get();
+	v[1] = col->vertices[tria->b].Get();
+	v[2] = col->vertices[tria->c].Get();
+	
+	v[3] = col->vertices[trib->a].Get();
+	v[4] = col->vertices[trib->b].Get();
+	v[5] = col->vertices[trib->c].Get();
+	
+	v[0] = vehicle->GetMatrix() * v[0];
+	v[1] = vehicle->GetMatrix() * v[1];
+	v[2] = vehicle->GetMatrix() * v[2];
+	v[3] = vehicle->GetMatrix() * v[3];
+	v[4] = vehicle->GetMatrix() * v[4];
+	v[5] = vehicle->GetMatrix() * v[5];
+	
+	proj1[0] = DotProduct(v[0], vec1);
+	proj2[0] = DotProduct(v[0], vec2);
+	proj1[1] = DotProduct(v[1], vec1);
+	proj2[1] = DotProduct(v[1], vec2);
+	proj1[2] = DotProduct(v[2], vec1);
+	proj2[2] = DotProduct(v[2], vec2);
+	
+	proj1[3] = DotProduct(v[3], vec1);
+	proj2[3] = DotProduct(v[3], vec2);
+	proj1[4] = DotProduct(v[4], vec1);
+	proj2[4] = DotProduct(v[4], vec2);
+	proj1[5] = DotProduct(v[5], vec1);
+	proj2[5] = DotProduct(v[5], vec2);
+	
+	int32 originIndex = 0;
+	float max1 = proj1[0];
+	float max2 = proj2[0];
+	float origin  = proj1[0] + proj2[0];
+	
+	for ( int32 i = 1; i < 6; i++ )
+	{
+		float o = proj1[i] + proj2[i];
+		if ( o < origin )
+		{
+			origin = o;
+			originIndex = i;
+		}
+		
+		if ( proj1[i] > max1 )
+			max1 = proj1[i];
+		if ( proj2[i] > max2 )
+			max2 = proj2[i];
+	}
+	
+	float bound1 = max1 - proj1[originIndex];
+	float bound2  = max2 - proj2[originIndex];
+						
+	PlayOneShotScriptObject(SCRIPT_SOUND_GLASS_BREAK_L, vehicle->GetPosition());
+	
+	CVector center = v[originIndex] + ((0.5f*bound1) * vec1) + ((0.5f*bound2) * vec2);
+	CVector speed = vehicle->m_vecMoveSpeed;
+	CVector right = bound2 * vec2;
+	CVector up    = bound1 * vec1;
+	CVector pos   = v[originIndex];
+	
+	GeneratePanesForWindow(2, pos, up, right, speed, center, 0.1f, false, false, 2, true);
+}
+
+bool
+CGlass::HasGlassBeenShatteredAtCoors(float x, float y, float z)
+{
+	CEntity *entity = nil;
+	float dist = 20.0f;
+	  
+	int32 nStartX = Max(CWorld::GetSectorIndexX(x - 30.0f), 0);
+	int32 nStartY = Max(CWorld::GetSectorIndexY(y - 30.0f), 0);
+	int32 nEndX   = Min(CWorld::GetSectorIndexX(x + 30.0f), NUMSECTORS_X-1);
+	int32 nEndY   = Min(CWorld::GetSectorIndexY(y + 30.0f), NUMSECTORS_Y-1);
+
+	CWorld::AdvanceCurrentScanCode();
+	
+	for ( int32 ys = nStartY; ys <= nEndY; ys++ )
+	{
+		for ( int32 xs = nStartX; xs <= nEndX; xs++ )
+		{
+			CSector *sector = CWorld::GetSector(xs, ys);
+
+			ASSERT(sector != nil);
+			
+			FindWindowSectorList(sector->m_lists[ENTITYLIST_OBJECTS], &dist, &entity, x, y, z);
+			FindWindowSectorList(sector->m_lists[ENTITYLIST_DUMMIES], &dist, &entity, x, y, z);
+		}
+	}
+	
+	if ( entity )
+	{
+		if ( entity->GetType() == ENTITY_TYPE_DUMMY )
+			return false;
+		
+		return !!((CObject*)entity)->bGlassBroken;
+	}
+	
+	return false;
+}
+
+void
+CGlass::FindWindowSectorList(CPtrList &list, float *dist, CEntity **entity, float x, float y, float z)
+{
+	ASSERT(dist!=nil);
+	ASSERT(entity!=nil);
+	
+	CPtrNode *node = list.first;
+	
+	while ( node != nil )
+	{
+		CEntity *ent = (CEntity *)node->item;
+		uint16 scanCode = ent->m_scanCode;
+		node = node->next;
+		
+		ASSERT(ent!=nil);
+		
+		if ( IsGlass(ent->GetModelIndex()) )
+		{
+			if ( scanCode != CWorld::GetCurrentScanCode() )
+			{
+				ent->m_scanCode = CWorld::GetCurrentScanCode();
+				
+				float dst = (CVector(x,y,z) - ent->GetPosition()).Magnitude();
+				
+				if ( dst < *dist )
+				{
+					*dist = dst;
+					*entity = ent;
+				}
+			}
+		}
+	}
+}
+
+void
+CGlass::BreakGlassPhysically(CVector pos, float radius)
+{
+	static uint32 breakTime = 0;
+	
+	if ( CTimer::GetTimeInMilliseconds() < breakTime + 1000 && CTimer::GetTimeInMilliseconds() >= breakTime )
+		return;
+	
+	CColSphere sphere;
+	sphere.piece = 0;
+	sphere.radius = radius;
+	sphere.surface = 0;
+	
+	for ( int32 i = CPools::GetObjectPool()->GetSize() - 1; i >= 0; i-- )
+	{
+		CObject *object = CPools::GetObjectPool()->GetSlot(i);
+		if (object)
+		{
+			if ( IsGlass(object->GetModelIndex()) )
+			{
+				if ( object->bUsesCollision )
+				{
+					CColModel *col = object->GetColModel();
+					ASSERT(col!=nil);
+					
+					if ( col->numTriangles < 2 )
+						continue;
+					
+					bool hit = false;
+					
+					CVector dist = pos - object->GetPosition();
+					
+					sphere.center.x = DotProduct(dist, object->GetRight());
+					sphere.center.y = DotProduct(dist, object->GetForward());
+					sphere.center.z = DotProduct(dist, object->GetUp());
+					
+					CCollision::CalculateTrianglePlanes(col);
+					
+					for ( int32 j = 0; j < col->numTriangles; j++ )
+					{
+						if ( CCollision::TestSphereTriangle(sphere,
+							col->vertices, col->triangles[j], col->trianglePlanes[j]) )
+						{
+							hit = true;
+						}
+					}
+					
+					if ( hit )
+					{
+						breakTime = CTimer::GetTimeInMilliseconds();
+						
+						if ( object->bGlassCracked )
+						{
+							CVector a = col->vertices[0].Get();
+							CVector b = col->vertices[1].Get();
+							CVector c = col->vertices[2].Get();
+							CVector d = col->vertices[3].Get();
+						
+							float minx = Min(Min(a.x, b.x), Min(c.x, d.x));
+							float maxx = Max(Max(a.x, b.x), Max(c.x, d.x));
+							float miny = Min(Min(a.y, b.y), Min(c.y, d.y));
+							float maxy = Max(Max(a.y, b.y), Max(c.y, d.y));
+							float minz = Min(Min(a.z, b.z), Min(c.z, d.z));
+							float maxz = Max(Max(a.z, b.z), Max(c.z, d.z));
+							
+							CVector pa = object->GetMatrix() * CVector(minx, miny, minz);
+							CVector pb = object->GetMatrix() * CVector(maxx, maxy, minz);
+							
+							PlayOneShotScriptObject(SCRIPT_SOUND_GLASS_BREAK_S, object->GetPosition());
+
+							GeneratePanesForWindow(1,
+								pa,
+								CVector(0.0f, 0.0f, maxz-minz),
+								pb - pa,
+								CVector(0.0f, 0.0f, 0.0f), pos, 0.1f, !!object->bGlassCracked, false, 1, false);								  
+								
+							object->bGlassBroken = true;
+							object->bIsVisible = false;
+							object->bUsesCollision = false;
+						}
+						else
+						{
+							PlayOneShotScriptObject(SCRIPT_SOUND_GLASS_CRACK, object->GetPosition());
+							object->bGlassCracked = true;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+#endif

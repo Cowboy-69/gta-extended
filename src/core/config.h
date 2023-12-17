@@ -94,6 +94,10 @@
 		#define EX_BURST_TYRES // from reVC
 	#endif
 
+	#ifdef EX_VEHICLE
+		#define EX_BREAKABLE_WINDSHIELDS // from reVC
+	#endif
+
 #endif
 
 enum Config {
