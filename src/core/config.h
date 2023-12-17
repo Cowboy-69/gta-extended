@@ -98,6 +98,10 @@
 		#define EX_BREAKABLE_WINDSHIELDS // from reVC
 	#endif
 
+	#ifdef EX_DAMAGE
+		#define EX_MELEE_ATTACK_ON_VEHICLES // from reVC
+	#endif
+
 #endif
 
 enum Config {

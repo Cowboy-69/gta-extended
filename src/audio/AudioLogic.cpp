@@ -3901,11 +3901,29 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 			m_sQueueSample.m_bStatic = TRUE;
 			break;
 		case SOUND_WEAPON_BAT_ATTACK:
+		{
+#ifdef EX_MELEE_ATTACK_ON_VEHICLES // SFX
+			uint32 soundParams = m_asAudioEntities[m_sQueueSample.m_nEntityIndex].m_afVolume[i];
+			uint8 damagerType = soundParams & 0xFF;
+			if (damagerType == ENTITY_TYPE_PED) {
+				m_sQueueSample.m_nSampleIndex = SFX_BAT_HIT_LEFT;
+				m_sQueueSample.m_nBankIndex = SFX_BANK_0;
+				m_sQueueSample.m_nFrequency = RandomDisplacement(2000) + 22000;
+			} else {
+				m_sQueueSample.m_nSampleIndex = m_anRandomTable[4] % 6 + SFX_COL_CAR_PANEL_1;
+				m_sQueueSample.m_nBankIndex = SFX_BANK_0;
+				m_sQueueSample.m_nFrequency = SampleManager.GetSampleBaseFrequency(m_sQueueSample.m_nSampleIndex);
+				m_sQueueSample.m_nFrequency += RandomDisplacement(m_sQueueSample.m_nFrequency >> 4);
+			}
+			narrowSoundRange = TRUE;
+			m_sQueueSample.m_nCounter = iSound++;
+#else
 			m_sQueueSample.m_nSampleIndex = SFX_BAT_HIT_LEFT;
 			m_sQueueSample.m_nBankIndex = SFX_BANK_0;
 			m_sQueueSample.m_nCounter = iSound++;
 			narrowSoundRange = TRUE;
 			m_sQueueSample.m_nFrequency = RandomDisplacement(2000) + 22000;
+#endif
 			m_sQueueSample.m_nPriority = 3;
 			m_sQueueSample.m_fSpeedMultiplier = 0.0f;
 			m_sQueueSample.m_MaxDistance = PED_ONE_SHOT_PUNCH_MAX_DIST;
@@ -3923,6 +3941,7 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 #endif
 				stereo = TRUE;
 			break;
+		}
 		case SOUND_FIGHT_PUNCH_33:
 			m_sQueueSample.m_nSampleIndex = SFX_FIGHT_1;
 			m_sQueueSample.m_nFrequency = 18000;
@@ -3971,6 +3990,17 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 			m_sQueueSample.m_nSampleIndex = SFX_FIGHT_5;
 			m_sQueueSample.m_nFrequency = 20000;
 		AddFightSound:
+#ifdef EX_MELEE_ATTACK_ON_VEHICLES // SFX
+			{
+				uint32 soundParams = m_asAudioEntities[m_sQueueSample.m_nEntityIndex].m_afVolume[i];
+				uint8 damagerType = soundParams & 0xFF;
+				if (damagerType != ENTITY_TYPE_PED) {
+					m_sQueueSample.m_nSampleIndex = m_anRandomTable[4] % 6 + SFX_COL_CAR_PANEL_1;
+					m_sQueueSample.m_nFrequency = SampleManager.GetSampleBaseFrequency(m_sQueueSample.m_nSampleIndex);
+					m_sQueueSample.m_nFrequency += RandomDisplacement(m_sQueueSample.m_nFrequency / 16);
+				}
+			}
+#endif
 			m_sQueueSample.m_nBankIndex = SFX_BANK_0;
 			m_sQueueSample.m_nCounter = iSound;
 			narrowSoundRange = TRUE;

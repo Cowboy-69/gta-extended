@@ -373,12 +373,23 @@ CPed::SetAttack(CEntity *victim)
 				if (curWeapon->m_eWeaponFire == WEAPON_FIRE_MELEE)
 					animDelta = 1000.0f;
 
+#ifdef EX_MELEE_ATTACK_ON_VEHICLES // If a player is standing with a bat on a car, he will attack the car
+				PedOnGroundState pedOnGround = CheckForPedsOnGroundToAttack(this, nil);
+				if (GetWeapon()->m_eWeaponType == WEAPONTYPE_BASEBALLBAT &&
+					(pedOnGround > PED_IN_FRONT_OF_ATTACKER || pedOnGround == NO_PED && bIsStanding && m_pCurSurface && m_pCurSurface->IsVehicle())) {
+
+					animAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, curWeapon->m_Anim2ToPlay, animDelta);
+				} else {
+					animAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, curWeapon->m_AnimToPlay, animDelta);
+				}
+#else
 				if (GetWeapon()->m_eWeaponType != WEAPONTYPE_BASEBALLBAT
 					|| CheckForPedsOnGroundToAttack(this, nil) < PED_ON_THE_FLOOR) {
 					animAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, curWeapon->m_AnimToPlay, animDelta);
 				} else {
 					animAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, curWeapon->m_Anim2ToPlay, animDelta);
 				}
+#endif
 			}
 
 			animAssoc->SetRun();
@@ -684,11 +695,23 @@ CPed::Attack(void)
 				return;
 			}
 		} else {
+#ifdef EX_MELEE_ATTACK_ON_VEHICLES // SFX
+			int damagerType = ENTITY_TYPE_NOTHING;
+			if (m_pDamageEntity && (m_fDamageImpulse == 0.0f || !m_pDamageEntity->IsBuilding())) {
+				damagerType = m_pDamageEntity->GetType();
+			}
+			if (weaponAnimAssoc->animId == ANIM_STD_WEAPON_BAT_V || weaponAnimAssoc->animId == ANIM_STD_WEAPON_BAT_H) {
+				DMAudio.PlayOneShot(m_audioEntityId, SOUND_WEAPON_BAT_ATTACK, (damagerType | (GetWeapon()->m_eWeaponType << 8)));
+			} else if (weaponAnimAssoc->animId == ANIM_STD_PARTIAL_PUNCH) {
+				DMAudio.PlayOneShot(m_audioEntityId, SOUND_FIGHT_PUNCH_39, (damagerType | (GetWeapon()->m_eWeaponType << 8)));
+			}
+#else
 			if (weaponAnimAssoc->animId == ANIM_STD_WEAPON_BAT_V || weaponAnimAssoc->animId == ANIM_STD_WEAPON_BAT_H) {
 				DMAudio.PlayOneShot(m_audioEntityId, SOUND_WEAPON_BAT_ATTACK, 1.0f);
 			} else if (weaponAnimAssoc->animId == ANIM_STD_PARTIAL_PUNCH) {
 				DMAudio.PlayOneShot(m_audioEntityId, SOUND_FIGHT_PUNCH_39, 0.0f);
 			}
+#endif
 
 			weaponAnimAssoc->speed = 0.5f;
 
@@ -1574,7 +1597,11 @@ CPed::PlayHitSound(CPed *hitTo)
 	}
 
 	if (soundId != NO_SND)
+#ifdef EX_MELEE_ATTACK_ON_VEHICLES // SFX
+		DMAudio.PlayOneShot(m_audioEntityId, soundId, (GetWeapon()->m_eWeaponType << 8) | ENTITY_TYPE_PED);
+#else
 		DMAudio.PlayOneShot(m_audioEntityId, soundId, 0.0f);
+#endif
 }
 
 bool
@@ -3013,7 +3040,11 @@ CPed::CollideWithPed(CPed *collideWith)
 					animAssoc->flags |= ASSOC_FADEOUTWHENDONE;
 					collideWith->m_nPedStateTimer = CTimer::GetTimeInMilliseconds() + 1000;
 					if (m_nPedState == PED_ATTACK)
+#ifdef EX_MELEE_ATTACK_ON_VEHICLES // SFX
+						DMAudio.PlayOneShot(m_audioEntityId, SOUND_FIGHT_PUNCH_39, (GetWeapon()->m_eWeaponType << 8) | ENTITY_TYPE_PED);
+#else
 						DMAudio.PlayOneShot(m_audioEntityId, SOUND_FIGHT_PUNCH_39, 0.0f);
+#endif
 				}
 			} else {
 				// We're at his right side

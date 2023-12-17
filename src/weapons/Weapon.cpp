@@ -446,6 +446,14 @@ CWeapon::FireMelee(CEntity *shooter, CVector &fireSource)
 
 							bool isBat = m_eWeaponType == WEAPONTYPE_BASEBALLBAT;
 
+#ifdef EX_MELEE_ATTACK_ON_VEHICLES // SFX
+							if (shooterPed->m_fDamageImpulse == 0.0f)
+							{
+								shooterPed->m_pDamageEntity = victimPed;
+								victimPed->RegisterReference(&shooterPed->m_pDamageEntity);
+							}
+#endif
+
 							if ( !victimPed->DyingOrDead() )
 								victimPed->ReactToAttack(shooterPed);
 
@@ -530,6 +538,85 @@ CWeapon::FireMelee(CEntity *shooter, CVector &fireSource)
 			}
 		}
 	}
+
+#ifdef EX_MELEE_ATTACK_ON_VEHICLES // FireMelee
+	CVehicle *nearVeh = (CVehicle*)CWorld::TestSphereAgainstWorld(fireSource, info->m_fRadius, nil, false, true, false, false, false, false);
+	if (nearVeh && nearVeh->IsCar())
+	{
+		CAutomobile *nearCar = (CAutomobile*)nearVeh;
+		m_eWeaponState = WEAPONSTATE_MELEE_MADECONTACT;
+		if (shooterPed == FindPlayerPed())
+		{
+			if (nearCar->IsLawEnforcementVehicle())
+			{
+				FindPlayerPed()->SetWantedLevelNoDrop(1);
+			}
+			CEventList::RegisterEvent(EVENT_ASSAULT, EVENT_ENTITY_VEHICLE, nearCar, shooterPed, 2000);
+		}
+		float oldHealth = nearCar->m_fHealth;
+		nearCar->VehicleDamage(info->m_nDamage* (0.01f * nearCar->pHandling->fMass), gaTempSphereColPoints[0].pieceB);
+		if (nearCar->m_fHealth < oldHealth)
+		{
+			nearCar->m_nLastWeaponDamage = m_eWeaponType;
+			//nearCar->m_pLastDamageEntity = shooterPed;
+		}
+		if (shooterPed->m_fDamageImpulse == 0.0f)
+		{
+			shooterPed->m_pDamageEntity = nearCar;
+			nearCar->RegisterReference(&shooterPed->m_pDamageEntity);
+		}
+		//damageEntityRegistered = 2;
+		if (FindPlayerPed()->GetWeapon() == this && nearCar->VehicleCreatedBy != MISSION_VEHICLE)
+		{
+			if (nearCar->AutoPilot.m_nDrivingStyle != DRIVINGSTYLE_PLOUGH_THROUGH
+				&& (CGeneral::GetRandomTrueFalse() || nearCar->AutoPilot.m_nCarMission != MISSION_CRUISE))
+			{
+				int leaveCarDelay = 200;
+				CPed *driver = nearCar->pDriver;
+				if (driver && driver->CharCreatedBy != MISSION_CHAR)
+				{
+					if (driver->m_pedStats->m_temper <= driver->m_pedStats->m_fear)
+					{
+						driver->SetObjective(OBJECTIVE_FLEE_ON_FOOT_TILL_SAFE);
+					}
+					else
+					{
+						driver->SetObjective(OBJECTIVE_KILL_CHAR_ON_FOOT, FindPlayerPed());
+						driver->m_objectiveTimer = CTimer::GetTimeInMilliseconds() + 10000;
+						driver->m_prevObjective = OBJECTIVE_KILL_CHAR_ON_FOOT;
+					}
+					driver->m_leaveCarTimer = CTimer::GetTimeInMilliseconds() + 200;
+					leaveCarDelay = 400;
+				}
+				for (int j = 0; j < nearCar->m_nNumPassengers; ++j)
+				{
+					CPed *passenger = nearCar->pPassengers[j];
+					if (passenger && passenger->CharCreatedBy != MISSION_CHAR)
+					{
+						nearCar->pPassengers[j]->SetObjective(OBJECTIVE_FLEE_ON_FOOT_TILL_SAFE);
+						passenger->m_leaveCarTimer = CTimer::GetTimeInMilliseconds() + leaveCarDelay;
+						leaveCarDelay += 200;
+					}
+				}
+			}
+			else
+			{
+				CPed *driver = nearCar->pDriver;
+				if (driver)
+				{
+					if (driver->m_objective != OBJECTIVE_LEAVE_CAR && driver->m_objective != OBJECTIVE_KILL_CHAR_ON_FOOT &&
+						driver->m_objective != OBJECTIVE_FLEE_ON_FOOT_TILL_SAFE)
+					{
+						if (nearCar->AutoPilot.m_nDrivingStyle != DRIVINGSTYLE_PLOUGH_THROUGH)
+							nearCar->AutoPilot.m_nCruiseSpeed = nearCar->AutoPilot.m_nCruiseSpeed * 1.5f;
+
+						nearCar->AutoPilot.m_nDrivingStyle = DRIVINGSTYLE_PLOUGH_THROUGH;
+					}
+				}
+			}
+		}
+	}
+#endif
 
 	return true;
 }
