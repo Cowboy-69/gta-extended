@@ -46,6 +46,10 @@
 #include "Text.h"
 #include "Camera.h"
 #include "Radar.h"
+#ifdef EX_REPLAY_CONTROL
+#include "ControllerConfig.h"
+#include "General.h"
+#endif
 
 uint8 CReplay::Mode;
 CAddressInReplayBuffer CReplay::Record;
@@ -116,6 +120,9 @@ uint32 CReplay::NumOfFires;
 uint8* CReplay::paProjectileInfo;
 uint8* CReplay::paProjectiles;
 int CReplay::nHandleOfPlayerPed[NUMPLAYERS];
+#endif
+#ifdef EX_REPLAY_CONTROL
+bool CReplay::bReplayControlEnabled = false;
 #endif
 
 static void(*CBArray[])(CAnimBlendAssociation*, void*) =
@@ -639,6 +646,16 @@ void CReplay::RetrieveDetailedPedAnimation(CPed *ped, CStoredDetailedAnimationSt
 
 void CReplay::PlaybackThisFrame(void)
 {
+#ifdef EX_REPLAY_CONTROL
+	if (bReplayControlEnabled) {
+		if (CPad::GetPad(0)->GetLeftShiftJustDown() || CPad::GetPad(0)->GetEnterJustDown())
+			CTimer::SetPlaybackPause(!CTimer::GetIsPlaybackPaused());
+		
+		if (CPad::GetPad(0)->GetLeftCtrlJustDown())
+			SlowMotion = SlowMotion == 4 ? 1 : 4;
+	}
+#endif
+
 	static int FrameSloMo = 0;
 	CAddressInReplayBuffer buf = Playback;
 	if (PlayBackThisFrameInterpolation(&buf, 1.0f, nil)){
@@ -655,9 +672,27 @@ void CReplay::PlaybackThisFrame(void)
 		}
 	}
 	FrameSloMo = (FrameSloMo + 1) % SlowMotion;
+#ifdef EX_REPLAY_CONTROL
+	if (bReplayControlEnabled && CPad::GetPad(0)->GetLeftAltJustDown()) {
+		if (buf.m_bSlot > 0 && buf.m_nOffset < 20000) {
+			buf.m_bSlot--;
+			buf.m_pBase = Buffers[buf.m_bSlot];
+		}
+
+		buf.m_nOffset = 0;
+	}
+	if (FrameSloMo == 0 && !CTimer::GetIsPlaybackPaused())
+		Playback = buf;
+
+	if (bReplayControlEnabled)
+		ProcessControlCam();
+	else
+		ProcessLookAroundCam();
+#else
 	if (FrameSloMo == 0)
 		Playback = buf;
 	ProcessLookAroundCam();
+#endif
 	DMAudio.SetEffectsFadeVol(0);
 	DMAudio.SetMusicFadeVol(0);
 }
@@ -909,6 +944,21 @@ bool CReplay::PlayBackThisFrameInterpolation(CAddressInReplayBuffer *buffer, flo
 		case REPLAYPACKET_GENERAL:
 		{
 			tGeneralPacket* pg = (tGeneralPacket*)&ptr[offset];
+#ifdef EX_REPLAY_CONTROL
+			if (!bReplayControlEnabled) {
+				TheCamera.GetMatrix() = TheCamera.GetMatrix() * CMatrix(split);
+				TheCamera.GetMatrix().GetPosition() *= split;
+				TheCamera.GetMatrix() += CMatrix(interpolation) * pg->camera_pos;
+				RwMatrix* pm = RwFrameGetMatrix(RwCameraGetFrame(TheCamera.m_pRwCamera));
+				pm->pos = TheCamera.GetPosition();
+				pm->at = TheCamera.GetForward();
+				pm->up = TheCamera.GetUp();
+				pm->right = TheCamera.GetRight();
+				CameraFocusX = split * CameraFocusX + interpolation * pg->player_pos.x;
+				CameraFocusY = split * CameraFocusY + interpolation * pg->player_pos.y;
+				CameraFocusZ = split * CameraFocusZ + interpolation * pg->player_pos.z;
+			}
+#else
 			TheCamera.GetMatrix() = TheCamera.GetMatrix() * CMatrix(split);
 			TheCamera.GetMatrix().GetPosition() *= split;
 			TheCamera.GetMatrix() += CMatrix(interpolation) * pg->camera_pos;
@@ -920,6 +970,7 @@ bool CReplay::PlayBackThisFrameInterpolation(CAddressInReplayBuffer *buffer, flo
 			CameraFocusX = split * CameraFocusX + interpolation * pg->player_pos.x;
 			CameraFocusY = split * CameraFocusY + interpolation * pg->player_pos.y;
 			CameraFocusZ = split * CameraFocusZ + interpolation * pg->player_pos.z;
+#endif
 			bPlayerInRCBuggy = pg->in_rcvehicle;
 			buffer->m_nOffset += sizeof(tGeneralPacket);
 			break;
@@ -1011,6 +1062,11 @@ void CReplay::FinishPlayback(void)
 	}
 	DMAudio.SetEffectsFadeVol(127);
 	DMAudio.SetMusicFadeVol(127);
+
+#ifdef EX_REPLAY_CONTROL
+	if (bReplayControlEnabled)
+		CTimer::SetPlaybackPause(false);
+#endif
 }
 
 void CReplay::EmptyReplayBuffer(void)
@@ -1117,9 +1173,26 @@ void CReplay::TriggerPlayback(uint8 cam_mode, float cam_x, float cam_y, float ca
 		CGame::currLevel = CTheZones::GetLevelFromPosition(&ff_coord);
 		CCollision::SortOutCollisionAfterLoad();
 		CStreaming::LoadScene(ff_coord);
+
+#ifdef EX_REPLAY_CONTROL
+		if (bReplayControlEnabled) {
+			CMatrix cameraMatrix;
+			FindFirstCameraMatrix(&cameraMatrix);
+			CameraFocusX = cameraMatrix.GetPosition().x;
+			CameraFocusY = cameraMatrix.GetPosition().y;
+			CameraFocusZ = cameraMatrix.GetPosition().z;
+			fAlphaAngleLookAroundCam = cameraMatrix.GetRight().z;
+			fBetaAngleLookAroundCam = CGeneral::GetATanOfXY(ff_coord.y - cameraMatrix.GetPosition().y, ff_coord.x - cameraMatrix.GetPosition().x);
+		}
+#endif
 	}
 	if (cam_mode == REPLAYCAMMODE_ASSTORED)
 		TheCamera.CarZoomIndicator = CAM_ZOOM_CINEMATIC;
+
+#ifdef EX_REPLAY_CONTROL
+	if (bReplayControlEnabled)
+		CTimer::SetPlaybackPause(true);
+#endif
 }
 
 void CReplay::StoreStuffInMem(void)
@@ -1525,10 +1598,113 @@ void CReplay::FindFirstFocusCoordinate(CVector *coord)
 	}
 }
 
+#ifdef EX_REPLAY_CONTROL
+void CReplay::FindFirstCameraMatrix(CMatrix* matrix)
+{
+	*matrix = CMatrix();
+	for (int slot = 0; slot < NUM_REPLAYBUFFERS; slot++) {
+		if (BufferStatus[slot] == REPLAYBUFFER_UNUSED)
+			continue;
+		for (size_t offset = 0; Buffers[slot][offset] != REPLAYPACKET_END; offset += FindSizeOfPacket(Buffers[slot][offset])) {
+			if (Buffers[slot][offset] == REPLAYPACKET_GENERAL) {
+				*matrix = ((tGeneralPacket*)&Buffers[slot][offset])->camera_pos;
+				return;
+			}
+		}
+	}
+}
+
+void CReplay::ProcessControlCam(void)
+{
+	// from CCam::Process_Debug, modified
+
+#define KEYDOWN(k) ControlsManager.GetIsKeyboardKeyDown((RsKeyCodes)k)
+
+	CVector focus = CVector(CameraFocusX, CameraFocusY, CameraFocusZ);
+
+	static float Speed = 0.0f;
+	static float PanSpeedX = 0.0f;
+	static float PanSpeedY = 0.0f;
+	CVector TargetCoors;
+
+	RwCameraSetNearClipPlane(Scene.camera, DEFAULT_NEAR);
+
+	fAlphaAngleLookAroundCam += DEGTORAD(CPad::GetPad(0)->GetMouseY()/2.0f);
+	fBetaAngleLookAroundCam += DEGTORAD(CPad::GetPad(0)->GetMouseX()/2.0f);
+
+	TargetCoors.x = focus.x + Cos(fAlphaAngleLookAroundCam) * Sin(fBetaAngleLookAroundCam) * 7.0f;
+	TargetCoors.y = focus.y + Cos(fAlphaAngleLookAroundCam) * Cos(fBetaAngleLookAroundCam) * 7.0f;
+	TargetCoors.z = focus.z + Sin(fAlphaAngleLookAroundCam) * 3.0f;
+
+	if(fAlphaAngleLookAroundCam > DEGTORAD(89.5f)) fAlphaAngleLookAroundCam = DEGTORAD(89.5f);
+	else if(fAlphaAngleLookAroundCam < DEGTORAD(-89.5f)) fAlphaAngleLookAroundCam = DEGTORAD(-89.5f);
+
+	if(KEYDOWN('W'))
+		Speed += 0.1f;
+	else if(KEYDOWN('S'))
+		Speed -= 0.1f;
+	else
+		Speed = 0.0f;
+	if(Speed > 70.0f) Speed = 70.0f;
+	if(Speed < -70.0f) Speed = -70.0f;
+
+	if(KEYDOWN(rsRIGHT) || KEYDOWN('A'))
+		PanSpeedX += 0.1f;
+	else if(KEYDOWN(rsLEFT) || KEYDOWN('D'))
+		PanSpeedX -= 0.1f;
+	else
+		PanSpeedX = 0.0f;
+	if(PanSpeedX > 70.0f) PanSpeedX = 70.0f;
+	if(PanSpeedX < -70.0f) PanSpeedX = -70.0f;
+
+	if(KEYDOWN(rsUP))
+		PanSpeedY += 0.1f;
+	else if(KEYDOWN(rsDOWN))
+		PanSpeedY -= 0.1f;
+	else
+		PanSpeedY = 0.0f;
+	if(PanSpeedY > 70.0f) PanSpeedY = 70.0f;
+	if(PanSpeedY < -70.0f) PanSpeedY = -70.0f;
+
+	CVector camera_pt(
+		fDistanceLookAroundCam * Sin(fBetaAngleLookAroundCam) * Cos(fAlphaAngleLookAroundCam),
+		fDistanceLookAroundCam * Cos(fBetaAngleLookAroundCam) * Cos(fAlphaAngleLookAroundCam),
+		fDistanceLookAroundCam * Sin(fAlphaAngleLookAroundCam)
+	);
+	camera_pt += focus;
+	CVector forward = TargetCoors - camera_pt;
+	forward.Normalise();
+	CVector right = CrossProduct(CVector(0.0f, 0.0f, 1.0f), forward);
+	right.Normalise();
+	CVector up = CrossProduct(forward, right);
+	up.Normalise();
+	CVector source = camera_pt + forward * Speed + up * PanSpeedY + right * PanSpeedX;
+	CameraFocusX = source.x;
+	CameraFocusY = source.y;
+	CameraFocusZ = source.z;
+	TheCamera.GetForward() = forward;
+	TheCamera.GetUp() = up;
+	TheCamera.GetRight() = right;
+	TheCamera.SetPosition(source);
+	RwMatrix* pm = RwFrameGetMatrix(RwCameraGetFrame(TheCamera.m_pRwCamera));
+	pm->pos = TheCamera.GetPosition();
+	pm->at = TheCamera.GetForward();
+	pm->up = TheCamera.GetUp();
+	pm->right = TheCamera.GetRight();
+	TheCamera.CalculateDerivedValues();
+	RwMatrixUpdate(RwFrameGetMatrix(RwCameraGetFrame(TheCamera.m_pRwCamera)));
+	RwFrameUpdateObjects(RwCameraGetFrame(TheCamera.m_pRwCamera));
+}
+#endif
+
 bool CReplay::ShouldStandardCameraBeProcessed(void)
 {
 	if (Mode != MODE_PLAYBACK)
 		return true;
+#ifdef EX_REPLAY_CONTROL
+	if (bReplayControlEnabled)
+		return false;
+#endif
 	if (FramesActiveLookAroundCam || bPlayerInRCBuggy)
 		return false;
 	return FindPlayerVehicle() != nil;
@@ -1610,6 +1786,11 @@ size_t CReplay::FindSizeOfPacket(uint8 type)
 
 void CReplay::Display()
 {
+#ifdef EX_REPLAY_CONTROL // Removed the text "REPLAY"
+	if (bReplayControlEnabled)
+		return;
+#endif
+
 	static int TimeCount = 0;
 	if (Mode == MODE_RECORD)
 		return;

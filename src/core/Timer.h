@@ -18,6 +18,9 @@ class CTimer
 public:
 	static bool  m_UserPause;
 	static bool  m_CodePause;
+#ifdef EX_REPLAY_CONTROL
+	static bool	 m_PlaybackPause;
+#endif
 
 	static const float &GetTimeStep(void) { return ms_fTimeStep; }
 	static void SetTimeStep(float ts) { ms_fTimeStep = ts; }
@@ -45,6 +48,10 @@ public:
 	static bool GetIsUserPaused() { return m_UserPause; }
 	static bool GetIsCodePaused() { return m_CodePause; }
 	static void SetCodePause(bool pause) { m_CodePause = pause; }
+#ifdef EX_REPLAY_CONTROL
+	static bool GetIsPlaybackPaused() { return m_PlaybackPause; }
+	static void SetPlaybackPause(bool pause) { m_PlaybackPause = pause; }
+#endif
 	
 	static void Initialise(void);
 	static void Shutdown(void);

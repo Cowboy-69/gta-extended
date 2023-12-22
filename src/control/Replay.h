@@ -209,6 +209,11 @@ class CReplay
 	};
 	VALIDATE_SIZE(tVehicleUpdatePacket, 48);
 
+#ifdef EX_REPLAY_CONTROL
+public:
+	static bool bReplayControlEnabled;
+#endif
+
 private:
 	static uint8 Mode;
 	static CAddressInReplayBuffer Record;
@@ -324,6 +329,10 @@ private:
 	static void PlayReplayFromHD(void); // out of class in III PC and later because of SecuROM
 	static void FindFirstFocusCoordinate(CVector *coord);
 	static void ProcessLookAroundCam(void);
+#ifdef EX_REPLAY_CONTROL
+	static void FindFirstCameraMatrix(CMatrix* matrix);
+	static void ProcessControlCam(void);
+#endif
 	static size_t FindSizeOfPacket(uint8);
 #endif
 };

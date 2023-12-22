@@ -16,6 +16,9 @@ float CTimer::ms_fTimeStep;
 float CTimer::ms_fTimeStepNonClipped;
 bool  CTimer::m_UserPause;
 bool  CTimer::m_CodePause;
+#ifdef EX_REPLAY_CONTROL
+bool  CTimer::m_PlaybackPause;
+#endif
 #ifdef FIX_BUGS
 uint32 CTimer::m_LogicalFrameCounter;
 uint32 CTimer::m_LogicalFramesPassed;
@@ -46,6 +49,9 @@ void CTimer::Initialise(void)
 	suspendDepth = 0;
 	m_UserPause = false;
 	m_CodePause = false;
+#ifdef EX_REPLAY_CONTROL
+	m_PlaybackPause = false;
+#endif
 	m_snTimeInMillisecondsNonClipped = 0;
 	m_snPreviousTimeInMilliseconds = 0;
 	m_snTimeInMilliseconds = 1;

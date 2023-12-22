@@ -45,6 +45,9 @@
 #include "Population.h"
 #include "IniFile.h"
 #include "Zones.h"
+#ifdef EX_REPLAY_CONTROL
+#include "Replay.h"
+#endif
 
 #include "crossplatform.h"
 
@@ -1220,6 +1223,10 @@ extern bool gbRenderWorld2;
 		DebugMenuAddCmd("Game", "Toggle Comedy Controls", ToggleComedy);
 
 		DebugMenuAddVarBool8("Game", "Toggle popping heads on headshot", &CPed::bPopHeadsOnHeadshot, nil);
+
+#ifdef EX_REPLAY_CONTROL // Debug menu - bReplayControlEnabled
+		DebugMenuAddVarBool8("Game", "Replay control enable", &CReplay::bReplayControlEnabled, nil);
+#endif
 
 #ifdef MISSION_SWITCHER
 		DebugMenuEntry *missionEntry;

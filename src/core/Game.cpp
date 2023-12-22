@@ -1082,7 +1082,12 @@ void CGame::Process(void)
 		CSceneEdit::Update();
 #endif
 		CEventList::Update();
+#ifdef EX_REPLAY_CONTROL
+		if (!CReplay::bReplayControlEnabled || CReplay::bReplayControlEnabled && (!CReplay::IsPlayingBack() || CReplay::IsPlayingBack() && !CTimer::GetIsPlaybackPaused()))
+			CParticle::Update();
+#else
 		CParticle::Update();
+#endif
 		gFireManager.Update();
 		CPopulation::Update();
 		CWeapon::UpdateWeapons();
