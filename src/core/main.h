@@ -35,6 +35,10 @@ extern bool gbShowTimebars;
 extern bool gbPrintMemoryUsage;
 #endif
 
+#ifdef EX_GALLERY // New screenshot folder and numbering
+extern uint32 newScreenNumber;
+#endif
+
 class CSprite2d;
 
 bool DoRWStuffStartOfFrame(int16 TopRed, int16 TopGreen, int16 TopBlue, int16 BottomRed, int16 BottomGreen, int16 BottomBlue, int16 Alpha);
@@ -53,6 +57,9 @@ void ValidateVersion();
 void ResetLoadingScreenBar(void);
 #ifndef MASTER
 void TheModelViewer(void);
+#endif
+#ifdef EX_GALLERY // New screenshot folder and numbering
+void TakeAndSaveScreenshot();
 #endif
 
 #ifdef LOAD_INI_SETTINGS

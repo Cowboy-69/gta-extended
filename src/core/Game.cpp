@@ -93,6 +93,9 @@
 #ifdef MODLOADER
 #include "modloader.h"
 #endif
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
 
 eLevelName CGame::currLevel;
 bool CGame::bDemoMode = true;
@@ -1054,7 +1057,11 @@ void CGame::Process(void)
 	POP_MEMID();
 
 	CStreaming::Update();
+#ifdef EX_PHOTO_MODE // CGame::Process
+	if (!CTimer::GetIsPaused() && !CPhotoMode::IsPhotoModeEnabled())
+#else
 	if (!CTimer::GetIsPaused())
+#endif
 	{
 		CTheZones::Update();
 		CSprite2d::SetRecipNearClip();
@@ -1132,6 +1139,19 @@ void CGame::Process(void)
 			POP_MEMID();
 		}
 	}
+#ifdef EX_PHOTO_MODE // CGame::Process
+	else if (CPhotoMode::IsPhotoModeEnabled()) {
+		CPhotoMode::ProcessControl();
+		CWeather::Update();
+		CTimeCycle::Update();
+		CCullZones::Update();
+		CCoronas::DoSunAndMoon();
+		CCoronas::Update();
+		CShadows::UpdateStaticShadows();
+		CShadows::UpdatePermanentShadows();
+	}
+#endif
+
 #ifdef GTA_PS2
 	CMemCheck::DoTest();
 #endif

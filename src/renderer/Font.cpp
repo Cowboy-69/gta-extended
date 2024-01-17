@@ -9,6 +9,11 @@
 #ifdef MODLOADER // fonts.txd, fonts_p.txd, fonts_r.txd, fonts_j.txd
 #include "modloader.h"
 #endif
+#ifdef EX_PC_KEY_ICONS
+#include "string"
+#include "ControllerConfig.h"
+#include "Pad.h"
+#endif
 
 void
 AsciiToUnicode(const char *src, wchar *dst)
@@ -288,6 +293,12 @@ int CFont::PS2Symbol = BUTTON_NONE;
 int CFont::ButtonsSlot = -1;
 #endif // BUTTON_ICONS
 
+#ifdef EX_PC_KEY_ICONS
+CSprite2d CFont::PCKeySprite[MAX_PC_KEY_SPRITES];
+int CFont::PCSymbol = -1;
+int CFont::PCKeySlot = -1;
+#endif
+
 void
 CFont::Initialise(void)
 {
@@ -408,6 +419,10 @@ CFont::Initialise(void)
 	// loaded in CMenuManager with GAMEPAD_MENU defined
 	LoadButtons("MODELS/X360BTNS.TXD");
 #endif
+
+#ifdef EX_PC_KEY_ICONS // Load PCBTNS.TXD
+	LoadPCKeys("LibertyExtended/MODELS/PCBTNS.TXD");
+#endif
 }
 
 #ifdef BUTTON_ICONS
@@ -443,6 +458,10 @@ CFont::LoadButtons(const char* txdPath)
 		ButtonSprite[BUTTON_R1].SetTexture("r1");
 		ButtonSprite[BUTTON_R2].SetTexture("r2");
 		ButtonSprite[BUTTON_R3].SetTexture("r3");
+#ifdef EX_PHOTO_MODE // Button icons
+		ButtonSprite[BUTTON_LEFT_RIGHT].SetTexture("dlr");
+		ButtonSprite[BUTTON_UP_DOWN].SetTexture("dud");
+#endif
 		CTxdStore::PopCurrentTxd();
 	}
 	else {
@@ -455,6 +474,53 @@ CFont::LoadButtons(const char* txdPath)
 	}
 }
 #endif // BUTTON_ICONS
+
+#ifdef EX_PC_KEY_ICONS // LoadPCKeys
+void CFont::LoadPCKeys(const char* txdPath)
+{
+	if (int file = CFileMgr::OpenFile(txdPath)) {
+		CFileMgr::CloseFile(file);
+		if (PCKeySlot == -1)
+			PCKeySlot = CTxdStore::AddTxdSlot("pckeys");
+		else {
+			for (int i = 0; i < MAX_PC_KEY_SPRITES; i++)
+				PCKeySprite[i].Delete();
+			CTxdStore::RemoveTxd(PCKeySlot);
+		}
+		CTxdStore::LoadTxd(PCKeySlot, txdPath);
+		CTxdStore::AddRef(PCKeySlot);
+		CTxdStore::PushCurrentTxd();
+		CTxdStore::SetCurrentTxd(PCKeySlot);
+
+		// Virtual keys
+		for (int i = 1; i < 255; i++) {
+			if (i >= 65 && i <= 90) {
+				// letter
+				std::string keyString(1, i);
+				PCKeySprite[i - 1].SetTexture(keyString.c_str());
+			} else {
+				std::string keyString = std::to_string(i);
+				PCKeySprite[i - 1].SetTexture(keyString.c_str());
+			}
+		}
+
+		// Another sprites
+		PCKeySprite[SPRITE_MOUSE_WHEEL_UP].SetTexture("MWHU");
+		PCKeySprite[SPRITE_MOUSE_WHEEL_DOWN].SetTexture("MWHD");
+		PCKeySprite[SPRITE_MOUSE_WHEEL_UP_AND_DOWN].SetTexture("MWH");
+		PCKeySprite[SPRITE_MOUSE].SetTexture("Mouse");
+
+		CTxdStore::PopCurrentTxd();
+	} else {
+		if (PCKeySlot != -1) {
+			for (int i = 0; i < MAX_PC_KEY_SPRITES; i++)
+				PCKeySprite[i].Delete();
+			CTxdStore::RemoveTxdSlot(PCKeySlot);
+			PCKeySlot = -1;
+		}
+	}
+}
+#endif
 
 #ifdef MORE_LANGUAGES
 void
@@ -559,6 +625,14 @@ CFont::Shutdown(void)
 		ButtonsSlot = -1;
 	}
 #endif
+#ifdef EX_PC_KEY_ICONS // Shutdown
+	if (PCKeySlot != -1) {
+		for (int i = 0; i < MAX_PC_KEY_SPRITES; i++)
+			PCKeySprite[i].Delete();
+		CTxdStore::RemoveTxdSlot(PCKeySlot);
+		PCKeySlot = -1;
+	}
+#endif
 	Sprite[0].Delete();
 	Sprite[1].Delete();
 	Sprite[2].Delete();
@@ -606,8 +680,43 @@ CFont::DrawButton(float x, float y)
 		int vertexAlphaState;
 		RwRenderStateGet(rwRENDERSTATEVERTEXALPHAENABLE, &vertexAlphaState);
 		RwRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, (void *)TRUE);
+#ifdef EX_PHOTO_MODE // We always apply filtering to gamepad button textures
+		int textureFilterState;
+		RwRenderStateGet(rwRENDERSTATETEXTUREFILTER, &textureFilterState);
+		RwRenderStateSet(rwRENDERSTATETEXTUREFILTER, (void*)rwFILTERLINEAR);
+#endif
 		ButtonSprite[PS2Symbol].Draw(rect, CRGBA(255, 255, 255, Details.color.a));
 		RwRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, (void *)vertexAlphaState);
+#ifdef EX_PHOTO_MODE // We always apply filtering to gamepad button textures
+		RwRenderStateSet(rwRENDERSTATETEXTUREFILTER, (void*)textureFilterState);
+#endif
+	}
+}
+#endif
+
+#ifdef EX_PC_KEY_ICONS // DrawPCKey
+void CFont::DrawPCKey(float x, float y)
+{
+	if (x <= 0.0f || x > SCREEN_WIDTH || y <= 0.0f || y > SCREEN_HEIGHT)
+		return;
+
+	if (PCSymbol != -1) {
+		CRect rect;
+		float charOffsetMultiplier = (float)PCKeySprite[PCSymbol].m_pTexture->raster->width / (float)PCKeySprite[PCSymbol].m_pTexture->raster->height;
+		rect.left = x;
+		rect.top = Details.scaleY + Details.scaleY + y;
+		rect.right = Details.scaleY * (17.0f * charOffsetMultiplier) + x;
+		rect.bottom = Details.scaleY * 19.0f + y;
+
+		int vertexAlphaState;
+		int textureFilterState;
+		RwRenderStateGet(rwRENDERSTATEVERTEXALPHAENABLE, &vertexAlphaState);
+		RwRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, (void *)TRUE);
+		RwRenderStateGet(rwRENDERSTATETEXTUREFILTER, &textureFilterState);
+		RwRenderStateSet(rwRENDERSTATETEXTUREFILTER, (void *)rwFILTERLINEAR); // We always apply filtering to PC key textures
+		PCKeySprite[PCSymbol].Draw(rect, CRGBA(255, 255, 255, Details.color.a));
+		RwRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, (void *)vertexAlphaState);
+		RwRenderStateSet(rwRENDERSTATETEXTUREFILTER, (void *)textureFilterState);
 	}
 }
 #endif
@@ -1142,6 +1251,16 @@ CFont::PrintString(float x, float y, wchar *start, wchar *&end, float spwidth, f
 		if (Details.slant != 0.0f && !IsJapanese())
 			y = (Details.slantRefX - x) * Details.slant + Details.slantRefY;
 
+#ifdef EX_PC_KEY_ICONS // PrintString
+		if (PCSymbol != -1) {
+			DrawPCKey(x, y);
+			float charOffsetMultiplier = (float)PCKeySprite[PCSymbol].m_pTexture->raster->width / (float)PCKeySprite[PCSymbol].m_pTexture->raster->height;
+			x += Details.scaleY * (17.0f * charOffsetMultiplier);
+			PCSymbol = -1;
+			PS2Symbol = -1;
+		}
+#endif
+
 #ifdef BUTTON_ICONS
 		if (PS2Symbol != BUTTON_NONE) {
 			DrawButton(x, y);
@@ -1490,6 +1609,11 @@ CFont::ParseToken(wchar *s, wchar* ss, bool japShit)
 		case 'C': PS2Symbol = BUTTON_R3; break;
 #endif
 		}
+
+#ifdef EX_PC_KEY_ICONS // ParseToken
+		if (PS2Symbol != -1 && !CPad::IsAffectedByController)
+			PCSymbol = ControlsManager.GetCurrentPCKeyFromCurrentAction();
+#endif
 	} else if (IsJapanese()) {
 		if ((*s & 0x7FFF) == 'N' || (*s & 0x7FFF) == 'n')
 			NewLine = true;

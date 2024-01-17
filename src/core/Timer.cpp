@@ -5,6 +5,9 @@
 #include "DMAudio.h"
 #include "Record.h"
 #include "Timer.h"
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
 
 uint32 CTimer::m_snTimeInMilliseconds;
 uint32 CTimer::m_snTimeInMillisecondsPauseMode = 1;
@@ -148,6 +151,10 @@ void CTimer::Update(void)
 															 
 	if ( GetIsPaused() )
 		ms_fTimeStep = 0.0f;
+#ifdef EX_PHOTO_MODE // CTimer::Update
+	else if (CPhotoMode::IsPhotoModeEnabled())
+		ms_fTimeStep = frameTime / 1000.0f * 50.0f;
+#endif
 	else
 	{
 		m_snTimeInMilliseconds += uint32(frameTimeFractionScaled);

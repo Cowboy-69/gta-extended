@@ -39,6 +39,9 @@
 #ifdef MODLOADER
 #include "modloader.h"
 #endif
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
 
 bool CStreaming::ms_disableStreaming;
 bool CStreaming::ms_bLoadingBigModel;
@@ -350,6 +353,11 @@ CStreaming::Update(void)
 #endif
 		){
 		StreamVehiclesAndPeds();
+#ifdef EX_PHOTO_MODE // StreamZoneModels depends on the camera position
+		if (CPhotoMode::IsPhotoModeEnabled())
+			StreamZoneModels(CPhotoMode::GetCameraPosition());
+		else
+#endif
 		StreamZoneModels(FindPlayerCoors());
 	}
 

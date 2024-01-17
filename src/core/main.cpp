@@ -78,6 +78,9 @@
 #ifdef MODLOADER
 #include "modloader.h"
 #endif
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
 
 GlobalScene Scene;
 
@@ -117,6 +120,9 @@ float NumberOfChunksLoaded;
 bool g_SlowMode = false;
 char version_name[64];
 
+#ifdef EX_GALLERY // New screenshot folder and numbering
+uint32 newScreenNumber = 0;
+#endif
 
 void GameInit(void);
 void SystemInit(void);
@@ -378,6 +384,31 @@ RwGrabScreen(RwCamera *camera, RwChar *filename)
 	return result;
 }
 
+#ifdef EX_GALLERY // New screenshot folder and numbering (thanks to Shagg_E)
+void TakeAndSaveScreenshot() {
+	char s[48 + 17];
+	char numberFinal[255];
+	char numberFinal2[255];
+
+	sprintf(numberFinal, "%i", newScreenNumber);
+
+	int8 digitsQuantity = (unsigned)strlen(numberFinal);
+	if (5 > digitsQuantity) {
+		for (int i = digitsQuantity; i < 5; i++) {
+			sprintf(numberFinal2, "0%s", numberFinal); // to prevent 4th digit bug it's better to split this stuff to two different chars
+			strcpy(numberFinal, numberFinal2); // to prevent 4th digit bug it's better to split this stuff to two different chars
+		}
+	}
+	strcpy(s, "LibertyExtended\\userfiles\\Gallery\\photo_");
+	strcat(s, numberFinal);
+	strcat(s, ".png");
+
+	newScreenNumber++;
+
+	RwGrabScreen(Scene.camera, s);
+}
+#endif
+
 #define TILE_WIDTH 576
 #define TILE_HEIGHT 432
 
@@ -405,8 +436,12 @@ DoRWStuffEndOfFrame(void)
 	}
 #else
 	if (CPad::GetPad(1)->GetLeftShockJustDown() || CPad::GetPad(0)->GetFJustDown(11)) {
+#ifdef EX_GALLERY // New screenshot folder and numbering
+		TakeAndSaveScreenshot();
+#else
 		sprintf(s, "screen_%011lld.png", time(nil));
 		RwGrabScreen(Scene.camera, s);
+#endif
 	}
 #endif
 #endif // !MASTER
@@ -1512,7 +1547,11 @@ Render2dStuff(void)
 		firstPersonWeapon = true;
 
 	// Draw black border for sniper and rocket launcher
+#ifdef EX_PHOTO_MODE // Don't draw black border for sniper and rocket launcher during photo mode
+	if(!CPhotoMode::IsPhotoModeEnabled() && ((weaponType == WEAPONTYPE_SNIPERRIFLE || weaponType == WEAPONTYPE_ROCKETLAUNCHER) && firstPersonWeapon)){
+#else
 	if((weaponType == WEAPONTYPE_SNIPERRIFLE || weaponType == WEAPONTYPE_ROCKETLAUNCHER) && firstPersonWeapon){
+#endif
 		CRGBA black(0, 0, 0, 255);
 
 		// top and bottom strips
@@ -1533,9 +1572,15 @@ Render2dStuff(void)
 #ifdef GTA_SCENE_EDIT
 	if(CSceneEdit::m_bEditOn)
 		CSceneEdit::Draw();
+	else {
+#endif
+#ifdef EX_PHOTO_MODE // Render2dStuff
+	if (CPhotoMode::IsPhotoModeEnabled())
+		CPhotoMode::DrawMenuAndEffects();
 	else
 #endif
 		CHud::Draw();
+	}
 	CUserDisplay::OnscnTimer.ProcessForDisplay();
 	CMessages::Display();
 	CDarkel::DrawMessages();

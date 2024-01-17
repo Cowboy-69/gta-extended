@@ -15,6 +15,9 @@
 #include "Particle.h"
 #include "soundlist.h"
 #include "debugmenu.h"
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
 
 
 #define MAX_PARTICLES_ON_SCREEN   (1000)
@@ -808,7 +811,11 @@ CParticle *CParticle::AddParticle(tParticleType type, CVector const &vecPos, CVe
 
 CParticle *CParticle::AddParticle(tParticleType type, CVector const &vecPos, CVector const &vecDir, CEntity *pEntity, float fSize, RwRGBA const &color, int32 nRotationSpeed, int32 nRotation, int32 nCurFrame, int32 nLifeSpan)
 {
+#ifdef EX_PHOTO_MODE // Particles stop being created in photo mode except for the muzzle flash
+	if ( CTimer::GetIsPaused() || CPhotoMode::IsPhotoModeEnabled() && type != PARTICLE_GUNFLASH_NOANIM)
+#else
 	if ( CTimer::GetIsPaused() )
+#endif
 		return NULL;
 
 #ifdef PC_PARTICLE

@@ -85,9 +85,26 @@ enum
 	BUTTON_R1,
 	BUTTON_R2,
 	BUTTON_R3,
+#ifdef EX_PHOTO_MODE // Button icons
+	BUTTON_LEFT_RIGHT,
+	BUTTON_UP_DOWN,
+#endif
 	MAX_BUTTON_ICONS
 };
 #endif // BUTTON_ICONS
+
+#ifdef EX_PC_KEY_ICONS
+enum
+{
+	// MAX_VIRTUAL_KEYS = 254,
+
+	SPRITE_MOUSE_WHEEL_UP = 254 + 1,
+	SPRITE_MOUSE_WHEEL_DOWN,
+	SPRITE_MOUSE_WHEEL_UP_AND_DOWN,
+	SPRITE_MOUSE,
+	MAX_PC_KEY_SPRITES,
+};
+#endif
 
 
 class CFont
@@ -113,6 +130,14 @@ public:
 	static void DrawButton(float x, float y);
 #endif // BUTTON_ICONS
 
+#ifdef EX_PC_KEY_ICONS
+	static int32 PCKeySlot;
+	static CSprite2d PCKeySprite[MAX_PC_KEY_SPRITES];
+	static int PCSymbol;
+
+	static void LoadPCKeys(const char* txdPath);
+	static void DrawPCKey(float x, float y);
+#endif
 
 	static void Initialise(void);
 	static void Shutdown(void);

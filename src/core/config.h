@@ -102,6 +102,12 @@
 		#define EX_MELEE_ATTACK_ON_VEHICLES // from reVC
 	#endif
 
+	#define EX_PC_KEY_ICONS
+	#define EX_GALLERY
+	#if defined EX_PC_KEY_ICONS && defined EX_GALLERY
+		#define EX_PHOTO_MODE
+	#endif
+
 	#define EX_EXPERIMENTAL
 	#ifdef EX_EXPERIMENTAL
 		#define EX_REPLAY_CONTROL

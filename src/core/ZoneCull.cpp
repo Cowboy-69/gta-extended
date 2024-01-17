@@ -18,6 +18,9 @@
 #ifdef MODLOADER
 #include "modloader.h"
 #endif
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
 
 int32     CCullZones::NumCullZones;
 CCullZone CCullZones::aZones[NUMCULLZONES];
@@ -294,6 +297,11 @@ CCullZones::Update(void)
 void
 CCullZones::ForceCullZoneCoors(CVector coors)
 {
+#ifdef EX_PHOTO_MODE // ForceCullZoneCoors depends on the camera position
+	if (CPhotoMode::IsPhotoModeEnabled())
+		coors = CPhotoMode::GetCameraPosition();
+#endif
+
 	int32 z;
 	z = FindCullZoneForCoors(coors);
 	if(z != OldCullZone){

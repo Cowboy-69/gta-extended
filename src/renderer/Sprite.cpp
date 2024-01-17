@@ -9,6 +9,10 @@
 #include "Frontend.h"
 #endif
 
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
+
 float CSprite::m_f2DNearScreenZ;
 float CSprite::m_f2DFarScreenZ;
 float CSprite::m_fRecipNearClipPlane;
@@ -28,7 +32,11 @@ CSprite::CalcScreenCoors(const RwV3d &in, RwV3d *out, float *outw, float *outh, 
 {
 	CVector viewvec = TheCamera.m_viewMatrix * in;
 	*out = viewvec;
+#ifdef EX_PHOTO_MODE // Near clip plane of sprites reduced during photo mode
+	if(out->z <= !CPhotoMode::IsPhotoModeEnabled() && CDraw::GetNearClipZ() + 1.0f) return false;
+#else
 	if(out->z <= CDraw::GetNearClipZ() + 1.0f) return false;
+#endif
 	if(out->z >= CDraw::GetFarClipZ() && farclip) return false;
 	float recip = 1.0f/out->z;
 	out->x *= SCREEN_WIDTH * recip;

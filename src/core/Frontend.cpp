@@ -37,6 +37,9 @@
 #ifdef MODLOADER // frontend.txd, menu.txd
 #include "modloader.h"
 #endif
+#ifdef EX_PHOTO_MODE // Photo mode button in pause menu
+#include "PhotoMode.h"
+#endif
 
 // Game has colors inlined in code.
 // For easier modification we collect them here:
@@ -1942,6 +1945,11 @@ CMenuManager::Draw()
 				if (i == m_nCurrOption && itemsAreSelectable){
 					CFont::SetColor(CRGBA(SELECTEDMENUOPTION_COLOR.r, SELECTEDMENUOPTION_COLOR.g, SELECTEDMENUOPTION_COLOR.b, FadeIn(255)));
 				} else {
+#ifdef EX_PHOTO_MODE // Black Exit game button
+					if (m_nCurrScreen == MENUPAGE_PAUSE_MENU && !strcmp(aScreens[m_nCurrScreen].m_aEntries[i].m_EntryName, "FEM_QT"))
+						CFont::SetColor(CRGBA(0, 0, 0, FadeIn(255)));
+					else
+#endif
 					CFont::SetColor(CRGBA(MENUOPTION_COLOR.r, MENUOPTION_COLOR.g, MENUOPTION_COLOR.b, FadeIn(255)));
 				}
 			}
@@ -4747,8 +4755,17 @@ CMenuManager::Process(void)
 	InitialiseChangedLanguageSettings();
 
 	// Just a hack by R* to not make game continuously resume/pause. But we it seems we can live with it.
+#if defined EX_PHOTO_MODE && !defined DEBUG // Exit photo mode by pressing the button
+	if (CPad::GetPad(0)->GetEscapeJustDown() || CPad::GetPad(0)->GetCircleJustUp()) {
+		if (CPhotoMode::IsPhotoModeEnabled())
+			CPhotoMode::DisablePhotoMode();
+		else
+			RequestFrontEndStartUp();
+	}
+#else
 	if (CPad::GetPad(0)->GetEscapeJustDown())
 		RequestFrontEndStartUp();
+#endif
 
 	SwitchMenuOnAndOff();
 
@@ -5903,6 +5920,10 @@ CMenuManager::ProcessButtonPresses(void)
 					RetryMission(MISSION_RETRY_TYPE_BEGIN_RESTARTING);
 					return;
 #endif
+#ifdef EX_PHOTO_MODE // Photo mode button in pause menu
+				case MENUACTION_PHOTO_MODE:
+					goBack = true;
+#endif
 #ifdef CUSTOM_FRONTEND_OPTIONS
 				case MENUACTION_CFO_SELECT:
 				case MENUACTION_CFO_DYNAMIC:
@@ -5953,6 +5974,16 @@ CMenuManager::ProcessButtonPresses(void)
 				}
 				RequestFrontEndShutDown();
 			}
+
+#ifdef EX_PHOTO_MODE // Photo mode button in pause menu
+			if (!CPad::GetPad(0)->GetEscapeJustDown() && (aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action == MENUACTION_PHOTO_MODE ||
+				CPhotoMode::IsPhotoModeEnabled() && aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action != MENUACTION_RESUME)) {
+
+				CPhotoMode::EnablePhotoMode();
+			} else {
+				CPhotoMode::DisablePhotoMode();
+			}
+#endif
 
 			// We're already resuming, we don't need further processing.
 #if defined(FIX_BUGS) || defined(PS2_LIKE_MENU)

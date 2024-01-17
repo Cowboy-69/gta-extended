@@ -886,6 +886,9 @@ CMenuScreenCustom aScreens[MENUPAGES] = {
 	   // CMenuManager::LoadAllTextures will add map here, if MENU_MAP enabled and map textures are found
 	   MENUACTION_CHANGEMENU,	"FEP_STA",	{ nil, SAVESLOT_NONE, MENUPAGE_STATS },
 	   MENUACTION_CHANGEMENU,	"FEP_BRI",	{ nil, SAVESLOT_NONE, MENUPAGE_BRIEFS },
+#ifdef EX_PHOTO_MODE // Photo mode button in pause menu
+	   MENUACTION_PHOTO_MODE,	"FEM_PHT",	{ nil, SAVESLOT_NONE, MENUPAGE_PHOTO_MODE },
+#endif
 	   MENUACTION_CHANGEMENU,	"FET_OPT",	{ nil, SAVESLOT_NONE, MENUPAGE_OPTIONS },
 	   MENUACTION_CHANGEMENU,	"FEM_QT",	{ nil, SAVESLOT_NONE, MENUPAGE_EXIT },
    },

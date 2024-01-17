@@ -2786,6 +2786,10 @@ const char *NintendoSwitchButtons[][MAX_CONTROLLERACTIONS] =
     CONTROLLER_BUTTONS("~T~", "~O~", "~X~", "~Q~", "~K~", "~M~", "~A~", "~J~", "~V~", "~C~", "BACK");
 #endif
 
+#ifdef EX_PC_KEY_ICONS
+const char* KeyboardKeys[][MAX_CONTROLLERACTIONS] = CONTROLLER_BUTTONS("~T~", "~O~", "~X~", "~Q~", "~K~", "~M~", "~A~", "~J~", "~V~", "~C~", "BACK");
+#endif
+
 #undef CONTROLLER_BUTTONS
 #undef VFB
 
@@ -2835,6 +2839,20 @@ void CControllerConfigManager::GetWideStringOfCommandKeys(uint16 action, wchar *
 
 		assert(Buttons[CPad::GetPad(0)->Mode][action] != nil); // we cannot use these
 		AsciiToUnicode(Buttons[CPad::GetPad(0)->Mode][action], wstr);
+
+		CMessages::WideStringCopy(text, wstr, leight);
+		return;
+	}
+#endif
+
+#ifdef EX_PC_KEY_ICONS // GetWideStringOfCommandKeys
+	if (CFont::PCKeySlot != -1) {
+		wchar wstr[16];
+
+		const char* (*PCKeys)[MAX_CONTROLLERACTIONS] = KeyboardKeys;
+
+		assert(PCKeys[CPad::GetPad(0)->Mode][action] != nil);
+		AsciiToUnicode(PCKeys[CPad::GetPad(0)->Mode][action], wstr);
 
 		CMessages::WideStringCopy(text, wstr, leight);
 		return;
@@ -3016,3 +3034,77 @@ void CControllerConfigManager::ResetSettingOrder(e_ControllerAction action)
 		}
 	}
 }
+
+#ifdef EX_PC_KEY_ICONS
+int CControllerConfigManager::GetControllerSettingNonJoystick(e_ControllerAction action)
+{
+	for (int i = KEYBOARD; i < MAX_CONTROLLERTYPES; i++) {
+		if (i == JOYSTICK)
+			continue;
+
+		int key = GetControllerKeyAssociatedWithAction(action, (eControllerType)i);
+
+		if (key == 0 || key == rsNULL)
+			continue;
+
+		return key;
+	}
+
+	return -1;
+}
+
+int CControllerConfigManager::GetCurrentPCKeyFromCurrentAction()
+{
+	int key = GetControllerSettingNonJoystick((e_ControllerAction(m_curActionInMessage)));
+
+	if (key == -1)
+		return -1;
+
+	int symbol = -1;
+
+	if (key <= rsMOUSEX2BUTTON) {
+		// Mouse
+		switch (key)
+		{
+			case rsMOUSELEFTBUTTON:
+				symbol = 0;
+				break;
+			case rsMOUSERIGHTBUTTON:
+				symbol = 1;
+				break;
+			case rsMOUSMIDDLEBUTTON:
+				symbol = 3;
+				break;
+			case rsMOUSEWHEELUPBUTTON:
+				symbol = SPRITE_MOUSE_WHEEL_UP;
+				break;
+			case rsMOUSEWHEELDOWNBUTTON:
+				symbol = SPRITE_MOUSE_WHEEL_DOWN;
+				break;
+			case rsMOUSEX1BUTTON:
+				symbol = 4;
+				break;
+			case rsMOUSEX2BUTTON:
+				symbol = 5;
+				break;
+		}
+	} else {
+		for (int i = 3; i < 255; i++) {
+			RsKeyCodes keyCode;
+
+			_InputTranslateKey(&keyCode, 0x1000000, i);
+
+			if (keyCode == rsNULL || keyCode == 0)
+				_InputTranslateShiftKey(&keyCode, i, false);
+
+			if (key != keyCode)
+				_InputTranslateKey(&keyCode, 0, i);
+
+			if (key == keyCode)
+				symbol = i - 1;
+		}
+	}
+
+	return symbol;
+}
+#endif

@@ -259,6 +259,9 @@ enum eMenuScreen
 #ifdef EX_FIRST_PERSON // Menu
 	MENUPAGE_FIRST_PERSON,
 #endif
+#ifdef EX_PHOTO_MODE // Photo mode button in pause menu
+	MENUPAGE_PHOTO_MODE,
+#endif
 	MENUPAGE_UNK, // originally 58. Custom screens are inserted above, because last screen in CMenuScreens should always be empty to make CFO work
 	MENUPAGES
 
@@ -412,6 +415,9 @@ enum eMenuAction
 #ifdef EX_FIRST_PERSON // Menu
 	MENUACTION_FOV_FP,
 	MENUACTION_AUTOCENTER_IN_VEHICLE_FP,
+#endif
+#ifdef EX_PHOTO_MODE // Photo mode button in pause menu
+	MENUACTION_PHOTO_MODE,
 #endif
 //#ifdef ANISOTROPIC_FILTERING
 //	MENUACTION_MIPMAPS,
