@@ -1430,10 +1430,18 @@ CTheScripts::SwitchToMission(int32 mission)
 	int handle = OpenScript();
 #else
 	CFileMgr::ChangeDir("\\");
+#ifdef LIBERTY_EX // LibertyExtended folder - scm
+#ifdef MODLOADER // main.scm
+	int handle = ModLoader_MainScm("LibertyExtended\\data\\main.scm", "rb");
+#else
+	int handle = CFileMgr::OpenFile("LibertyExtended\\data\\main.scm", "rb");
+#endif
+#else
 #ifdef MODLOADER // main.scm
 	int handle = ModLoader_MainScm("data\\main.scm", "rb");
 #else
 	int handle = CFileMgr::OpenFile("data\\main.scm", "rb");
+#endif
 #endif
 #endif
 	CFileMgr::Seek(handle, offset, 0);

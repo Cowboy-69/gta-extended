@@ -507,6 +507,15 @@ int CTheScripts::OpenScript()
 {
 	CFileMgr::ChangeDir("\\");
 	switch (ScriptToLoad) {
+#ifdef LIBERTY_EX // LibertyExtended folder - scm
+#ifdef MODLOADER // main.scm
+	case 0: return ModLoader_MainScm("LibertyExtended\\data\\main.scm", "rb");
+#else
+	case 0: return CFileMgr::OpenFile("LibertyExtended\\data\\main.scm", "rb");
+#endif
+	case 1: return CFileMgr::OpenFile("LibertyExtended\\data\\main_freeroam.scm", "rb");
+	case 2: return CFileMgr::OpenFile("LibertyExtended\\data\\main_d.scm", "rb");
+#else
 #ifdef MODLOADER // main.scm
 	case 0: return ModLoader_MainScm("data\\main.scm", "rb");
 #else
@@ -514,11 +523,20 @@ int CTheScripts::OpenScript()
 #endif
 	case 1: return CFileMgr::OpenFile("data\\main_freeroam.scm", "rb");
 	case 2: return CFileMgr::OpenFile("data\\main_d.scm", "rb");
+#endif
 	}
+#ifdef LIBERTY_EX // LibertyExtended folder - scm
+#ifdef MODLOADER // main.scm
+	return ModLoader_MainScm("LibertyExtended\\data\\main.scm", "rb");
+#else
+	return CFileMgr::OpenFile("LibertyExtended\\data\\main.scm", "rb");
+#endif
+#else
 #ifdef MODLOADER // main.scm
 	return ModLoader_MainScm("data\\main.scm", "rb");
 #else
 	return CFileMgr::OpenFile("data\\main.scm", "rb");
+#endif
 #endif
 }
 #endif
@@ -544,8 +562,21 @@ void CTheScripts::Init()
 
 	int mainf = OpenScript();
 #else
+#ifdef LIBERTY_EX // LibertyExtended folder - scm
+	CFileMgr::ChangeDir("\\");
+#ifdef MODLOADER // main.scm
+	int mainf = ModLoader_MainScm("LibertyExtended\\data\\main.scm", "rb");
+#else
+	int mainf = CFileMgr::OpenFile("LibertyExtended\\data\\main.scm", "rb");
+#endif
+#else
 	CFileMgr::SetDir("data");
+#ifdef MODLOADER // main.scm
+	int mainf = ModLoader_MainScm("main.scm", "rb");
+#else
 	int mainf = CFileMgr::OpenFile("main.scm", "rb");
+#endif
+#endif
 #endif
 	CFileMgr::Read(mainf, (char*)ScriptSpace, SIZE_MAIN_SCRIPT);
 	CFileMgr::CloseFile(mainf);
