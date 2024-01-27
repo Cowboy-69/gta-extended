@@ -199,11 +199,19 @@ void CControllerConfigManager::LoadSettings(int32 file)
 
 void CControllerConfigManager::InitDefaultControlConfiguration()
 {
+#ifdef EX_CONTROL // InitDefaultControlConfiguration - Swap bindings
+	SetControllerKeyAssociatedWithAction    (VEHICLE_LOOKLEFT,                    'Q',	      KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_LOOKLEFT,                    rsPADEND,	  OPTIONAL_EXTRA);
+										    						              
+	SetControllerKeyAssociatedWithAction    (VEHICLE_LOOKRIGHT,                   'E',		  KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_LOOKRIGHT,                   rsPADDOWN,  OPTIONAL_EXTRA);
+#else
 	SetControllerKeyAssociatedWithAction    (VEHICLE_LOOKLEFT,                    rsPADEND,   KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (VEHICLE_LOOKLEFT,                    'Q',        OPTIONAL_EXTRA);
 										    						              
 	SetControllerKeyAssociatedWithAction    (VEHICLE_LOOKRIGHT,                   rsPADDOWN,  KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (VEHICLE_LOOKRIGHT,                   'E',        OPTIONAL_EXTRA);
+#endif
 																              
 	if ( _dwOperatingSystemVersion == OS_WIN98 )											              
 		SetControllerKeyAssociatedWithAction(VEHICLE_HORN,                        rsSHIFT,    OPTIONAL_EXTRA); // BUG: must be KEYBOARD ?											              
@@ -212,7 +220,38 @@ void CControllerConfigManager::InitDefaultControlConfiguration()
 		SetControllerKeyAssociatedWithAction(VEHICLE_HORN,                        rsLSHIFT,   OPTIONAL_EXTRA);
 		SetControllerKeyAssociatedWithAction(VEHICLE_HORN,                        rsRSHIFT,   KEYBOARD);
 	}													              
-																	              
+									          
+#ifdef EX_CONTROL // InitDefaultControlConfiguration - Swap bindings
+	SetControllerKeyAssociatedWithAction    (VEHICLE_HANDBRAKE,                   ' ',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_HANDBRAKE,                   rsRCTRL,    OPTIONAL_EXTRA);
+															                      
+	SetControllerKeyAssociatedWithAction    (VEHICLE_ENTER_EXIT,                  'F',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_ENTER_EXIT,                  rsENTER,    OPTIONAL_EXTRA);
+										    					                  
+	SetControllerKeyAssociatedWithAction    (VEHICLE_ACCELERATE,                  'W',	      KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_ACCELERATE,                  rsUP,       OPTIONAL_EXTRA);
+																		          
+	SetControllerKeyAssociatedWithAction    (VEHICLE_CHANGE_RADIO_STATION,        'R',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_CHANGE_RADIO_STATION,        rsINS,      OPTIONAL_EXTRA);
+																		          
+	SetControllerKeyAssociatedWithAction    (VEHICLE_BRAKE,                       'S',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_BRAKE,                       rsDOWN,     OPTIONAL_EXTRA);
+																		          
+	SetControllerKeyAssociatedWithAction    (TOGGLE_SUBMISSIONS,                  rsPLUS,     KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (TOGGLE_SUBMISSIONS,                  rsCAPSLK,   OPTIONAL_EXTRA);
+
+	SetControllerKeyAssociatedWithAction    (GO_LEFT,                             'A',		  KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (GO_LEFT,                             rsLEFT,     OPTIONAL_EXTRA);
+																		          
+	SetControllerKeyAssociatedWithAction    (GO_RIGHT,                            'D',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (GO_RIGHT,                            rsRIGHT,    OPTIONAL_EXTRA);
+																		          
+	SetControllerKeyAssociatedWithAction    (GO_FORWARD,                          'W',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (GO_FORWARD,                          rsUP,       OPTIONAL_EXTRA);
+																		          
+	SetControllerKeyAssociatedWithAction    (GO_BACK,                             'S',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (GO_BACK,                             rsDOWN,     OPTIONAL_EXTRA);
+#else
 	SetControllerKeyAssociatedWithAction    (VEHICLE_HANDBRAKE,                   rsRCTRL,    KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (VEHICLE_HANDBRAKE,                   ' ',        OPTIONAL_EXTRA);
 															                      
@@ -242,6 +281,7 @@ void CControllerConfigManager::InitDefaultControlConfiguration()
 																		          
 	SetControllerKeyAssociatedWithAction    (GO_BACK,                             rsDOWN,     KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (GO_BACK,                             'S',        OPTIONAL_EXTRA);
+#endif
 																		          
 	SetControllerKeyAssociatedWithAction    (PED_LOOKBEHIND,                      rsPADEND,   KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (PED_LOOKBEHIND,                      rsCAPSLK,   OPTIONAL_EXTRA);
@@ -265,8 +305,13 @@ void CControllerConfigManager::InitDefaultControlConfiguration()
 																		          
 	SetControllerKeyAssociatedWithAction    (PED_LOCK_TARGET,                     rsDEL,      KEYBOARD);
 																		          
+#ifdef EX_CONTROL // InitDefaultControlConfiguration - Swap bindings
+	SetControllerKeyAssociatedWithAction    (PED_JUMPING,                         ' ',		  KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (PED_JUMPING,                         rsRCTRL,    OPTIONAL_EXTRA);
+#else
 	SetControllerKeyAssociatedWithAction    (PED_JUMPING,                         rsRCTRL,    KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (PED_JUMPING,                         ' ',        OPTIONAL_EXTRA);
+#endif
 																              
 	if ( _dwOperatingSystemVersion == OS_WIN98 )											              
 		SetControllerKeyAssociatedWithAction(PED_SPRINT,                          rsSHIFT,    OPTIONAL_EXTRA); // BUG: must be KEYBOARD ?											              
@@ -286,11 +331,19 @@ void CControllerConfigManager::InitDefaultControlConfiguration()
 																			      
 	SetControllerKeyAssociatedWithAction    (PED_CENTER_CAMERA_BEHIND_PLAYER,     '#',        KEYBOARD);
 	
+#ifdef EX_CONTROL // InitDefaultControlConfiguration - Swap bindings
+	SetControllerKeyAssociatedWithAction    (PED_SNIPER_ZOOM_IN,                  'Z',		  KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (PED_SNIPER_ZOOM_IN,                  rsPGUP,     OPTIONAL_EXTRA);
+										    
+	SetControllerKeyAssociatedWithAction    (PED_SNIPER_ZOOM_OUT,                 'X',		  KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (PED_SNIPER_ZOOM_OUT,                 rsPGDN,     OPTIONAL_EXTRA);
+#else
 	SetControllerKeyAssociatedWithAction    (PED_SNIPER_ZOOM_IN,                  rsPGUP,     KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (PED_SNIPER_ZOOM_IN,                  'Z',        OPTIONAL_EXTRA);
 										    
 	SetControllerKeyAssociatedWithAction    (PED_SNIPER_ZOOM_OUT,                 rsPGDN,     KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (PED_SNIPER_ZOOM_OUT,                 'X',        OPTIONAL_EXTRA);
+#endif
 										    
 	SetControllerKeyAssociatedWithAction    (PED_1RST_PERSON_LOOK_LEFT,           rsPADLEFT,  KEYBOARD);
 
