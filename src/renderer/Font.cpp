@@ -458,9 +458,10 @@ CFont::LoadButtons(const char* txdPath)
 		ButtonSprite[BUTTON_R1].SetTexture("r1");
 		ButtonSprite[BUTTON_R2].SetTexture("r2");
 		ButtonSprite[BUTTON_R3].SetTexture("r3");
-#ifdef EX_PHOTO_MODE // Button icons
+#ifdef EX_MORE_BUTTON_ICONS
 		ButtonSprite[BUTTON_LEFT_RIGHT].SetTexture("dlr");
 		ButtonSprite[BUTTON_UP_DOWN].SetTexture("dud");
+		ButtonSprite[BUTTON_SELECT].SetTexture("select");
 #endif
 		CTxdStore::PopCurrentTxd();
 	}
@@ -1607,6 +1608,9 @@ CFont::ParseToken(wchar *s, wchar* ss, bool japShit)
 		case 'J': PS2Symbol = BUTTON_R1; break;
 		case 'V': PS2Symbol = BUTTON_R2; break;
 		case 'C': PS2Symbol = BUTTON_R3; break;
+#ifdef EX_MORE_BUTTON_ICONS
+		case 'S': PS2Symbol = BUTTON_SELECT; break;
+#endif
 #endif
 		}
 

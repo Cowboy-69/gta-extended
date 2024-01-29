@@ -23,6 +23,12 @@
 #ifdef MODLOADER // hud.txd
 #include "modloader.h"
 #endif
+#ifdef EX_PC_KEY_ICONS
+#include "ControllerConfig.h"
+#endif
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
 
 #ifdef PS2_HUD
 #define MONEY_X 100.0f
@@ -311,6 +317,11 @@ void CHud::SetZoneName(wchar *name)
 void CHud::SetHelpMessage(wchar *message, bool quick)
 {
 	if (!CReplay::IsPlayingBack()) {
+#ifdef EX_PC_KEY_ICONS // Clear actions in the message
+		ControlsManager.m_curFirstActionInMessage = -1;
+		ControlsManager.m_curSecondActionInMessage = -1;
+#endif
+
 		CMessages::WideStringCopy(m_HelpMessage, message, HELP_MSG_LENGTH);
 		CMessages::InsertPlayerControlKeysInString(m_HelpMessage);
 
@@ -1382,6 +1393,11 @@ void CHud::Draw()
 
 void CHud::DrawAfterFade()
 {
+#ifdef EX_PHOTO_MODE // Don't draw DrawAfterFade stuff during photo mode
+	if (CPhotoMode::IsPhotoModeEnabled())
+		return;
+#endif
+
 	if (CTimer::GetIsUserPaused() || CReplay::IsPlayingBack())
 		return;
 

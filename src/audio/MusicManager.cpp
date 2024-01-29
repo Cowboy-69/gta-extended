@@ -14,6 +14,9 @@
 #include "Timer.h"
 #include "World.h"
 #include "sampman.h"
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
 
 #if !defined FIX_BUGS && (defined RADIO_SCROLL_TO_PREV_STATION || defined RADIO_OFF_TEXT)
 static_assert(false, "RADIO_SCROLL_TO_PREV_STATION and RADIO_OFF_TEXT won't work correctly without FIX_BUGS");
@@ -75,6 +78,11 @@ cMusicManager::PlayerInCar()
 void
 cMusicManager::DisplayRadioStationName()
 {
+#ifdef EX_PHOTO_MODE // Don't draw a radio station name during photo mode
+	if (CPhotoMode::IsPhotoModeEnabled())
+		return;
+#endif
+
 	int8 pRetune;
 	int8 gStreamedSound;
 	int8 gRetuneCounter;

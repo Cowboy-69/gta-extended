@@ -2798,7 +2798,40 @@ int32 CControllerConfigManager::GetNumOfSettingsForAction(e_ControllerAction act
 	     nil,    /* SHOW_MOUSE_POINTER_TOGGLE */                                                                                                               \
 	 }}
 
+#ifdef EX_MORE_BUTTON_ICONS
+const char *XboxButtons_noIcons[][MAX_CONTROLLERACTIONS] = CONTROLLER_BUTTONS("Y", "B", "A", "X", "LB", "LT", "LS", "RB", "RT", "RS", "BACK");
 
+#ifdef BUTTON_ICONS
+const char *XboxButtons[][MAX_CONTROLLERACTIONS] = CONTROLLER_BUTTONS("~T~", "~O~", "~X~", "~Q~", "~K~", "~M~", "~A~", "~J~", "~V~", "~C~", "~S~");
+#endif
+
+
+#define PS2_TRIANGLE "TRIANGLE"
+#define PS2_CIRCLE "CIRCLE"
+#define PS2_CROSS "CROSS"
+#define PS2_SQUARE "SQUARE"
+
+const char *PlayStationButtons_noIcons[][MAX_CONTROLLERACTIONS] =
+    CONTROLLER_BUTTONS(PS2_TRIANGLE, PS2_CIRCLE, PS2_CROSS, PS2_SQUARE, "L1", "L2", "L3", "R1", "R2", "R3", "SELECT");
+
+#ifdef BUTTON_ICONS
+const char *PlayStationButtons[][MAX_CONTROLLERACTIONS] =
+    CONTROLLER_BUTTONS("~T~", "~O~", "~X~", "~Q~", "~K~", "~M~", "~A~", "~J~", "~V~", "~C~", "~S~");
+#endif
+
+#undef PS2_TRIANGLE
+#undef PS2_CIRCLE
+#undef PS2_CROSS
+#undef PS2_SQUARE
+
+const char *NintendoSwitchButtons_noIcons[][MAX_CONTROLLERACTIONS] =
+    CONTROLLER_BUTTONS("Y", "A", "B", "X", "L", "ZL", "LS", "R", "ZR", "RS", "BACK");
+
+#ifdef BUTTON_ICONS
+const char *NintendoSwitchButtons[][MAX_CONTROLLERACTIONS] =
+    CONTROLLER_BUTTONS("~T~", "~O~", "~X~", "~Q~", "~K~", "~M~", "~A~", "~J~", "~V~", "~C~", "~S~");
+#endif
+#else
 const char *XboxButtons_noIcons[][MAX_CONTROLLERACTIONS] = CONTROLLER_BUTTONS("Y", "B", "A", "X", "LB", "LT", "LS", "RB", "RT", "RS", "BACK");
 
 #ifdef BUTTON_ICONS
@@ -2838,9 +2871,10 @@ const char *NintendoSwitchButtons_noIcons[][MAX_CONTROLLERACTIONS] =
 const char *NintendoSwitchButtons[][MAX_CONTROLLERACTIONS] =
     CONTROLLER_BUTTONS("~T~", "~O~", "~X~", "~Q~", "~K~", "~M~", "~A~", "~J~", "~V~", "~C~", "BACK");
 #endif
+#endif
 
 #ifdef EX_PC_KEY_ICONS
-const char* KeyboardKeys[][MAX_CONTROLLERACTIONS] = CONTROLLER_BUTTONS("~T~", "~O~", "~X~", "~Q~", "~K~", "~M~", "~A~", "~J~", "~V~", "~C~", "BACK");
+const char* KeyboardKeys[][MAX_CONTROLLERACTIONS] = CONTROLLER_BUTTONS("~T~", "~O~", "~X~", "~Q~", "~K~", "~M~", "~A~", "~J~", "~V~", "~C~", "~S~");
 #endif
 
 #undef CONTROLLER_BUTTONS
@@ -3108,7 +3142,19 @@ int CControllerConfigManager::GetControllerSettingNonJoystick(e_ControllerAction
 
 int CControllerConfigManager::GetCurrentPCKeyFromCurrentAction()
 {
-	int key = GetControllerSettingNonJoystick((e_ControllerAction(m_curActionInMessage)));
+	static bool bSecondAction = false;
+
+	int key = -1;
+
+	if (bSecondAction)
+		key = GetControllerSettingNonJoystick((e_ControllerAction(m_curSecondActionInMessage)));
+	else
+		key = GetControllerSettingNonJoystick((e_ControllerAction(m_curFirstActionInMessage)));
+
+	if (m_curSecondActionInMessage == -1)
+		bSecondAction = false;
+	else
+		bSecondAction = !bSecondAction;
 
 	if (key == -1)
 		return -1;

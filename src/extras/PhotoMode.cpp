@@ -106,7 +106,6 @@ void CPhotoMode::EnablePhotoMode()
 
 	bCharacterVisibility = true;
 
-	CAnimBlendAssociation* second;
 	animID = -1;
 	animFrame = 0.0f;
 	weaponID = WEAPONTYPE_UNARMED;
@@ -839,21 +838,21 @@ void CPhotoMode::ProcessCamera()
 	if (!bMenuOpen && (pad->GetRightMouse() || pad->IsAffectedByController)) {
 		if (KEYDOWN('W') || pad->IsAffectedByController && pad->GetDPadUp()) {
 			if (pad->GetLeftShift() || pad->IsAffectedByController && pad->GetLeftShoulder1())
-				cameraFOV -= 2.0f;
+				cameraFOV -= 2.0f * CTimer::GetTimeStepFix();
 			else if (pad->GetLeftCtrl() || pad->IsAffectedByController && pad->GetRightShoulder1())
-				cameraFOV -= 0.25f;
+				cameraFOV -= 0.25f * CTimer::GetTimeStepFix();
 			else
-				cameraFOV -= 1.0f;
+				cameraFOV -= 1.0f * CTimer::GetTimeStepFix();
 
 			if (cameraFOV <= 10.0f)
 				cameraFOV = 10.0f;
 		} else if (KEYDOWN('S') || pad->IsAffectedByController && pad->GetDPadDown()) {
 			if (pad->GetLeftShift() || pad->IsAffectedByController && pad->GetLeftShoulder1())
-				cameraFOV += 2.0f;
+				cameraFOV += 2.0f * CTimer::GetTimeStepFix();
 			else if (pad->GetLeftCtrl() || pad->IsAffectedByController && pad->GetRightShoulder1())
-				cameraFOV += 0.25f;
+				cameraFOV += 0.25f * CTimer::GetTimeStepFix();
 			else
-				cameraFOV += 1.0f;
+				cameraFOV += 1.0f * CTimer::GetTimeStepFix();
 
 			if (cameraFOV >= 120.0f)
 				cameraFOV = 120.0f;
@@ -861,21 +860,21 @@ void CPhotoMode::ProcessCamera()
 
 		if (KEYDOWN('A') || pad->IsAffectedByController && pad->GetDPadLeft()) {
 			if (pad->GetLeftShift() || pad->IsAffectedByController && pad->GetLeftShoulder1())
-				cameraTilt -= 0.04f;
+				cameraTilt -= 0.04f * CTimer::GetTimeStepFix();
 			else if (pad->GetLeftCtrl() || pad->IsAffectedByController && pad->GetRightShoulder1())
-				cameraTilt -= 0.005f;
+				cameraTilt -= 0.005f * CTimer::GetTimeStepFix();
 			else
-				cameraTilt -= 0.02f;
+				cameraTilt -= 0.02f * CTimer::GetTimeStepFix();
 
 			if (cameraTilt <= -2.0f)
 				cameraTilt = -2.0f;
 		} else if (KEYDOWN('D') || pad->IsAffectedByController && pad->GetDPadRight()) {
 			if (pad->GetLeftShift() || pad->IsAffectedByController && pad->GetLeftShoulder1())
-				cameraTilt += 0.04f;
+				cameraTilt += 0.04f * CTimer::GetTimeStepFix();
 			else if (pad->GetLeftCtrl() || pad->IsAffectedByController && pad->GetRightShoulder1())
-				cameraTilt += 0.005f;
+				cameraTilt += 0.005f * CTimer::GetTimeStepFix();
 			else
-				cameraTilt += 0.02f;
+				cameraTilt += 0.02f * CTimer::GetTimeStepFix();
 
 			if (cameraTilt >= 2.0f)
 				cameraTilt = 2.0f;
@@ -943,15 +942,15 @@ void CPhotoMode::ProcessCamera()
 		PanSpeedY = 0.0f;
 	} else {
 		if (pad->IsAffectedByController) {
-			float SpeedMultiplier = 0.001f;
+			float SpeedMultiplier = 0.0015f;
 			if (pad->GetLeftShoulder1())
-				SpeedMultiplier = 0.005f;
+				SpeedMultiplier = 0.0075f;
 			else if (pad->GetRightShoulder1())
-				SpeedMultiplier = 0.0003f;
+				SpeedMultiplier = 0.00045f;
 
-			Speed = -pad->GetLeftStickY() * SpeedMultiplier * CTimer::GetTimeStep();
+			Speed = -pad->GetLeftStickY() * SpeedMultiplier * CTimer::GetTimeStepFix();
 
-			PanSpeedX = -pad->GetLeftStickX() * SpeedMultiplier * CTimer::GetTimeStep();
+			PanSpeedX = -pad->GetLeftStickX() * SpeedMultiplier * CTimer::GetTimeStepFix();
 
 			PanSpeedY = -pad->NewState.LeftShoulder2 / 255.0f * 0.25f + pad->NewState.RightShoulder2 / 255.0f * 0.25f;
 		} else {
@@ -962,23 +961,23 @@ void CPhotoMode::ProcessCamera()
 				SpeedMultiplier = 0.005f;
 
 			if (KEYDOWN('W') && !pad->GetRightMouse())
-				Speed += 1.0f * SpeedMultiplier * CTimer::GetTimeStep();
+				Speed += 1.0f * SpeedMultiplier * CTimer::GetTimeStepFix();
 			else if (KEYDOWN('S') && !pad->GetRightMouse())
-				Speed += -1.0f * SpeedMultiplier * CTimer::GetTimeStep();
+				Speed += -1.0f * SpeedMultiplier * CTimer::GetTimeStepFix();
 			else
 				Speed = 0.0f;
 
 			if (KEYDOWN('A') && !pad->GetRightMouse())
-				PanSpeedX += 1.0f * SpeedMultiplier * CTimer::GetTimeStep();
+				PanSpeedX += 1.0f * SpeedMultiplier * CTimer::GetTimeStepFix();
 			else if (KEYDOWN('D') && !pad->GetRightMouse())
-				PanSpeedX += -1.0f * SpeedMultiplier * CTimer::GetTimeStep();
+				PanSpeedX += -1.0f * SpeedMultiplier * CTimer::GetTimeStepFix();
 			else
 				PanSpeedX = 0.0f;
 
 			if (KEYDOWN('Q') && !pad->GetRightMouse())
-				PanSpeedY += -1.0f * SpeedMultiplier * CTimer::GetTimeStep();
+				PanSpeedY += -1.0f * SpeedMultiplier * CTimer::GetTimeStepFix();
 			else if (KEYDOWN('E') && !pad->GetRightMouse())
-				PanSpeedY += 1.0f * SpeedMultiplier * CTimer::GetTimeStep();
+				PanSpeedY += 1.0f * SpeedMultiplier * CTimer::GetTimeStepFix();
 			else
 				PanSpeedY = 0.0f;
 		}
@@ -1932,12 +1931,6 @@ void CPhotoMode::InitFakePlayer()
 	fakePlayer->GetMatrix().UpdateRW();
 	fakePlayer->UpdateRwFrame();
 	CWorld::Add(fakePlayer);
-
-	/*CAnimBlendAssociation* currentAnim = RpAnimBlendClumpGetFirstAssociation(fakePlayer->GetClump());
-	if (currentAnim) {
-		currentAnim->blendDelta = -4000.0f;
-		RpAnimBlendClumpUpdateAnimations(fakePlayer->GetClump(), CTimer::GetTimeStepInSeconds());
-	}*/
 
 	AssocGroupId assocGroup = animList[animID] == ANIM_STD_WALK || animList[animID] == ANIM_STD_RUN || animList[animID] == ANIM_STD_RUNFAST ? ASSOCGRP_PLAYER : ASSOCGRP_STD;
 	CAnimBlendAssociation* playerAnim = CAnimManager::AddAnimation(fakePlayer->GetClump(), assocGroup, (AnimationId)animList[animID]);

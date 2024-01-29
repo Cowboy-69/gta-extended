@@ -4756,11 +4756,13 @@ CMenuManager::Process(void)
 
 	// Just a hack by R* to not make game continuously resume/pause. But we it seems we can live with it.
 #if defined EX_PHOTO_MODE && !defined DEBUG // Exit photo mode by pressing the button
-	if (CPad::GetPad(0)->GetEscapeJustDown() || CPad::GetPad(0)->GetCircleJustUp()) {
+	if (CPad::GetPad(0)->GetEscapeJustDown()) {
 		if (CPhotoMode::IsPhotoModeEnabled())
 			CPhotoMode::DisablePhotoMode();
 		else
 			RequestFrontEndStartUp();
+	} else if (CPhotoMode::IsPhotoModeEnabled() && CPad::GetPad(0)->IsAffectedByController && CPad::GetPad(0)->GetCircleJustUp()) {
+		CPhotoMode::DisablePhotoMode();
 	}
 #else
 	if (CPad::GetPad(0)->GetEscapeJustDown())

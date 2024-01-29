@@ -88,6 +88,8 @@
 		#define EX_CAN_SHUT_DOWN_CAR // Vehicles are muted when the exit button is held down
 		#define EX_AIMING
 		#define EX_FIRST_PERSON
+		#define EX_MORE_BUTTON_ICONS
+		#define EX_PC_KEY_ICONS
 	#endif
 
 	#if defined EX_VEHICLE && defined EX_SECOND_SAMPLE_BANK
@@ -102,10 +104,12 @@
 		#define EX_MELEE_ATTACK_ON_VEHICLES // from reVC
 	#endif
 
-	#define EX_PC_KEY_ICONS
-	#define EX_GALLERY
-	#if defined EX_PC_KEY_ICONS && defined EX_GALLERY
+	#if defined EX_PC_KEY_ICONS && defined EX_MORE_BUTTON_ICONS
 		#define EX_PHOTO_MODE
+	#endif
+
+	#if defined EX_PHOTO_MODE
+		#define EX_GALLERY
 	#endif
 
 	#define EX_EXPERIMENTAL

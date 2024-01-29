@@ -152,7 +152,8 @@ public:
 	bool                  m_bMouseAssociated;
 
 #ifdef EX_PC_KEY_ICONS
-	int					  m_curActionInMessage;
+	int					  m_curFirstActionInMessage;
+	int					  m_curSecondActionInMessage;
 #endif
 
 #ifdef LOAD_INI_SETTINGS
