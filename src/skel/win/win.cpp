@@ -887,6 +887,9 @@ void _psSelectScreenVM(RwInt32 videoMode)
 {
 	RwTexDictionarySetCurrent( nil );
 	
+#ifdef EX_RADIO_ICONS // Unload radio textures
+	FrontEndMenuManager.UnloadRadioTextures();
+#endif
 	FrontEndMenuManager.UnloadTextures();
 	
 	if ( !_psSetVideoMode(RwEngineGetCurrentSubSystem(), videoMode) )
@@ -2605,8 +2608,12 @@ WinMain(HINSTANCE instance,
 		if ( !(FrontEndMenuManager.m_bWantToRestart || TheMemoryCard.b_FoundRecentSavedGameWantToLoad))
 			break;
 #else
-		if ( !FrontEndMenuManager.m_bWantToRestart )
+		if ( !FrontEndMenuManager.m_bWantToRestart ) {
+#ifdef EX_RADIO_ICONS // Unload radio textures
+			FrontEndMenuManager.UnloadRadioTextures();
+#endif
 			break;
+		}
 #endif
 		
 #ifdef EX_PHOTO_MODE // Disabling photo mode when starting a new game or loading a game save

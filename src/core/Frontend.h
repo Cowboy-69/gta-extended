@@ -4,6 +4,9 @@
 #else
 
 #include "Sprite2d.h"
+#ifdef EX_RADIO_ICONS
+#include "DMAudio.h"
+#endif
 
 #ifdef PS2_LIKE_MENU
 #define MENUHEADER_POS_X 50.0f
@@ -700,6 +703,9 @@ public:
 	bool m_bSpritesLoaded;
 	CSprite2d m_aFrontEndSprites[NUM_FE_SPRITES];
 	CSprite2d m_aMenuSprites[NUM_MENU_SPRITES];
+#ifdef EX_RADIO_ICONS
+	CSprite2d m_aFrontEndRadioSprites[NUM_RADIOS + 1];
+#endif
  int32 field_518;
 	int32 m_nMenuFadeAlpha;
 	bool m_bPressedPgUpOnList;
@@ -904,6 +910,9 @@ public:
 	float StretchY(float);
 	void SwitchMenuOnAndOff();
 	void UnloadTextures();
+#ifdef EX_RADIO_ICONS
+	void UnloadRadioTextures();
+#endif
 	void WaitForUserCD();
 	void PrintController();
 	int GetNumOptionsCntrlConfigScreens();

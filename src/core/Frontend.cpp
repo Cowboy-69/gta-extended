@@ -13,7 +13,9 @@
 #include "RwHelper.h"
 #include "Timer.h"
 #include "Game.h"
+#ifndef EX_RADIO_ICONS
 #include "DMAudio.h"
+#endif
 #include "FileMgr.h"
 #include "Streaming.h"
 #include "TxdStore.h"
@@ -320,6 +322,22 @@ const char* MenuFilenames[][2] = {
 	{"gta3logo256", "gta3logo256m"},
 	{ nil, nil }
 };
+
+#ifdef EX_RADIO_ICONS
+const char* FrontendRadioFilenames[][2] = {
+	{"headradio", "" },
+	{"doubleclef", "" },
+	{"kjah", "" },
+	{"rise", "" },
+	{"lips", "" },
+	{"game", "" },
+	{"msx", "" },
+	{"flashback", "" },
+	{"chatterbox", "" },
+	{"mp3logo", ""},
+	{"none", ""},
+};
+#endif
 
 #define MENU_X_RIGHT_ALIGNED(x) SCALE_AND_CENTER_X(DEFAULT_SCREEN_WIDTH - (x))
 
@@ -2075,6 +2093,20 @@ CMenuManager::Draw()
 
 			// Radio icons
 			if (aScreens[m_nCurrScreen].m_aEntries[i].m_Action == MENUACTION_RADIO) {
+#ifdef EX_RADIO_ICONS // Draw radio icons in the menu
+				ProcessRadioIcon(m_aFrontEndRadioSprites[HEAD_RADIO], MENU_X_LEFT_ALIGNED(30.0f), MENU_Y(nextYToUse), 0, HOVEROPTION_RADIO_0);
+				ProcessRadioIcon(m_aFrontEndRadioSprites[DOUBLE_CLEF], MENU_X_LEFT_ALIGNED(90.0f), MENU_Y(nextYToUse), 1, HOVEROPTION_RADIO_1);
+				ProcessRadioIcon(m_aFrontEndRadioSprites[JAH_RADIO], MENU_X_LEFT_ALIGNED(150.0f), MENU_Y(nextYToUse), 2, HOVEROPTION_RADIO_2);
+				ProcessRadioIcon(m_aFrontEndRadioSprites[RISE_FM], MENU_X_LEFT_ALIGNED(210.0f), MENU_Y(nextYToUse), 3, HOVEROPTION_RADIO_3);
+				ProcessRadioIcon(m_aFrontEndRadioSprites[LIPS_106], MENU_X_LEFT_ALIGNED(270.0f), MENU_Y(nextYToUse), 4, HOVEROPTION_RADIO_4);
+				ProcessRadioIcon(m_aFrontEndRadioSprites[GAME_FM], MENU_X_LEFT_ALIGNED(320.0f), MENU_Y(nextYToUse), 5, HOVEROPTION_RADIO_5);
+				ProcessRadioIcon(m_aFrontEndRadioSprites[MSX_FM], MENU_X_LEFT_ALIGNED(360.0f), MENU_Y(nextYToUse), 6, HOVEROPTION_RADIO_6);
+				ProcessRadioIcon(m_aFrontEndRadioSprites[FLASHBACK], MENU_X_LEFT_ALIGNED(420.0f), MENU_Y(nextYToUse), 7, HOVEROPTION_RADIO_7);
+				ProcessRadioIcon(m_aFrontEndRadioSprites[CHATTERBOX], MENU_X_LEFT_ALIGNED(480.0f), MENU_Y(nextYToUse), 8, HOVEROPTION_RADIO_8);
+
+				if (DMAudio.IsMP3RadioChannelAvailable())
+					ProcessRadioIcon(m_aFrontEndRadioSprites[9], MENU_X_LEFT_ALIGNED(540.0f), MENU_Y(nextYToUse), 9, HOVEROPTION_RADIO_9);
+#else
 				ProcessRadioIcon(m_aFrontEndSprites[FE_RADIO1], MENU_X_LEFT_ALIGNED(30.0f), MENU_Y(nextYToUse), 0, HOVEROPTION_RADIO_0);
 				ProcessRadioIcon(m_aFrontEndSprites[FE_RADIO2], MENU_X_LEFT_ALIGNED(90.0f), MENU_Y(nextYToUse), 1, HOVEROPTION_RADIO_1);
 				ProcessRadioIcon(m_aFrontEndSprites[FE_RADIO5], MENU_X_LEFT_ALIGNED(150.0f), MENU_Y(nextYToUse), 2, HOVEROPTION_RADIO_2);
@@ -2087,6 +2119,7 @@ CMenuManager::Draw()
 
 				if (DMAudio.IsMP3RadioChannelAvailable())
 					ProcessRadioIcon(m_aMenuSprites[MENUSPRITE_MP3LOGO], MENU_X_LEFT_ALIGNED(540.0f), MENU_Y(nextYToUse), 9, HOVEROPTION_RADIO_9);
+#endif
 
 				nextYToUse += 70.0f;
 			}
@@ -4233,6 +4266,31 @@ CMenuManager::LoadAllTextures()
 		m_aMenuSprites[i].SetTexture(MenuFilenames[i][0], MenuFilenames[i][1]);
 		m_aMenuSprites[i].SetAddressing(rwTEXTUREADDRESSBORDER);
 	}
+
+#ifdef EX_RADIO_ICONS // LoadAllTextures
+	CStreaming::MakeSpaceFor(350 * CDSTREAM_SECTOR_SIZE); // twice of it in mobile
+	CStreaming::ImGonnaUseStreamingMemory();
+	CGame::TidyUpMemory(false, true);
+	CTxdStore::PushCurrentTxd();
+	int radioFrontendTxdSlot = CTxdStore::FindTxdSlot("radio");
+
+	if (radioFrontendTxdSlot == -1)
+		radioFrontendTxdSlot = CTxdStore::AddTxdSlot("radio");
+
+	printf("LOAD radio\n");
+	CTxdStore::LoadTxd(radioFrontendTxdSlot, "LIBERTYEXTENDED/MODELS/RADIO.TXD");
+	CTxdStore::AddRef(radioFrontendTxdSlot);
+	CTxdStore::SetCurrentTxd(radioFrontendTxdSlot);
+
+	for (int i = 0; i < NUM_RADIOS + 1; i++) {
+		m_aFrontEndRadioSprites[i].SetTexture(FrontendRadioFilenames[i][0], FrontendRadioFilenames[i][1]);
+		m_aFrontEndRadioSprites[i].SetAddressing(rwTEXTUREADDRESSBORDER);
+	}
+
+	CTxdStore::PopCurrentTxd();
+	CStreaming::IHaveUsedStreamingMemory();
+#endif
+
 #ifdef MENU_MAP
 	static bool menuOptionAdded = false;
 	for (int i = 0; i < ARRAY_SIZE(MapFilenames); i++) {
@@ -6553,6 +6611,17 @@ CMenuManager::SwitchMenuOnAndOff()
 	m_bStartUpFrontEndRequested = false;
 	m_bShutDownFrontEndRequested = false;
 }
+
+#ifdef EX_RADIO_ICONS
+void CMenuManager::UnloadRadioTextures()
+{
+	int radioFrontend = CTxdStore::FindTxdSlot("radio");
+	for (int i = 0; i < NUM_RADIOS + 1; ++i)
+		m_aFrontEndRadioSprites[i].Delete();
+
+	CTxdStore::RemoveTxd(radioFrontend);
+}
+#endif
 
 void
 CMenuManager::UnloadTextures()
