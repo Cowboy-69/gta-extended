@@ -282,18 +282,26 @@ void CControllerConfigManager::InitDefaultControlConfiguration()
 	SetControllerKeyAssociatedWithAction    (GO_BACK,                             rsDOWN,     KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (GO_BACK,                             'S',        OPTIONAL_EXTRA);
 #endif
-																		          
-	SetControllerKeyAssociatedWithAction    (PED_LOOKBEHIND,                      rsPADEND,   KEYBOARD);
-	SetControllerKeyAssociatedWithAction    (PED_LOOKBEHIND,                      rsCAPSLK,   OPTIONAL_EXTRA);
-																		          
-	SetControllerKeyAssociatedWithAction    (PED_FIREWEAPON,                      rsPADINS,   KEYBOARD);
-	SetControllerKeyAssociatedWithAction    (PED_FIREWEAPON,                      rsLCTRL,    OPTIONAL_EXTRA);
+				
+#ifdef EX_CONTROL // InitDefaultControlConfiguration
+	SetControllerKeyAssociatedWithAction    (PED_LOOKBEHIND,                      'C',	      KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (PED_LOOKBEHIND,                      rsCAPSLK,	  OPTIONAL_EXTRA);
+
+#ifdef BIND_VEHICLE_FIREWEAPON
+	SetControllerKeyAssociatedWithAction    (VEHICLE_FIREWEAPON,                  rsLCTRL,    KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_FIREWEAPON,                  rsPADINS,   OPTIONAL_EXTRA);
+#endif
+#else
 #ifdef BIND_VEHICLE_FIREWEAPON
 	SetControllerKeyAssociatedWithAction    (VEHICLE_FIREWEAPON,                  rsPADINS,   KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (VEHICLE_FIREWEAPON,                  rsLCTRL,    OPTIONAL_EXTRA);
 #endif
 
-#ifdef EX_CONTROL // Default weapon switch to Q and E for the keyboard
+	SetControllerKeyAssociatedWithAction    (PED_FIREWEAPON,                      rsPADINS,   KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (PED_FIREWEAPON,                      rsLCTRL,    OPTIONAL_EXTRA);
+#endif
+
+#ifdef EX_CONTROL // InitDefaultControlConfiguration - Default weapon switch to Q and E for the keyboard
 	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_LEFT,               'Q',		  KEYBOARD);
 
 	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_RIGHT,              'E',		  OPTIONAL_EXTRA);
@@ -302,8 +310,10 @@ void CControllerConfigManager::InitDefaultControlConfiguration()
 
 	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_RIGHT,              rsPADENTER, OPTIONAL_EXTRA); // BUG: must be KEYBOARD ?
 #endif
-																		          
+						
+#ifndef EX_CONTROL // InitDefaultControlConfiguration
 	SetControllerKeyAssociatedWithAction    (PED_LOCK_TARGET,                     rsDEL,      KEYBOARD);
+#endif
 																		          
 #ifdef EX_CONTROL // InitDefaultControlConfiguration - Swap bindings
 	SetControllerKeyAssociatedWithAction    (PED_JUMPING,                         ' ',		  KEYBOARD);
@@ -364,8 +374,10 @@ void CControllerConfigManager::InitDefaultControlConfiguration()
 	SetControllerKeyAssociatedWithAction    (CAMERA_CHANGE_VIEW_ALL_SITUATIONS,   rsHOME,     KEYBOARD);
 
 #ifdef EX_CONTROL // InitDefaultControlConfiguration
-	SetControllerKeyAssociatedWithAction    (CAMERA_CHANGE_VIEW_ALL_SITUATIONS,   'V',        OPTIONAL_EXTRA);
+	SetControllerKeyAssociatedWithAction    (CAMERA_CHANGE_VIEW_ALL_SITUATIONS,   'V',		  KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (CAMERA_CHANGE_VIEW_ALL_SITUATIONS,   rsHOME,     OPTIONAL_EXTRA);
 #else
+	SetControllerKeyAssociatedWithAction    (CAMERA_CHANGE_VIEW_ALL_SITUATIONS,   rsHOME,     KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (CAMERA_CHANGE_VIEW_ALL_SITUATIONS,   'C',        OPTIONAL_EXTRA);
 #endif
 
