@@ -4325,6 +4325,9 @@ const char* controllerTypesPaths[] = {
 	"LibertyExtended/MODELS/FRONTEND_X360.TXD",
 	"LibertyExtended/MODELS/FRONTEND_XONE.TXD",
 	"LibertyExtended/MODELS/FRONTEND_NSW.TXD",
+#ifdef EX_MORE_GAMEPAD_CONTROLLERS // Icon
+	"LibertyExtended/MODELS/FRONTEND_DS5.TXD",
+#endif
 #else
 	"MODELS/FRONTEND_DS3.TXD",
 	"MODELS/FRONTEND_DS4.TXD",
@@ -4340,6 +4343,27 @@ CMenuManager::LoadController(int8 type)
 	switch (type)
 	{
 #ifdef LIBERTY_EX // LibertyExtended folder - Gamepad buttons
+#ifdef EX_MORE_GAMEPAD_CONTROLLERS
+	case CONTROLLER_DUALSHOCK2:
+	case CONTROLLER_DUALSHOCK3:
+		CFont::LoadButtons("LibertyExtended/MODELS/PS3BTNS.TXD");
+		break;
+	case CONTROLLER_DUALSHOCK4:
+		CFont::LoadButtons("LibertyExtended/MODELS/ps4btns.TXD");
+		break;
+	case CONTROLLER_XBOXONE:
+		CFont::LoadButtons("LibertyExtended/MODELS/x1btns.TXD");
+		break;
+	case CONTROLLER_NINTENDO_SWITCH:
+		CFont::LoadButtons("LibertyExtended/MODELS/NSWBTNS.TXD");
+		break;
+	case CONTROLLER_DUALSENSE:
+		CFont::LoadButtons("LibertyExtended/MODELS/ps5btns.TXD");
+		break;
+	default:
+		CFont::LoadButtons("LibertyExtended/MODELS/X360BTNS.TXD");
+		break;
+#else
 	case CONTROLLER_DUALSHOCK2:
 	case CONTROLLER_DUALSHOCK3:
 	case CONTROLLER_DUALSHOCK4:
@@ -4351,6 +4375,7 @@ CMenuManager::LoadController(int8 type)
 	default:
 		CFont::LoadButtons("LibertyExtended/MODELS/X360BTNS.TXD");
 		break;
+#endif
 #else
 	case CONTROLLER_DUALSHOCK2:
 	case CONTROLLER_DUALSHOCK3:

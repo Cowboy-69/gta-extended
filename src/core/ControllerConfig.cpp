@@ -2907,6 +2907,9 @@ void CControllerConfigManager::GetWideStringOfCommandKeys(uint16 action, wchar *
 		case CMenuManager::CONTROLLER_DUALSHOCK2:
 		case CMenuManager::CONTROLLER_DUALSHOCK3:
 		case CMenuManager::CONTROLLER_DUALSHOCK4:
+#ifdef EX_MORE_GAMEPAD_CONTROLLERS
+		case CMenuManager::CONTROLLER_DUALSENSE:
+#endif
 			Buttons = CFont::ButtonsSlot != -1 ? PlayStationButtons : PlayStationButtons_noIcons;
 			break;
 		case CMenuManager::CONTROLLER_NINTENDO_SWITCH:

@@ -91,6 +91,7 @@
 		#define EX_FIRST_PERSON
 		#define EX_MORE_BUTTON_ICONS
 		#define EX_PC_KEY_ICONS
+		#define EX_MORE_GAMEPAD_CONTROLLERS
 	#endif
 
 	#if defined EX_VEHICLE && defined EX_SECOND_SAMPLE_BANK
