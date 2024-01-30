@@ -351,6 +351,9 @@ extern bool bMilitaryFiringFromTankAtPlayer;
 extern bool bDisableBulletTraces;
 extern bool bRemoveLightCubesFromCars;
 extern CRGBA WaypointColor;
+#ifdef EX_DISTANT_LIGHTS
+extern bool bEnableDistantLights;
+#endif
 #endif
 
 #define DEBUGBREAK() __debugbreak();

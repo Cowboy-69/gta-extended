@@ -1143,6 +1143,29 @@ void CGame::Process(void)
 	else if (CPhotoMode::IsPhotoModeEnabled()) {
 		CPhotoMode::ProcessControl();
 		CWeather::Update();
+
+#ifdef EX_DISTANT_LIGHTS // IsPhotoModeEnabled
+		if (bEnableDistantLights) {
+			for (int i = CPools::GetDummyPool()->GetSize() - 1; i >= 0; i--) {
+				CDummy* entity = CPools::GetDummyPool()->GetSlot(i);
+
+				if (!entity)
+					continue;
+
+				entity->ProcessDistantLights();
+			}
+
+			for (int i = CPools::GetBuildingPool()->GetSize() - 1; i >= 0; i--) {
+				CBuilding* entity = CPools::GetBuildingPool()->GetSlot(i);
+
+				if (!entity)
+					continue;
+
+				entity->ProcessDistantLights();
+			}
+		}
+#endif
+
 		CTimeCycle::Update();
 		CCullZones::Update();
 		CCoronas::DoSunAndMoon();

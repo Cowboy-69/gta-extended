@@ -82,7 +82,7 @@
 
 	#ifdef EX_CONTROL
 		#define EX_VIBRATION // For gamepad
-		#define EX_GPS
+		#define EX_GPS // thank https://github.com/DK22Pac/plugin-sdk/tree/master/examples/GPS
 		#define EX_PC_WALK // Walking on the key
 		#define EX_RADAR_ZOOM // Radar zoom out on the key
 		#define EX_RELOAD // Reload on the key
@@ -117,6 +117,10 @@
 	#define EX_EXPERIMENTAL
 	#ifdef EX_EXPERIMENTAL
 		#define EX_REPLAY_CONTROL
+	#endif
+
+	#ifdef EX_FEATURES_INI
+		#define EX_DISTANT_LIGHTS // thank https://github.com/ThirteenAG/III.VC.SA.IV.Project2DFX/releases/tag/gta3
 	#endif
 
 #endif
@@ -209,7 +213,11 @@ enum Config {
 
 	NUMEXTRADIRECTIONALS = 4,
 	NUMANTENNAS = 8,
+#ifdef EX_DISTANT_LIGHTS
+	NUMCORONAS = 2000,
+#else
 	NUMCORONAS = 56,
+#endif
 	NUMPOINTLIGHTS = 32,
 	NUM3DMARKERS = 32,
 	NUMBRIGHTLIGHTS = 32,

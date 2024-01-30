@@ -250,6 +250,9 @@ extern bool bMilitaryFiringFromTankAtPlayer = ReadAndGetFeature("MilitaryFiringF
 extern bool bDisableBulletTraces = ReadAndGetFeature("DisableBulletTraces");
 extern bool bRemoveLightCubesFromCars = ReadAndGetFeature("RemoveLightCubesFromCars");
 CRGBA WaypointColor = ReadAndGetWaypointColor("WaypointColorRGB");
+#ifdef EX_DISTANT_LIGHTS
+extern bool bEnableDistantLights = ReadAndGetFeature("EnableDistantLights");
+#endif
 #endif
 
 mINI::INIFile ini("re3.ini");
