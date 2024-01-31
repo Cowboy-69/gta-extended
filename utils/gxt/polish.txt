@@ -81,7 +81,7 @@ Aby ~h~wycelować~w~ karabin snajperski, naciśnij i przytrzymaj klawisz~h~ ~k~~
 Aby ~h~wycelować~w~ karabin snajperski, naciśnij i przytrzymaj klawisz~h~ ~k~~PED_LOCK_TARGET~~w~.
 	
 [HELP8_A]
-Naciśnij klawisz~h~ ~k~~PED_SNIPER_ZOOM_IN~~w~, aby ~h~przybliżyć ~w~widok przez lunetkę karabinu oraz klawisz~h~ ~k~~PED_SNIPER_ZOOM_OUT~~w~, aby ~h~oddalić~w~ widok.
+Naciśnij klawisz~h~ ~k~~PED_SNIPER_ZOOM_IN~,~w~ aby ~h~przybliżyć ~w~widok przez lunetkę karabinu oraz klawisz~h~ ~k~~PED_SNIPER_ZOOM_OUT~,~w~ aby ~h~oddalić~w~ widok.
 	
 [HELP9_A]
 Naciśnij klawisz~h~ ~k~~PED_FIREWEAPON~~w~, aby oddać ~h~strzał~w~ z karabinu snajperskiego.
@@ -603,16 +603,16 @@ Lokal Luigiego
 ~g~Jeżeli szukasz zajęcia, wróć między 15:00 a 00:00.
 	
 [GUN_1A]
-Użyj klawiszy ~h~~k~~PED_CYCLE_WEAPON_RIGHT~~w~ oraz ~h~~k~~PED_CYCLE_WEAPON_LEFT~ ~w~, aby przełączać się między kolejnymi rodzajami broni.
+Użyj klawiszy ~h~~k~~PED_CYCLE_WEAPON_RIGHT~ ~w~oraz ~h~~k~~PED_CYCLE_WEAPON_LEFT~,~w~ aby przełączać się między kolejnymi rodzajami broni.
 	
 [GUN_2A]
-Przytrzymaj klawisz ~h~~k~~PED_LOCK_TARGET~ ~w~, aby ~h~wykonać autocelowanie~w~ i naciśnij klawisz ~h~ ~k~~PED_FIREWEAPON~ ~w~, aby ~h~otworzyć ogień! Spróbuj postrzelać do celu...
+Przytrzymaj klawisz ~h~~k~~PED_LOCK_TARGET~,~w~ aby ~h~wykonać autocelowanie~w~ i naciśnij klawisz ~h~ ~k~~PED_FIREWEAPON~,~w~ aby ~h~otworzyć ogień! Spróbuj postrzelać do celu...
 	
 [GUN_2C]
-Przytrzymaj klawisz ~h~~k~~PED_LOCK_TARGET~ ~w~, aby ~h~wykonać autocelowanie~w~ i naciśnij klawisz ~h~ ~k~~PED_FIREWEAPON~ ~w~, aby ~h~otworzyć ogień! Spróbuj postrzelać do celu...
+Przytrzymaj klawisz ~h~~k~~PED_LOCK_TARGET~,~w~ aby ~h~wykonać autocelowanie~w~ i naciśnij klawisz ~h~ ~k~~PED_FIREWEAPON~,~w~ aby ~h~otworzyć ogień! Spróbuj postrzelać do celu...
 	
 [GUN_2D]
-Przytrzymaj klawisz ~h~~k~~PED_LOCK_TARGET~ ~w~, aby ~h~wykonać autocelowanie~w~ i naciśnij klawisz ~h~ ~k~~PED_FIREWEAPON~ ~w~, aby ~h~otworzyć ogień! Spróbuj postrzelać do celu...
+Przytrzymaj klawisz ~h~~k~~PED_LOCK_TARGET~,~w~ aby ~h~wykonać autocelowanie~w~ i naciśnij klawisz ~h~ ~k~~PED_FIREWEAPON~,~w~ aby ~h~otworzyć ogień! Spróbuj postrzelać do celu...
 	
 [GUN_3A]
 Trzymając wciśnięty klawisz ~h~~k~~PED_LOCK_TARGET~,~w~ naciśnij klawisz ~h~~k~~PED_CYCLE_TARGET_LEFT~~w~ lub klawisz ~h~~k~~PED_CYCLE_TARGET_RIGHT~ , aby przełączać się między celami.
@@ -3390,7 +3390,7 @@ Na to już za późno, Marty. Miałeś szansę, ale teraz przejmuję twoją bud�
 ~r~Zgubiłeś Carlosa lichwiarza!
 	
 [LOOK_A]
-Naciśnij i przytrzymaj klawisz ~h~~k~~VEHICLE_LOOKLEFT~ ~w~lub klawisz ~h~~k~~VEHICLE_LOOKRIGHT~ ~w~, aby spojrzeć ~h~w lewo~w~ lub ~h~w prawo~w~ przez szyby pojadu. Naciśnij oba klawisze naraz, aby spojrzeć ~h~do tyłu~w~.
+Naciśnij i przytrzymaj klawisz ~h~~k~~VEHICLE_LOOKLEFT~ ~w~lub klawisz ~h~~k~~VEHICLE_LOOKRIGHT~,~w~ aby spojrzeć ~h~w lewo~w~ lub ~h~w prawo~w~ przez szyby pojadu. Naciśnij oba klawisze naraz, aby spojrzeć ~h~do tyłu~w~.
 	
 [LOVE6_1]
 ~g~Teraz odciągnij gliniarzy od magazynu!
@@ -4569,7 +4569,7 @@ WITAMY W
 ~g~Zdobądź samochód! Pamiętaj, że liczą się tylko kolesie rozjechani samochodem!
 	
 [HELP8_B]
-Naciśnij klawisz~h~ ~k~~PED_SNIPER_ZOOM_IN~~w~, aby ~h~przybliżyć ~w~widok przez lunetkę karabinu oraz klawisz~h~ ~k~~PED_SNIPER_ZOOM_OUT~~w~, aby ~h~oddalić~w~ widok.
+Naciśnij klawisz~h~ ~k~~PED_SNIPER_ZOOM_IN~,~w~ aby ~h~przybliżyć ~w~widok przez lunetkę karabinu oraz klawisz~h~ ~k~~PED_SNIPER_ZOOM_OUT~,~w~ aby ~h~oddalić~w~ widok.
 	
 [LRQC_1]
 Muszę, hm, porozmawiać z Asuką.

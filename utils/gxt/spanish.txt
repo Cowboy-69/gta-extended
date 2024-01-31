@@ -90,7 +90,7 @@ Mantén pulsado ~h~~k~~PED_LOCK_TARGET~ ~w~para ~h~apuntar~w~ con el fusil de fr
 Mantén pulsado ~h~~k~~PED_LOCK_TARGET~ ~w~para ~h~apuntar~w~ con el fusil de francotirador.
 
 [HELP8_A]
-Pulsa ~h~~k~~PED_SNIPER_ZOOM_IN~ ~w~para ~h~aumentar el zoom ~w~de la mira del fusil y ~h~~k~~PED_SNIPER_ZOOM_OUT~~w~ para ~h~reducirlo~w~.
+Pulsa ~h~~k~~PED_SNIPER_ZOOM_IN~ ~w~para ~h~aumentar el zoom ~w~de la mira del fusil y ~h~~k~~PED_SNIPER_ZOOM_OUT~ ~w~para ~h~reducirlo~w~.
 
 [HELP9_A]
 Pulsa ~h~~k~~PED_FIREWEAPON~~w~ para ~h~disparar ~w~el fusil de francotirador.
@@ -618,7 +618,7 @@ Club de Luigi
 ~g~Vuelve entre las 15:00 y las 00:00 para buscar trabajo.
 
 [GUN_1A]
-Pulsa ~h~~k~~PED_CYCLE_WEAPON_RIGHT~~w~ y ~h~~k~~PED_CYCLE_WEAPON_LEFT~ ~w~para cambiar de arma.
+Pulsa ~h~~k~~PED_CYCLE_WEAPON_RIGHT~ ~w~y ~h~~k~~PED_CYCLE_WEAPON_LEFT~ ~w~para cambiar de arma.
 
 [GUN_2A]
 ¡Mantén pulsado ~h~~k~~PED_LOCK_TARGET~ ~w~para ~h~apuntar automáticamente~w~ y pulsa ~h~~k~~PED_FIREWEAPON~ ~w~para ~h~disparar! Intenta darle a las dianas...
@@ -3436,7 +3436,7 @@ Ya es muy tarde, Marty. Tuviste tu oportunidad, pero ahora yo me ocuparé de tu 
 ~r~¡Has abandonado a Carlos, el usurero!
 
 [LOOK_A]
-Mantén pulsado ~h~~k~~VEHICLE_LOOKLEFT~~w~ o ~h~~k~~VEHICLE_LOOKRIGHT~~w~ para mirar~h~ a la izquierda~w~ o ~h~a la derecha ~w~estando dentro de un vehículo. Pulsa ambos para mirar~h~ atrás~w~.
+Mantén pulsado ~h~~k~~VEHICLE_LOOKLEFT~ ~w~o ~h~~k~~VEHICLE_LOOKRIGHT~ ~w~para mirar~h~ a la izquierda~w~ o ~h~a la derecha ~w~estando dentro de un vehículo. Pulsa ambos para mirar~h~ atrás~w~.
 
 [LOVE6_1]
 ~g~¡Ahora aleja a los policías del almacén!
@@ -4606,7 +4606,7 @@ BIENVENIDO A
 ~g~Hazte con un vehículo y recuerda que sólo cuentan las muertes a tiros desde el coche.
 
 [HELP8_B]
-Pulsa ~h~~k~~PED_SNIPER_ZOOM_IN~ ~w~para ~h~aumentar el zoom ~w~de la mira del fusil y ~h~~k~~PED_SNIPER_ZOOM_OUT~~w~ para ~h~reducirlo~w~.
+Pulsa ~h~~k~~PED_SNIPER_ZOOM_IN~ ~w~para ~h~aumentar el zoom ~w~de la mira del fusil y ~h~~k~~PED_SNIPER_ZOOM_OUT~ ~w~para ~h~reducirlo~w~.
 
 [LRQC_1]
 Asuka y yo tenemos que hablar...

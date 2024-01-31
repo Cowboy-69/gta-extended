@@ -81,7 +81,7 @@ Maintiens la ~h~touche ~k~~PED_LOCK_TARGET~~w~ enfoncée pour ~h~viser~w~ avec l
 Maintiens la ~h~touche ~k~~PED_LOCK_TARGET~~w~ enfoncée pour ~h~viser~w~ avec le fusil à lunette.
 
 [HELP8_A]
-Appuie sur la ~h~touche ~k~~PED_SNIPER_ZOOM_IN~~w~ pour faire un ~h~zoom avant~w~ avec le fusil et sur la ~h~touche ~k~~PED_SNIPER_ZOOM_OUT~~w~ pour faire un ~h~zoom arrière~w~.
+Appuie sur la ~h~touche ~k~~PED_SNIPER_ZOOM_IN~ ~w~pour faire un ~h~zoom avant~w~ avec le fusil et sur la ~h~touche ~k~~PED_SNIPER_ZOOM_OUT~ ~w~pour faire un ~h~zoom arrière~w~.
 
 [HELP9_A]
 Appuie sur la ~h~touche ~k~~PED_FIREWEAPON~~w~ pour ~h~tirer~w~ au fusil à lunette.
@@ -609,16 +609,16 @@ Ray a autre chose à faire que de voir ta tronche. Va faire un tour!
 ~g~Ramène ta fraise entre 15:00 et 00:00 pour bosser.
 
 [GUN_1A]
-Sers-toi de la ~h~touche ~k~~PED_CYCLE_WEAPON_RIGHT~~w~ et de la ~h~touche ~k~~PED_CYCLE_WEAPON_LEFT~~w~ pour faire défiler tes armes.
+Sers-toi de la ~h~touche ~k~~PED_CYCLE_WEAPON_RIGHT~ ~w~et de la ~h~touche ~k~~PED_CYCLE_WEAPON_LEFT~ ~w~pour faire défiler tes armes.
 
 [GUN_2A]
-Maintiens la ~h~touche ~k~~PED_LOCK_TARGET~~w~ enfoncée pour ~h~viser automatiquement~w~ tes ennemis et appuie sur la ~h~touche ~k~~PED_FIREWEAPON~~w~ pour tirer. Entraîne-toi sur les cibles...
+Maintiens la ~h~touche ~k~~PED_LOCK_TARGET~ ~w~enfoncée pour ~h~viser automatiquement~w~ tes ennemis et appuie sur la ~h~touche ~k~~PED_FIREWEAPON~ ~w~pour tirer. Entraîne-toi sur les cibles...
 
 [GUN_2C]
-Maintiens la ~h~touche ~k~~PED_LOCK_TARGET~~w~ enfoncée pour ~h~viser automatiquement~w~ tes ennemis et appuie sur la ~h~touche ~k~~PED_FIREWEAPON~~w~ pour tirer. Entraîne-toi sur les cibles...
+Maintiens la ~h~touche ~k~~PED_LOCK_TARGET~ ~w~enfoncée pour ~h~viser automatiquement~w~ tes ennemis et appuie sur la ~h~touche ~k~~PED_FIREWEAPON~ ~w~pour tirer. Entraîne-toi sur les cibles...
 
 [GUN_2D]
-Maintiens la ~h~touche ~k~~PED_LOCK_TARGET~~w~ enfoncée pour ~h~viser automatiquement~w~ tes ennemis et appuie sur la ~h~touche ~k~~PED_FIREWEAPON~~w~ pour tirer. Entraîne-toi sur les cibles...
+Maintiens la ~h~touche ~k~~PED_LOCK_TARGET~ ~w~enfoncée pour ~h~viser automatiquement~w~ tes ennemis et appuie sur la ~h~touche ~k~~PED_FIREWEAPON~ ~w~pour tirer. Entraîne-toi sur les cibles...
 
 [GUN_3A]
 Tout en appuyant sur la ~h~touche ~k~~PED_LOCK_TARGET~~w~, appuie sur la ~h~touche ~k~~PED_CYCLE_TARGET_LEFT~~w~ ou la ~h~touche ~k~~PED_CYCLE_TARGET_RIGHT~~w~ pour changer de cible.
@@ -3309,7 +3309,7 @@ C'est beaucoup trop tard, Marty. Je t'ai donné une chance, mais maintenant je r
 ~r~T'as laissé Carlos l'usurier derrière!
 
 [LOOK_A]
-Appuie et maintiens enfoncée la ~h~touche ~k~~VEHICLE_LOOKLEFT~ ~w~ou ~h~touche ~k~~VEHICLE_LOOKRIGHT~ ~w~ pour regarder ~h~à gauche~w~ ou ~h~à droite~w~ quand tu es en voiture. Appuie sur ces deux touches pour regarder ~h~derrière~w~.
+Appuie et maintiens enfoncée la ~h~touche ~k~~VEHICLE_LOOKLEFT~ ~w~ou ~h~touche ~k~~VEHICLE_LOOKRIGHT~ ~w~pour regarder ~h~à gauche~w~ ou ~h~à droite~w~ quand tu es en voiture. Appuie sur ces deux touches pour regarder ~h~derrière~w~.
 
 [LOVE6_1]
 ~g~Maintenant, attire les flics loin de l'entrepôt!
@@ -4488,7 +4488,7 @@ BIENVENUE A
 ~g~Trouve une bagnole et souviens-toi que seuls les meurtres à l'Uzi sont pris en considération!
 
 [HELP8_B]
-Appuie sur la~h~ touche ~k~~PED_SNIPER_ZOOM_IN~ ~w~pour faire un ~h~zoom avant ~w~avec la lunette et sur la ~h~touche ~k~~PED_SNIPER_ZOOM_OUT~~w~ pour faire un ~h~zoom arrière~w~.
+Appuie sur la~h~ touche ~k~~PED_SNIPER_ZOOM_IN~ ~w~pour faire un ~h~zoom avant ~w~avec la lunette et sur la ~h~touche ~k~~PED_SNIPER_ZOOM_OUT~ ~w~pour faire un ~h~zoom arrière~w~.
 
 [LRQC_1]
 Asuka et moi, on doit parler, hein,

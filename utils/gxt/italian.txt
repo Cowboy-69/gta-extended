@@ -81,7 +81,7 @@ Tieni premuto il ~h~tasto ~k~~PED_LOCK_TARGET~~w~ per ~h~mirare~w~ con il fucile
 Tieni premuto il ~h~tasto ~k~~PED_LOCK_TARGET~~w~ per ~h~mirare~w~ con il fucile di precisione.
 
 [HELP8_A]
-Premi il ~h~tasto ~k~~PED_SNIPER_ZOOM_IN~~w~ per ~h~zoomare~w~ col fucile e il ~h~tasto ~k~~PED_SNIPER_ZOOM_OUT~~w~ per ~h~allargare il campo~w~.
+Premi il ~h~tasto ~k~~PED_SNIPER_ZOOM_IN~ ~w~per ~h~zoomare~w~ col fucile e il ~h~tasto ~k~~PED_SNIPER_ZOOM_OUT~ ~w~per ~h~allargare il campo~w~.
 
 [HELP9_A]
 Premi il ~h~tasto ~k~~PED_FIREWEAPON~~w~ per ~h~sparare~w~ con il fucile di precisione.
@@ -609,16 +609,16 @@ Club Luigi's
 ~g~Passa tra le 15:00 e le 00:00 per un lavoro
 
 [GUN_1A]
-Usa il ~h~tasto ~k~~PED_CYCLE_WEAPON_RIGHT~~w~ e il ~h~tasto ~k~~PED_CYCLE_WEAPON_LEFT~~w~ per passare in rassegna le armi.
+Usa il ~h~tasto ~k~~PED_CYCLE_WEAPON_RIGHT~ ~w~e il ~h~tasto ~k~~PED_CYCLE_WEAPON_LEFT~ ~w~per passare in rassegna le armi.
 
 [GUN_2A]
-Tieni premuto il ~h~tasto ~k~~PED_LOCK_TARGET~~w~ per la ~h~mira automatica~w~ e premi il ~h~tasto ~k~~PED_FIREWEAPON~~w~ per sparare! Allenati con i bersagli...
+Tieni premuto il ~h~tasto ~k~~PED_LOCK_TARGET~ ~w~per la ~h~mira automatica~w~ e premi il ~h~tasto ~k~~PED_FIREWEAPON~ ~w~per sparare! Allenati con i bersagli...
 
 [GUN_2C]
-Tieni premuto il ~h~tasto ~k~~PED_LOCK_TARGET~~w~ per la ~h~mira automatica~w~ e premi il ~h~tasto ~k~~PED_FIREWEAPON~~w~ per sparare! Allenati con i bersagli...
+Tieni premuto il ~h~tasto ~k~~PED_LOCK_TARGET~ ~w~per la ~h~mira automatica~w~ e premi il ~h~tasto ~k~~PED_FIREWEAPON~ ~w~per sparare! Allenati con i bersagli...
 
 [GUN_2D]
-Tieni premuto il ~h~tasto ~k~~PED_LOCK_TARGET~~w~ per la ~h~mira automatica~w~ e premi il ~h~tasto ~k~~PED_FIREWEAPON~~w~ per sparare! Allenati con i bersagli...
+Tieni premuto il ~h~tasto ~k~~PED_LOCK_TARGET~ ~w~per la ~h~mira automatica~w~ e premi il ~h~tasto ~k~~PED_FIREWEAPON~ ~w~per sparare! Allenati con i bersagli...
 
 [GUN_3A]
 Mentre tieni premuto il ~h~tasto ~k~~PED_LOCK_TARGET~~w~, premi il ~h~tasto ~k~~PED_CYCLE_TARGET_LEFT~~w~ o il ~h~tasto ~k~~PED_CYCLE_TARGET_RIGHT~~w~ per cambiare bersaglio.
@@ -3444,7 +3444,7 @@ Un amico mi ha detto che puoi risolvermi dei problemi. Vai alla cabina telefonic
 ~r~Ti sei dimenticato di Carlos lo strozzino!
 
 [LOOK_A]
-Tieni premuto il ~h~tasto ~k~~VEHICLE_LOOKLEFT~ ~w~o il ~h~tasto ~k~~VEHICLE_LOOKRIGHT~~w~ per guardare a ~h~sinistra~w~ o a ~h~destra~w~ mentre sei nel veicolo. Premi entrambi i tasti per guardare ~h~indietro~w~.
+Tieni premuto il ~h~tasto ~k~~VEHICLE_LOOKLEFT~ ~w~o il ~h~tasto ~k~~VEHICLE_LOOKRIGHT~ ~w~per guardare a ~h~sinistra~w~ o a ~h~destra~w~ mentre sei nel veicolo. Premi entrambi i tasti per guardare ~h~indietro~w~.
 
 [LOVE6_1]
 ~g~Adesso attira gli sbirri lontano dai magazzini!
@@ -4629,7 +4629,7 @@ BENVENUTI A
 ~g~Prendi un veicolo e ricorda: contano solo le uccisioni fatte con l'Uzi mentre guidi!
 
 [HELP8_B]
-Premi il ~h~tasto ~k~~PED_SNIPER_ZOOM_IN~ ~w~per ~h~zoomare ~w~col fucile e il~h~ tasto ~k~~PED_SNIPER_ZOOM_OUT~~w~ per ~h~allargare il campo~w~.
+Premi il ~h~tasto ~k~~PED_SNIPER_ZOOM_IN~ ~w~per ~h~zoomare ~w~col fucile e il~h~ tasto ~k~~PED_SNIPER_ZOOM_OUT~ ~w~per ~h~allargare il campo~w~.
 
 [LRQC_1]
 Asuka e io dobbiamo parlare, OK?
