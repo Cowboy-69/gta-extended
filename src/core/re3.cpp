@@ -813,6 +813,8 @@ void NastyLimbsCheat();
 void InvincibleCheat();
 void AirWaysCheat();
 void NoWantedCheat();
+void RCRocketCheat();
+void BigHeadsCheat();
 #endif
 
 DebugMenuEntry *carCol1;
@@ -1054,6 +1056,8 @@ DebugMenuPopulate(void)
 		DebugMenuAddCmd("Cheats", "Invincible", InvincibleCheat);
 		DebugMenuAddCmd("Cheats", "AirWays", AirWaysCheat);
 		DebugMenuAddCmd("Cheats", "No wanted", NoWantedCheat);
+		DebugMenuAddCmd("Cheats", "RC Rocket", RCRocketCheat);
+		DebugMenuAddCmd("Cheats", "Big heads", BigHeadsCheat);
 #endif
 
 #ifdef EX_VEHICLE_LOADER

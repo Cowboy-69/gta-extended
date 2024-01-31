@@ -96,6 +96,7 @@ public:
 #ifdef EX_CHEATS
 	static bool bInvincibleCheat;
 	static bool bNoWantedCheat;
+	static bool bRCRocketCheat;
 #endif
 
 	static const uint32 nSaveStructSize;

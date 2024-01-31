@@ -30,6 +30,7 @@ bool CPlayerPed::bDontAllowWeaponChange;
 #ifdef EX_CHEATS
 bool CPlayerPed::bInvincibleCheat;
 bool CPlayerPed::bNoWantedCheat;
+bool CPlayerPed::bRCRocketCheat;
 #endif
 
 const uint32 CPlayerPed::nSaveStructSize =

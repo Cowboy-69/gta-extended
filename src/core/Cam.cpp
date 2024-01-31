@@ -318,6 +318,11 @@ CCam::Process(void)
 		Process_Real_1st_Person(CameraTarget, TargetOrientation, SpeedVar, TargetSpeedVar);
 		break;
 #endif
+#ifdef EX_CHEATS // RCROCKET
+	case MODE_FOLLOWPROJECTILE:
+		Process_FollowProjectile(CameraTarget, TargetOrientation, SpeedVar, TargetSpeedVar);
+		break;
+#endif
 	default:
 		Source = CVector(0.0f, 0.0f, 0.0f);
 		Front = CVector(0.0f, 1.0f, 0.0f);
@@ -4466,7 +4471,8 @@ CCam::Process_Real_1st_Person(const CVector& CameraTarget, float TargetOrientati
 	//ped->PositionAttachedPed();
 	ped->GetMatrix().UpdateRW();
 	ped->UpdateRwFrame();
-	//ped->UpdateRpHAnim();
+	if (IsClumpSkinned(ped->GetClump()))
+		ped->UpdateRpHAnim();
 	
 	RwV3d HeadPos;
 
@@ -4694,6 +4700,70 @@ void CCam::LimitAngleBetaRelativelyTwoAngles(CVector normalizedRelativeVector, f
 
 	if (bLookRight)
 		if (diffRightAngle <= 0.0f) Beta = maxRightAngle;
+}
+#endif
+
+#ifdef EX_CHEATS // RCROCKET
+void CCam::Process_FollowProjectile(const CVector& CameraTarget, float TargetOrientation, float SpeedVar, float TargetSpeedVar)
+{
+	FOV = 90.0f;
+
+	if(CamTargetEntity->m_rwObject == nil) {
+		float shakeStrength = TheCamera.m_fCamShakeForce - 0.28f*(CTimer::GetTimeInMilliseconds() - TheCamera.m_uiCamShakeStart)/1000.0f;
+		if (shakeStrength <= 0.0f)
+			TheCamera.RestoreWithJumpCut();
+
+		return;
+	}
+
+	if(ResetStatics){
+		Beta = TargetOrientation;
+		Alpha = 0.0f;
+		m_fInitialPlayerOrientation = TargetOrientation;
+	}
+
+	float AlphaOffset, BetaOffset;
+	bool UseMouse = false;
+	float MouseX = CPad::GetPad(0)->GetMouseX();
+	float MouseY = CPad::GetPad(0)->GetMouseY();
+	float LookLeftRight = 0.0f, LookUpDown = 0.0f;
+	if((MouseX != 0.0f || MouseY != 0.0f) && !CPad::GetPad(0)->ArePlayerControlsDisabled()){
+		UseMouse = true;
+		LookLeftRight = -2.5f*MouseX;
+		LookUpDown = 4.0f*MouseY;
+	}else if (CPad::GetPad(0)->IsAffectedByController){
+		LookLeftRight = -CPad::GetPad(0)->LookAroundLeftRight();
+		LookUpDown = CPad::GetPad(0)->LookAroundUpDown();
+	}
+
+	BetaOffset = LookLeftRight * TheCamera.m_fMouseAccelHorzntl * FOV / 80.0f;
+	AlphaOffset = LookUpDown * TheCamera.m_fMouseAccelVertical * FOV/80.0f;
+
+	Alpha += AlphaOffset;
+	Beta += BetaOffset;
+	while(Beta >= PI) Beta -= 2*PI;
+	while(Beta < -PI) Beta += 2*PI;
+
+	CVector TargetCoors = CameraTarget;
+	Source = CameraTarget;
+	
+	CMatrix* matrix = &CamTargetEntity->GetMatrix();
+	Front = matrix->GetForward();
+	Front.Normalise();
+	Up = -matrix->GetUp();
+	Up.Normalise();
+	CVector Right = CrossProduct(Front, Up);
+	Right.Normalise();
+	Up = CrossProduct(Right, Front);
+	Up.Normalise();
+
+	Front.x = Cos(Alpha) * -Cos(Beta);
+	Front.y = Cos(Alpha) * -Sin(Beta);
+	Front.z = Sin(Alpha);
+
+	GetVectorsReadyForRW();
+
+	ResetStatics = false;
 }
 #endif
 

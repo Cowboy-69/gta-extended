@@ -149,7 +149,11 @@ void CPhotoMode::EnablePhotoMode()
 	bPlayerWantsToTakePhoto = false;
 	photoSavedTime = 0.0f;
 	bHideUI = false;
-	
+
+#ifdef EX_FIRST_PERSON // Restoring the player's head in first-person mode when switching to photo mode
+	if (TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON)
+		RpAnimBlendClumpUpdateAnimations(FindPlayerPed()->GetClump(), CTimer::GetTimeStepInSeconds());
+#endif
 }
 
 void CPhotoMode::DisablePhotoMode()

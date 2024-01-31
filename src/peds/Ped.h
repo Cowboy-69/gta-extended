@@ -923,6 +923,9 @@ public:
 	static bool bNastyLimbsCheat;
 	static bool bPedCheat2;
 	static bool bPedCheat3;
+#ifdef EX_CHEATS // BIGHEADS
+	static bool bBigHeadsCheat;
+#endif
 	static CVector2D ms_vec2DFleePosition;
 
 #ifdef DEBUGMENU

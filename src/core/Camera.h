@@ -98,6 +98,9 @@ public:
 #ifdef EX_FIRST_PERSON
 		MODE_REAL_1ST_PERSON,
 #endif
+#ifdef EX_CHEATS // RCROCKET
+		MODE_FOLLOWPROJECTILE,
+#endif
 	};
 
 	bool    bBelowMinDist; //used for follow ped mode
@@ -257,6 +260,9 @@ public:
 #ifdef EX_FIRST_PERSON
 	void Process_Real_1st_Person(const CVector& CameraTarget, float, float, float);
 	void LimitAngleBetaRelativelyTwoAngles(CVector normalizedRelativeVector, float leftLimitingAngle, float rightLimitingAngle);
+#endif
+#ifdef EX_CHEATS // RCROCKET
+	void Process_FollowProjectile(const CVector& CameraTarget, float, float, float);
 #endif
 
 	/* Some of the unused PS2 cams */

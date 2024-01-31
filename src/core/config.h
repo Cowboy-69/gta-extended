@@ -607,10 +607,12 @@ enum Config {
 	#define VC_RAIN_NERF // Reduces number of rain particles
 #endif
 
+#ifndef LIBERTY_EX
 // if these defines are enabled saves are not vanilla compatible without COMPATIBLE_SAVES
 #ifndef COMPATIBLE_SAVES
 #undef PED_SKIN
 #undef PEDS_REPORT_CRIMES_ON_PHONE
+#endif
 #endif
 
 #ifdef GTA_HANDHELD

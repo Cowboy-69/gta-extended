@@ -12,6 +12,9 @@
 #include "Explosion.h"
 #include "Weapon.h"
 #include "World.h"
+#ifdef EX_CHEATS // RCROCKET
+#include "PlayerPed.h"
+#endif
 
 #ifdef SQUEEZE_PERFORMANCE
 uint32 projectileInUse;
@@ -70,6 +73,12 @@ CProjectileInfo::AddProjectile(CEntity *entity, eWeaponType weapon, CVector pos,
 	{
 		float vy = 1.25f;
 		time = CTimer::GetTimeInMilliseconds() + 1400;
+#ifdef EX_CHEATS // RCROCKET
+		if (FindPlayerPed()->bRCRocketCheat) {
+			vy += 1.65f;
+			time += 18000;
+		}
+#endif
 		if (ped->IsPlayer()) {
 			matrix.GetForward() = TheCamera.Cams[TheCamera.ActiveCam].Front;
 			matrix.GetUp() = TheCamera.Cams[TheCamera.ActiveCam].Up;
@@ -173,6 +182,18 @@ CProjectileInfo::AddProjectile(CEntity *entity, eWeaponType weapon, CVector pos,
 	gaProjectileInfo[i].m_bInUse = true;
 	CWorld::Add(ms_apProjectile[i]);
 
+#ifdef EX_CHEATS // RCROCKET
+	if (weapon == WEAPONTYPE_ROCKETLAUNCHER && FindPlayerPed()->bRCRocketCheat) {
+		CVector pos = ms_apProjectile[i]->GetPosition();
+		pos.z += 0.5f;
+		ms_apProjectile[i]->SetPosition(pos);
+
+		TheCamera.Cams[TheCamera.ActiveCam].CamTargetEntity = ms_apProjectile[i];
+		TheCamera.m_bLookingAtPlayer = false;
+		TheCamera.Cams[TheCamera.ActiveCam].Mode = CCam::MODE_FOLLOWPROJECTILE;
+	}
+#endif
+
 	gaProjectileInfo[i].m_vecPos = ms_apProjectile[i]->GetPosition();
 	return true;
 }
@@ -246,6 +267,11 @@ CProjectileInfo::Update()
 					RemoveProjectile(&gaProjectileInfo[i], ms_apProjectile[i]);
 				}
 				CWorld::pIgnoreEntity = nil;
+
+#ifdef EX_CHEATS // RCROCKET
+				if (FindPlayerPed()->bRCRocketCheat)
+					ms_apProjectile[i]->m_vecMoveSpeed = TheCamera.Cams[TheCamera.ActiveCam].Front;
+#endif
 			} else if (gaProjectileInfo[i].m_eWeaponType == WEAPONTYPE_MOLOTOV) {
 				CVector pos = ms_apProjectile[i]->GetPosition();
 				CWorld::pIgnoreEntity = ms_apProjectile[i];

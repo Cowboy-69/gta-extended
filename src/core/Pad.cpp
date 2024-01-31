@@ -347,6 +347,22 @@ void NoWantedCheat(void) {
 
 	FindPlayerPed()->bNoWantedCheat = !FindPlayerPed()->bNoWantedCheat;
 }
+
+void RCRocketCheat(void) {
+	wchar* string;
+	if (FindPlayerPed()->bInvincibleCheat)
+		string = TheText.Get("CHEATOF");
+	else
+		string = TheText.Get("CHEAT1");
+
+	CHud::SetHelpMessage(string, true);
+
+	FindPlayerPed()->bRCRocketCheat = !FindPlayerPed()->bRCRocketCheat;
+}
+
+void BigHeadsCheat(void) {
+	CPed::bBigHeadsCheat = !CPed::bBigHeadsCheat;
+}
 #endif
 
 //////////////////////////////////////////////////////////////////////////
@@ -1187,6 +1203,14 @@ void CPad::AddToPCCheatString(char c)
 	// AEZAKMI
 	if (!_CHEATCMP("IMKAZEA"))
 		NoWantedCheat();
+
+	// RCROCKET
+	if (!_CHEATCMP("TEKCORCR"))
+		RCRocketCheat();
+
+	// BIGHEADS
+	if (!_CHEATCMP("SDAEHGIB"))
+		BigHeadsCheat();
 #endif
 
 #ifdef KANGAROO_CHEAT
@@ -3614,6 +3638,8 @@ void CPad::ResetCheats(void)
 	CAutomobile::bAirWaysCheat = false;
 	CPlayerPed::bInvincibleCheat = false;
 	CPlayerPed::bNoWantedCheat = false;
+	CPlayerPed::bRCRocketCheat = false;
+	CPed::bBigHeadsCheat = false;
 #endif
 
 	gbFastTime = false;

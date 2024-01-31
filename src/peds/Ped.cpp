@@ -33,6 +33,9 @@
 #include "Range2D.h"
 #include "Wanted.h"
 #include "SaveBuf.h"
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
 
 CPed *gapTempPedList[50];
 uint16 gnNumTempPedList;
@@ -46,6 +49,9 @@ uint16 CPed::nEnterCarRangeMultiplier = 1;
 bool CPed::bNastyLimbsCheat;
 bool CPed::bPedCheat2;
 bool CPed::bPedCheat3;
+#ifdef EX_CHEATS // BIGHEADS
+bool CPed::bBigHeadsCheat;
+#endif
 CVector2D CPed::ms_vec2DFleePosition;
 
 void *CPed::operator new(size_t sz) throw() { return CPools::GetPedPool()->New();  }
@@ -4965,19 +4971,52 @@ CPed::PreRender(void)
 
 #ifdef EX_FIRST_PERSON // Removing the player's head during the first-person view
 	if (IsPlayer()) {
-		RwFrame* frame = m_pFrames[PED_HEAD]->frame;
-		RwMatrix* frameMat = RwFrameGetMatrix(frame);
 		RwV3d scale;
+
+#ifdef EX_PHOTO_MODE // Don't remove the player's head during photo mode (first person)
+		if (!CPhotoMode::IsPhotoModeEnabled() && TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON && !TheCamera.Cams[TheCamera.ActiveCam].LookingBehind) {
+#else
 		if (TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON && !TheCamera.Cams[TheCamera.ActiveCam].LookingBehind) {
-			scale.x = 0.0f;
-			scale.y = 0.0f;
-			scale.z = 0.0f;
+#endif
+			scale = { 0.0f, 0.0f, 0.0f };
 		} else {
-			scale.x = 1.0f;
-			scale.y = 1.0f;
-			scale.z = 1.0f;
+			scale = { 1.0f, 1.0f, 1.0f };
 		}
-		RwMatrixScale(frameMat, &scale, rwCOMBINEPRECONCAT);
+
+		if (IsClumpSkinned(GetClump())) {
+			RpHAnimHierarchy* hier = GetAnimHierarchyFromSkinClump(GetClump());
+			int32 idx = RpHAnimIDGetIndex(hier, ConvertPedNode2BoneTag(PED_HEAD));
+			RwMatrix* head = &RpHAnimHierarchyGetMatrixArray(hier)[idx];
+			RwMatrixScale(head, &scale, rwCOMBINEPRECONCAT);
+		} else {
+			RwFrame* frame = m_pFrames[PED_HEAD]->frame;
+			RwMatrix* frameMat = RwFrameGetMatrix(frame);
+			RwMatrixScale(frameMat, &scale, rwCOMBINEPRECONCAT);
+		}
+	}
+#endif
+
+#ifdef EX_CHEATS // BIGHEADS
+	if (bBigHeadsCheat) {
+		if (IsClumpSkinned(GetClump())) {
+			RpHAnimHierarchy* hier = GetAnimHierarchyFromSkinClump(GetClump());
+			int32 idx;
+			RwV3d scale;
+			scale.x = 3.0f;
+			scale.y = 3.0f;
+			scale.z = 3.0f;
+			idx = RpHAnimIDGetIndex(hier, ConvertPedNode2BoneTag(PED_HEAD));
+			RwMatrix* head = &RpHAnimHierarchyGetMatrixArray(hier)[idx];
+			RwMatrixScale(head, &scale, rwCOMBINEPRECONCAT);
+		} else {
+			RwFrame* frame = m_pFrames[PED_HEAD]->frame;
+			RwMatrix* frameMat = RwFrameGetMatrix(frame);
+			RwV3d scale;
+			scale.x = 3.0f;
+			scale.y = 3.0f;
+			scale.z = 3.0f;
+			RwMatrixScale(frameMat, &scale, rwCOMBINEPRECONCAT);
+		}
 	}
 #endif
 
