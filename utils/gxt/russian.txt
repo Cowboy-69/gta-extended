@@ -8193,6 +8193,141 @@ Autosave File Not Present
 [FEO_OTH]
 OTHER SETTINGS
 
+[FED_BRL]
+БЕЗ РАМОК
+
+[TYREPOP]
+Прострелено шин
+
+[FEM_PHT]
+ФОТО РЕЖИМ
+
+[PM_CAM]
+КАМЕРА
+
+[PM_ZOOM]
+ЗУМ
+
+[PM_TILT]
+НАКЛОН
+
+[PM_ZOTI]
+ЗУМ И НАКЛОН
+
+[PM_NCP]
+NEAR CLIP PLANE
+
+[PM_CHAR]
+ПЕРСОНАЖ
+
+[PM_VSBL]
+ВИДИМОСТЬ
+
+[PM_ANIM]
+АНИМАЦИЯ
+
+[PM_ANFR]
+КАДР АНИМАЦИИ
+
+[PM_WEAP]
+ОРУЖИЕ
+
+[PM_MUZL]
+ДУЛЬНАЯ ВСПЫШКА
+
+[PM_ROT]
+ВРАЩАТЬ
+
+[PM_SKY]
+НЕБО
+
+[PM_SUN]
+УГОЛ СОЛНЦА И ЛУНЫ
+
+[PM_HOUR]
+ВРЕМЯ В ЧАСАХ
+
+[PM_MIN]
+ВРЕМЯ В МИНУТАХ
+
+[PM_WTHR]
+ПОГОДА
+
+[PM_SNNY]
+СОЛНЕЧНО
+
+[PM_CLDY]
+ОБЛАЧНО
+
+[PM_RANY]
+ДОЖДЬ
+
+[PM_FGGY]
+ТУМАН
+
+[PM_LGHT]
+СВЕТ
+
+[PM_DEFL]
+СТАНДАРТНЫЙ СВЕТ
+
+[PM_COLR]
+КРАСНЫЙ ЦВЕТ
+
+[PM_COLG]
+ЗЕЛЕНЫЙ ЦВЕТ
+
+[PM_COLB]
+СИНИЙ ЦВЕТ
+
+[PM_DARK]
+ТЕМНЫЙ СВЕТ
+
+[PM_EFFE]
+ЭФФЕКТЫ
+
+[PM_CLFL]
+ЦВЕТОФИЛЬТР
+
+[PM_INTS]
+ИНТЕНСИВНОСТЬ
+
+[PM_BRTN]
+ЯРКОСТЬ
+
+[PM_FRMS]
+РАМКИ
+
+[PM_TOGL]
+МЕНЮ
+
+[PM_EXIT]
+ВЫХОД
+
+[PM_MOVE]
+ДВИГАТЬ
+
+[PM_PHTO]
+ФОТО
+
+[PM_UI]
+UI
+
+[PM_SPED]
+СКОРОСТЬ
+
+[PM_ADJS]
+НАСТРОЙКА
+
+[PM_MVLI]
+ДВИГАТЬ СВЕТ
+
+[PM_MVCH]
+ДВИГАТЬ ПЕРСОНАЖА
+
+[PM_SAVE]
+ФОТО СОХРАНЕНО В LIBERTYEXTENDED\USERFILES\GALLERY
+
 { end of file }
 
 [DUMMY]

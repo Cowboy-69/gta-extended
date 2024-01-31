@@ -8111,85 +8111,223 @@ CAR DENSITY
 
 {______________________________Liberty Extended______________________________}
 [FEC_AIM]
-AUTOMATYCZNE CELOWANIE
+AUTO AIMING
 
 [FEC_LSX]
-CZUŁOŚĆ SPOJRZENIA X
+LOOK SENSITIVITY X
 
 [FEC_LSY]   
-CZUŁOŚĆ SPOJRZENIA Y
+LOOK SENSITIVITY Y
 
 [FEC_ASX]   
-CZUŁOŚĆ CELOWANIA X
+AIMING SENSITIVITY X
 
 [FEC_ASY]   
-CZUŁOŚĆ CELOWANIA Y
+AIMING SENSITIVITY Y
 
 [FEC_IVL]   
-ODWRÓĆ PIONOWO
+INVERT VERTICALLY
 
 [FEC_LZN]   
-STREFA MARTWA LEWEGO DRĄŻKA
+LEFT STICK DEADZONE
 
 [FEC_RZN]   
-STREFA MARTWA PRAWEGO DRĄŻKA
+RIGHT STICK DEADZONE
 
 [FEC_VBF]   
-SIŁA WIBRACJI
+VIBRATION FORCE
 
 [FEC_PRS]   
-Poprzednia stacja radiowa
+Previous radio station
 
 [FEC_NRS]   
-Następna stacja radiowa
+Next radio station
 
 [FEC_RTC]   
-Obrót kamery
+Rotate camera
 
 [FET_AGC]   
-KONFIGURACJA GAMEPADA
+GAMEPAD CONFIGURATION
 
 [FET_AGS]   
-USTAWIENIA GAMEPADA
+GAMEPAD SETTINGS
 
 [FEC_FOV]   
-POLE WIDZENIA
+FIELD OF VIEW
 
 [FEC_ACV]   
-AUTOMATYCZNE CENTROWANIE W POJEŹDZIE
+AUTO-CENTERING IN VEHICLE
 
 [FEC_RVD]   
-POJAZD KREWNEGO PODCZAS PRZEJAZDU
+RELATIVE VEHICLE WHILE DRIVEBY
 
 [FEC_DOM]   
 DOOM Mode
 
 [FEC_WAL]
-Spacer
+Walk
 
 [FEC_RZO]
-Powiększenie radaru
+Radar zoom
 
 [FEC_REL]
-Przeładować broń
+Reload weapon
 
 [FED_GPS]
 GPS
 
 [FEC_ATK]
-Atak
+Attack
 
 [FES_SAV]
-W tym momencie nie możesz zapisać gry. Aby zapisać grę, nie możesz być na misji, nie możesz się ruszać ani mieć poziomu poszukiwanego.
+You cannot save the game at this time. To save the game, you must not be on a mission, not move or have a wanted level.
 
 [FET_AUT]
-Autozapis
+Autosave
 
 [FEM_SL9]
-Brak pliku automatycznego zapisu
+Autosave File Not Present
 
 [FEO_OTH]
-Inne ustawienia
+OTHER SETTINGS
+
+[FED_BRL]
+BORDERLESS
+
+[TYREPOP]
+Tires popped with gunfire
+
+[FEM_PHT]
+PHOTO MODE
+
+[PM_CAM]
+CAMERA
+
+[PM_ZOOM]
+ZOOM
+
+[PM_TILT]
+TILT
+
+[PM_ZOTI]
+ZOOM AND TILT
+
+[PM_NCP]
+NEAR CLIP PLANE
+
+[PM_CHAR]
+CHARACTER
+
+[PM_VSBL]
+VISIBILITY
+
+[PM_ANIM]
+ANIMATION
+
+[PM_ANFR]
+ANIMATION FRAME
+
+[PM_WEAP]
+WEAPON
+
+[PM_MUZL]
+MUZZLE FLASH
+
+[PM_ROT]
+ROTATE
+
+[PM_SKY]
+SKY
+
+[PM_SUN]
+SUN AND MOON ANGLE
+
+[PM_HOUR]
+TIME IN HOURS
+
+[PM_MIN]
+TIME IN MINUTES
+
+[PM_WTHR]
+WEATHER
+
+[PM_SNNY]
+SUNNY
+
+[PM_CLDY]
+CLOUDY
+
+[PM_RANY]
+RAINY
+
+[PM_FGGY]
+FOGGY
+
+[PM_LGHT]
+LIGHT
+
+[PM_DEFL]
+DEFAULT LIGHT
+
+[PM_COLR]
+COLOR RED
+
+[PM_COLG]
+COLOR GREEN
+
+[PM_COLB]
+COLOR BLUE
+
+[PM_DARK]
+DARK LIGHT
+
+[PM_EFFE]
+EFFECTS
+
+[PM_CLFL]
+COLORFILTER
+
+[PM_INTS]
+INTENSITY
+
+[PM_BRTN]
+BRIGHTNESS
+
+[PM_FRMS]
+FRAMES
+
+[PM_TOGL]
+MENU
+
+[PM_EXIT]
+EXIT
+
+[PM_MOVE]
+MOVE
+
+[PM_PHTO]
+PHOTO
+
+[PM_UI]
+UI
+
+[PM_SPED]
+SPEED
+
+[PM_ADJS]
+ADJUST
+
+[PM_MVLI]
+MOVE LIGHT
+
+[PM_MVCH]
+MOVE CHARACTER
+
+[PM_SAVE]
+PHOTO SAVED TO LIBERTYEXTENDED\USERFILES\GALLERY
+
+[FEC_DS5]
+DUALSENSE
 
 { end of file }	
 	

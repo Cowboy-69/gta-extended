@@ -8372,95 +8372,224 @@ PED DENSITY
 CAR DENSITY
 
 {______________________________Liberty Extended______________________________}
-[FEC_AIM]   
-VISÉE AUTO
+[FEC_AIM]
+AUTO AIMING
 
-[FEC_LSX]   
-SENSIBILITÉ DU REGARD X
+[FEC_LSX]
+LOOK SENSITIVITY X
 
 [FEC_LSY]   
-SENSIBILITÉ DU REGARD Y
+LOOK SENSITIVITY Y
 
 [FEC_ASX]   
-SENSIBILITÉ DE VISÉE X
+AIMING SENSITIVITY X
 
 [FEC_ASY]   
-SENSIBILITÉ DE VISÉE Y
+AIMING SENSITIVITY Y
 
 [FEC_IVL]   
-INVERSER VERTICALEMENT
+INVERT VERTICALLY
 
 [FEC_LZN]   
-ZONE MORTE DU STICK GAUCHE
+LEFT STICK DEADZONE
 
-[FEC_RZN]
-ZONE MORTE DU STICK DROIT
+[FEC_RZN]   
+RIGHT STICK DEADZONE
 
 [FEC_VBF]   
-FORCE DE VIBRATION
+VIBRATION FORCE
 
 [FEC_PRS]   
-Radio précédente
+Previous radio station
 
 [FEC_NRS]   
-Radio suivante
+Next radio station
 
 [FEC_RTC]   
-Faire pivoter la caméra
+Rotate camera
 
 [FET_AGC]   
-CONFIGURATION DE LA MANETTE
+GAMEPAD CONFIGURATION
 
 [FET_AGS]   
-PARAMETRES DE LA MANETTE
+GAMEPAD SETTINGS
 
 [FEC_FOV]   
-CHAMP DE VISION
+FIELD OF VIEW
 
 [FEC_ACV]   
-CENTRAGE AUTOMATIQUE DANS LE VÉHICULE
+AUTO-CENTERING IN VEHICLE
 
 [FEC_RVD]   
-VÉHICULE RELATIF EN CONDUISANT PAR
+RELATIVE VEHICLE WHILE DRIVEBY
 
 [FEC_DOM]   
 DOOM Mode
 
 [FEC_WAL]
-Marche
+Walk
 
 [FEC_RZO]
-Zoom radar
+Radar zoom
 
 [FEC_REL]
-Recharge de l'arme
+Reload weapon
 
 [FED_GPS]
 GPS
 
 [FEC_ATK]
-Attaque
-
-[FET_SGP]
-STOCKER DES PHOTOS DANS UNE GALERIE
+Attack
 
 [FES_SAV]
-Vous ne pouvez pas sauvegarder le jeu à ce moment-là. Pour sauvegarder la partie, vous ne devez pas être en mission, ne pas bouger ou avoir un niveau recherché.
+You cannot save the game at this time. To save the game, you must not be on a mission, not move or have a wanted level.
 
 [FET_AUT]
 Autosave
 
 [FEM_SL9]
-Pas de sauvegarde automatique
+Autosave File Not Present
 
 [FEO_OTH]
-Autres paramètres
+OTHER SETTINGS
 
-[FEC_LTS]
-Clignotants gauches
+[FED_BRL]
+BORDERLESS
 
-[FEC_RTS]
-Signaux de virage à droite
+[TYREPOP]
+Tires popped with gunfire
+
+[FEM_PHT]
+PHOTO MODE
+
+[PM_CAM]
+CAMERA
+
+[PM_ZOOM]
+ZOOM
+
+[PM_TILT]
+TILT
+
+[PM_ZOTI]
+ZOOM AND TILT
+
+[PM_NCP]
+NEAR CLIP PLANE
+
+[PM_CHAR]
+CHARACTER
+
+[PM_VSBL]
+VISIBILITY
+
+[PM_ANIM]
+ANIMATION
+
+[PM_ANFR]
+ANIMATION FRAME
+
+[PM_WEAP]
+WEAPON
+
+[PM_MUZL]
+MUZZLE FLASH
+
+[PM_ROT]
+ROTATE
+
+[PM_SKY]
+SKY
+
+[PM_SUN]
+SUN AND MOON ANGLE
+
+[PM_HOUR]
+TIME IN HOURS
+
+[PM_MIN]
+TIME IN MINUTES
+
+[PM_WTHR]
+WEATHER
+
+[PM_SNNY]
+SUNNY
+
+[PM_CLDY]
+CLOUDY
+
+[PM_RANY]
+RAINY
+
+[PM_FGGY]
+FOGGY
+
+[PM_LGHT]
+LIGHT
+
+[PM_DEFL]
+DEFAULT LIGHT
+
+[PM_COLR]
+COLOR RED
+
+[PM_COLG]
+COLOR GREEN
+
+[PM_COLB]
+COLOR BLUE
+
+[PM_DARK]
+DARK LIGHT
+
+[PM_EFFE]
+EFFECTS
+
+[PM_CLFL]
+COLORFILTER
+
+[PM_INTS]
+INTENSITY
+
+[PM_BRTN]
+BRIGHTNESS
+
+[PM_FRMS]
+FRAMES
+
+[PM_TOGL]
+MENU
+
+[PM_EXIT]
+EXIT
+
+[PM_MOVE]
+MOVE
+
+[PM_PHTO]
+PHOTO
+
+[PM_UI]
+UI
+
+[PM_SPED]
+SPEED
+
+[PM_ADJS]
+ADJUST
+
+[PM_MVLI]
+MOVE LIGHT
+
+[PM_MVCH]
+MOVE CHARACTER
+
+[PM_SAVE]
+PHOTO SAVED TO LIBERTYEXTENDED\USERFILES\GALLERY
+
+[FEC_DS5]
+DUALSENSE
 
 { end of file }
 

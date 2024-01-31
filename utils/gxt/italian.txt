@@ -8201,98 +8201,226 @@ PED DENSITY
 CAR DENSITY
 
 {______________________________Liberty Extended______________________________}
-[FEC_AIM]   
-PUNTAMENTO AUTO
+[FEC_AIM]
+AUTO AIMING
 
-[FEC_LSX]   
-GUARDA SENSIBILITÀ X
+[FEC_LSX]
+LOOK SENSITIVITY X
 
 [FEC_LSY]   
-GUARDA SENSIBILITÀ Y
+LOOK SENSITIVITY Y
 
 [FEC_ASX]   
-SENSIBILITÀ DI MIRA X
+AIMING SENSITIVITY X
 
 [FEC_ASY]   
-SENSIBILITÀ DI MIRA Y
+AIMING SENSITIVITY Y
 
 [FEC_IVL]   
-INVERTI VERTICALMENTE
+INVERT VERTICALLY
 
 [FEC_LZN]   
-ZONA MORTA DELLO STICK SINISTRO
+LEFT STICK DEADZONE
 
 [FEC_RZN]   
-ZONA MORTA DELLO STICK DESTRO
+RIGHT STICK DEADZONE
 
 [FEC_VBF]   
-FORZA DI VIBRAZIONE
+VIBRATION FORCE
 
 [FEC_PRS]   
-Stazione radio precedente
+Previous radio station
 
 [FEC_NRS]   
-Prossima stazione radio
+Next radio station
 
 [FEC_RTC]   
-Ruota camera
+Rotate camera
 
 [FET_AGC]   
-CONFIGURAZIONE DEL GAMEPAD
+GAMEPAD CONFIGURATION
 
 [FET_AGS]   
-IMPOSTAZIONI DEL GAMEPAD
+GAMEPAD SETTINGS
 
 [FEC_FOV]   
-CAMPO VISIVO
+FIELD OF VIEW
 
 [FEC_ACV]   
-AUTOCENTRAGGIO NEL VEICOLO
+AUTO-CENTERING IN VEHICLE
 
 [FEC_RVD]   
-VEICOLO RELATIVO DURANTE LA GUIDA
+RELATIVE VEHICLE WHILE DRIVEBY
 
 [FEC_DOM]   
-DOOM Modalità
+DOOM Mode
 
 [FEC_WAL]
-Camminare
+Walk
 
 [FEC_RZO]
-Zoom radar
+Radar zoom
 
 [FEC_REL]
-Ricaricare l'arma
+Reload weapon
 
 [FED_GPS]
 GPS
 
 [FEC_ATK]
-Attacco
-
-[FET_SGP]
-SALVARE LE FOTO IN UNA GALLERIA
+Attack
 
 [FES_SAV]
-Non è possibile salvare la partita in questo momento. Per salvare la partita, non si deve essere in missione, non ci si deve muovere o si deve avere un livello di ricercato.
+You cannot save the game at this time. To save the game, you must not be on a mission, not move or have a wanted level.
 
 [FET_AUT]
-Salvataggio automatico
+Autosave
 
 [FEM_SL9]
-File di autosalvataggio non presente
+Autosave File Not Present
 
 [FEO_OTH]
-Altre impostazioni
+OTHER SETTINGS
 
-[FEC_LTS]
-Segnali di svolta a sinistra
+[FED_BRL]
+BORDERLESS
 
-[FEC_RTS]
-Segnali di svolta a destra
+[TYREPOP]
+Tires popped with gunfire
 
-[FEC_EML]
-Luci di emergenza
+[FEM_PHT]
+PHOTO MODE
+
+[PM_CAM]
+CAMERA
+
+[PM_ZOOM]
+ZOOM
+
+[PM_TILT]
+TILT
+
+[PM_ZOTI]
+ZOOM AND TILT
+
+[PM_NCP]
+NEAR CLIP PLANE
+
+[PM_CHAR]
+CHARACTER
+
+[PM_VSBL]
+VISIBILITY
+
+[PM_ANIM]
+ANIMATION
+
+[PM_ANFR]
+ANIMATION FRAME
+
+[PM_WEAP]
+WEAPON
+
+[PM_MUZL]
+MUZZLE FLASH
+
+[PM_ROT]
+ROTATE
+
+[PM_SKY]
+SKY
+
+[PM_SUN]
+SUN AND MOON ANGLE
+
+[PM_HOUR]
+TIME IN HOURS
+
+[PM_MIN]
+TIME IN MINUTES
+
+[PM_WTHR]
+WEATHER
+
+[PM_SNNY]
+SUNNY
+
+[PM_CLDY]
+CLOUDY
+
+[PM_RANY]
+RAINY
+
+[PM_FGGY]
+FOGGY
+
+[PM_LGHT]
+LIGHT
+
+[PM_DEFL]
+DEFAULT LIGHT
+
+[PM_COLR]
+COLOR RED
+
+[PM_COLG]
+COLOR GREEN
+
+[PM_COLB]
+COLOR BLUE
+
+[PM_DARK]
+DARK LIGHT
+
+[PM_EFFE]
+EFFECTS
+
+[PM_CLFL]
+COLORFILTER
+
+[PM_INTS]
+INTENSITY
+
+[PM_BRTN]
+BRIGHTNESS
+
+[PM_FRMS]
+FRAMES
+
+[PM_TOGL]
+MENU
+
+[PM_EXIT]
+EXIT
+
+[PM_MOVE]
+MOVE
+
+[PM_PHTO]
+PHOTO
+
+[PM_UI]
+UI
+
+[PM_SPED]
+SPEED
+
+[PM_ADJS]
+ADJUST
+
+[PM_MVLI]
+MOVE LIGHT
+
+[PM_MVCH]
+MOVE CHARACTER
+
+[PM_SAVE]
+PHOTO SAVED TO LIBERTYEXTENDED\USERFILES\GALLERY
+
+[FEC_DS5]
+DUALSENSE
+
+{ end of file }
 
 [DUMMY]
 THIS LABEL NEEDS TO BE HERE !!!
