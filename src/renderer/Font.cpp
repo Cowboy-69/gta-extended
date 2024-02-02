@@ -462,6 +462,8 @@ CFont::LoadButtons(const char* txdPath)
 		ButtonSprite[BUTTON_LEFT_RIGHT].SetTexture("dlr");
 		ButtonSprite[BUTTON_UP_DOWN].SetTexture("dud");
 		ButtonSprite[BUTTON_SELECT].SetTexture("select");
+		ButtonSprite[BUTTON_LSTICK].SetTexture("thumbl");
+		ButtonSprite[BUTTON_RSTICK].SetTexture("thumbr");
 #endif
 		CTxdStore::PopCurrentTxd();
 	}
