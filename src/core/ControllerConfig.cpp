@@ -217,8 +217,12 @@ void CControllerConfigManager::InitDefaultControlConfiguration()
 		SetControllerKeyAssociatedWithAction(VEHICLE_HORN,                        rsSHIFT,    OPTIONAL_EXTRA); // BUG: must be KEYBOARD ?											              
 	else		
 	{
+#ifdef EX_CONTROL // InitDefaultControlConfiguration
+		SetControllerKeyAssociatedWithAction(VEHICLE_HORN,                        rsLSHIFT,   KEYBOARD);
+#else
 		SetControllerKeyAssociatedWithAction(VEHICLE_HORN,                        rsLSHIFT,   OPTIONAL_EXTRA);
 		SetControllerKeyAssociatedWithAction(VEHICLE_HORN,                        rsRSHIFT,   KEYBOARD);
+#endif
 	}													              
 									          
 #ifdef EX_CONTROL // InitDefaultControlConfiguration - Swap bindings
