@@ -35,7 +35,8 @@ void CBuilding::ProcessDistantLights()
 	if (m_modelIndex == 1233 || m_modelIndex == 1259 || m_modelIndex == 1258 || m_modelIndex == 2802 ||
 		m_modelIndex == 2174 || m_modelIndex == 1241 || m_modelIndex == 1459 || m_modelIndex == 2173 || 
 		m_modelIndex == 2172 || m_modelIndex == 1244 || m_modelIndex == 412 || m_modelIndex == 1243 ||
-		m_modelIndex == 1550 || m_modelIndex == 2249 || m_modelIndex == 290) {
+		m_modelIndex == 1550 || m_modelIndex == 2249 || m_modelIndex == 290 || m_modelIndex == 533 ||
+		m_modelIndex == 923) {
 
 		return;
 	}
