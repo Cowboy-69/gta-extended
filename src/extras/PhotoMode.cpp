@@ -1538,10 +1538,16 @@ void CPhotoMode::ProcessPlayerPosition()
 			else
 				stickY /= 128.0f * 5.0f;
 
-			playerPos.z += -pad->NewState.LeftShoulder2 / 255.0f * 0.4f + pad->NewState.RightShoulder2 / 255.0f * 0.4f;
+			CVector oldPlayerPos = playerPos;
+
+			playerPos.z += -pad->NewState.LeftShoulder2 / 255.0f * 0.25f + pad->NewState.RightShoulder2 / 255.0f * 0.25f;
 			playerPos.x += TheCamera.GetRight().x * -stickX + TheCamera.GetForward().x * -stickY;
 			playerPos.y += TheCamera.GetRight().y * -stickX + TheCamera.GetForward().y * -stickY;
+
+			lightPos += playerPos - oldPlayerPos;
 		} else {
+			CVector oldPlayerPos = playerPos;
+
 			float mouseX = -(float)pad->GetMouseX() / 50.0f;
 			float mouseY = (float)pad->GetMouseY() / 50.0f;
 			if (pad->GetRightMouse()) {
@@ -1550,6 +1556,8 @@ void CPhotoMode::ProcessPlayerPosition()
 				playerPos.x += TheCamera.GetRight().x * mouseX + TheCamera.GetForward().x * mouseY;
 				playerPos.y += TheCamera.GetRight().y * mouseX + TheCamera.GetForward().y * mouseY;
 			}
+
+			lightPos += playerPos - oldPlayerPos;
 		}
 
 		ChangePlayerPosition();
@@ -1577,7 +1585,7 @@ void CPhotoMode::ProcessLights()
 			else
 				stickY /= 128.0f * 5.0f;
 
-			lightPos.z += -pad->NewState.LeftShoulder2 / 255.0f * 0.4f + pad->NewState.RightShoulder2 / 255.0f * 0.4f;
+			lightPos.z += -pad->NewState.LeftShoulder2 / 255.0f * 0.25f + pad->NewState.RightShoulder2 / 255.0f * 0.25f;
 			lightPos.x += TheCamera.GetRight().x * -stickX + TheCamera.GetForward().x * -stickY;
 			lightPos.y += TheCamera.GetRight().y * -stickX + TheCamera.GetForward().y * -stickY;
 		} else {
