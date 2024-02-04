@@ -3144,11 +3144,18 @@ void CControllerConfigManager::ResetSettingOrder(e_ControllerAction action)
 #ifdef EX_PC_KEY_ICONS
 int CControllerConfigManager::GetControllerSettingNonJoystick(e_ControllerAction action)
 {
+	// First, the mouse key is checked
+
+	int key = GetControllerKeyAssociatedWithAction(action, MOUSE);
+
+	if (key != 0 && key != rsNULL)
+		return key;
+
 	for (int i = KEYBOARD; i < MAX_CONTROLLERTYPES; i++) {
-		if (i == JOYSTICK)
+		if (i == JOYSTICK || i == MOUSE)
 			continue;
 
-		int key = GetControllerKeyAssociatedWithAction(action, (eControllerType)i);
+		key = GetControllerKeyAssociatedWithAction(action, (eControllerType)i);
 
 		if (key == 0 || key == rsNULL)
 			continue;
