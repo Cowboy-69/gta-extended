@@ -2489,7 +2489,9 @@ bool
 CWeapon::HitsGround(CEntity *holder, CVector *fireSource, CEntity *aimingTo)
 {
 	ASSERT(holder!=nil);
+#ifndef EX_DAMAGE // TEST: This should help fix some of the crashes
 	ASSERT(aimingTo!=nil);
+#endif
 
 	if (!holder->IsPed() || !((CPed*)holder)->m_pSeekTarget)
 		return false;
