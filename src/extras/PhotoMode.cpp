@@ -333,7 +333,7 @@ void CPhotoMode::DrawHints()
 
 				offsetX += 11.0f;
 
-				CFont::PS2Symbol = BUTTON_L3;
+				CFont::PS2Symbol = BUTTON_LSTICK;
 				CFont::SetScale(SCREEN_SCALE_X(0.8f * 0.75f), SCREEN_SCALE_Y(1.35f * 0.75f));
 				CFont::DrawButton(SCREEN_SCALE_X(offsetX), SCREEN_SCALE_FROM_BOTTOM(buttonY));
 				CFont::PS2Symbol = BUTTON_NONE;
@@ -376,7 +376,7 @@ void CPhotoMode::DrawHints()
 
 				offsetX += 11.0f;
 
-				CFont::PS2Symbol = BUTTON_L3;
+				CFont::PS2Symbol = BUTTON_LSTICK;
 				CFont::SetScale(SCREEN_SCALE_X(0.8f * 0.75f), SCREEN_SCALE_Y(1.35f * 0.75f));
 				CFont::DrawButton(SCREEN_SCALE_X(offsetX), SCREEN_SCALE_FROM_BOTTOM(buttonY));
 				CFont::PS2Symbol = BUTTON_NONE;
