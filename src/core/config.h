@@ -640,7 +640,7 @@ enum Config {
 #undef ONE_THREAD_PER_CHANNEL
 #undef FLUSHABLE_STREAMING
 
-#if !defined(_WIN32) || defined(__LP64__) || defined(_WIN64)
+/*#if !defined(_WIN32) || defined(__LP64__) || defined(_WIN64)
 #error Mod Loader is currently only supported in win-x86 builds
-#endif
+#endif*/
 #endif
