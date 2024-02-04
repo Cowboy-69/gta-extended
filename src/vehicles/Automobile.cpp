@@ -535,9 +535,11 @@ CAutomobile::ProcessControl(void)
 
 	// special control
 	switch(GetModelIndex()){
+#ifndef EX_FIRE_TRUCK_WATER_CANNON // The water jet now doesn't shift during movement
 	case MI_FIRETRUCK:
 		FireTruckControl();
 		break;
+#endif
 	case MI_RHINO:
 		TankControl();
 		BlowUpCarsInPath();
@@ -1335,6 +1337,11 @@ CAutomobile::PreRender(void)
 {
 	int i, j, n;
 	CVehicleModelInfo *mi = (CVehicleModelInfo*)CModelInfo::GetModelInfo(GetModelIndex());
+
+#ifdef EX_FIRE_TRUCK_WATER_CANNON // The water jet now doesn't shift during movement
+	if (GetModelIndex() == MI_FIRETRUCK)
+		FireTruckControl();
+#endif
 
 	if(GetModelIndex() == MI_RCBANDIT){
 		CVector pos = GetMatrix() * CVector(0.218f, -0.444f, 0.391f);
@@ -2717,6 +2724,17 @@ CAutomobile::ProcessControlInputs(uint8 pad)
 void
 CAutomobile::FireTruckControl(void)
 {
+#ifdef EX_FIRE_TRUCK_WATER_CANNON // Movement of the visible water cannon
+	// from reLCS
+	if (m_aCarNodes[CAR_BUMP_REAR]) {
+		CMatrix mat(RwFrameGetMatrix(m_aCarNodes[CAR_BUMP_REAR]));
+		CVector pos = mat.GetPosition();
+		mat.SetRotate(Clamp(m_fCarGunUD, DEGTORAD(-5.0f), DEGTORAD(15.0f)), 0.0f, -m_fCarGunLR);
+		mat.Translate(pos);
+		mat.UpdateRW();
+	}
+#endif
+
 	if(this == FindPlayerVehicle()){
 #ifdef FIX_BUGS
 		if (!CPad::GetPad(0)->GetCarGunFired())
@@ -2731,6 +2749,26 @@ CAutomobile::FireTruckControl(void)
 			m_fCarGunLR += CPad::GetPad(0)->GetCarGunLeftRight() * 0.00025f * CTimer::GetTimeStep();
 			m_fCarGunUD += CPad::GetPad(0)->GetCarGunUpDown() * 0.0001f * CTimer::GetTimeStep();
 		}
+#ifdef EX_FIRE_TRUCK_WATER_CANNON // Movement of the visible water cannon
+		m_fCarGunUD = Clamp(m_fCarGunUD, DEGTORAD(-5.0f), DEGTORAD(15.0f));
+
+		// from reLCS
+		CVector cannonPos, cannonDir;
+		CVector localOffset(0.0f, 0.75f, 0.0f);
+		CVector localPos(0.0f, 1.05f, 2.02f);
+		CMatrix rotMat;
+		rotMat.SetUnity();
+		rotMat.SetRotate(m_fCarGunUD, 0.0f, -m_fCarGunLR);
+		localOffset = rotMat * localOffset;
+		localPos += localOffset;
+		cannonPos = GetMatrix() * localPos;
+		cannonDir = Multiply3x3(GetMatrix(), CVector(-Sin(-m_fCarGunLR) * Cos(m_fCarGunUD),
+			Cos(-m_fCarGunLR) * Cos(m_fCarGunUD),
+			Sin(m_fCarGunUD)));
+		cannonDir.z += (CGeneral::GetRandomNumber() & 0xF) / 1000.0f;
+		cannonDir += m_vecMoveSpeed;
+		CWaterCannons::UpdateOne((uintptr)this, &cannonPos, &cannonDir, true);
+#else
 		m_fCarGunUD = Clamp(m_fCarGunUD, 0.05f, 0.3f);
 
 
@@ -2743,6 +2781,7 @@ CAutomobile::FireTruckControl(void)
 		cannonDir = Multiply3x3(GetMatrix(), cannonDir);
 		cannonDir.z += (CGeneral::GetRandomNumber()&0xF)/1000.0f;
 		CWaterCannons::UpdateOne((uintptr)this, &cannonPos, &cannonDir);
+#endif
 	}else if(GetStatus() == STATUS_PHYSICS){
 		CFire *fire = gFireManager.FindFurthestFire_NeverMindFireMen(GetPosition(), 10.0f, 35.0f);
 		if(fire == nil)
@@ -2768,6 +2807,24 @@ CAutomobile::FireTruckControl(void)
 		m_fCarGunUD = 0.2f + 0.2f*upDown;
 
 		// Spray water every once in a while
+#ifdef EX_FIRE_TRUCK_WATER_CANNON // Movement of the visible water cannon
+		// from reLCS
+		CVector cannonPos, cannonDir;
+		CVector localOffset(0.0f, 0.75f, 0.0f);
+		CVector localPos(0.0f, 1.05f, 2.02f);
+		CMatrix rotMat;
+		rotMat.SetUnity();
+		rotMat.SetRotate(m_fCarGunUD, 0.0f, -m_fCarGunLR);
+		localOffset = rotMat * localOffset;
+		localPos += localOffset;
+		cannonPos = GetMatrix() * localPos;
+		cannonDir = Multiply3x3(GetMatrix(), CVector(-Sin(-m_fCarGunLR) * Cos(m_fCarGunUD),
+			Cos(-m_fCarGunLR) * Cos(m_fCarGunUD),
+			Sin(m_fCarGunUD)));
+		cannonDir.z += (CGeneral::GetRandomNumber() & 0xF) / 1000.0f;
+		cannonDir += m_vecMoveSpeed;
+		CWaterCannons::UpdateOne((uintptr)this, &cannonPos, &cannonDir, false);
+#else
 		if((CTimer::GetTimeInMilliseconds()>>10) & 3){
 			CVector cannonPos(0.0f, 0.0f, 2.2f);	// different position than player's firetruck!
 			cannonPos = GetMatrix() * cannonPos;
@@ -2779,6 +2836,7 @@ CAutomobile::FireTruckControl(void)
 			cannonDir.z += (CGeneral::GetRandomNumber()&0xF)/1000.0f;
 			CWaterCannons::UpdateOne((uintptr)this, &cannonPos, &cannonDir);
 		}
+#endif
 	}
 }
 

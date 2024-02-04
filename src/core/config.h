@@ -100,6 +100,7 @@
 
 	#ifdef EX_VEHICLE
 		#define EX_BREAKABLE_WINDSHIELDS // from reVC
+		#define EX_FIRE_TRUCK_WATER_CANNON
 	#endif
 
 	#ifdef EX_DAMAGE

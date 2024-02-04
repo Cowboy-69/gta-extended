@@ -11,6 +11,10 @@
 #include "Fire.h"
 #include "WaterLevel.h"
 #include "Camera.h"
+#ifdef EX_FIRE_TRUCK_WATER_CANNON // A player can get a wanted level when using the water cannon on peds
+#include "PlayerInfo.h"
+#include "Wanted.h"
+#endif
 
 #define WATERCANNONVERTS 4
 #define WATERCANNONINDEXES 12
@@ -100,7 +104,11 @@ void CWaterCannon::Update_OncePerFrame(int16 index)
 	}
 }
 
+#ifdef EX_FIRE_TRUCK_WATER_CANNON // A player can get a wanted level when using the water cannon on peds
+void CWaterCannon::Update_NewInput(CVector *pos, CVector *dir, bool playerUsesCannon)
+#else
 void CWaterCannon::Update_NewInput(CVector *pos, CVector *dir)
+#endif
 {
 	ASSERT(pos != NULL);
 	ASSERT(dir != NULL);
@@ -108,6 +116,9 @@ void CWaterCannon::Update_NewInput(CVector *pos, CVector *dir)
 	m_avecPos[m_nCur]      = *pos;
 	m_avecVelocity[m_nCur] = *dir;
 	m_abUsed[m_nCur]       = true;
+#ifdef EX_FIRE_TRUCK_WATER_CANNON // A player can get a wanted level when using the water cannon on peds
+	m_bPlayerUsesCannon	   = playerUsesCannon;
+#endif
 }
 
 void CWaterCannon::Render(void)
@@ -237,6 +248,27 @@ void CWaterCannon::PushPeds(void)
 							if ( fire )
 								fire->Extinguish();
 							
+#ifdef EX_FIRE_TRUCK_WATER_CANNON // A player can get a wanted level when using the water cannon on peds
+							if (m_bPlayerUsesCannon && ped->CharCreatedBy != MISSION_CHAR) {
+								CWanted* wanted = FindPlayerPed()->m_pWanted;
+								if (wanted->GetWantedLevel() < 2) {
+									if (ped->m_nPedType == PEDTYPE_COP) {
+										if (wanted->GetWantedLevel() == 0)
+											wanted->m_nChaos = 60;
+										else
+											wanted->m_nChaos += 5;
+									} else {
+										wanted->m_nChaos += 1;
+									}
+
+									//if (FindPlayerVehicle())
+										//wanted->m_vLastSeenPlayerVehicle = FindPlayerVehicle();
+
+									wanted->UpdateWantedLevel();
+								}
+							}
+#endif
+
 							j = NUM_SEGMENTPOINTS;
 						}
 					}
@@ -252,7 +284,11 @@ void CWaterCannons::Init(void)
 		aCannons[i].Init();
 }
 
+#ifdef EX_FIRE_TRUCK_WATER_CANNON // A player can get a wanted level when using the water cannon on peds
+void CWaterCannons::UpdateOne(uint32 id, CVector *pos, CVector *dir, bool playerUsesCannon)
+#else
 void CWaterCannons::UpdateOne(uint32 id, CVector *pos, CVector *dir)
+#endif
 {
 	ASSERT(pos != NULL);
 	ASSERT(dir != NULL);
@@ -265,7 +301,11 @@ void CWaterCannons::UpdateOne(uint32 id, CVector *pos, CVector *dir)
 		
 		if ( n < NUM_WATERCANNONS )
 		{
+#ifdef EX_FIRE_TRUCK_WATER_CANNON // A player can get a wanted level when using the water cannon on peds
+			aCannons[n].Update_NewInput(pos, dir, playerUsesCannon);
+#else
 			aCannons[n].Update_NewInput(pos, dir);
+#endif
 			return;
 		}
 	}
@@ -280,7 +320,11 @@ void CWaterCannons::UpdateOne(uint32 id, CVector *pos, CVector *dir)
 		{
 			aCannons[n].Init();
 			aCannons[n].m_nId = id;
+#ifdef EX_FIRE_TRUCK_WATER_CANNON // A player can get a wanted level when using the water cannon on peds
+			aCannons[n].Update_NewInput(pos, dir, playerUsesCannon);
+#else
 			aCannons[n].Update_NewInput(pos, dir);
+#endif
 			return;
 		}
 	}
