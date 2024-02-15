@@ -59,6 +59,8 @@
 #ifdef VICE_EXTENDED
 	// These macros are used to navigation; Disabling them individually is not recommended
 
+	#define UTILS // Useful tools
+
 	#define CROUCH
 	#define FIRING_AND_AIMING
 	#define FIRST_PERSON
@@ -99,9 +101,9 @@
 
 	#define NEW_CHEATS
 
-	#define UTILS
-
 	//#define VICE_CRY
+
+	#define EX_MORE_BUTTON_ICONS
 
 enum Config {
 	NUMPLAYERS = 1,

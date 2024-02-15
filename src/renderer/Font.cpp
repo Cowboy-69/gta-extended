@@ -428,6 +428,13 @@ CFont::LoadButtons(const char *txdPath)
 		ButtonSprite[BUTTON_RSTICK_DOWN].SetTexture("thumbryd");
 		ButtonSprite[BUTTON_RSTICK_LEFT].SetTexture("thumbrxl");
 		ButtonSprite[BUTTON_RSTICK_RIGHT].SetTexture("thumbrxr");
+#ifdef EX_MORE_BUTTON_ICONS
+		ButtonSprite[BUTTON_LEFT_RIGHT].SetTexture("dlr");
+		ButtonSprite[BUTTON_UP_DOWN].SetTexture("dud");
+		ButtonSprite[BUTTON_SELECT].SetTexture("select");
+		ButtonSprite[BUTTON_LSTICK].SetTexture("thumbl");
+		ButtonSprite[BUTTON_RSTICK].SetTexture("thumbr");
+#endif
 		CTxdStore::PopCurrentTxd();
 	}
 	else {
@@ -1577,6 +1584,9 @@ CFont::ParseToken(wchar* str, CRGBA &color, bool &flash, bool &bold)
 		case 'L': PS2Symbol = BUTTON_RSTICK_DOWN; break;
 		case '(': PS2Symbol = BUTTON_RSTICK_LEFT; break;
 		case ')': PS2Symbol = BUTTON_RSTICK_RIGHT; break;
+#ifdef EX_MORE_BUTTON_ICONS
+		case 'S': PS2Symbol = BUTTON_SELECT; break;
+#endif
 #endif
 		default:
 			break;
