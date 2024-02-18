@@ -7,6 +7,11 @@
 #include "FileMgr.h"
 #endif
 #include "Timer.h"
+#ifdef EX_PC_KEY_ICONS
+#include "string"
+#include "ControllerConfig.h"
+#include "Pad.h"
+#endif
 
 void
 AsciiToUnicode(const char *src, wchar *dst)
@@ -301,6 +306,12 @@ int CFont::PS2Symbol = BUTTON_NONE;
 int CFont::ButtonsSlot = -1;
 #endif // BUTTON_ICONS
 
+#ifdef EX_PC_KEY_ICONS
+CSprite2d CFont::PCKeySprite[MAX_PC_KEY_SPRITES];
+int CFont::PCSymbol = -1;
+int CFont::PCKeySlot = -1;
+#endif
+
 void
 CFont::Initialise(void)
 {
@@ -391,6 +402,10 @@ CFont::Initialise(void)
 	LoadButtons("MODELS/X360BTNS.TXD");
 #endif
 #endif
+
+#ifdef EX_PC_KEY_ICONS // Load PCBTNS.TXD
+	LoadPCKeys("ViceExtended/MODELS/PCBTNS.TXD");
+#endif
 }
 
 #ifdef BUTTON_ICONS
@@ -447,6 +462,53 @@ CFont::LoadButtons(const char *txdPath)
 	}
 }
 #endif // BUTTON_ICONS
+
+#ifdef EX_PC_KEY_ICONS // LoadPCKeys
+void CFont::LoadPCKeys(const char* txdPath)
+{
+	if (int file = CFileMgr::OpenFile(txdPath)) {
+		CFileMgr::CloseFile(file);
+		if (PCKeySlot == -1)
+			PCKeySlot = CTxdStore::AddTxdSlot("pckeys");
+		else {
+			for (int i = 0; i < MAX_PC_KEY_SPRITES; i++)
+				PCKeySprite[i].Delete();
+			CTxdStore::RemoveTxd(PCKeySlot);
+		}
+		CTxdStore::LoadTxd(PCKeySlot, txdPath);
+		CTxdStore::AddRef(PCKeySlot);
+		CTxdStore::PushCurrentTxd();
+		CTxdStore::SetCurrentTxd(PCKeySlot);
+
+		// Virtual keys
+		for (int i = 1; i < 255; i++) {
+			if (i >= 65 && i <= 90) {
+				// letter
+				std::string keyString(1, i);
+				PCKeySprite[i - 1].SetTexture(keyString.c_str());
+			} else {
+				std::string keyString = std::to_string(i);
+				PCKeySprite[i - 1].SetTexture(keyString.c_str());
+			}
+		}
+
+		// Another sprites
+		PCKeySprite[SPRITE_MOUSE_WHEEL_UP].SetTexture("MWHU");
+		PCKeySprite[SPRITE_MOUSE_WHEEL_DOWN].SetTexture("MWHD");
+		PCKeySprite[SPRITE_MOUSE_WHEEL_UP_AND_DOWN].SetTexture("MWH");
+		PCKeySprite[SPRITE_MOUSE].SetTexture("Mouse");
+
+		CTxdStore::PopCurrentTxd();
+	} else {
+		if (PCKeySlot != -1) {
+			for (int i = 0; i < MAX_PC_KEY_SPRITES; i++)
+				PCKeySprite[i].Delete();
+			CTxdStore::RemoveTxdSlot(PCKeySlot);
+			PCKeySlot = -1;
+		}
+	}
+}
+#endif
 
 #ifdef MORE_LANGUAGES
 void
@@ -516,6 +578,14 @@ CFont::Shutdown(void)
 		ButtonsSlot = -1;
 	}
 #endif
+#ifdef EX_PC_KEY_ICONS // Shutdown
+	if (PCKeySlot != -1) {
+		for (int i = 0; i < MAX_PC_KEY_SPRITES; i++)
+			PCKeySprite[i].Delete();
+		CTxdStore::RemoveTxdSlot(PCKeySlot);
+		PCKeySlot = -1;
+	}
+#endif
 	Sprite[0].Delete();
 	Sprite[1].Delete();
 #ifdef MORE_LANGUAGES
@@ -566,6 +636,39 @@ CFont::DrawButton(float x, float y)
 			ButtonSprite[PS2Symbol].Draw(rect, CRGBA(255, 255, 255, RenderState.color.a));
 		RwRenderStateSet(rwRENDERSTATETEXTURERASTER, raster);
 		RwRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, (void *)vertexAlphaState);
+	}
+}
+#endif
+
+#ifdef EX_PC_KEY_ICONS // DrawPCKey
+void CFont::DrawPCKey(float x, float y)
+{
+	if (x <= 0.0f || x > SCREEN_WIDTH || y <= 0.0f || y > SCREEN_HEIGHT)
+		return;
+
+	if (PCSymbol != -1) {
+		CRect rect;
+		float charOffsetMultiplier = (float)PCKeySprite[PCSymbol].m_pTexture->raster->width / (float)PCKeySprite[PCSymbol].m_pTexture->raster->height;
+		rect.left = x;
+		rect.top = RenderState.scaleY + RenderState.scaleY + y;
+		rect.right = Details.scaleY * (17.0f * charOffsetMultiplier) + x;
+		rect.bottom = RenderState.scaleY * 19.0f + y;
+
+		int vertexAlphaState;
+		int textureFilterState;
+		void* raster;
+		RwRenderStateGet(rwRENDERSTATEVERTEXALPHAENABLE, &vertexAlphaState);
+		RwRenderStateGet(rwRENDERSTATETEXTURERASTER, &raster);
+		RwRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, (void*)TRUE);
+		RwRenderStateGet(rwRENDERSTATETEXTUREFILTER, &textureFilterState);
+		RwRenderStateSet(rwRENDERSTATETEXTUREFILTER, (void *)rwFILTERLINEAR); // We always apply filtering to PC key textures
+		if (RenderState.bIsShadow)
+			PCKeySprite[PCSymbol].Draw(rect, RenderState.color);
+		else
+			PCKeySprite[PCSymbol].Draw(rect, CRGBA(255, 255, 255, RenderState.color.a));
+		RwRenderStateSet(rwRENDERSTATETEXTUREFILTER, (void *)textureFilterState);
+		RwRenderStateSet(rwRENDERSTATETEXTURERASTER, raster);
+		RwRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, (void*)vertexAlphaState);
 	}
 }
 #endif
@@ -730,6 +833,17 @@ CFont::RenderFontBuffer()
 			PS2Symbol = BUTTON_NONE;
 #endif
 			pRenderStateBufPointer.pStr = ParseToken(pRenderStateBufPointer.pStr, color, bFlash, bBold);
+
+#ifdef EX_PC_KEY_ICONS // PrintString
+			if (PCSymbol != -1) {
+				DrawPCKey(textPosX, textPosY);
+				float charOffsetMultiplier = (float)PCKeySprite[PCSymbol].m_pTexture->raster->width / (float)PCKeySprite[PCSymbol].m_pTexture->raster->height;
+				textPosX += RenderState.scaleY * (17.0f * charOffsetMultiplier);
+				PCSymbol = -1;
+				PS2Symbol = -1;
+			}
+#endif
+
 #ifdef BUTTON_ICONS
 			if(PS2Symbol != BUTTON_NONE) {
 				DrawButton(textPosX, textPosY);
@@ -1591,6 +1705,11 @@ CFont::ParseToken(wchar* str, CRGBA &color, bool &flash, bool &bold)
 		default:
 			break;
 		}
+
+#ifdef EX_PC_KEY_ICONS // ParseToken
+		if (PS2Symbol != -1 && !CPad::IsAffectedByController)
+			PCSymbol = ControlsManager.GetCurrentPCKeyFromCurrentAction();
+#endif
 	}
 	while (*s != '~')
 		++s;

@@ -104,6 +104,7 @@
 	//#define VICE_CRY
 
 	#define EX_MORE_BUTTON_ICONS
+	#define EX_PC_KEY_ICONS
 
 enum Config {
 	NUMPLAYERS = 1,

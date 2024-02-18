@@ -155,6 +155,10 @@ public:
 	bool                  m_aSimCheckers[MAX_SIMS][MAX_CONTROLLERTYPES];
 	bool                  m_bMouseAssociated;
 
+#ifdef EX_PC_KEY_ICONS
+	int					  m_curActionsInMessage[4];
+#endif
+
 #ifdef LOAD_INI_SETTINGS
 	static uint32 ms_padButtonsInited;
 #endif
@@ -217,6 +221,11 @@ public:
 	wchar *GetControllerSettingTextKeyBoard       (e_ControllerAction action, eControllerType type);
 	wchar *GetControllerSettingTextMouse          (e_ControllerAction action);
 	wchar *GetControllerSettingTextJoystick       (e_ControllerAction action);
+
+#ifdef EX_PC_KEY_ICONS
+	int GetControllerSettingNonJoystick(e_ControllerAction action);
+	int GetCurrentPCKeyFromCurrentAction();
+#endif
 
 	int32 GetNumOfSettingsForAction(e_ControllerAction action);
 	void  GetWideStringOfCommandKeys(uint16 action, wchar *text, uint16 leight);

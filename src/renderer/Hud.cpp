@@ -28,6 +28,9 @@
 #ifdef VEHICLE_MODS
 #include "Garages.h"
 #endif
+#ifdef EX_PC_KEY_ICONS
+#include "ControllerConfig.h"
+#endif
 
 #if defined(FIX_BUGS)
 	#define SCREEN_SCALE_X_FIX(a) SCREEN_SCALE_X(a)
@@ -1987,6 +1990,12 @@ void CHud::SetHelpMessage(wchar *message, bool quick, bool displayForever)
 		for (int i = 0; i < HELP_MSG_LENGTH; i++) {
 			m_HelpMessageToPrint[i] = 0;
 		}
+
+#ifdef EX_PC_KEY_ICONS // Clear actions in the message
+		for (int j = 0; j < 4; j++) {
+			ControlsManager.m_curActionsInMessage[j] = -1;
+		}
+#endif
 
 		CMessages::WideStringCopy(m_HelpMessage, message, HELP_MSG_LENGTH);
 		CMessages::InsertPlayerControlKeysInString(m_HelpMessage);

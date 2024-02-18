@@ -467,6 +467,15 @@ CMessages::InsertPlayerControlKeysInString(wchar *str)
 				if (contSize != 0) {
 					if (WideStringCompare(&str[i], ControlsManager.m_aActionNames[cont], contSize)) {
 						done = true;
+#ifdef EX_PC_KEY_ICONS // InsertPlayerControlKeysInString
+						for (int j = 0; j < 4; j++) {
+							if (ControlsManager.m_curActionsInMessage[j] == -1) {
+								ControlsManager.m_curActionsInMessage[j] = cont;
+
+								break;
+							}
+						}
+#endif
 						ControlsManager.GetWideStringOfCommandKeys(cont, keybuf, 256);
 						uint16 keybuf_size = GetWideStringLength(keybuf);
 						for (uint16 j = 0; j < keybuf_size; j++) {
