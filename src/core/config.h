@@ -106,6 +106,10 @@
 	#define EX_MORE_BUTTON_ICONS
 	#define EX_PC_KEY_ICONS
 
+	#ifdef UTILS
+		#define EX_BRYX_LIGHTS
+	#endif
+
 enum Config {
 	NUMPLAYERS = 1,
 

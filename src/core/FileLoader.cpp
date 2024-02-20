@@ -870,6 +870,11 @@ CFileLoader::LoadTimeObject(const char *line)
 		break;
 	}
 
+#ifdef EX_BRYX_LIGHTS
+	if (id == -1)
+		id = CModelInfo::GetFreeModelID();
+#endif
+
 	mi = CModelInfo::AddTimeModel(id);
 	mi->SetModelName(model);
 	mi->SetNumAtomics(numObjs);
@@ -1660,6 +1665,11 @@ CFileLoader::LoadObjectInstance(const char *line)
 			return;
 		area = 0;
 	}
+
+#ifdef EX_BRYX_LIGHTS
+	if (id == -1)
+		CModelInfo::GetModelInfo(name, &id);
+#endif
 
 	mi = (CSimpleModelInfo*)CModelInfo::GetModelInfo(id);
 	if(mi == nil)

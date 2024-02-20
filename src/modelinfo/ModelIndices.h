@@ -2,7 +2,11 @@
 
 #include "ModelInfo.h"
 
-#ifdef EX_VCPD_WINTERGREEN
+#ifdef EX_VCPD_WINTERGREEN // ModelIndices - MI_POLWINTERGREEN
+#endif
+#ifdef EX_BRYX_LIGHTS // ModelIndices - MI_BRYX_LIGHTS/MI_LODBRYX_LIGHTS
+#endif
+#ifdef VICE_EXTENDED // ModelIndices
 #define MODELINDICES \
 	X("fire_hydrant",	MI_FIRE_HYDRANT) \
 	X("phonesign",		MI_PHONESIGN) \
@@ -140,7 +144,13 @@
 	X("blimp_day",		MI_BLIMP_DAY) \
 	X("yt_main_body",	MI_YT_MAIN_BODY) \
 	X("yt_main_body2",	MI_YT_MAIN_BODY2) \
-	X("polwintergreen",	MI_POLWINTERGREEN)
+	X("polwintergreen",	MI_POLWINTERGREEN) \
+	X("od_chariot_lghts01", MI_OD_CHARIOT_LGHTS01) \
+	X("od_chariot_lghts02", MI_OD_CHARIOT_LGHTS02) \
+	X("lodchariot_lghts01", MI_LODCHARIOT_LGHTS01) \
+	X("lodchariot_lghts02", MI_LODCHARIOT_LGHTS02) \
+	X("bryx_lights", MI_BRYX_LIGHTS) \
+	X("lodbryx_lights", MI_LODBRYX_LIGHTS)
 #else
 #define MODELINDICES \
 	X("fire_hydrant",	MI_FIRE_HYDRANT) \

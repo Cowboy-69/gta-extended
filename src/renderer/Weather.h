@@ -57,6 +57,12 @@ public:
 	static void AddBeastie();
 
 	static void ForceHurricaneWeather();
+
+#ifdef EX_BRYX_LIGHTS
+	static bool bBryxLights;
+	static void ShowBryxLights();
+	static void HideBryxLights();
+#endif
 };
 
 enum {

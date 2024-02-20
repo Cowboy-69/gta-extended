@@ -219,7 +219,7 @@ CModelInfo::GetModelInfo(const char *name, int minIndex, int maxIndex)
 	return nil;
 }
 
-#ifdef NEW_VEHICLE_LOADER
+#ifdef UTILS // GetFreeModelID
 int CModelInfo::GetFreeModelID()
 {
 	for (int i = 0; i < MODELINFOSIZE; i++) {

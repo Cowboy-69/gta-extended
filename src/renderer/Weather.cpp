@@ -55,6 +55,10 @@ bool CWeather::bScriptsForceRain;
 
 tRainStreak Streaks[NUM_RAIN_STREAKS];
 
+#ifdef EX_BRYX_LIGHTS
+bool CWeather::bBryxLights;
+#endif
+
 int16 WeatherTypesList[] = {
 	WEATHER_EXTRA_SUNNY, WEATHER_EXTRA_SUNNY, WEATHER_EXTRA_SUNNY, WEATHER_EXTRA_SUNNY,
 	WEATHER_EXTRA_SUNNY, WEATHER_EXTRA_SUNNY, WEATHER_EXTRA_SUNNY, WEATHER_EXTRA_SUNNY,
@@ -141,6 +145,10 @@ void CWeather::Init(void)
 	SoundHandle = DMAudio.CreateEntity(AUDIOTYPE_WEATHER, (void*)1);
 	if (SoundHandle >= 0)
 		DMAudio.SetEntityStatus(SoundHandle, TRUE);
+
+#ifdef EX_BRYX_LIGHTS
+	bBryxLights = false;
+#endif
 }
 
 void CWeather::Update(void)
@@ -171,6 +179,11 @@ void CWeather::Update(void)
 	if (NewWeatherType != WEATHER_RAINY || OldWeatherType != WEATHER_RAINY) {
 		LightningFlash = false;
 		LightningBurst = false;
+
+#ifdef EX_BRYX_LIGHTS // Hide after the lightning ends
+		if (bBryxLights)
+			HideBryxLights();
+#endif
 	}
 	else{
 		if (LightningBurst) {
@@ -189,6 +202,10 @@ void CWeather::Update(void)
 				LightningDuration = Min(CTimer::GetFrameCounter() - LightningStart, 20);
 				LightningFlash = false;
 				WhenToPlayLightningSound = CTimer::GetTimeInMilliseconds() + 150 * (20 - LightningDuration);
+
+#ifdef EX_BRYX_LIGHTS // Hide
+				HideBryxLights();
+#endif
 			}
 		}
 		else {
@@ -201,6 +218,10 @@ void CWeather::Update(void)
 				LightningStart = CTimer::GetFrameCounter();
 				LightningFlashLastChange = CTimer::GetTimeInMilliseconds();
 				LightningFlash = true;
+
+#ifdef EX_BRYX_LIGHTS // Show
+				ShowBryxLights();
+#endif
 			}
 		}
 	}
@@ -709,5 +730,64 @@ void CWeather::ForceHurricaneWeather()
 	CWeather::OldWeatherType = WEATHER_HURRICANE;
 	CWeather::NewWeatherType = WEATHER_HURRICANE;
 	CWeather::ForcedWeatherType = WEATHER_HURRICANE;
+}
+#endif
+
+#ifdef EX_BRYX_LIGHTS
+void CWeather::ShowBryxLights()
+{
+	if (bBryxLights)
+		return;
+
+	bBryxLights = true;
+
+	CTimeModelInfo* mi = (CTimeModelInfo*)CModelInfo::GetModelInfo(MI_BRYX_LIGHTS);
+	if (mi) {
+		mi->SetTimes(23, 5);
+
+		mi = (CTimeModelInfo*)CModelInfo::GetModelInfo(MI_LODBRYX_LIGHTS);
+		mi->SetTimes(23, 5);
+
+		mi = (CTimeModelInfo*)CModelInfo::GetModelInfo(MI_OD_CHARIOT_LGHTS01);
+		if (mi) {
+			mi->SetTimes(0, 0);
+
+			mi = (CTimeModelInfo*)CModelInfo::GetModelInfo(MI_OD_CHARIOT_LGHTS02);
+			mi->SetTimes(0, 0);
+
+			mi = (CTimeModelInfo*)CModelInfo::GetModelInfo(MI_LODCHARIOT_LGHTS01);
+			mi->SetTimes(0, 0);
+
+			mi = (CTimeModelInfo*)CModelInfo::GetModelInfo(MI_LODCHARIOT_LGHTS02);
+			mi->SetTimes(0, 0);
+		}
+	}
+}
+
+void CWeather::HideBryxLights()
+{
+	bBryxLights = false;
+
+	CTimeModelInfo* mi = (CTimeModelInfo*)CModelInfo::GetModelInfo(MI_BRYX_LIGHTS);
+	if (mi) {
+		mi->SetTimes(0, 0);
+
+		mi = (CTimeModelInfo*)CModelInfo::GetModelInfo(MI_LODBRYX_LIGHTS);
+		mi->SetTimes(0, 0);
+
+		mi = (CTimeModelInfo*)CModelInfo::GetModelInfo(MI_OD_CHARIOT_LGHTS01);
+		if (mi) {
+			mi->SetTimes(24, 5);
+
+			mi = (CTimeModelInfo*)CModelInfo::GetModelInfo(MI_OD_CHARIOT_LGHTS02);
+			mi->SetTimes(23, 5);
+
+			mi = (CTimeModelInfo*)CModelInfo::GetModelInfo(MI_LODCHARIOT_LGHTS01);
+			mi->SetTimes(24, 5);
+
+			mi = (CTimeModelInfo*)CModelInfo::GetModelInfo(MI_LODCHARIOT_LGHTS02);
+			mi->SetTimes(23, 5);
+		}
+	}
 }
 #endif

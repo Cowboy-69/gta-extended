@@ -43,7 +43,7 @@ public:
 		return ms_modelInfoPtrs[id]->GetColModel();
 	}
 
-#ifdef NEW_VEHICLE_LOADER
+#ifdef UTILS // GetFreeModelID
 	static int GetFreeModelID();
 #endif
 
