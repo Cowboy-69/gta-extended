@@ -37,6 +37,9 @@
 #include "FileLoader.h"
 #include "User.h"
 #include "sampman.h"
+#ifdef EX_PHOTO_MODE // Photo mode button in pause menu
+#include "PhotoMode.h"
+#endif
 
 // Similar story to Hud.cpp:
 // Game has colors inlined in code.
@@ -4259,6 +4262,13 @@ CMenuManager::Process(void)
 
 	InitialiseChangedLanguageSettings();
 
+#if defined EX_PHOTO_MODE && !defined DEBUG // Exit photo mode by pressing the button
+	if (CPhotoMode::IsPhotoModeEnabled() && (CPad::GetPad(0)->GetEscapeJustDown() || CPad::GetPad(0)->IsAffectedByController && CPad::GetPad(0)->GetCircleJustUp())) {
+		CPhotoMode::DisablePhotoMode();
+		return;
+	}
+#endif
+
 	if (m_bMenuActive) {
 		UserInput();
 		ProcessFileActions();
@@ -5760,6 +5770,13 @@ CMenuManager::ProcessUserInput(uint8 goDown, uint8 goUp, uint8 optionSelected, u
 				SwitchToNewScreen(MENUPAGE_OUTRO);
 				break;
 			case MENUACTION_RESUME:
+#ifdef EX_PHOTO_MODE // Photo mode button in pause menu
+			case MENUACTION_PHOTO_MODE:
+				if (aScreens[m_nCurrScreen].m_aEntries[m_nCurrOption].m_Action == MENUACTION_PHOTO_MODE)
+					CPhotoMode::EnablePhotoMode();
+				else
+					CPhotoMode::DisablePhotoMode();
+#endif
 #ifdef LEGACY_MENU_OPTIONS
 				if (m_PrefsVsyncDisp != m_PrefsVsync) {
 					m_PrefsVsync = m_PrefsVsyncDisp;

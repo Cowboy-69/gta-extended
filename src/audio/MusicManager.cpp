@@ -23,6 +23,9 @@
 #ifdef EX_RADIO_ICONS
 #include "Frontend.h"
 #endif
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
 
 #if !defined FIX_BUGS && (defined RADIO_SCROLL_TO_PREV_STATION || defined RADIO_OFF_TEXT)
 static_assert(false, "R*'s radio implementation is quite buggy, RADIO_SCROLL_TO_PREV_STATION and RADIO_OFF_TEXT won't work without FIX_BUGS");
@@ -1292,6 +1295,11 @@ cMusicManager::SetStripClubTrackPos(uint8 scriptObject)
 void
 cMusicManager::DisplayRadioStationName()
 {
+#ifdef EX_PHOTO_MODE // Don't draw a radio station name during photo mode
+	if (CPhotoMode::IsPhotoModeEnabled())
+		return;
+#endif
+
 	uint8 gStreamedSound;
 	static wchar *pCurrentStation = nil;
 	static uint8 cDisplay = 0;

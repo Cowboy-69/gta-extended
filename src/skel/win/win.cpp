@@ -51,6 +51,10 @@
 #include "platform.h"
 #include "crossplatform.h"
 
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
+
 #define MAX_SUBSYSTEMS		(16)
 
 static RwBool		  ForegroundApp = TRUE;
@@ -2594,6 +2598,10 @@ WinMain(HINSTANCE instance,
 #endif
 			break;
 		}
+#endif
+
+#ifdef EX_PHOTO_MODE // Disabling photo mode when starting a new game or loading a game save
+		CPhotoMode::DisablePhotoMode();
 #endif
 		
 		CPad::ResetCheats();

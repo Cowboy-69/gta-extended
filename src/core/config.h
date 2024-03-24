@@ -106,6 +106,10 @@
 	#define EX_MORE_BUTTON_ICONS
 	#define EX_PC_KEY_ICONS
 
+	#if defined EX_MORE_BUTTON_ICONS && defined EX_PC_KEY_ICONS
+		#define EX_PHOTO_MODE
+	#endif
+
 	#ifdef UTILS
 		#define EX_BRYX_LIGHTS
 	#endif

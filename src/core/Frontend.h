@@ -261,6 +261,9 @@ enum eMenuScreen
 #if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined IMPROVED_TECH_PART // Other settings
 	MENUPAGE_OTHER_SETTINGS,
 #endif
+#ifdef EX_PHOTO_MODE // Photo mode button in pause menu
+	MENUPAGE_PHOTO_MODE,
+#endif
 	MENUPAGES
 };
 
@@ -366,6 +369,9 @@ enum eMenuAction
 #if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined IMPROVED_TECH_PART // Other settings
 	MENUACTION_AUTOSAVE,
 	MENUACTION_GALLERY,
+#endif
+#ifdef EX_PHOTO_MODE // Photo mode button in pause menu
+	MENUACTION_PHOTO_MODE,
 #endif
 };
 

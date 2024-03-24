@@ -95,6 +95,9 @@
 #ifdef USE_TEXTURE_POOL
 #include "TexturePools.h"
 #endif
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
 
 eLevelName CGame::currLevel;
 int32 CGame::currArea;
@@ -879,7 +882,11 @@ void CGame::Process(void)
 	CStreaming::Update();
 	uint32 processTime = CTimer::GetCurrentTimeInCycles() / CTimer::GetCyclesPerMillisecond() - startTime;
 	CWindModifiers::Number = 0;
+#ifdef EX_PHOTO_MODE // CGame::Process
+	if (!CTimer::GetIsPaused() && !CPhotoMode::IsPhotoModeEnabled())
+#else
 	if (!CTimer::GetIsPaused())
+#endif
 	{
 #ifndef MASTER
 		if (VarUpdatePlayerCoords) {
@@ -974,6 +981,41 @@ void CGame::Process(void)
 			POP_MEMID();
 		}
 	}
+#ifdef EX_PHOTO_MODE // CGame::Process
+	else if (CPhotoMode::IsPhotoModeEnabled()) {
+		CPhotoMode::ProcessControl();
+		CWeather::Update();
+
+#ifdef EX_DISTANT_LIGHTS // IsPhotoModeEnabled
+		if (bEnableDistantLights) {
+			for (int i = CPools::GetDummyPool()->GetSize() - 1; i >= 0; i--) {
+				CDummy* entity = CPools::GetDummyPool()->GetSlot(i);
+
+				if (!entity)
+					continue;
+
+				entity->ProcessDistantLights();
+			}
+
+			for (int i = CPools::GetBuildingPool()->GetSize() - 1; i >= 0; i--) {
+				CBuilding* entity = CPools::GetBuildingPool()->GetSlot(i);
+
+				if (!entity)
+					continue;
+
+				entity->ProcessDistantLights();
+			}
+		}
+#endif
+
+		CTimeCycle::Update();
+		CCullZones::Update();
+		CCoronas::DoSunAndMoon();
+		CCoronas::Update();
+		CShadows::UpdateStaticShadows();
+		CShadows::UpdatePermanentShadows();
+	}
+#endif
 #ifdef GTA_PS2
 	CMemCheck::DoTest();
 #endif

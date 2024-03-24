@@ -46,6 +46,9 @@
 #ifdef EX_PED_VARIATIONS
 #include "TxdStore.h"
 #endif
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
 
 CPed *gapTempPedList[50];
 uint16 gnNumTempPedList;
@@ -5498,7 +5501,11 @@ CPed::PreRender(void)
 	}
 
 #ifdef FIRST_PERSON
+#ifdef EX_PHOTO_MODE // Don't remove the player's head during photo mode (first person)
+	if (bBodyPartJustCameOff && m_bodyPartBleeding == PED_HEAD || IsPlayer() && !CPhotoMode::IsPhotoModeEnabled() && TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON) {
+#else
 	if (bBodyPartJustCameOff && m_bodyPartBleeding == PED_HEAD || IsPlayer() && TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON) {
+#endif
 #else
 	if (bBodyPartJustCameOff && m_bodyPartBleeding == PED_HEAD) {
 #endif

@@ -37,6 +37,9 @@
 #include "Font.h"
 #include "Frontend.h"
 #include "VarConsole.h"
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
 
 bool CStreaming::ms_disableStreaming;
 bool CStreaming::ms_bLoadingBigModel;
@@ -347,6 +350,11 @@ CStreaming::Update(void)
 	   CGame::currArea == AREA_MAIN_MAP &&
 	   !CReplay::IsPlayingBack()){
 		StreamVehiclesAndPeds();
+#ifdef EX_PHOTO_MODE // StreamZoneModels depends on the camera position
+		if (CPhotoMode::IsPhotoModeEnabled())
+			StreamZoneModels(CPhotoMode::GetCameraPosition());
+		else
+#endif
 		StreamZoneModels(FindPlayerCoors());
 	}
 

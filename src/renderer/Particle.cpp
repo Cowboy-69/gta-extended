@@ -21,6 +21,9 @@
 #include "soundlist.h"
 #include "SaveBuf.h"
 #include "debugmenu.h"
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
 
 #define MAX_PARTICLES_ON_SCREEN   (750)
 
@@ -882,7 +885,11 @@ CParticle *CParticle::AddParticle(tParticleType type, CVector const &vecPos, CVe
 
 CParticle *CParticle::AddParticle(tParticleType type, CVector const &vecPos, CVector const &vecDir, CEntity *pEntity, float fSize, RwRGBA const &color, int32 nRotationSpeed, int32 nRotation, int32 nCurFrame, int32 nLifeSpan)
 {
+#ifdef EX_PHOTO_MODE // Particles stop being created in photo mode except for the muzzle flash
+	if ( CTimer::GetIsPaused() || CPhotoMode::IsPhotoModeEnabled() && type != PARTICLE_GUNFLASH_NOANIM)
+#else
 	if ( CTimer::GetIsPaused() )
+#endif
 		return nil;
 
 #ifndef IMPROVED_VEHICLES_2 // vehicle damage particles
@@ -2145,7 +2152,11 @@ void CParticle::Render()
 					
 					if ( i == PARTICLE_WATER_HYDRANT
 							|| (!particleBanned || SCREEN_WIDTH * fParticleScaleLimit >= w)
+#ifdef EX_PHOTO_MODE // Near clip plane of sprites reduced during photo mode
+							&& (SCREEN_HEIGHT * fParticleScaleLimit >= h || CPhotoMode::IsPhotoModeEnabled()))
+#else
 							&& SCREEN_HEIGHT * fParticleScaleLimit >= h )
+#endif
 					{
 						if ( i == PARTICLE_WATER_HYDRANT )
 						{

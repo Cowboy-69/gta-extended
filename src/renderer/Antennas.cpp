@@ -2,6 +2,9 @@
 
 #include "main.h"
 #include "Antennas.h"
+#ifdef EX_PHOTO_MODE // Antenna
+#include "PhotoMode.h"
+#endif
 
 CAntenna CAntennas::aAntennas[NUMANTENNAS];
 
@@ -110,6 +113,11 @@ CAntennas::Render(void)
 void
 CAntenna::Update(CVector dir, CVector basepos)
 {
+#ifdef EX_PHOTO_MODE // Antenna
+	if (CPhotoMode::IsPhotoModeEnabled())
+		return;
+#endif
+
 	int i;
 
 	pos[0] = basepos;

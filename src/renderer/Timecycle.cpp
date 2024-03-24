@@ -9,6 +9,9 @@
 #include "CutsceneMgr.h"
 #include "FileMgr.h"
 #include "Timecycle.h"
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
 
 uint8 CTimeCycle::m_nAmbientRed[NUMHOURS][NUMWEATHERS];
 uint8 CTimeCycle::m_nAmbientGreen[NUMHOURS][NUMWEATHERS];
@@ -402,9 +405,21 @@ CTimeCycle::Update(void)
 
 	float sunAngle = 2*PI*(CClock::GetSeconds()/60.0f + CClock::GetMinutes() + CClock::GetHours()*60)/(24*60);
 	CVector &sunPos = GetSunDirection();
+#ifdef EX_PHOTO_MODE // Changing sun angle
+	if (CPhotoMode::IsPhotoModeEnabled() && CPhotoMode::HasSunAngleBeenChanged()) {
+		sunPos.x = Sin(sunAngle) * Sin(CPhotoMode::GetSunAngle());
+		sunPos.y = 1.0f * Cos(CPhotoMode::GetSunAngle());
+		sunPos.z = 0.2f * Sin(CPhotoMode::GetSunAngle()) - Cos(sunAngle);
+	} else {
+		sunPos.x = Sin(sunAngle);
+		sunPos.y = 1.0f;
+		sunPos.z = 0.2f - Cos(sunAngle);
+	}
+#else
 	sunPos.x = Sin(sunAngle);
 	sunPos.y = 1.0f;
 	sunPos.z = 0.2f - Cos(sunAngle);
+#endif
 	sunPos.Normalise();
 
 	if(m_bExtraColourOn)

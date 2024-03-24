@@ -78,6 +78,9 @@
 #ifdef USE_OUR_VERSIONING
 #include "GitSHA1.h"
 #endif
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
 
 GlobalScene Scene;
 
@@ -1518,7 +1521,11 @@ Render2dStuff(void)
 		firstPersonWeapon = true;
 
 	// Draw black border for sniper and rocket launcher
+#ifdef EX_PHOTO_MODE // Don't draw black border for sniper and rocket launcher during photo mode
+	if(!CPhotoMode::IsPhotoModeEnabled() && ((weaponType == WEAPONTYPE_SNIPERRIFLE || weaponType == WEAPONTYPE_ROCKETLAUNCHER || weaponType == WEAPONTYPE_LASERSCOPE) && firstPersonWeapon)){
+#else
 	if((weaponType == WEAPONTYPE_SNIPERRIFLE || weaponType == WEAPONTYPE_ROCKETLAUNCHER || weaponType == WEAPONTYPE_LASERSCOPE) && firstPersonWeapon){
+#endif
 		CRGBA black(0, 0, 0, 255);
 
 		// top and bottom strips
@@ -1539,9 +1546,15 @@ Render2dStuff(void)
 #ifdef GTA_SCENE_EDIT
 	if(CSceneEdit::m_bEditOn)
 		CSceneEdit::Draw();
+	else {
+#endif
+#ifdef EX_PHOTO_MODE // Render2dStuff
+	if (CPhotoMode::IsPhotoModeEnabled())
+		CPhotoMode::DrawMenuAndEffects();
 	else
 #endif
 		CHud::Draw();
+	}
 
 	CSpecialFX::Render2DFXs();
 	CUserDisplay::OnscnTimer.ProcessForDisplay();

@@ -630,12 +630,20 @@ CFont::DrawButton(float x, float y)
 		RwRenderStateGet(rwRENDERSTATEVERTEXALPHAENABLE, &vertexAlphaState);
 		RwRenderStateGet(rwRENDERSTATETEXTURERASTER, &raster);
 		RwRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, (void *)TRUE);
+#ifdef EX_PHOTO_MODE // We always apply filtering to gamepad button textures
+		int textureFilterState;
+		RwRenderStateGet(rwRENDERSTATETEXTUREFILTER, &textureFilterState);
+		RwRenderStateSet(rwRENDERSTATETEXTUREFILTER, (void*)rwFILTERLINEAR);
+#endif
 		if (RenderState.bIsShadow)
 			ButtonSprite[PS2Symbol].Draw(rect, RenderState.color);
 		else
 			ButtonSprite[PS2Symbol].Draw(rect, CRGBA(255, 255, 255, RenderState.color.a));
 		RwRenderStateSet(rwRENDERSTATETEXTURERASTER, raster);
 		RwRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, (void *)vertexAlphaState);
+#ifdef EX_PHOTO_MODE // We always apply filtering to gamepad button textures
+		RwRenderStateSet(rwRENDERSTATETEXTUREFILTER, (void*)textureFilterState);
+#endif
 	}
 }
 #endif
@@ -651,7 +659,7 @@ void CFont::DrawPCKey(float x, float y)
 		float charOffsetMultiplier = (float)PCKeySprite[PCSymbol].m_pTexture->raster->width / (float)PCKeySprite[PCSymbol].m_pTexture->raster->height;
 		rect.left = x;
 		rect.top = RenderState.scaleY + RenderState.scaleY + y;
-		rect.right = Details.scaleY * (17.0f * charOffsetMultiplier) + x;
+		rect.right = RenderState.scaleY * (17.0f * charOffsetMultiplier) + x;
 		rect.bottom = RenderState.scaleY * 19.0f + y;
 
 		int vertexAlphaState;

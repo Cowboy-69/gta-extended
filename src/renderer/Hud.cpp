@@ -31,6 +31,9 @@
 #ifdef EX_PC_KEY_ICONS
 #include "ControllerConfig.h"
 #endif
+#ifdef EX_PHOTO_MODE
+#include "PhotoMode.h"
+#endif
 
 #if defined(FIX_BUGS)
 	#define SCREEN_SCALE_X_FIX(a) SCREEN_SCALE_X(a)
@@ -1528,6 +1531,11 @@ void CHud::DrawAfterFade()
 	RwRenderStateSet(rwRENDERSTATETEXTUREFILTER, (void*)rwFILTERNEAREST);
 	RwRenderStateSet(rwRENDERSTATETEXTUREADDRESS, (void*)rwTEXTUREADDRESSCLAMP);
 	RwRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, (void*)FALSE);
+
+#ifdef EX_PHOTO_MODE // Don't draw DrawAfterFade stuff during photo mode
+	if (CPhotoMode::IsPhotoModeEnabled())
+		return;
+#endif
 
 	if (CTimer::GetIsUserPaused() || CReplay::IsPlayingBack())
 		return;
