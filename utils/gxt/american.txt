@@ -485,7 +485,7 @@ Check Out at the Check In
 Loose Ends
 
 [ANSWER]
-Press the ~h~~k~~PED_ANSWER_PHONE~~w~ to answer your cell phone.
+Press the ~h~~k~~PED_ANSWER_PHONE~ ~w~to answer your cell phone.
 
 [MOB_01A]
 Awright me ol'china! It's Paul. I might have a little result for you, but I need to speak to you in person.
@@ -3944,7 +3944,7 @@ NO LONGER NEEDED
 NO LONGER NEEDED
 
 [HELP31]
-To do a drive-by, first look left or right using the ~h~~k~~VEHICLE_LOOKLEFT~~w~ or the ~h~~k~~VEHICLE_LOOKRIGHT~.
+To do a drive-by, first look left or right using the ~h~~k~~VEHICLE_LOOKLEFT~ ~w~or the ~h~~k~~VEHICLE_LOOKRIGHT~ ~w~.
 
 [HELP34]
 You must have a sub machine gun to perform a drive-by.
@@ -4229,7 +4229,7 @@ Casual
 Mr Vercetti
 
 [OUTFT10]
-Tracksuit
+Black Tracksuit
 
 [OUTFT13]
 MC Tommy
@@ -4325,7 +4325,7 @@ Casual outfit delivered to Safehouses. New clothes are available at Gash in The 
 Mr Vercetti outfit delivered to Safehouses. New clothes are available at Gash in The North Point Mall.
 
 [CLOTH9]
-Tracksuit outfit delivered to Safehouses. New clothes are available at Gash in The North Point Mall.
+Tracksuit outfits delivered to Safehouses. New clothes are available at Gash in The North Point Mall.
 
 [CLOTH10]
 Bank Job outfit delivered to Safehouses.
@@ -4478,10 +4478,10 @@ Press the~h~ ~k~~VEHICLE_HANDBRAKE~ button ~w~to apply the vehicle's ~h~handbrak
 Press the ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~button to enter or exit a vehicle.
 
 [HELP27]
-Press the ~h~~k~~VEHICLE_TURRETUP~~w~ button and the ~h~~k~~VEHICLE_TURRETDOWN~~w~ button, to shift your weight on a bike.
+Press the ~h~~k~~VEHICLE_TURRETUP~ ~w~button and the ~h~~k~~VEHICLE_TURRETDOWN~ ~w~button, to shift your weight on a bike.
 
 [HELP28]
-Press the ~h~~k~~VEHICLE_TURRETUP~~w~ button and the ~h~~k~~VEHICLE_TURRETDOWN~~w~ button, to shift your weight on a bike.
+Press the ~h~~k~~VEHICLE_TURRETUP~ ~w~button and the ~h~~k~~VEHICLE_TURRETDOWN~ ~w~button, to shift your weight on a bike.
 
 [HELP35]
 Press the ~h~~k~~GO_LEFT~~w~, and the ~h~~k~~GO_RIGHT~~w~, to steer the vehicle.
@@ -6341,7 +6341,7 @@ Fastest time for 'Cone Crazy'
 Stop in the ~q~pink marker.
 
 [HELP45]
-Press the ~h~~k~~PED_DUCK~~w~ button to duck. This will increase the accuracy of guns you are holding.
+Press the ~h~~k~~PED_DUCK~ ~w~button to duck. This will increase the accuracy of guns you are holding.
 
 [RCR1_5]
 RC Bandit Race
@@ -6437,16 +6437,16 @@ Warning! This savegame is set to use DTS. This requires DTS compatible hardware 
 Fastest time for Checkpoint Charlie
 
 [HELP50]
-Press the ~h~~k~~PED_ANSWER_PHONE~~w~ button to set the camera behind you.
+Press the ~h~~k~~PED_ANSWER_PHONE~ ~w~button to set the camera behind you.
 
 [HELP51]
-Press the ~h~~k~~PED_ANSWER_PHONE~~w~ button to set the camera behind you.
+Press the ~h~~k~~PED_ANSWER_PHONE~ ~w~button to set the camera behind you.
 
 [HELP52]
-Press the ~h~~k~~PED_ANSWER_PHONE~~w~ button to set the camera behind you.
+Press the ~h~~k~~PED_ANSWER_PHONE~ ~w~button to set the camera behind you.
 
 [HELP53]
-Press ~h~~k~~PED_CYCLE_WEAPON_LEFT~~w~ button or ~h~~k~~PED_CYCLE_WEAPON_RIGHT~~w~ button to cycle through your available weapons.
+Press ~h~~k~~PED_CYCLE_WEAPON_LEFT~ ~w~button or ~h~~k~~PED_CYCLE_WEAPON_RIGHT~ ~w~button to cycle through your available weapons.
 
 [HELP46]
 There are eight different types of weapon.
@@ -6458,7 +6458,7 @@ You can carry one of each type of weapon at a time - one type of pistol, one typ
 ~w~Cost: $~1~ ~r~Buying this will replace your current weapon.
 
 [HELP2A2]
-Press the ~h~~k~~PED_SPRINT~~w~ button when running to ~h~sprint
+Press the ~h~~k~~PED_SPRINT~ ~w~button when running to ~h~sprint
 
 [HLPSN_A]
 The sniper rifle allows you to zoom in and fire accurately at targets from a distance.
@@ -6470,26 +6470,26 @@ Press and hold the~h~ ~k~~PED_LOCK_TARGET~ ~w~button to ~h~target~w~ with the sn
 Press and hold the~h~ ~k~~PED_LOCK_TARGET~ ~w~button to ~h~target~w~ with the sniper rifle.
 
 [HLPSN_D]
-Press the ~h~~k~~PED_SNIPER_ZOOM_IN~~w~ button ~w~to ~h~zoom in ~w~with the rifle and the~h~ ~k~~PED_SNIPER_ZOOM_OUT~ button ~w~to ~h~zoom out ~w~again.
+Press the ~h~~k~~PED_SNIPER_ZOOM_IN~ ~w~button ~w~to ~h~zoom in ~w~with the rifle and the~h~ ~k~~PED_SNIPER_ZOOM_OUT~ button ~w~to ~h~zoom out ~w~again.
 
 [HLPSN_E]
-Press the ~h~~k~~PED_FIREWEAPON~~w~ button ~w~to ~h~fire~w~ the sniper rifle.
+Press the ~h~~k~~PED_FIREWEAPON~ ~w~button ~w~to ~h~fire~w~ the sniper rifle.
 
 [HLPSN_F]
-Press the ~h~~k~~PED_FIREWEAPON~~w~ button ~w~to ~h~fire~w~ the sniper rifle.
+Press the ~h~~k~~PED_FIREWEAPON~ ~w~button ~w~to ~h~fire~w~ the sniper rifle.
 
 [HLPSN_G]
-Press the ~h~~k~~PED_FIREWEAPON~~w~ button to ~h~fire~w~ the sniper rifle.
+Press the ~h~~k~~PED_FIREWEAPON~ ~w~button to ~h~fire~w~ the sniper rifle.
 
 [PLANE_H]
-Use the ~h~~k~~VEHICLE_ACCELERATE~~w~ button to accelerate, Left and right to turn.
+Use the ~h~~k~~VEHICLE_ACCELERATE~ ~w~button to accelerate, Left and right to turn.
 
 [PLANE_4] { reVC update }
-{ Use the ~h~~k~~VEHICLE_ACCELERATE~~w~ button to accelerate, Left and right to turn. }
+{ Use the ~h~~k~~VEHICLE_ACCELERATE~ ~w~button to accelerate, Left and right to turn. }
 Use the right analog stick to accelerate, pull back on the left analog stick to climb, push forwards to descend. Left and right to turn.
 
 [HELP55]
-Press the ~h~~k~~PED_FIREWEAPON~~w~ button to attack the chef.
+Press the ~h~~k~~PED_FIREWEAPON~ ~w~button to attack the chef.
 
 [STPR_8]
 Pole Position Club
@@ -6759,7 +6759,7 @@ Longest Stoppie distance (m)
 Longest 2 wheels distance (m)
 
 [OUTFT11]
-Tracksuit
+Red Tracksuit
 
 [OUTFT12]
 Frankie
@@ -6831,10 +6831,10 @@ Are you sure you want to start a new game? All progress will be lost. Proceed?
 TIME:
 
 [HELP56]
-Press the ~h~~k~~CAMERA_CHANGE_VIEW_ALL_SITUATIONS~~w~ button to change camera modes.
+Press the ~h~~k~~CAMERA_CHANGE_VIEW_ALL_SITUATIONS~ ~w~button to change camera modes.
 
 [HELP57]
-Press the ~h~~k~~CAMERA_CHANGE_VIEW_ALL_SITUATIONS~~w~ button to change camera modes.
+Press the ~h~~k~~CAMERA_CHANGE_VIEW_ALL_SITUATIONS~ ~w~button to change camera modes.
 
 [HELP58]
 While targeting you can press the ~h~~k~~PED_CYCLE_TARGET_LEFT~ button or ~k~~PED_CYCLE_TARGET_RIGHT~ ~w~button to cycle through targets.
@@ -9952,10 +9952,10 @@ Fire Fighter mission ended.
 ~g~Burning vehicles reported in the ~a~ area. Go and extinguish the fire.
 
 [SPRAY_4:FIRETRK] { reVC update }
-Use the ~h~~k~~VEHICLE_FIREWEAPON~ ~w~button to fire the water cannon. Aim using ~h~~k~~VEHICLE_TURRETLEFT~~w~ and ~h~~k~~VEHICLE_TURRETRIGHT~~w~.
+Use the ~h~~k~~VEHICLE_FIREWEAPON~ ~w~button to fire the water cannon. Aim using ~h~~k~~VEHICLE_TURRETLEFT~ ~w~and ~h~~k~~VEHICLE_TURRETRIGHT~.~w~
 
 [SPRAY_1:FIRETRK] { reVC update }
-Use the ~h~~k~~VEHICLE_FIREWEAPON~ ~w~button to fire the water cannon. Aim using ~h~~k~~VEHICLE_TURRETLEFT~~w~ and ~h~~k~~VEHICLE_TURRETRIGHT~~w~.
+Use the ~h~~k~~VEHICLE_FIREWEAPON~ ~w~button to fire the water cannon. Aim using ~h~~k~~VEHICLE_TURRETLEFT~ ~w~and ~h~~k~~VEHICLE_TURRETRIGHT~.~w~
 
 {=================================== MISSION TABLE GENERA1 ===================================}
 
@@ -10288,31 +10288,31 @@ Tommy! I'll stay here and watch over Diaz!
 The Kruger is an assault rifle, which allows you to manually aim in 1st person.
 
 [GEN3_58:GENERA3]
-Press and hold the~h~ ~k~~PED_LOCK_TARGET~~w~ button to ~h~aim~w~ with an assault rifle.
+Press and hold the~h~ ~k~~PED_LOCK_TARGET~ ~w~button to ~h~aim~w~ with an assault rifle.
 
 [GEN3_59:GENERA3]
-Press and hold the~h~ ~k~~PED_LOCK_TARGET~~w~ button to ~h~aim~w~ with an assault rifle.
+Press and hold the~h~ ~k~~PED_LOCK_TARGET~ ~w~button to ~h~aim~w~ with an assault rifle.
 
 [GEN3_60:GENERA3]
-Press the ~h~~k~~PED_FIREWEAPON~~w~ button to ~h~fire~w~ an assault rifle.
+Press the ~h~~k~~PED_FIREWEAPON~ ~w~button to ~h~fire~w~ an assault rifle.
 
 [GEN3_61:GENERA3]
-Press the ~h~~k~~PED_FIREWEAPON~~w~ button to ~h~fire~w~ an assault rifle.
+Press the ~h~~k~~PED_FIREWEAPON~ ~w~button to ~h~fire~w~ an assault rifle.
 
 [GEN3_62:GENERA3]
-Press the ~h~~k~~PED_FIREWEAPON~~w~ button to ~h~fire~w~ an assault rifle.
+Press the ~h~~k~~PED_FIREWEAPON~ ~w~button to ~h~fire~w~ an assault rifle.
 
 [GEN3_63:GENERA3]
 As well as performing drive-by's,~h~ motorbikes ~w~allow you to ~h~shoot forwards~w~.
 
 [GEN3_64:GENERA3] { reVC update }
-To shoot forwards while on a bike press the ~h~~k~~VEHICLE_FIREWEAPON~~w~ button.
+To shoot forwards while on a bike press the ~h~~k~~VEHICLE_FIREWEAPON~ ~w~button.
 
 [GEN3_65:GENERA3] { reVC update }
-To shoot forwards while on a bike press the ~h~~k~~VEHICLE_FIREWEAPON~~w~ button.
+To shoot forwards while on a bike press the ~h~~k~~VEHICLE_FIREWEAPON~ ~w~button.
 
 [GEN3_66:GENERA3] { reVC update }
-To shoot forwards while on a bike press the ~h~~k~~VEHICLE_FIREWEAPON~~w~ button.
+To shoot forwards while on a bike press the ~h~~k~~VEHICLE_FIREWEAPON~ ~w~button.
 
 [GEN3_67:GENERA3]
 You must have a sub machine gun to shoot forwards on a motorbike.
@@ -10881,7 +10881,7 @@ ICECREAM ASSET COMPLETED
 ~g~The icecream factory will now generate revenue up to a maximum of $~1~. Make sure you collect it regularly.
 
 [ICC1_2:ICECRE1]
-~g~Park your van and press the ~h~~k~~VEHICLE_HORN~~w~ to play your ice cream jingle to notify customers that your ready for business.
+~g~Park your van and press the ~h~~k~~VEHICLE_HORN~ ~w~to play your ice cream jingle to notify customers that your ready for business.
 
 [ICC1_16:ICECRE1]
 ~g~Use your Mr. Whoopee van to distribute Cherry Poppers product around Vice City.
@@ -12331,7 +12331,7 @@ Hey! Get back on the bike!
 Pizzas left:
 
 [PIZ1_06:PIZZA]
-Press the~h~ ~k~~TOGGLE_SUBMISSIONS~~w~ when on the bike to cancel the mission.
+Press the~h~ ~k~~TOGGLE_SUBMISSIONS~ ~w~when on the bike to cancel the mission.
 
 [PIZ1_13:PIZZA]
 Get these delivered nice and hot.
@@ -12950,7 +12950,7 @@ Oh, we gotta redecorate this place. We gotta make it look older.
 You're my lawyer, Rosenberg, not my interior decorator. Got it?
 
 [BUYP3:PROT1]
-Stand inside the pickup, then press the ~h~~k~~PED_ANSWER_PHONE~~w~ button to purchase that property.
+Stand inside the pickup, then press the ~h~~k~~PED_ANSWER_PHONE~ ~w~button to purchase that property.
 
 [PRO1_13:PROT1]
 ~g~You have five minutes to smash them all.
@@ -13928,7 +13928,7 @@ Press the ~h~~k~~VEHICLE_LOOKRIGHT~ ~w~button to rotate the helicopter clockwise
 ~r~You destroyed the TOPFUN van that contained the bombs and RC helicopter!
 
 [TEX3_32:SERG3]
-You can ~h~look behind~w~ by simultaneously pressing the ~h~~k~~VEHICLE_LOOKLEFT~~w~ and the ~h~~k~~VEHICLE_LOOKRIGHT~~w~ buttons.
+You can ~h~look behind~w~ by simultaneously pressing the ~h~~k~~VEHICLE_LOOKLEFT~ ~w~and the ~h~~k~~VEHICLE_LOOKRIGHT~ ~w~buttons.
 
 [TEX3_4:SERG3] { reVC update }
 ~g~To drop a bomb press the~h~ ~k~~VEHICLE_FIREWEAPON~ ~g~button.
@@ -13992,7 +13992,7 @@ Pushing ~h~forward on the analog stick ~w~increases the rotor speed, causing the
 To drop a bomb press the ~h~~k~~VEHICLE_HANDBRAKE~ ~w~button.
 
 [TEX3_23:SERG3]
-Press the ~h~~k~~VEHICLE_TURRETUP~~w~ and ~h~~k~~VEHICLE_TURRETDOWN~~w~ buttons to tilt the helicopter in the direction you wish to maneuver it.
+Press the ~h~~k~~VEHICLE_TURRETUP~ ~w~and ~h~~k~~VEHICLE_TURRETDOWN~ ~w~buttons to tilt the helicopter in the direction you wish to maneuver it.
 
 {=================================== MISSION TABLE TAXI1 ===================================}
 
@@ -14551,7 +14551,7 @@ Right turn signals
 Emergency lights
 
 [CLOTH_1]
-Use ~h~~k~~GO_LEFT~ ~h~~k~~GO_RIGHT~~w~ to select clothes. To buy the selected clothes, press ~h~~k~~PED_SPRINT~ ~w~. Press ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~to leave the store.
+Use ~h~~k~~GO_LEFT~ ~w~~h~~k~~GO_RIGHT~ ~w~to select clothes. To buy the selected clothes, press ~h~~k~~PED_SPRINT~.~w~ Press ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~to leave the store.
 
 [CLOTH_2]
 You don't have enough money to buy this item
@@ -14563,10 +14563,148 @@ Borderless
 Purchased
 
 [CLOTH_4]
-Use ~h~~k~~GO_LEFT~ ~h~~k~~GO_RIGHT~~w~ to select clothes. To put on the selected clothes, press ~h~~k~~PED_SPRINT~ ~w~. Press ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~to leave the wardrobe.
+Use ~h~~k~~GO_LEFT~ ~h~~k~~GO_RIGHT~ ~w~to select clothes. To put on the selected clothes, press ~h~~k~~PED_SPRINT~.~w~ Press ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~to leave the wardrobe.
 
 [CLOTH_5]
 Used
+
+[FEM_PHT]
+PHOTO MODE
+
+[PM_CAM]
+CAMERA
+
+[PM_ZOOM]
+ZOOM
+
+[PM_TILT]
+TILT
+
+[PM_ZOTI]
+ZOOM AND TILT
+
+[PM_NCP]
+NEAR CLIP PLANE
+
+[PM_CHAR]
+CHARACTER
+
+[PM_VSBL]
+VISIBILITY
+
+[PM_CLTH]
+CLOTHES
+
+[PM_ANIM]
+ANIMATION
+
+[PM_ANFR]
+ANIMATION FRAME
+
+[PM_WEAP]
+WEAPON
+
+[PM_MUZL]
+MUZZLE FLASH
+
+[PM_ROT]
+ROTATE
+
+[PM_SKY]
+SKY
+
+[PM_SUN]
+SUN AND MOON ANGLE
+
+[PM_HOUR]
+TIME IN HOURS
+
+[PM_MIN]
+TIME IN MINUTES
+
+[PM_WTHR]
+WEATHER
+
+[PM_SNNY]
+SUNNY
+
+[PM_CLDY]
+CLOUDY
+
+[PM_RANY]
+RAINY
+
+[PM_FGGY]
+FOGGY
+
+[PM_SNN2]
+SUNNY 2
+
+[PM_HRCN]
+HURRICANE
+
+[PM_LGHT]
+LIGHT
+
+[PM_DEFL]
+DEFAULT LIGHT
+
+[PM_COLR]
+COLOR RED
+
+[PM_COLG]
+COLOR GREEN
+
+[PM_COLB]
+COLOR BLUE
+
+[PM_DARK]
+DARK LIGHT
+
+[PM_EFFE]
+EFFECTS
+
+[PM_CLFL]
+COLORFILTER
+
+[PM_INTS]
+INTENSITY
+
+[PM_BRTN]
+BRIGHTNESS
+
+[PM_FRMS]
+FRAMES
+
+[PM_TOGL]
+MENU
+
+[PM_EXIT]
+EXIT
+
+[PM_MOVE]
+MOVE
+
+[PM_PHTO]
+PHOTO
+
+[PM_UI]
+UI
+
+[PM_SPED]
+SPEED
+
+[PM_ADJS]
+ADJUST
+
+[PM_MVLI]
+MOVE LIGHT
+
+[PM_MVCH]
+MOVE CHARACTER
+
+[PM_SAVE]
+PHOTO SAVED TO VICEEXTENDED\USERFILES\GALLERY
 
 { end of file }
 [DUMMY]
