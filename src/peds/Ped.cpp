@@ -1659,7 +1659,8 @@ CPed::CalculateNewVelocity(void)
 
 #if defined IMPROVED_MENU_AND_INPUT && defined FIRST_PERSON && defined FIRING_AND_AIMING
 	if (((!TheCamera.Cams[0].Using3rdPersonMouseCam() && !FindPlayerPed()->bIsPlayerAiming) && !CPad::GetPad(0)->IsAffectedByController || 
-		(bIsDucking && TheCamera.Cams[TheCamera.ActiveCam].Mode != CCam::MODE_REAL_1ST_PERSON))
+		(bIsDucking && TheCamera.Cams[TheCamera.ActiveCam].Mode != CCam::MODE_REAL_1ST_PERSON)) || 
+		FindPlayerPed()->bIsPlayerAiming && GetWeapon()->m_eWeaponType == WEAPONTYPE_PYTHON
 #else
 	if ((!TheCamera.Cams[TheCamera.ActiveCam].GetWeaponFirstPersonOn() && !TheCamera.Cams[0].Using3rdPersonMouseCam())
 #endif
@@ -1695,7 +1696,7 @@ CPed::CalculateNewVelocity(void)
 		fightAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_MELEE_IDLE_FIGHTMODE);
 
 #if defined CROUCH && defined FIRING_AND_AIMING
-	if ((!idleAssoc || idleAssoc->blendAmount < 0.5f) && !fightAssoc || IsPlayer() && FindPlayerPed()->bIsPlayerAiming) {
+	if ((!idleAssoc || idleAssoc->blendAmount < 0.5f) && !fightAssoc || FindPlayerPed()->bIsPlayerAiming) {
 #else
 	if ((!idleAssoc || idleAssoc->blendAmount < 0.5f) && !fightAssoc && !bIsDucking) {
 #endif
