@@ -216,6 +216,11 @@ public:
 	wchar m_fullGameName[32];
 #endif
 
+#ifdef IMPROVED_VEHICLES // Service lights for service cars - init
+	RwTexture* serviceLightsOffTexture;
+	RwTexture* serviceLightsOnTexture;
+#endif
+
 	static int8 ms_compsToUse[2];
 	static int8 ms_compsUsed[2];
 	static RwRGBA ms_vehicleColourTable[256];

@@ -112,6 +112,13 @@ RwObjectNameIdAssocation carIds[] = {
 	{ "indicator2_rr",			CAR_INDICATOR_2_RR,	VEHICLE_FLAG_RIGHT },
 	{ "window_misc_r_hi",		CAR_WINDOW_R_MISC,	VEHICLE_FLAG_RIGHT | VEHICLE_FLAG_DRAWLAST},
 #endif
+#ifdef IMPROVED_VEHICLES // Service lights for service cars and cleareance lights
+	{ "servicelights_0",	CAR_SERVICELIGHTS_0,	VEHICLE_FLAG_DRAWLAST },
+	{ "servicelights_1",	CAR_SERVICELIGHTS_1,	VEHICLE_FLAG_DRAWLAST },
+	{ "servicelights_2",	CAR_SERVICELIGHTS_2,	VEHICLE_FLAG_DRAWLAST },
+	{ "servicelights_3",	CAR_SERVICELIGHTS_3,	VEHICLE_FLAG_DRAWLAST },
+	{ "clearance_lights",	CAR_CLEARANCE_LIGHTS,	VEHICLE_FLAG_DRAWLAST },
+#endif
 
 	{ "ped_frontseat",	CAR_POS_FRONTSEAT,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
 	{ "ped_backseat",	CAR_POS_BACKSEAT,	VEHICLE_FLAG_POS | CLUMP_FLAG_NO_HIERID },
@@ -332,9 +339,17 @@ CVehicleModelInfo::SetClump(RpClump *clump)
 
 #ifdef IMPROVED_VEHICLES_2 // set light textures
 	RwTexDictionary* modelTxd = CTxdStore::GetSlot(GetTxdSlot())->texDict;
+
 	if (modelTxd) {
 		lightsOffTexture = RwTexDictionaryFindNamedTexture(modelTxd, "lights");
 		lightsOnTexture = RwTexDictionaryFindNamedTexture(modelTxd, "lightson");
+	}
+#endif
+
+#ifdef IMPROVED_VEHICLES // Service lights for service cars - init
+	if (modelTxd) {
+		serviceLightsOffTexture = RwTexDictionaryFindNamedTexture(modelTxd, "servicelights");
+		serviceLightsOnTexture = RwTexDictionaryFindNamedTexture(modelTxd, "servicelightson");
 	}
 #endif
 }
@@ -678,7 +693,9 @@ CVehicleModelInfo::PreprocessHierarchy(void)
 		}else{
 			atomic = (RpAtomic*)GetFirstObject(assoc.frame);
 			RpClumpRemoveAtomic(m_clump, atomic);
+#ifndef IMPROVED_VEHICLES // Service lights for service cars
 			RwFrameRemoveChild(assoc.frame);
+#endif
 			SetVehicleComponentFlags(assoc.frame, desc[i].flags);
 			m_comps[m_numComps++] = atomic;
 		}
@@ -725,6 +742,8 @@ CVehicleModelInfo::PreprocessHierarchy(void)
 					break;
 				}
 			}
+
+			continue;
 		}
 #endif
 
@@ -736,6 +755,8 @@ CVehicleModelInfo::PreprocessHierarchy(void)
 				RpMaterial* material = windowAtomic->geometry->matList.materials[0];
 				m_nDefaultWindowMaterialColor = material->color;
 			}
+
+			continue;
 		}
 #endif
 

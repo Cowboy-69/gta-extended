@@ -77,6 +77,13 @@ enum eCarNodes
 	CAR_VENT_R_DAM,
 	CAR_SUPERCHARGER,
 #endif
+#ifdef IMPROVED_VEHICLES // Service lights for service cars and cleareance lights
+	CAR_SERVICELIGHTS_0,
+	CAR_SERVICELIGHTS_1,
+	CAR_SERVICELIGHTS_2,
+	CAR_SERVICELIGHTS_3,
+	CAR_CLEARANCE_LIGHTS,
+#endif
 	NUM_CAR_NODES,
 };
 

@@ -313,6 +313,19 @@ CAutomobile::SetModelIndex(uint32 id)
 {
 	CVehicle::SetModelIndex(id);
 	SetupModelNodes();
+
+#ifdef IMPROVED_VEHICLES // Service lights for service cars - init
+	if (m_aCarNodes[CAR_SERVICELIGHTS_1] && (m_aExtras[0] == 0 || m_aExtras[1] == 0)) {
+		if (m_aCarNodes[CAR_SERVICELIGHTS_2]) RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SERVICELIGHTS_2]), 0);
+		if (m_aCarNodes[CAR_SERVICELIGHTS_3]) RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SERVICELIGHTS_3]), 0);
+	} else if (m_aCarNodes[CAR_SERVICELIGHTS_2] && (m_aExtras[0] == 1 || m_aExtras[1] == 1)) {
+		if (m_aCarNodes[CAR_SERVICELIGHTS_1]) RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SERVICELIGHTS_1]), 0);
+		if (m_aCarNodes[CAR_SERVICELIGHTS_3]) RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SERVICELIGHTS_3]), 0);
+	} else if (m_aCarNodes[CAR_SERVICELIGHTS_3] && (m_aExtras[0] == 2 || m_aExtras[1] == 2)) {
+		if (m_aCarNodes[CAR_SERVICELIGHTS_1]) RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SERVICELIGHTS_1]), 0);
+		if (m_aCarNodes[CAR_SERVICELIGHTS_2]) RpAtomicSetFlags((RpAtomic*)GetFirstObject(m_aCarNodes[CAR_SERVICELIGHTS_2]), 0);
+	}
+#endif
 }
 
 #define SAND_SLOWDOWN (0.01f)
@@ -4039,6 +4052,65 @@ CAutomobile::Render(void)
 
 			RwRGBA color = windowColor;
 			material->color = color;
+		}
+	}
+#endif
+
+#ifdef IMPROVED_VEHICLES // Service lights for service cars and cleareance lights
+	if (UsesSiren()) {
+		int curObjectForServiceLights = 0;
+
+		for (int i = 0; i < 4; i++) {
+			if (m_aCarNodes[CAR_SERVICELIGHTS_0 + curObjectForServiceLights]) {
+				RpAtomic* atomic = nil;
+				RwFrameForAllObjects(m_aCarNodes[CAR_SERVICELIGHTS_0 + curObjectForServiceLights], GetCurrentAtomicObjectCB, &atomic);
+				if (atomic) {
+					for (int i = 0; i < atomic->geometry->matList.numMaterials; i++) {
+						RpMaterial* material = atomic->geometry->matList.materials[i];
+
+						if (!material)
+							continue;
+
+						int ambientOn = 3.0f;
+
+						if (m_bSirenOrAlarm) {
+							if (i == 0) {
+								RwTexture* currentTexture = CTimer::GetTimeInMilliseconds() & 512 ? mi->serviceLightsOnTexture : mi->serviceLightsOffTexture;
+								material = RpMaterialSetTexture(material, currentTexture);
+								material->surfaceProps.ambient = CTimer::GetTimeInMilliseconds() & 512 ? ambientOn : 1.0f;
+							} else if (i == 1) {
+								RwTexture* currentTexture = CTimer::GetTimeInMilliseconds() & 512 ? mi->serviceLightsOffTexture : mi->serviceLightsOnTexture;
+								material = RpMaterialSetTexture(material, currentTexture);
+								material->surfaceProps.ambient = CTimer::GetTimeInMilliseconds() & 512 ? 1.0f : ambientOn;
+							} else if (i == 2) {
+								RwTexture* currentTexture = CTimer::GetTimeInMilliseconds() & 256 ? mi->serviceLightsOnTexture : mi->serviceLightsOffTexture;
+								material = RpMaterialSetTexture(material, currentTexture);
+								material->surfaceProps.ambient = CTimer::GetTimeInMilliseconds() & 256 ? ambientOn : 1.0f;
+							} else if (i == 3) {
+								RwTexture* currentTexture = CTimer::GetTimeInMilliseconds() & 256 ? mi->serviceLightsOffTexture : mi->serviceLightsOnTexture;
+								material = RpMaterialSetTexture(material, currentTexture);
+								material->surfaceProps.ambient = CTimer::GetTimeInMilliseconds() & 256 ? 1.0f : ambientOn;
+							}
+						} else {
+							material = RpMaterialSetTexture(material, mi->serviceLightsOffTexture);
+							material->surfaceProps.ambient = 1.0f;
+						}
+					}
+				}
+			}
+
+			curObjectForServiceLights++;
+		}
+	}
+
+	if (m_aCarNodes[CAR_CLEARANCE_LIGHTS]) {
+		RpAtomic* atomic = nil;
+		RwFrameForAllObjects(m_aCarNodes[CAR_CLEARANCE_LIGHTS], GetCurrentAtomicObjectCB, &atomic);
+		if (atomic) {
+			for (int i = 0; i < atomic->geometry->matList.numMaterials; i++) {
+				RpMaterial* material = atomic->geometry->matList.materials[i];
+				material->surfaceProps.ambient = bEngineOn ? 3.0f : 1.0f;
+			}
 		}
 	}
 #endif
