@@ -2153,9 +2153,17 @@ void CParticle::Render()
 					if ( i == PARTICLE_WATER_HYDRANT
 							|| (!particleBanned || SCREEN_WIDTH * fParticleScaleLimit >= w)
 #ifdef EX_PHOTO_MODE // Near clip plane of sprites reduced during photo mode
+#ifdef FIRST_PERSON // Near clip plane of sprites reduced during first person
+							&& (SCREEN_HEIGHT * fParticleScaleLimit >= h || CPhotoMode::IsPhotoModeEnabled() || TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON))
+#else
 							&& (SCREEN_HEIGHT * fParticleScaleLimit >= h || CPhotoMode::IsPhotoModeEnabled()))
+#endif
+#else
+#ifdef FIRST_PERSON // Near clip plane of sprites reduced during first person
+							&& SCREEN_HEIGHT * fParticleScaleLimit >= h || TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON )
 #else
 							&& SCREEN_HEIGHT * fParticleScaleLimit >= h )
+#endif
 #endif
 					{
 						if ( i == PARTICLE_WATER_HYDRANT )
