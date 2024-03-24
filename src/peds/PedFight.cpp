@@ -236,7 +236,11 @@ CPed::PointGunAt(void)
 		animLoopStart += 0.05f;
 #endif
 
+#ifdef FIRING_AND_AIMING // Smooth animation at the start of aiming
+	if (weaponAssoc && (!IsPlayer() && weaponAssoc->currentTime > animLoopStart * 0.4f || IsPlayer() && weaponAssoc->currentTime > animLoopStart)) {
+#else
 	if (weaponAssoc && weaponAssoc->currentTime > animLoopStart * 0.4f) {
+#endif
 		weaponAssoc->SetCurrentTime(animLoopStart);
 		weaponAssoc->flags &= ~ASSOC_RUNNING;
 
