@@ -604,6 +604,9 @@ bool LoadINISettings()
 	if (!ini.read(cfg))
 		return false;
 
+#ifdef EX_LOADING_GAME_SAVE_ON_STARTUP // ini
+	ReadIniIfExists("General", "GameSaveOnStartup", &gbGameSaveOnStartup);
+#endif
 #ifdef IMPROVED_VIDEOMODE
 	ReadIniIfExists("VideoMode", "Width", &FrontEndMenuManager.m_nPrefsWidth);
 	ReadIniIfExists("VideoMode", "Height", &FrontEndMenuManager.m_nPrefsHeight);
@@ -755,6 +758,9 @@ bool LoadINISettings()
 
 void SaveINISettings()
 {
+#ifdef EX_LOADING_GAME_SAVE_ON_STARTUP // ini
+	StoreIni("General", "GameSaveOnStartup", gbGameSaveOnStartup);
+#endif
 #ifdef IMPROVED_VIDEOMODE
 	StoreIni("VideoMode", "Width", FrontEndMenuManager.m_nPrefsWidth);
 	StoreIni("VideoMode", "Height", FrontEndMenuManager.m_nPrefsHeight);

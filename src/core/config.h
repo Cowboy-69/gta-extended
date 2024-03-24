@@ -120,6 +120,10 @@
 		#define EX_OUTER_SPACE
 	#endif
 
+	#ifdef UTILS
+		#define EX_LOADING_GAME_SAVE_ON_STARTUP
+	#endif
+
 enum Config {
 	NUMPLAYERS = 1,
 

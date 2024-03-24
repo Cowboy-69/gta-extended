@@ -108,6 +108,9 @@ bool gbDrawVersionText; // Our addition, we think it was always enabled on !MAST
 #ifdef NO_MOVIES
 bool gbNoMovies;
 #endif
+#ifdef EX_LOADING_GAME_SAVE_ON_STARTUP
+uint8 gbGameSaveOnStartup = 0;
+#endif
 
 volatile int32 frameCount;
 

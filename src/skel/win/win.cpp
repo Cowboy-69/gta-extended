@@ -55,6 +55,11 @@
 #include "PhotoMode.h"
 #endif
 
+#ifdef EX_LOADING_GAME_SAVE_ON_STARTUP
+#include "Script.h"
+#include "GenericGameStorage.h"
+#endif
+
 #define MAX_SUBSYSTEMS		(16)
 
 static RwBool		  ForegroundApp = TRUE;
@@ -2495,6 +2500,27 @@ WinMain(HINSTANCE instance,
 						
 						if (wp.showCmd != SW_SHOWMINIMIZED)
 							RsEventHandler(rsFRONTENDIDLE, nil);
+
+#ifdef EX_LOADING_GAME_SAVE_ON_STARTUP
+						if (gbGameSaveOnStartup > 0 && CheckSlotDataValid(gbGameSaveOnStartup - 1)) {
+							FrontEndMenuManager.m_nCurrSaveSlot = gbGameSaveOnStartup - 1;
+
+							FrontEndMenuManager.m_bWantToLoad = true;
+
+#ifdef USE_DEBUG_SCRIPT_LOADER
+							CTheScripts::ScriptToLoad = 0;
+#endif
+
+#ifdef XBOX_MESSAGE_SCREEN
+							SetDialogText("FELD_WR");
+							ToggleDialog(true);
+#else
+							if (!FrontEndMenuManager.m_bGameNotLoaded)
+								FrontEndMenuManager.MessageScreen("FELD_WR", true);
+#endif
+							FrontEndMenuManager.DoSettingsBeforeStartingAGame();
+						}
+#endif
 
 #ifdef PS2_MENU
 						if ( !FrontEndMenuManager.m_bMenuActive || TheMemoryCard.m_bWantToLoad )

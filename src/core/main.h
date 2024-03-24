@@ -86,3 +86,7 @@ extern bool gbDrawVersionText;
 #ifdef NO_MOVIES
 extern bool gbNoMovies;
 #endif
+
+#ifdef EX_LOADING_GAME_SAVE_ON_STARTUP
+extern uint8 gbGameSaveOnStartup;
+#endif
