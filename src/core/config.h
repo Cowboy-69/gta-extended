@@ -61,6 +61,8 @@
 
 	#define UTILS // Useful tools
 
+	#define EX_EXPERIMENTAL
+
 	#define CROUCH
 	#define FIRING_AND_AIMING
 	#define FIRST_PERSON
@@ -110,8 +112,12 @@
 		#define EX_PHOTO_MODE
 	#endif
 
-	#ifdef UTILS
+	#if defined UTILS && defined EX_EXPERIMENTAL
 		#define EX_BRYX_LIGHTS
+	#endif
+
+	#ifdef EX_EXPERIMENTAL
+		#define EX_OUTER_SPACE
 	#endif
 
 enum Config {

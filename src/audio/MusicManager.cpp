@@ -782,6 +782,13 @@ cMusicManager::ServiceGameMode()
 void
 cMusicManager::SetUpCorrectAmbienceTrack()
 {
+#ifdef EX_OUTER_SPACE
+	if (TheCamera.GetPosition().z >= 80000.0f) {
+		m_nFrontendTrack = STREAMED_SOUND_AMBSIL_AMBIENT;
+		return;
+	}
+#endif
+
 	switch (CGame::currArea)
 	{
 	case AREA_MAIN_MAP:

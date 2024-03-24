@@ -664,6 +664,19 @@ CCoronas::DoSunAndMoon(void)
 	sunCoors *= 150.0f;
 	sunCoors += TheCamera.GetPosition();
 
+#ifdef EX_OUTER_SPACE
+	if(TheCamera.GetPosition().z >= 70000.0f){
+		RegisterCorona(SUN_CORE,
+			255, 175, 0,
+			255, sunCoors, 15.0f,
+			999999.88f, TYPE_STAR, FLARE_NONE, REFLECTION_OFF, LOSCHECK_OFF, STREAK_OFF, 0.0f);
+
+		RegisterCorona(SUN_CORONA,
+			255, 175, 0,
+			255, sunCoors, 60.0f,
+			999999.88f, TYPE_STAR, FLARE_SUN, REFLECTION_OFF, LOSCHECK_ON, STREAK_OFF, 0.0f);
+	}else
+#endif
 	if(CTimeCycle::GetSunDirection().z > -0.2f){
 		float size = ((CGeneral::GetRandomNumber()&0xFF) * 0.005f + 10.0f) * CTimeCycle::GetSunSize();
 		RegisterCorona(SUN_CORE,

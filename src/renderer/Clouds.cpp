@@ -331,7 +331,11 @@ CClouds::Render(void)
 bool
 UseDarkBackground(void)
 {
+#ifdef EX_OUTER_SPACE
+	return TheCamera.GetPosition().z < 12000.0f && (TheCamera.GetForward().z < -0.9f || gbShowCollisionPolys);
+#else
 	return TheCamera.GetForward().z < -0.9f || gbShowCollisionPolys;
+#endif
 }
 
 void
@@ -350,6 +354,19 @@ CClouds::RenderBackground(int16 topred, int16 topgreen, int16 topblue,
 		ms_cameraRoll = -ms_cameraRoll;
 
 	ms_HorizonTilt = SCREEN_WIDTH/2.0f * Tan(ms_cameraRoll);
+
+#ifdef EX_OUTER_SPACE
+	if (TheCamera.GetPosition().z >= 12000.0f) {
+		float multiplier = Max(0.0f, 1.0f - ((TheCamera.GetPosition().z - 12000.0f) / 70000.0f));
+		topred = topred * multiplier;
+		topgreen = topgreen * multiplier;
+		topblue = topblue * multiplier;
+		botred = botred * multiplier;
+		botgreen = botgreen * multiplier;
+		botblue = botblue * multiplier;
+		alpha = 255;
+	}
+#endif
 
 	if(UseDarkBackground()){
 		ms_colourTop.r = 50;
@@ -454,8 +471,19 @@ CClouds::RenderHorizon(void)
 
 	PUSH_RENDERGROUP("CClouds::RenderHorizon");
 
+#ifdef EX_OUTER_SPACE
+	if (TheCamera.GetPosition().z >= 12000.0f) {
+		float multiplier = Max(0.0f, 1.0f - ((TheCamera.GetPosition().z - 12000.0f) / 50000.0f));
+		ms_colourBottom.a = 230 * multiplier;
+		ms_colourTop.a = 80 * multiplier;
+	} else {
+		ms_colourBottom.a = 230;
+		ms_colourTop.a = 80;
+	}
+#else
 	ms_colourBottom.a = 230;
 	ms_colourTop.a = 80;
+#endif
 
 	float topright = ms_horizonZ - ms_HorizonTilt;
 	float topleft = ms_horizonZ + ms_HorizonTilt;
@@ -466,9 +494,22 @@ CClouds::RenderHorizon(void)
 		ms_colourTop, ms_colourTop, ms_colourBottom, ms_colourBottom);
 
 
+#ifdef EX_OUTER_SPACE
+	if (TheCamera.GetPosition().z >= 12000.0f) {
+		float multiplier = Max(0.0f, 1.0f - ((TheCamera.GetPosition().z - 12000.0f) / 50000.0f));
+		ms_colourBkGrd.r = 128.0f*CTimeCycle::GetAmbientRed() * multiplier;
+		ms_colourBkGrd.g = 128.0f*CTimeCycle::GetAmbientGreen() * multiplier;
+		ms_colourBkGrd.b = 128.0f*CTimeCycle::GetAmbientBlue() * multiplier;
+	} else {
+		ms_colourBkGrd.r = 128.0f*CTimeCycle::GetAmbientRed();
+		ms_colourBkGrd.g = 128.0f*CTimeCycle::GetAmbientGreen();
+		ms_colourBkGrd.b = 128.0f*CTimeCycle::GetAmbientBlue();
+	}
+#else
 	ms_colourBkGrd.r = 128.0f*CTimeCycle::GetAmbientRed();
 	ms_colourBkGrd.g = 128.0f*CTimeCycle::GetAmbientGreen();
 	ms_colourBkGrd.b = 128.0f*CTimeCycle::GetAmbientBlue();
+#endif
 	ms_colourBkGrd.a = 255;
 
 	float horzstrip = SCREEN_STRETCH_Y(HORIZSTRIPHEIGHT);

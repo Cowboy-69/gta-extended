@@ -10,6 +10,9 @@
 #include "ZoneCull.h"
 #include "Frontend.h"
 #include "MBlur.h"
+#ifdef EX_OUTER_SPACE
+#include "Camera.h"
+#endif
 
 RpLight *pAmbient;
 RpLight *pDirect;
@@ -58,6 +61,17 @@ SetLightsWithTimeOfDayColour(RpWorld *)
 			AmbientLightColourForFrame_PedsCarsAndObjects.blue = CTimeCycle::GetAmbientBlue_Obj() * CCoronas::LightsMult;
 		}
 
+#ifdef EX_OUTER_SPACE
+		if (TheCamera.GetPosition().z >= 80000.0f) {
+			AmbientLightColourForFrame.red = 0.0f;
+			AmbientLightColourForFrame.green = 0.0f;
+			AmbientLightColourForFrame.blue = 0.0f;
+
+			AmbientLightColourForFrame_PedsCarsAndObjects.red = 0.0f;
+			AmbientLightColourForFrame_PedsCarsAndObjects.green = 0.0f;
+			AmbientLightColourForFrame_PedsCarsAndObjects.blue = 0.0f;
+		} else
+#endif
 		if(CWeather::LightningFlash && !CCullZones::CamNoRain()){
 			AmbientLightColourForFrame.red = 1.0f;
 			AmbientLightColourForFrame.green = 1.0f;

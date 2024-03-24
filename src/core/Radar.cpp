@@ -709,6 +709,11 @@ void CRadar::DrawBlips()
 
 void CRadar::DrawMap()
 {
+#ifdef EX_OUTER_SPACE
+	if (TheCamera.GetPosition().z >= 70000.0f)
+		return;
+#endif
+
 	if (!TheCamera.m_WideScreenOn && CHud::m_Wants_To_Draw_Hud) {
 		CalculateCachedSinCos();
 #ifdef IMPROVED_MENU_AND_INPUT // Radar zoom out
