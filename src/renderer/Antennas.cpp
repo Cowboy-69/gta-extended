@@ -33,7 +33,11 @@ CAntennas::Update(void)
 
 // Add a new one or update an old one
 void
+#ifdef EX_VCPD_WINTERGREEN // Antenna
+CAntennas::RegisterOne(uint32 id, CVector dir, CVector position, float length, CRGBA color)
+#else
 CAntennas::RegisterOne(uint32 id, CVector dir, CVector position, float length)
+#endif
 {
 	int i, j;
 
@@ -58,6 +62,9 @@ CAntennas::RegisterOne(uint32 id, CVector dir, CVector position, float length)
 			for(j = 0; j < 6; j++){
 				aAntennas[i].pos[j] = position + dir*j*aAntennas[i].segmentLength;
 				aAntennas[i].speed[j] = CVector(0.0f, 0.0f, 0.0f);
+#ifdef EX_VCPD_WINTERGREEN // Antenna
+				aAntennas[i].color[j] = color;
+#endif
 			}
 		}
 	}else{
@@ -86,12 +93,28 @@ CAntennas::Render(void)
 		RwRenderStateSet(rwRENDERSTATETEXTURERASTER, nil);
 
 		for(j = 0; j < 5; j++){
+#ifdef EX_VCPD_WINTERGREEN // Antenna
+			RwIm3DVertexSetRGBA(&vertexbufferA[0], 
+				aAntennas[i].color[j].r, 
+				aAntennas[i].color[j].g, 
+				aAntennas[i].color[j].b, 
+				aAntennas[i].color[j].a);
+#else
 			RwIm3DVertexSetRGBA(&vertexbufferA[0], 200, 200, 200, 100);
+#endif
 			RwIm3DVertexSetPos(&vertexbufferA[0],
 				aAntennas[i].pos[j].x,
 				aAntennas[i].pos[j].y,
 				aAntennas[i].pos[j].z);
+#ifdef EX_VCPD_WINTERGREEN // Antenna
+			RwIm3DVertexSetRGBA(&vertexbufferA[1],
+				aAntennas[i].color[j+1].r, 
+				aAntennas[i].color[j+1].g, 
+				aAntennas[i].color[j+1].b, 
+				aAntennas[i].color[j+1].a);
+#else
 			RwIm3DVertexSetRGBA(&vertexbufferA[1], 200, 200, 200, 100);
+#endif
 			RwIm3DVertexSetPos(&vertexbufferA[1],
 				aAntennas[i].pos[j+1].x,
 				aAntennas[i].pos[j+1].y,

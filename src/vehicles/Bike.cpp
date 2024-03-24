@@ -40,6 +40,9 @@
 #ifdef VEHICLE_MODS
 #include "Garages.h"
 #endif
+#ifdef EX_VCPD_WINTERGREEN // Antenna
+#include "Antennas.h"
+#endif
 
 const uint32 CBike::nSaveStructSize =
 #ifdef COMPATIBLE_SAVES
@@ -1435,9 +1438,17 @@ CBike::PreRender(void)
 			m_aWheelSkidmarkType[BIKEWHEEL_REAR], &m_aWheelSkidmarkBloody[BIKEWHEEL_REAR]);
 	}
 
+#ifdef EX_VCPD_WINTERGREEN // Antenna
+	if(GetModelIndex() == MI_POLWINTERGREEN){
+		CalculateLeanMatrix();
+
+		CVector pos = m_leanMatrix * CVector(-0.310239f, -1.04334f, 0.284978f);
+		CAntennas::RegisterOne((uintptr)this, m_leanMatrix.GetUp(), pos, 1.0f, CRGBA(0, 0, 0, 255));
+	}
+#endif
+
 #ifdef EX_VCPD_WINTERGREEN // Siren lights
 	if (GetModelIndex() == MI_POLWINTERGREEN && m_bSirenOrAlarm) {
-		CalculateLeanMatrix();
 		CVector frontLeftSirenPos = m_leanMatrix * CVector(-0.236697f, 0.915334f, 0.540212f);
 		CVector frontRightSirenPos = m_leanMatrix * CVector(0.236697f, 0.915334f, 0.540212f);
 		CVector rearLeftSirenPos = m_leanMatrix * CVector(-0.26499f, -1.35235f, 0.195883f);
