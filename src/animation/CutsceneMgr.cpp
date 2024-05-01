@@ -25,6 +25,9 @@
 #ifdef EX_PED_VARIATIONS
 #include "TxdStore.h"
 #endif
+#ifdef MODLOADER // cuts.img
+#include "modloader.h"
+#endif
 
 const struct {
 	const char *szTrackName;
@@ -204,7 +207,11 @@ CCutsceneMgr::LoadCutsceneData(const char *szCutsceneName)
 	strcpy(ms_cutsceneName, szCutsceneName);
 
 	RwStream *stream;
+#ifdef MODLOADER // cuts.img
+	stream = RwStreamOpen(rwSTREAMFILENAME, rwSTREAMREAD, ModLoader_GetCdStreamPath_Unsafe("ANIM\\CUTS.IMG"));
+#else
 	stream = RwStreamOpen(rwSTREAMFILENAME, rwSTREAMREAD, "ANIM\\CUTS.IMG");
+#endif
 	assert(stream);
 
 	// Load animations
@@ -223,7 +230,11 @@ CCutsceneMgr::LoadCutsceneData(const char *szCutsceneName)
 	RwStreamClose(stream, nil);
 
 	// Load camera data
+#ifdef MODLOADER // cuts.img
+	file = CFileMgr::OpenFile(ModLoader_GetCdStreamPath_Unsafe("ANIM\\CUTS.IMG"), "rb");
+#else
 	file = CFileMgr::OpenFile("ANIM\\CUTS.IMG", "rb");
+#endif
 	sprintf(gString, "%s.DAT", szCutsceneName);
 	if (ms_pCutsceneDir->FindItem(gString, offset, size)) {
 		CStreaming::ImGonnaUseStreamingMemory();

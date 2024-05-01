@@ -20,6 +20,9 @@
 #include "ModelIndices.h"
 #include "ModelInfo.h"
 #include "custompipes.h"
+#ifdef MODLOADER // carcols.dat
+#include "modloader.h"
+#endif
 
 int8 CVehicleModelInfo::ms_compsToUse[2] = { -2, -2 };
 int8 CVehicleModelInfo::ms_compsUsed[2];
@@ -1327,7 +1330,11 @@ CVehicleModelInfo::LoadVehicleColours(void)
 	int n;
 
 	CFileMgr::ChangeDir("\\DATA\\");
+#ifdef MODLOADER // carcols.dat
+	fd = ModLoader_CarcolsDat("CARCOLS.DAT", "r");
+#else
 	fd = CFileMgr::OpenFile("CARCOLS.DAT", "r");
+#endif
 	CFileMgr::ChangeDir("\\");
 
 	for(i = 0; i < 256; i++)

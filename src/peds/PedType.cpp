@@ -4,6 +4,9 @@
 #include "FileMgr.h"
 #include "PedType.h"
 #include "SaveBuf.h"
+#ifdef MODLOADER // ped.dat, pedstats.dat
+#include "modloader.h"
+#endif
 
 CPedType *CPedType::ms_apPedType[NUM_PEDTYPES];
 CPedStats *CPedStats::ms_apPedStats[NUM_PEDSTATS];
@@ -56,7 +59,11 @@ CPedType::LoadPedData(void)
 	buf = new char[16 * 1024];
 
 	CFileMgr::SetDir("DATA");
+#ifdef MODLOADER // ped.dat
+	buflen = ModLoader_PedDat("PED.DAT", (uint8*)buf, 16 * 1024, "r");
+#else
 	buflen = CFileMgr::LoadFile("PED.DAT", (uint8*)buf, 16 * 1024, "r");
+#endif
 	CFileMgr::SetDir("");
 
 	for(bp = 0; bp < buflen; ){
@@ -257,7 +264,11 @@ CPedStats::LoadPedStats(void)
 	buf = new char[16 * 1024];
 
 	CFileMgr::SetDir("DATA");
+#ifdef MODLOADER // pedstats.dat
+	buflen = ModLoader_PedStatsDat("PEDSTATS.DAT", (uint8*)buf, 16 * 1024, "r");
+#else
 	buflen = CFileMgr::LoadFile("PEDSTATS.DAT", (uint8*)buf, 16 * 1024, "r");
+#endif
 	CFileMgr::SetDir("");
 
 	for(bp = 0; bp < buflen; ){

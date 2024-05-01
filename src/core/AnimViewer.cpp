@@ -40,6 +40,9 @@
 #include "Radar.h"
 #include "Hud.h"
 #include "debugmenu.h"
+#ifdef MODLOADER // hud.txd, particle.txd
+#include "modloader.h"
+#endif
 
 int CAnimViewer::animTxdSlot = 0;
 CEntity *CAnimViewer::pTarget = nil;
@@ -64,7 +67,11 @@ CAnimViewer::Initialise(void) {
 	// we need messages, messages needs hud, hud needs those
 	int hudSlot = CTxdStore::AddTxdSlot("hud");
 #ifdef VICE_EXTENDED // ViceExtended folder - hud.txd
+#ifdef MODLOADER // hud.txd
+	ModLoader_HudTxd(hudSlot, "ViceExtended/MODELS/HUD.TXD");
+#else
 	CTxdStore::LoadTxd(hudSlot, "ViceExtended/MODELS/HUD.TXD");
+#endif
 #else
 	CTxdStore::LoadTxd(hudSlot, "MODELS/HUD.TXD");
 #endif
@@ -74,7 +81,11 @@ CAnimViewer::Initialise(void) {
 	CTxdStore::Create(animTxdSlot);
 	int particleSlot = CTxdStore::AddTxdSlot("particle");
 #ifdef VICE_EXTENDED // ViceExtended folder - particle.txd
+#ifdef MODLOADER // particle.txd
+	ModLoader_ParticleTxd(particleSlot, "ViceExtended/MODELS/PARTICLE.TXD");
+#else
 	CTxdStore::LoadTxd(particleSlot, "ViceExtended/MODELS/PARTICLE.TXD");
+#endif
 #else
 	CTxdStore::LoadTxd(particleSlot, "MODELS/PARTICLE.TXD");
 #endif
@@ -97,13 +108,12 @@ CAnimViewer::Initialise(void) {
 	CPedStats::Initialise();
 	CMessages::Init();
 	CdStreamAddImage("MODELS\\GTA3.IMG");
-#ifdef VICE_EXTENDED // ViceExtended folder - default.dat and animviewer.dat
+#ifdef VICE_EXTENDED // ViceExtended folder - default.dat
 	CFileLoader::LoadLevel("ViceExtended\\data\\DEFAULT.DAT");
-	CFileLoader::LoadLevel("ViceExtended\\data\\ANIMVIEWER.DAT");
 #else
 	CFileLoader::LoadLevel("DATA\\DEFAULT.DAT");
-	CFileLoader::LoadLevel("DATA\\ANIMVIEWER.DAT");
 #endif
+	CFileLoader::LoadLevel("DATA\\ANIMVIEWER.DAT");
 	CStreaming::Init();
 	for(int i = 0; i < MODELINFOSIZE; i++)
 		if(CModelInfo::GetModelInfo(i))

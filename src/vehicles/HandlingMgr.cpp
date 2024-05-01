@@ -4,6 +4,9 @@
 #include "FileMgr.h"
 #include "Physical.h"
 #include "HandlingMgr.h"
+#ifdef MODLOADER // handling.cfg
+#include "modloader.h"
+#endif
 
 cHandlingDataMgr mod_HandlingManager;
 
@@ -149,7 +152,11 @@ cHandlingDataMgr::LoadHandlingData(void)
 	tBikeHandlingData *bikeHandling;
 
 	CFileMgr::SetDir("DATA");
+#ifdef MODLOADER // handling.cfg
+	ModLoader_HandlingCfg(HandlingFilename, work_buff, sizeof(work_buff), "r");
+#else
 	CFileMgr::LoadFile(HandlingFilename, work_buff, sizeof(work_buff), "r");
+#endif
 	CFileMgr::SetDir("");
 
 	start = (char*)work_buff;

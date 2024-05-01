@@ -28,6 +28,9 @@
 #include "Streaming.h"
 #include "Clock.h"
 #include "WaterLevel.h"
+#ifdef MODLOADER // pedgrp.dat
+#include "modloader.h"
+#endif
 
 #ifdef IMPROVED_TECH_PART // increased spawn range
 #define MIN_CREATION_DIST		(CGame::IsInInterior() || CCutsceneMgr::IsRunning() || CDarkel::FrenzyOnGoing() ? 40.0f : 70.0f)
@@ -180,7 +183,11 @@ CPopulation::LoadPedGroups()
 	char modelName[256];
 
 	CFileMgr::ChangeDir("\\DATA\\");
+#ifdef MODLOADER // pedgrp.dat
+	fd = ModLoader_PedGrpDat("PEDGRP.DAT", "r");
+#else
 	fd = CFileMgr::OpenFile("PEDGRP.DAT", "r");
+#endif
 	CFileMgr::ChangeDir("\\");
 	while (CFileMgr::ReadLine(fd, line, sizeof(line))) {
 		int end;

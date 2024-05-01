@@ -5,6 +5,9 @@
 #include "Object.h"
 #include "FileMgr.h"
 #include "ObjectData.h"
+#ifdef MODLOADER // object.dat
+#include "modloader.h"
+#endif
 
 CObjectInfo CObjectData::ms_aObjectInfo[NUMOBJECTINFO];
 
@@ -64,7 +67,11 @@ CObjectData::Initialise(const char *filename)
 	ms_aObjectInfo[3].m_bCameraToAvoidThisObject = true;
 
 	CFileMgr::SetDir("");
+#ifdef MODLOADER // object.dat
+	ModLoader_ObjectDat(filename, work_buff, sizeof(work_buff), "r");
+#else
 	CFileMgr::LoadFile(filename, work_buff, sizeof(work_buff), "r");
+#endif
 
 	id = 4;
 	p = (char*)work_buff;

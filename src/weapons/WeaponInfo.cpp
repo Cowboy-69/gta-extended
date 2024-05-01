@@ -8,6 +8,9 @@
 #include "Weapon.h"
 #include "ModelInfo.h"
 #include "ModelIndices.h"
+#ifdef MODLOADER // weapon.dat
+#include "modloader.h"
+#endif
 
 uint16 CWeaponInfo::ms_aReloadSampleTime[WEAPONTYPE_TOTALWEAPONS] =
 {
@@ -160,7 +163,11 @@ CWeaponInfo::LoadWeaponData(void)
 		
 #ifdef VICE_EXTENDED // ViceExtended folder - weapon.dat
 	CFileMgr::SetDir("ViceExtended");
+#ifdef MODLOADER // weapon.dat
+	buflen = ModLoader_WeaponDat("data\\WEAPON.DAT", work_buff, sizeof(work_buff), "r");
+#else
 	buflen = CFileMgr::LoadFile("data\\WEAPON.DAT", work_buff, sizeof(work_buff), "r");
+#endif
 #else
 	CFileMgr::SetDir("DATA");
 	buflen = CFileMgr::LoadFile("WEAPON.DAT", work_buff, sizeof(work_buff), "r");

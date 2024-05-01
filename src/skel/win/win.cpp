@@ -60,6 +60,10 @@
 #include "GenericGameStorage.h"
 #endif
 
+#ifdef MODLOADER
+#include "modloader.h"
+#endif
+
 #define MAX_SUBSYSTEMS		(16)
 
 static RwBool		  ForegroundApp = TRUE;
@@ -2058,6 +2062,14 @@ WinMain(HINSTANCE instance,
 	}
 #endif
 
+#ifdef MODLOADER
+	struct ModLoaderContext
+	{
+		ModLoaderContext() { ModLoader_Init(); }
+		~ModLoaderContext() { ModLoader_Shutdown(); }
+	} modloader_ctx;
+#endif
+
 #ifdef USE_CUSTOM_ALLOCATOR
 	InitMemoryMgr();
 #endif
@@ -2363,7 +2375,11 @@ WinMain(HINSTANCE instance,
 					case GS_INIT_LOGO_MPEG:
 					{
 						if ( !startupDeactivate )
+#ifdef MODLOADER // Logo.mpg
+							ModLoader_PlayMovieInWindow_Logo(cmdShow, "movies\\Logo.mpg");
+#else
 							PlayMovieInWindow(cmdShow, "movies\\Logo.mpg");
+#endif
 						gGameState = GS_LOGO_MPEG;
 						TRACE("gGameState = GS_LOGO_MPEG;");
 						break;
@@ -2402,9 +2418,17 @@ WinMain(HINSTANCE instance,
 #endif
 						
 						if ( FrontEndMenuManager.OS_Language == LANG_FRENCH || FrontEndMenuManager.OS_Language == LANG_GERMAN )
+#ifdef MODLOADER
+							ModLoader_PlayMovieInWindow_GTAtitles(cmdShow, "movies\\GTAtitlesGER.mpg");
+#else
 							PlayMovieInWindow(cmdShow, "movies\\GTAtitlesGER.mpg");
+#endif
 						else
+#ifdef MODLOADER
+							ModLoader_PlayMovieInWindow_GTAtitles(cmdShow, "movies\\GTAtitles.mpg");
+#else
 							PlayMovieInWindow(cmdShow, "movies\\GTAtitles.mpg");
+#endif
 						
 						gGameState = GS_INTRO_MPEG;
 						TRACE("gGameState = GS_INTRO_MPEG;");
@@ -2538,7 +2562,11 @@ WinMain(HINSTANCE instance,
 						if ( FrontEndMenuManager.m_bWantToLoad )
 #endif
 						{
+#ifdef MODLOADER
+							ModLoader_InitialiseGame();
+#else
 							InitialiseGame();
+#endif
 							FrontEndMenuManager.m_bGameNotLoaded = false;
 							gGameState = GS_PLAYING_GAME;
 							TRACE("gGameState = GS_PLAYING_GAME;");
@@ -2572,7 +2600,11 @@ WinMain(HINSTANCE instance,
 							CGame::currLevel = (eLevelName)TheMemoryCard.GetLevelToLoad();
 						}
 #else
+#ifdef MODLOADER
+						ModLoader_InitialiseGame();
+#else
 						InitialiseGame();
+#endif
 
 						FrontEndMenuManager.m_bGameNotLoaded = false;
 #endif

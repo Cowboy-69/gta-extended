@@ -40,6 +40,9 @@
 #ifdef IMPROVED_TECH_PART // skiped phone calls
 #include "RpAnimBlend.h"
 #endif
+#ifdef MODLOADER // main.scm
+#include "modloader.h"
+#endif
 
 #ifdef USE_DEBUG_SCRIPT_LOADER
 extern const char* scriptfile;
@@ -400,7 +403,15 @@ int8 CRunningScript::ProcessCommands1000To1099(int32 command)
 		int handle = CTheScripts::OpenScript();
 #else
 		CFileMgr::ChangeDir("\\");
+#ifdef VICE_EXTENDED // ViceExtended folder - scm
+#ifdef MODLOADER // main.scm
+		int handle = ModLoader_MainScm("ViceExtended\\data\\main.scm", "rb");
+#else
+		int handle = CFileMgr::OpenFile("ViceExtended\\data\\main.scm", "rb");
+#endif
+#else
 		int handle = CFileMgr::OpenFile("data\\main.scm", "rb");
+#endif
 #endif
 		CFileMgr::Seek(handle, offset, 0);
 		CFileMgr::Read(handle, (const char*)&CTheScripts::ScriptSpace[SIZE_MAIN_SCRIPT], SIZE_MISSION_SCRIPT);

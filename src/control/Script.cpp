@@ -52,6 +52,9 @@
 #ifdef USE_ADVANCED_SCRIPT_DEBUG_OUTPUT
 #include <stdarg.h>
 #endif
+#ifdef MODLOADER // main.scm
+#include "modloader.h"
+#endif
 
 uint8 CTheScripts::ScriptSpace[SIZE_SCRIPT_SPACE];
 CRunningScript CTheScripts::ScriptsArray[MAX_NUM_SCRIPTS];
@@ -735,11 +738,19 @@ int CTheScripts::OpenScript()
 	CFileMgr::ChangeDir("\\");
 #ifdef VICE_EXTENDED // ViceExtended folder - scm
 	switch (ScriptToLoad) {
+#ifdef MODLOADER // main.scm
+	case 0: return ModLoader_MainScm("ViceExtended\\data\\main.scm", "rb");
+#else
 	case 0: return CFileMgr::OpenFile("ViceExtended\\data\\main.scm", "rb");
+#endif
 	case 1: return CFileMgr::OpenFile("ViceExtended\\data\\freeroam_miami.scm", "rb");
 	case 2: return CFileMgr::OpenFile("ViceExtended\\data\\main_d.scm", "rb");
 	}
+#ifdef MODLOADER // main.scm
+	return ModLoader_MainScm("ViceExtended\\data\\main.scm", "rb");
+#else
 	return CFileMgr::OpenFile("ViceExtended\\data\\main.scm", "rb");
+#endif
 #else
 	switch (ScriptToLoad) {
 	case 0: return CFileMgr::OpenFile("data\\main.scm", "rb");
@@ -774,7 +785,11 @@ void CTheScripts::Init()
 #else
 #ifdef VICE_EXTENDED // ViceExtended folder - scm
 	CFileMgr::SetDir("ViceExtended");
+#ifdef MODLOADER // main.scm
+	int mainf = ModLoader_MainScm("data\\main.scm", "rb");
+#else
 	int mainf = CFileMgr::OpenFile("data\\main.scm", "rb");
+#endif
 #else
 	CFileMgr::SetDir("data");
 	int mainf = CFileMgr::OpenFile("main.scm", "rb");

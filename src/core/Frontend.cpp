@@ -40,6 +40,9 @@
 #ifdef EX_PHOTO_MODE // Photo mode button in pause menu
 #include "PhotoMode.h"
 #endif
+#ifdef MODLOADER // fronten1.txd, fronten2.txd
+#include "modloader.h"
+#endif
 
 // Similar story to Hud.cpp:
 // Game has colors inlined in code.
@@ -3746,8 +3749,12 @@ CMenuManager::LoadAllTextures()
 
 	printf("LOAD frontend1\n");
 #ifdef VICE_EXTENDED // ViceExtended folder - fronten1.txd
+#ifdef MODLOADER // fronten1.txd
+	ModLoader_Fronten1Txd(frontendTxdSlot1, "MODELS/FRONTEN1.TXD");
+#else
 	//CTxdStore::LoadTxd(frontendTxdSlot1, "ViceExtended/MODELS/FRONTEN1.TXD");
 	CTxdStore::LoadTxd(frontendTxdSlot1, "MODELS/FRONTEN1.TXD");
+#endif
 #else
 	CTxdStore::LoadTxd(frontendTxdSlot1, "MODELS/FRONTEN1.TXD");
 #endif
@@ -3809,8 +3816,12 @@ CMenuManager::LoadAllTextures()
 
 		printf("LOAD frontend2\n");
 #ifdef VICE_EXTENDED // ViceExtended folder - fronten2.txd
+#ifdef MODLOADER // fronten2.txd
+		ModLoader_Fronten2Txd(frontendTxdSlot2, "MODELS/FRONTEN2.TXD");
+#else
 		//CTxdStore::LoadTxd(frontendTxdSlot2, "ViceExtended/MODELS/FRONTEN2.TXD");
 		CTxdStore::LoadTxd(frontendTxdSlot2, "MODELS/FRONTEN2.TXD");
+#endif
 #else
 		CTxdStore::LoadTxd(frontendTxdSlot2, "MODELS/FRONTEN2.TXD");
 #endif

@@ -98,6 +98,9 @@
 #ifdef EX_PHOTO_MODE
 #include "PhotoMode.h"
 #endif
+#ifdef MODLOADER // particle.txd
+#include "modloader.h"
+#endif
 
 eLevelName CGame::currLevel;
 int32 CGame::currArea;
@@ -407,7 +410,11 @@ bool CGame::Initialise(const char* datFile)
 	LoadingScreen("Loading the Game", "Loading particles", nil);
 	int particleTxdSlot = CTxdStore::AddTxdSlot("particle");
 #ifdef VICE_EXTENDED // ViceExtended folder - particle.txd
+#ifdef MODLOADER // particle.txd
+	ModLoader_ParticleTxd(particleTxdSlot, "ViceExtended/MODELS/PARTICLE.TXD");
+#else
 	CTxdStore::LoadTxd(particleTxdSlot, "ViceExtended/MODELS/PARTICLE.TXD");
+#endif
 #else
 	CTxdStore::LoadTxd(particleTxdSlot, "MODELS/PARTICLE.TXD");
 #endif
@@ -465,6 +472,9 @@ bool CGame::Initialise(const char* datFile)
 
 	CdStreamAddImage("MODELS\\GTA3.IMG");
 
+#ifdef VICE_EXTENDED// ViceExtended folder - ViceEx.dat
+	CFileLoader::LoadLevel("ViceExtended\\DATA\\ViceEx.DAT");
+#endif
 #ifdef VICE_EXTENDED // ViceExtended folder - default.dat
 	CFileLoader::LoadLevel("ViceExtended\\DATA\\DEFAULT.DAT");
 #else

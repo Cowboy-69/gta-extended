@@ -57,6 +57,9 @@
 
 #define VICE_EXTENDED
 #ifdef VICE_EXTENDED
+
+	#define MODLOADER // https://github.com/thelink2012/modloader
+
 	// These macros are used to navigation; Disabling them individually is not recommended
 
 	#define UTILS // Useful tools
@@ -103,7 +106,7 @@
 
 	#define NEW_CHEATS
 
-	//#define VICE_CRY
+	#define VICE_CRY
 
 	#define EX_MORE_BUTTON_ICONS
 	#define EX_PC_KEY_ICONS
@@ -128,30 +131,22 @@ enum Config {
 	NUMPLAYERS = 1,
 
 	NUMCDIMAGES = 6, // gta3.img duplicates (not used on PC)
-	MAX_CDIMAGES = 16, // additional cdimages
+	MAX_CDIMAGES = 32, // additional cdimages
 	MAX_CDCHANNELS = 5,
 
-#ifdef VICE_CRY
-	MODELINFOSIZE = 8000,
-#else
-	MODELINFOSIZE = 6700,
-#endif
+	MODELINFOSIZE = 10000,
 	TXDSTORESIZE = 1485,
-	COLSTORESIZE = 31,
-	EXTRADIRSIZE = 256,
+	COLSTORESIZE = 100,
+	EXTRADIRSIZE = 512,
 	CUTSCENEDIRSIZE = 512,
 
-#ifdef VICE_CRY
-	SIMPLEMODELSIZE = 6000,
-#else
-	SIMPLEMODELSIZE = 3985,
-#endif
-	TIMEMODELSIZE = 485,
-	CLUMPMODELSIZE = 5,
+	SIMPLEMODELSIZE = 10000,
+	TIMEMODELSIZE = 10000,
+	CLUMPMODELSIZE = 100,
 	WEAPONMODELSIZE = 37,
 	PEDMODELSIZE = 130,
 	VEHICLEMODELSIZE = 210,
-	TWODFXSIZE = 1310,
+	TWODFXSIZE = 3000,
 
 	MAXVEHICLESLOADED = 50, // 70 on mobile
 
@@ -175,7 +170,7 @@ enum Config {
 	// Link list lengths
 	NUMALPHALIST = 20,
 	NUMBOATALPHALIST = 20,
-	NUMALPHAENTITYLIST = 200,
+	NUMALPHAENTITYLIST = 2000,
 	NUMALPHAUNTERWATERENTITYLIST = 30,
 	NUMCOLCACHELINKS = 50,
 	NUMREFERENCES = 800,
@@ -761,4 +756,14 @@ static_assert(false, "SUPPORT_XBOX_SCRIPT and SUPPORT_MOBILE_SCRIPT are mutually
 #endif
 #if defined(GTA_PS2) && defined(EXTERNAL_3D_SOUND)
 #error EXTERNAL_3D_SOUND cannot work on PS2
+#endif
+
+#ifdef MODLOADER
+#undef USE_TXD_CDIMAGE
+#undef ONE_THREAD_PER_CHANNEL
+#undef FLUSHABLE_STREAMING
+
+/*#if !defined(_WIN32) || defined(__LP64__) || defined(_WIN64)
+#error Mod Loader is currently only supported in win-x86 builds
+#endif*/
 #endif

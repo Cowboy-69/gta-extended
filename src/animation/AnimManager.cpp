@@ -11,6 +11,9 @@
 #include "AnimBlendAssocGroup.h"
 #include "AnimManager.h"
 #include "Streaming.h"
+#ifdef MODLOADER // LoadAnimFile
+#include "modloader.h"
+#endif
 
 CAnimBlock CAnimManager::ms_aAnimBlocks[NUMANIMBLOCKS];
 CAnimBlendHierarchy CAnimManager::ms_aAnimations[NUMANIMATIONS];
@@ -1388,7 +1391,11 @@ void
 CAnimManager::LoadAnimFiles(void)
 {
 #ifdef VICE_EXTENDED // ViceExtended folder - ped.ifp
+#ifdef MODLOADER // ped.ifp
+	LoadAnimFile(ModLoader_GetAnimFile_Unsafe("ViceExtended\\ANIM\\PED.IFP"));
+#else
 	LoadAnimFile("ViceExtended\\ANIM\\PED.IFP");
+#endif
 #else
 	LoadAnimFile("ANIM\\PED.IFP");
 #endif
@@ -1427,7 +1434,11 @@ void
 CAnimManager::LoadAnimFile(const char *filename)
 {
 	RwStream *stream;
+#ifdef MODLOADER // LoadAnimFile
+	stream = (RwStream*)ModLoader_AnimFile(rwSTREAMFILENAME, rwSTREAMREAD, filename);
+#else
 	stream = RwStreamOpen(rwSTREAMFILENAME, rwSTREAMREAD, filename);
+#endif
 	assert(stream);
 	LoadAnimFile(stream, true);
 	RwStreamClose(stream, nil);

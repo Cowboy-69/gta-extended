@@ -8,6 +8,9 @@
 #include "Messages.h"
 #include "Text.h"
 #include "Timer.h"
+#ifdef MODLOADER // GXT
+#include "modloader.h"
+#endif
 
 wchar WideErrorString[25];
 
@@ -98,7 +101,11 @@ CText::Load(void)
 	}
 #endif
 
+#ifdef MODLOADER // GXT
+	file = CFileMgr::OpenFile(ModLoader_RegisterAndGetGxtFile_Unsafe(filename), "rb");
+#else
 	file = CFileMgr::OpenFile(filename, "rb");
+#endif
 
 	offset = 0;
 	while (!tkey_loaded || !tdat_loaded) {
@@ -334,7 +341,11 @@ CText::LoadMissionText(char *MissionTableName)
 	}
 #endif
 	CTimer::Suspend();
+#ifdef MODLOADER // GXT
+	int file = CFileMgr::OpenFile(ModLoader_RegisterAndGetGxtFile_Unsafe(filename), "rb");
+#else
 	int file = CFileMgr::OpenFile(filename, "rb");
+#endif
 	CFileMgr::Seek(file, MissionTextOffsets.data[missionTableId].offset, SEEK_SET);
 
 	char TableCheck[8];

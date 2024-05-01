@@ -12,6 +12,9 @@
 #include "ControllerConfig.h"
 #include "Pad.h"
 #endif
+#ifdef MODLOADER // fonts.txd, fonts_p.txd, fonts_r.txd, fonts_j.txd
+#include "modloader.h"
+#endif
 
 void
 AsciiToUnicode(const char *src, wchar *dst)
@@ -321,6 +324,24 @@ CFont::Initialise(void)
 #ifdef VICE_EXTENDED // ViceExtended folder - fonts
 #ifdef MORE_LANGUAGES
 	Slot = slot;
+#ifdef MODLOADER // fonts.txd, fonts_p.txd, fonts_r.txd, fonts_j.txd
+	switch (LanguageSet)
+	{
+	case FONT_LANGSET_EFIGS:
+	default:
+		ModLoader_FontsTxd(slot, "MODELS/FONTS.TXD");
+		break;
+	case FONT_LANGSET_POLISH:
+		ModLoader_FontsTxd(slot, "ViceExtended/MODELS/FONTS_P.TXD");
+		break;
+	case FONT_LANGSET_RUSSIAN:
+		ModLoader_FontsTxd(slot, "ViceExtended/MODELS/FONTS_R.TXD");
+		break;
+	case FONT_LANGSET_JAPANESE:
+		ModLoader_FontsTxd(slot, "ViceExtended/MODELS/FONTS_J.TXD");
+		break;
+	}
+#else
 	switch (LanguageSet)
 	{
 	case FONT_LANGSET_EFIGS:
@@ -338,9 +359,14 @@ CFont::Initialise(void)
 		CTxdStore::LoadTxd(slot, "ViceExtended/MODELS/FONTS_J.TXD");
 		break;
 	}
+#endif
+#else
+#ifdef MODLOADER // fonts.txd
+	ModLoader_FontsTxd(slot, "MODELS/FONTS.TXD");
 #else
 	//CTxdStore::LoadTxd(slot, "ViceExtended/MODELS/FONTS.TXD");
 	CTxdStore::LoadTxd(slot, "MODELS/FONTS.TXD");
+#endif
 #endif
 #else
 #ifdef MORE_LANGUAGES
@@ -524,6 +550,22 @@ CFont::ReloadFonts(uint8 set)
 		switch (set)
 		{
 #ifdef VICE_EXTENDED // ViceExtended folder - fonts
+#ifdef MODLOADER // fonts.txd, fonts_p.txd, fonts_r.txd, fonts_j.txd
+		case FONT_LANGSET_EFIGS:
+		default:
+			ModLoader_FontsTxd(Slot, "MODELS/FONTS.TXD");
+			break;
+		case FONT_LANGSET_POLISH:
+			ModLoader_FontsTxd(Slot, "ViceExtended/MODELS/FONTS_P.TXD");
+			break;
+		case FONT_LANGSET_RUSSIAN:
+			ModLoader_FontsTxd(Slot, "ViceExtended/MODELS/FONTS_R.TXD");
+			break;
+		case FONT_LANGSET_JAPANESE:
+			ModLoader_FontsTxd(Slot, "ViceExtended/MODELS/FONTS_J.TXD");
+			break;
+		}
+#else
 		case FONT_LANGSET_EFIGS:
 		default:
 			//CTxdStore::LoadTxd(Slot, "ViceExtended/MODELS/FONTS.TXD");
@@ -539,6 +581,7 @@ CFont::ReloadFonts(uint8 set)
 			CTxdStore::LoadTxd(Slot, "ViceExtended/MODELS/FONTS_J.TXD");
 			break;
 		}
+#endif
 #else
 		case FONT_LANGSET_EFIGS:
 		default:

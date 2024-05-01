@@ -216,4 +216,9 @@ public:
 	static void UpdateForAnimViewer(void);
 
 	static void PrintStreamingBufferState();
+
+#ifdef MODLOADER
+	static void LoadCdDirectoryUsingCallbacks(void *pUserData, int n, bool (*ReadEntry)(void *, void *, uint32_t),
+											  bool (*RegisterEntry)(void *, void *, bool), void (*RegisterSpecialEntry)(void *, void *));
+#endif
 };

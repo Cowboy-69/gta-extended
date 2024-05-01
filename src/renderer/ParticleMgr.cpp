@@ -3,6 +3,9 @@
 #include "main.h"
 #include "FileMgr.h"
 #include "ParticleMgr.h"
+#ifdef MODLOADER // particle.cfg
+#include "modloader.h"
+#endif
 
 cParticleSystemMgr mod_ParticleSystemManager;
 
@@ -25,7 +28,11 @@ void cParticleSystemMgr::LoadParticleData()
 {
 #ifdef VICE_EXTENDED // ViceExtended folder - particle.cfg
 	CFileMgr::SetDir("ViceExtended");
+#ifdef MODLOADER // particle.cfg
+	ModLoader_ParticleCfg("data\\particle.cfg", work_buff, ARRAY_SIZE(work_buff), "r");
+#else
 	CFileMgr::LoadFile("data\\particle.cfg", work_buff, ARRAY_SIZE(work_buff), "r");
+#endif
 #else
 	CFileMgr::SetDir("DATA");
 	CFileMgr::LoadFile(ParticleFilename, work_buff, ARRAY_SIZE(work_buff), "r");

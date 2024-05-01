@@ -240,7 +240,11 @@ CFileMgr::SetDirMyDocuments(void)
 	mychdir(_psGetUserFilesFolder());
 }
 
+#if defined MODLOADER && defined _WIN64 // CFileMgr::LoadFile return type
+int
+#else
 ssize_t
+#endif
 CFileMgr::LoadFile(const char *file, uint8 *buf, int maxlen, const char *mode)
 {
 	int fd;

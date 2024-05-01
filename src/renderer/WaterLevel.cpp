@@ -30,6 +30,9 @@
 #include "WaterLevel.h"
 #include "SurfaceTable.h"
 #include "WaterCreatures.h"
+#ifdef MODLOADER // waterpro.dat
+#include "modloader.h"
+#endif
 
 #define RwIm3DVertexSet_RGBA(vert, rgba) RwIm3DVertexSetRGBA(vert, rgba.red, rgba.green, rgba.blue, rgba.alpha) // (RwRGBAAssign(&(_dst)->color, &_src))
 
@@ -122,11 +125,19 @@ CWaterLevel::Initialise(Const char *pWaterDat)
 
 	do
 	{
+#ifdef MODLOADER // waterpro.dat
+		hFile = ModLoader_WaterproDat("DATA\\waterpro.dat", "rb");
+#else
 		hFile = CFileMgr::OpenFile("DATA\\waterpro.dat", "rb");
+#endif
 	}
 	while ( hFile < 0 );
 #else
+#ifdef MODLOADER // waterpro.dat
+	int32 hFile = ModLoader_WaterproDat("DATA\\waterpro.dat", "rb");
+#else
 	int32 hFile = CFileMgr::OpenFile("DATA\\waterpro.dat", "rb");
+#endif
 #endif
 	
 	if (hFile > 0)
@@ -257,7 +268,11 @@ CWaterLevel::Initialise(Const char *pWaterDat)
 			}
 		}
 
+#ifdef MODLOADER // waterpro.dat
+		hFile = ModLoader_WaterproDat("data\\waterpro.dat", "wb");
+#else
 		hFile = CFileMgr::OpenFileForWriting("data\\waterpro.dat");
+#endif
 
 		if (hFile > 0)
 		{

@@ -15,6 +15,9 @@
 #include "Timer.h"
 #include "Lights.h"
 #include "MemoryMgr.h"
+#ifdef MODLOADER
+#include "modloader.h"
+#endif
 
 RpClump *gpPlayerClump;
 float gOldFov;
@@ -27,7 +30,11 @@ FindPlayerDff(uint32 &offset, uint32 &size)
 	int file;
 	CDirectory::DirectoryInfo info;
 
+#ifdef MODLOADER
+	file = CFileMgr::OpenFile(ModLoader_GetCdDirectoryPath_Unsafe("models\\gta3.dir"), "rb");
+#else
 	file = CFileMgr::OpenFile("models\\gta3.dir", "rb");
+#endif
 
 	do {
 		if (!CFileMgr::Read(file, (char*)&info, sizeof(CDirectory::DirectoryInfo)))
@@ -101,7 +108,11 @@ CPlayerSkin::GetSkinTexture(const char *texName)
 	if (tex != nil) return tex;
 
 	if (strcmp(DEFAULT_SKIN_NAME, texName) == 0 || texName[0] == '\0')
+#ifdef MODLOADER // player.bmp
+		sprintf(gString, ModLoader_RegisterAndGetPlayerBmpFile_Unsafe("models\\generic\\player.bmp"));
+#else
 		sprintf(gString, "models\\generic\\player.bmp");
+#endif
 	else
 		sprintf(gString, "skins\\%s.bmp", texName);
 

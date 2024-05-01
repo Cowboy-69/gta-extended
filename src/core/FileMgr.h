@@ -9,7 +9,11 @@ public:
 	static void ChangeDir(const char *dir);
 	static void SetDir(const char *dir);
 	static void SetDirMyDocuments(void);
+#if defined MODLOADER && defined _WIN64 // CFileMgr::LoadFile return type
+	static int LoadFile(const char *file, uint8 *buf, int maxlen, const char *mode);
+#else
 	static ssize_t LoadFile(const char *file, uint8 *buf, int maxlen, const char *mode);
+#endif
 	static int OpenFile(const char *file, const char *mode);
 	static int OpenFile(const char *file) { return OpenFile(file, "rb"); }
 	static int OpenFileForWriting(const char *file);

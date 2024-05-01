@@ -34,6 +34,9 @@
 #ifdef EX_PHOTO_MODE
 #include "PhotoMode.h"
 #endif
+#ifdef MODLOADER // hud.txd
+#include "modloader.h"
+#endif
 
 #if defined(FIX_BUGS)
 	#define SCREEN_SCALE_X_FIX(a) SCREEN_SCALE_X(a)
@@ -1797,7 +1800,11 @@ void CHud::ReloadTXD()
 
 	HudTXD = CTxdStore::AddTxdSlot("hud");
 #ifdef VICE_EXTENDED // ViceExtended folder - hud.txd
+#ifdef MODLOADER // hud.txd
+	ModLoader_HudTxd(HudTXD, "ViceExtended/MODELS/HUD.TXD");
+#else
 	CTxdStore::LoadTxd(HudTXD, "ViceExtended/MODELS/HUD.TXD");
+#endif
 #else
 	CTxdStore::LoadTxd(HudTXD, "MODELS/HUD.TXD");
 #endif
@@ -1818,7 +1825,11 @@ void CHud::Initialise()
 
 	int HudTXD = CTxdStore::AddTxdSlot("hud");
 #ifdef VICE_EXTENDED // ViceExtended folder - hud.txd
+#ifdef MODLOADER // hud.txd
+	ModLoader_HudTxd(HudTXD, "ViceExtended/MODELS/HUD.TXD");
+#else
 	CTxdStore::LoadTxd(HudTXD, "ViceExtended/MODELS/HUD.TXD");
+#endif
 #else
 	CTxdStore::LoadTxd(HudTXD, "MODELS/HUD.TXD");
 #endif

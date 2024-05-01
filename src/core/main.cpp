@@ -81,6 +81,9 @@
 #ifdef EX_PHOTO_MODE
 #include "PhotoMode.h"
 #endif
+#ifdef MODLOADER
+#include "modloader.h"
+#endif
 
 GlobalScene Scene;
 
@@ -628,7 +631,11 @@ LoadSplash(const char *name)
 			splash.Delete();
 		if(txd)
 			CTxdStore::RemoveTxd(splashTxdId);
+#ifdef MODLOADER // LoadSplash
+		CTxdStore::LoadTxd(splashTxdId, ModLoader_RegisterAndGetSplashFile_Unsafe(filename));
+#else
 		CTxdStore::LoadTxd(splashTxdId, filename);
+#endif
 		CTxdStore::AddRef(splashTxdId);
 		CTxdStore::PushCurrentTxd();
 		CTxdStore::SetCurrentTxd(splashTxdId);
@@ -1611,6 +1618,10 @@ Render2dStuffAfterFade(void)
 void
 Idle(void *arg)
 {
+#ifdef MODLOADER
+	ModLoader_Tick();
+#endif
+
 	CTimer::Update();
 
 	tbInit();
@@ -1778,6 +1789,10 @@ popret:	POP_MEMID();	// MEMID_RENDER
 void
 FrontendIdle(void)
 {
+#ifdef MODLOADER
+	ModLoader_Tick();
+#endif
+
 	CDraw::CalculateAspectRatio();
 	CTimer::Update();
 	CSprite2d::SetRecipNearClip(); // this should be on InitialiseRenderWare according to PS2 asm. seems like a bug fix
@@ -1810,11 +1825,7 @@ void
 InitialiseGame(void)
 {
 	LoadingScreen(nil, nil, "loadsc0");
-#ifdef VICE_EXTENDED
-	CGame::Initialise("ViceExtended\\DATA\\GTA_VC.DAT");
-#else
 	CGame::Initialise("DATA\\GTA_VC.DAT");
-#endif
 }
 
 RsEventStatus
