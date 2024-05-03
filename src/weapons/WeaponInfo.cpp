@@ -137,6 +137,9 @@ CWeaponInfo::Initialise(void)
 #ifdef EX_IMPROVED_WEAPONS
 		aWeaponInfo[i].m_animForWeaponToPlay = ASSOCGRP_STD;
 #endif
+#ifdef EX_WEAPON_SIGHT // weapon.dat
+		aWeaponInfo[i].m_nWeaponSight = 0;
+#endif
 	}
 	debug("Loading weapon data...\n");
 	LoadWeaponData();
@@ -156,6 +159,9 @@ CWeaponInfo::LoadWeaponData(void)
 	char animToPlay[32];
 #ifdef EX_IMPROVED_WEAPONS // weapon.dat
 	char animForWeaponToPlay[32];
+#endif
+#ifdef EX_WEAPON_SIGHT // weapon.dat
+	int weaponSight;
 #endif
 
 	size_t bp, buflen;
@@ -204,8 +210,12 @@ CWeaponInfo::LoadWeaponData(void)
 		fireOffsetZ = 0.0f;
 		sscanf(
 			&line[lp],
-#ifdef EX_IMPROVED_WEAPONS // weapon.dat
+#if defined EX_IMPROVED_WEAPONS && defined EX_WEAPON_SIGHT // weapon.dat
+			"%s %s %f %d %d %d %d %f %f %f %f %f %f %f %s %f %f %f %f %f %f %f %d %d %x %d %s %d",
+#elif defined EX_IMPROVED_WEAPONS // weapon.dat
 			"%s %s %f %d %d %d %d %f %f %f %f %f %f %f %s %f %f %f %f %f %f %f %d %d %x %d %s",
+#elif defined EX_WEAPON_SIGHT // weapon.dat
+			"%s %s %f %d %d %d %d %f %f %f %f %f %f %f %s %f %f %f %f %f %f %f %d %d %x %d %d",
 #else
 			"%s %s %f %d %d %d %d %f %f %f %f %f %f %f %s %f %f %f %f %f %f %f %d %d %x %d",
 #endif
@@ -234,9 +244,16 @@ CWeaponInfo::LoadWeaponData(void)
 			&modelId,
 			&modelId2,
 			&flags,
-#ifdef EX_IMPROVED_WEAPONS // weapon.dat
+#if defined EX_IMPROVED_WEAPONS && defined EX_WEAPON_SIGHT // weapon.dat
+			&weaponSlot,
+			animForWeaponToPlay,
+			&weaponSight);
+#elif defined EX_IMPROVED_WEAPONS // weapon.dat
 			&weaponSlot,
 			animForWeaponToPlay);
+#elif defined EX_WEAPON_SIGHT // weapon.dat
+			&weaponSlot,
+			&weaponSight);
 #else
 			&weaponSlot);
 #endif
@@ -270,6 +287,9 @@ CWeaponInfo::LoadWeaponData(void)
 		aWeaponInfo[weaponType].m_nModel2Id = modelId2;
 		aWeaponInfo[weaponType].m_Flags = flags;
 		aWeaponInfo[weaponType].m_nWeaponSlot = weaponSlot;
+#ifdef EX_WEAPON_SIGHT // weapon.dat
+		aWeaponInfo[weaponType].m_nWeaponSight = weaponSight;
+#endif
 
 		if (animLoopEnd < 98.0f && weaponType != WEAPONTYPE_FLAMETHROWER && !CWeapon::IsShotgun(weaponType))
 			aWeaponInfo[weaponType].m_nFiringRate = ((aWeaponInfo[weaponType].m_fAnimLoopEnd - aWeaponInfo[weaponType].m_fAnimLoopStart) * 900.0f);

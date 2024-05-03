@@ -148,6 +148,9 @@ uint32 CHud::m_LastWeapon;
 uint32 CHud::m_LastTimeEnergyLost;
 
 CSprite2d CHud::Sprites[NUM_HUD_SPRITES];
+#ifdef EX_WEAPON_SIGHT
+CSprite2d CHud::WeaponSights[NUM_WEAPON_SIGHTS];
+#endif
 
 struct
 {
@@ -307,6 +310,36 @@ void CHud::Draw()
 #ifdef ASPECT_RATIO_SCALE
 				f3rdY -= SCREEN_SCALE_Y(2.0f);
 #endif
+
+#ifdef EX_WEAPON_SIGHT // Draw
+				CWeaponInfo* weaponInfo = CWeaponInfo::GetWeaponInfo((eWeaponType)WeaponType);
+				if (FrontEndMenuManager.m_PrefsWeaponSight > 0 && weaponInfo->m_nWeaponSight != 0) {
+					int weaponSightID = weaponInfo->m_nWeaponSight - 1;
+
+					float scaleMultiplier = 0.3f;
+
+					if (FrontEndMenuManager.m_PrefsWeaponSight == 1) {
+						weaponSightID = 0;
+						scaleMultiplier = 0.15f;
+					} else if (weaponSightID == SIGHT_SHOTGUN) {
+						scaleMultiplier = 0.5f;
+					}
+
+					rect.left = f3rdX - SCREEN_SCALE_X(32.0f * scaleMultiplier);
+					rect.top = f3rdY - SCREEN_SCALE_Y(32.0f  * scaleMultiplier);
+					rect.right = f3rdX + SCREEN_SCALE_X(32.0f * scaleMultiplier);
+					rect.bottom = f3rdY + SCREEN_SCALE_Y(32.0f  * scaleMultiplier);
+
+					if (playerPed->GetWeapon()->m_eWeaponState >= WEAPONSTATE_RELOADING) {
+						WeaponSights[weaponSightID].Draw(CRect(rect), CRGBA(150, 150, 150, 255),
+							0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+					} else {
+						WeaponSights[weaponSightID].Draw(CRect(rect), CRGBA(255, 255, 255, 255),
+							0.0f, 0.0f,  1.0f, 0.0f,  0.0f, 1.0f,  1.0f, 1.0f);
+					}
+				}
+				else
+#endif
 				if (playerPed && (WeaponType == WEAPONTYPE_M4 || WeaponType == WEAPONTYPE_RUGER || WeaponType == WEAPONTYPE_M60)) {
 					rect.left = f3rdX - SCREEN_SCALE_X(32.0f * 0.6f);
 					rect.top = f3rdY - SCREEN_SCALE_Y(32.0f  * 0.6f);
@@ -329,12 +362,47 @@ void CHud::Draw()
 				if (Mode == CCam::MODE_M16_1STPERSON ||
 				    Mode == CCam::MODE_M16_1STPERSON_RUNABOUT ||
 				    Mode == CCam::MODE_HELICANNON_1STPERSON) {
+
+#ifdef EX_WEAPON_SIGHT // Draw
+					CWeaponInfo* weaponInfo = CWeaponInfo::GetWeaponInfo((eWeaponType)WeaponType);
+					if (FrontEndMenuManager.m_PrefsWeaponSight > 0 && weaponInfo->m_nWeaponSight != 0) {
+						int weaponSightID = weaponInfo->m_nWeaponSight - 1;
+
+						float scaleMultiplier = 0.3f;
+
+						if (FrontEndMenuManager.m_PrefsWeaponSight == 1) {
+							weaponSightID = 0;
+							scaleMultiplier = 0.15f;
+						}
+
+						rect.left = (SCREEN_WIDTH / 2) - SCREEN_SCALE_X(32.0f * scaleMultiplier);
+						rect.top = (SCREEN_HEIGHT / 2) - SCREEN_SCALE_Y(32.0f * scaleMultiplier);
+						rect.right = (SCREEN_WIDTH / 2) + SCREEN_SCALE_X(32.0f * scaleMultiplier);
+						rect.bottom = (SCREEN_HEIGHT / 2) + SCREEN_SCALE_Y(32.0f * scaleMultiplier);
+
+						if (playerPed->GetWeapon()->m_eWeaponState >= WEAPONSTATE_RELOADING) {
+							WeaponSights[weaponSightID].Draw(CRect(rect), CRGBA(150, 150, 150, 255),
+								0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+						} else {
+							WeaponSights[weaponSightID].Draw(CRect(rect), CRGBA(255, 255, 255, 255),
+								0.0f, 0.0f,  1.0f, 0.0f,  0.0f, 1.0f,  1.0f, 1.0f);
+						}
+					} else {
+						rect.left = (SCREEN_WIDTH / 2) - SCREEN_SCALE_X(32.0f);
+						rect.top = (SCREEN_HEIGHT / 2) - SCREEN_SCALE_Y(32.0f);
+						rect.right = (SCREEN_WIDTH / 2) + SCREEN_SCALE_X(32.0f);
+						rect.bottom = (SCREEN_HEIGHT / 2) + SCREEN_SCALE_Y(32.0f);
+						Sprites[HUD_SITEM16].Draw(CRect(rect), CRGBA(255, 255, 255, 255),
+							0.0f, 0.0f,  1.0f, 0.0f,  0.0f, 1.0f,  1.0f, 1.0f);
+					}
+#else
 					rect.left = (SCREEN_WIDTH / 2) - SCREEN_SCALE_X(32.0f);
 					rect.top = (SCREEN_HEIGHT / 2) - SCREEN_SCALE_Y(32.0f);
 					rect.right = (SCREEN_WIDTH / 2) + SCREEN_SCALE_X(32.0f);
 					rect.bottom = (SCREEN_HEIGHT / 2) + SCREEN_SCALE_Y(32.0f);
 					Sprites[HUD_SITEM16].Draw(CRect(rect), CRGBA(255, 255, 255, 255),
 						0.0f, 0.0f,  1.0f, 0.0f,  0.0f, 1.0f,  1.0f, 1.0f);
+#endif
 				}
 				else if (Mode == CCam::MODE_1STPERSON_RUNABOUT) {
 					rect.left = (SCREEN_WIDTH / 2) - SCREEN_SCALE_X(32.0f * 0.7f);
@@ -1907,6 +1975,23 @@ void CHud::Initialise()
 	VarConsole.Add("Draw HUD", &m_Wants_To_Draw_Hud, false);
 #endif
 	CTxdStore::PopCurrentTxd();
+
+#ifdef EX_WEAPON_SIGHT // TXD: Load
+	int sightsTXD = CTxdStore::AddTxdSlot("weaponSights");
+	CTxdStore::LoadTxd(sightsTXD, "ViceExtended/MODELS/weaponSights.TXD");
+	CTxdStore::AddRef(sightsTXD);
+	CTxdStore::PopCurrentTxd();
+	CTxdStore::SetCurrentTxd(sightsTXD);
+
+	WeaponSights[SIGHT_DOT].SetTexture("sightDot", "sightDotA");
+	WeaponSights[SIGHT_PISTOL].SetTexture("sightPistol", "sightPistolA");
+	WeaponSights[SIGHT_SMG].SetTexture("sightSMG", "sightSMGA");
+	WeaponSights[SIGHT_SHOTGUN].SetTexture("sightShotgun", "sightShotgunA");
+	WeaponSights[SIGHT_RIFLE].SetTexture("sightRifle", "sightRifleA");
+	WeaponSights[SIGHT_HEAVY].SetTexture("sightHeavy", "sightHeavyA");
+
+	CTxdStore::PopCurrentTxd();
+#endif
 }
 
 void CHud::ReInitialise() {
@@ -2104,6 +2189,15 @@ void CHud::Shutdown()
 
 	int HudTXD = CTxdStore::FindTxdSlot("hud");
 	CTxdStore::RemoveTxdSlot(HudTXD);
+
+#ifdef EX_WEAPON_SIGHT // TXD: Shutdown
+	for (int i = 0; i < NUM_WEAPON_SIGHTS; ++i) {
+		WeaponSights[i].Delete();
+	}
+
+	int sightTXD = CTxdStore::FindTxdSlot("weaponSights");
+	CTxdStore::RemoveTxdSlot(sightTXD);
+#endif
 }
 
 float CHud::DrawFadeState(DRAW_FADE_STATE fadingElement, int forceFadingIn)

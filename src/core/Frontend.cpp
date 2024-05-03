@@ -617,6 +617,9 @@ CMenuManager::CMenuManager()
 	m_PrefsAutosave = true;
 	m_PrefsStoreGalleryPhotos = true;
 #endif
+#ifdef EX_WEAPON_SIGHT // Menu
+	m_PrefsWeaponSight = 2;
+#endif
 }
 
 void
@@ -1646,6 +1649,16 @@ CMenuManager::DrawStandardMenus(bool activeScreen)
 						rightText = TheText.Get("FEA_NM3");
 					}
 					break;
+#ifdef EX_WEAPON_SIGHT // Menu
+				case MENUACTION_WEAPONSIGHT:
+					if (m_PrefsWeaponSight == 2)
+						rightText = TheText.Get("FEM_COM");
+					else if (m_PrefsWeaponSight == 1)
+						rightText = TheText.Get("FEM_SIM");
+					else
+						rightText = TheText.Get("FEM_DEF");
+					break;
+#endif
 #ifdef CUSTOM_FRONTEND_OPTIONS
 				case MENUACTION_CFO_DYNAMIC:
 				case MENUACTION_CFO_SELECT:
@@ -4273,7 +4286,8 @@ CMenuManager::Process(void)
 
 	InitialiseChangedLanguageSettings();
 
-#if defined EX_PHOTO_MODE && !defined DEBUG // Exit photo mode by pressing the button
+//#if defined EX_PHOTO_MODE && !defined DEBUG // Exit photo mode by pressing the button
+#if defined EX_PHOTO_MODE // Exit photo mode by pressing the button
 	if (CPhotoMode::IsPhotoModeEnabled() && (CPad::GetPad(0)->GetEscapeJustDown() || CPad::GetPad(0)->IsAffectedByController && CPad::GetPad(0)->GetCircleJustUp())) {
 		CPhotoMode::DisablePhotoMode();
 		return;
@@ -5937,6 +5951,9 @@ CMenuManager::ProcessUserInput(uint8 goDown, uint8 goUp, uint8 optionSelected, u
 					m_PrefsRelativeCamInVeh_DB_FP = false;
 					m_PrefsDoomMode_FP = false;
 #endif
+#ifdef EX_WEAPON_SIGHT // Menu
+					m_PrefsWeaponSight = 2;
+#endif
 					SaveSettings();
 #ifdef LOAD_INI_SETTINGS
 					SaveINIControllerSettings();
@@ -6221,6 +6238,16 @@ CMenuManager::ProcessOnOffMenuOptions()
 		m_PrefsGPS = !m_PrefsGPS;
 		SaveSettings();
 		break;
+#ifdef EX_WEAPON_SIGHT // Menu
+	case MENUACTION_WEAPONSIGHT:
+		if (m_PrefsWeaponSight == 2)
+			m_PrefsWeaponSight = 0;
+		else
+			m_PrefsWeaponSight++;
+
+		SaveSettings();
+		break;
+#endif
 #endif
 	case MENUACTION_CTRLVIBRATION:
 		m_PrefsUseVibration = !m_PrefsUseVibration;

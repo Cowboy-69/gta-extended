@@ -261,9 +261,6 @@ enum eMenuScreen
 #if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined IMPROVED_TECH_PART // Other settings
 	MENUPAGE_OTHER_SETTINGS,
 #endif
-#ifdef EX_PHOTO_MODE // Photo mode button in pause menu
-	MENUPAGE_PHOTO_MODE,
-#endif
 	MENUPAGES
 };
 
@@ -372,6 +369,9 @@ enum eMenuAction
 #endif
 #ifdef EX_PHOTO_MODE // Photo mode button in pause menu
 	MENUACTION_PHOTO_MODE,
+#endif
+#ifdef EX_WEAPON_SIGHT // Menu
+	MENUACTION_WEAPONSIGHT,
 #endif
 };
 
@@ -846,6 +846,9 @@ public:
 #if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined IMPROVED_TECH_PART // Other settings
 	bool m_PrefsAutosave;
 	bool m_PrefsStoreGalleryPhotos;
+#endif
+#ifdef EX_WEAPON_SIGHT // Menu
+	int m_PrefsWeaponSight;
 #endif
 
 #ifdef GAMEPAD_MENU

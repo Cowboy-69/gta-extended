@@ -63,6 +63,9 @@ public:
 #ifdef EX_IMPROVED_WEAPONS // weapon.dat
 	AssocGroupId m_animForWeaponToPlay;
 #endif
+#ifdef EX_WEAPON_SIGHT
+	uint8 m_nWeaponSight;
+#endif
 
 	static void Initialise(void);
 	static void LoadWeaponData(void);

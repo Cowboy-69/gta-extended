@@ -718,6 +718,9 @@ bool LoadINISettings()
 	ReadIniIfExists("Other", "Autosave", &FrontEndMenuManager.m_PrefsAutosave);
 	ReadIniIfExists("Other", "StoreGalleryPhotos", &FrontEndMenuManager.m_PrefsStoreGalleryPhotos);
 #endif
+#ifdef EX_WEAPON_SIGHT // Menu
+	ReadIniIfExists("Display", "WeaponSight", &FrontEndMenuManager.m_PrefsWeaponSight);
+#endif
 
 #ifdef CUSTOM_FRONTEND_OPTIONS
 	bool migrate = cfg.get("FrontendOptions").size() != 0;
@@ -871,6 +874,9 @@ void SaveINISettings()
 #if defined AUTOSAVE_AND_SAVE_ANYWHERE && defined IMPROVED_TECH_PART // Other settings
 	StoreIni("Other", "Autosave", FrontEndMenuManager.m_PrefsAutosave);
 	StoreIni("Other", "StoreGalleryPhotos", FrontEndMenuManager.m_PrefsStoreGalleryPhotos);
+#endif
+#ifdef EX_WEAPON_SIGHT // Menu
+	StoreIni("Display", "WeaponSight", FrontEndMenuManager.m_PrefsWeaponSight);
 #endif
 
 #ifdef CUSTOM_FRONTEND_OPTIONS
