@@ -886,6 +886,14 @@ char const* aPlayerChainsawAnimations[] = {
 	"IDLE_csaw",
 	"walk_start_csaw",
 };
+#ifdef FIRING_AND_AIMING // Rocket animations
+char const* aRocketAnimations[] = {
+	"ROCKET_fire",
+	"ROCKET_crouchfire",
+	"ROCKET_load",
+	"ROCKET_crouchload",
+};
+#endif
 char const* aShuffleAnimations[] = {
 	"WALK_shuffle",
 	"RUN_civi",
@@ -1079,6 +1087,9 @@ const AnimAssocDefinition CAnimManager::ms_aAnimAssocDefinitions[NUM_ANIM_ASSOC_
 	{ "sniper", "sniper", MI_COP, awc(aSniperAnimations), aWeaponAnimDescs },
 	{ "grenade", "grenade", MI_COP, awc(aThrowAnimations), aWeaponAnimDescs },
 	{ "flame", "flame", MI_COP, awc(aFlamethrowerAnimations), aWeaponAnimDescs },
+#ifdef FIRING_AND_AIMING // Rocket animations
+	{ "rocket", "rocket", MI_COP, awc(aRocketAnimations), aWeaponAnimDescs },
+#endif
 	{ "medic", "medic", MI_COP, awc(aMedicAnimations), aMedicAnimDescs },
 	{ "sunbathe", "sunbathe", MI_COP, 1, aSunbatheAnimations, aSunbatheAnimDescs },	// NB: not using awc here!
 	{ "playidles", "playidles", MI_COP, awc(aPlayerIdleAnimations), aPlayerIdleAnimDescs },

@@ -83,6 +83,7 @@ const int CPhotoMode::animList[][2] = {
 										{ ASSOCGRP_RIFLE, ANIM_MELEE_ATTACK_2ND },
 										{ ASSOCGRP_THROW, ANIM_WEAPON_FIRE },
 										{ ASSOCGRP_FLAMETHROWER, ANIM_WEAPON_FIRE },
+										{ ASSOCGRP_ROCKET, ANIM_WEAPON_FIRE },
 									  };
 
 bool CPhotoMode::bPhotoModeEnabled = false;
@@ -2039,7 +2040,8 @@ void CPhotoMode::InitFakePlayer()
 	CWeaponInfo* weaponInfo = CWeaponInfo::GetWeaponInfo((eWeaponType)weaponID);
 
 	if (animList[animID][1] != ANIM_MELEE_ATTACK_2ND &&
-		(animList[animID][0] >= ASSOCGRP_SCREWDRIVER && animList[animID][0] <= ASSOCGRP_RIFLE || animList[animID][0] == ASSOCGRP_FLAMETHROWER)) {
+		(animList[animID][0] >= ASSOCGRP_SCREWDRIVER && animList[animID][0] <= ASSOCGRP_RIFLE ||
+		animList[animID][0] == ASSOCGRP_FLAMETHROWER || animList[animID][0] == ASSOCGRP_ROCKET)) {
 
 		if (animList[animID][0] == ASSOCGRP_COLT)
 			CAnimManager::AddAnimation(fakePlayer->GetClump(), ASSOCGRP_STD, ANIM_STD_IDLE);
@@ -2185,6 +2187,7 @@ void CPhotoMode::RequestAnims()
 	int uziBlock = CAnimManager::GetAnimationBlockIndex("uzi");
 	int rifleBlock = CAnimManager::GetAnimationBlockIndex("rifle");
 	int flameBlock = CAnimManager::GetAnimationBlockIndex("flame");
+	int rocketBlock = CAnimManager::GetAnimationBlockIndex("rocket");
 	int manBlock = CAnimManager::GetAnimationBlockIndex("man");
 	CStreaming::RequestAnim(screwdrvBlock, STREAMFLAGS_DEPENDENCY);
 	CStreaming::RequestAnim(golfclubBlock, STREAMFLAGS_DEPENDENCY);
@@ -2199,6 +2202,7 @@ void CPhotoMode::RequestAnims()
 	CStreaming::RequestAnim(uziBlock, STREAMFLAGS_DEPENDENCY);
 	CStreaming::RequestAnim(rifleBlock, STREAMFLAGS_DEPENDENCY);
 	CStreaming::RequestAnim(flameBlock, STREAMFLAGS_DEPENDENCY);
+	CStreaming::RequestAnim(rocketBlock, STREAMFLAGS_DEPENDENCY);
 	CStreaming::RequestAnim(manBlock, STREAMFLAGS_DEPENDENCY);
 	CStreaming::LoadAllRequestedModels(false);
 	CAnimManager::AddAnimBlockRef(screwdrvBlock);
@@ -2214,6 +2218,7 @@ void CPhotoMode::RequestAnims()
 	CAnimManager::AddAnimBlockRef(uziBlock);
 	CAnimManager::AddAnimBlockRef(rifleBlock);
 	CAnimManager::AddAnimBlockRef(flameBlock);
+	CAnimManager::AddAnimBlockRef(rocketBlock);
 	CAnimManager::AddAnimBlockRef(manBlock);
 }
 
@@ -2232,6 +2237,7 @@ void CPhotoMode::RemoveAnims()
 	CAnimManager::RemoveAnimBlockRef(CAnimManager::GetAnimationBlockIndex("uzi"));
 	CAnimManager::RemoveAnimBlockRef(CAnimManager::GetAnimationBlockIndex("rifle"));
 	CAnimManager::RemoveAnimBlockRef(CAnimManager::GetAnimationBlockIndex("flame"));
+	CAnimManager::RemoveAnimBlockRef(CAnimManager::GetAnimationBlockIndex("rocket"));
 	CAnimManager::RemoveAnimBlockRef(CAnimManager::GetAnimationBlockIndex("man"));
 }
 

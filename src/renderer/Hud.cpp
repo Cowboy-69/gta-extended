@@ -283,7 +283,11 @@ void CHud::Draw()
 
 					if (WeaponType >= WEAPONTYPE_COLT45 && WeaponType <= WEAPONTYPE_RUGER
 						|| WeaponType == WEAPONTYPE_M60 || WeaponType == WEAPONTYPE_MINIGUN
+#ifdef FIRING_AND_AIMING // Third person rocket launcher aiming
+						|| WeaponType == WEAPONTYPE_FLAMETHROWER || WeaponType == WEAPONTYPE_ROCKETLAUNCHER) {
+#else
 						|| WeaponType == WEAPONTYPE_FLAMETHROWER) {
+#endif
 						DrawCrossHairPC = 1;
 					}
 				}
@@ -321,6 +325,8 @@ void CHud::Draw()
 					if (FrontEndMenuManager.m_PrefsWeaponSight == 1) {
 						weaponSightID = 0;
 						scaleMultiplier = 0.15f;
+					} else if (weaponSightID == SIGHT_ROCKET) {
+						scaleMultiplier = 0.4f;
 					} else if (weaponSightID == SIGHT_SHOTGUN) {
 						scaleMultiplier = 0.5f;
 					}
@@ -1989,6 +1995,7 @@ void CHud::Initialise()
 	WeaponSights[SIGHT_SHOTGUN].SetTexture("sightShotgun", "sightShotgunA");
 	WeaponSights[SIGHT_RIFLE].SetTexture("sightRifle", "sightRifleA");
 	WeaponSights[SIGHT_HEAVY].SetTexture("sightHeavy", "sightHeavyA");
+	WeaponSights[SIGHT_ROCKET].SetTexture("sightRocket", "sightRocketA");
 
 	CTxdStore::PopCurrentTxd();
 #endif

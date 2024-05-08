@@ -56,6 +56,7 @@ enum eWeaponSights
 	SIGHT_SHOTGUN,
 	SIGHT_RIFLE,
 	SIGHT_HEAVY,
+	SIGHT_ROCKET,
 	NUM_WEAPON_SIGHTS,
 };
 #endif

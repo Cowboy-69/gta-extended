@@ -1788,13 +1788,14 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 	if (!m_pFire) {
 		eWeaponType weapon = GetWeapon()->m_eWeaponType;
 #if defined FIRING_AND_AIMING && defined FIRST_PERSON
-		bool bSniperCamera = weapon == WEAPONTYPE_ROCKETLAUNCHER || weapon == WEAPONTYPE_SNIPERRIFLE || weapon == WEAPONTYPE_LASERSCOPE || weapon == WEAPONTYPE_CAMERA;
+		bool bSniperCamera = weapon == WEAPONTYPE_SNIPERRIFLE || weapon == WEAPONTYPE_LASERSCOPE || weapon == WEAPONTYPE_CAMERA;
 
 		uint32 slot = CWeaponInfo::GetWeaponInfo(weapon)->m_nWeaponSlot;
 		if ((slot == WEAPONSLOT_SHOTGUN || slot == WEAPONSLOT_HANDGUN ||
 			slot == WEAPONSLOT_RIFLE || slot == WEAPONSLOT_SUBMACHINEGUN ||
 			weapon == WEAPONTYPE_M60 || weapon == WEAPONTYPE_MINIGUN ||
-			weapon == WEAPONTYPE_FLAMETHROWER || bSniperCamera) && m_nMoveState != PEDMOVE_SPRINT) {
+			weapon == WEAPONTYPE_FLAMETHROWER || weapon == WEAPONTYPE_ROCKETLAUNCHER || bSniperCamera) &&
+			m_nMoveState != PEDMOVE_SPRINT) {
 
 			bool isFrontObstacle = false;
 			if (padUsed->GetTarget()) {
@@ -1830,9 +1831,7 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 
 			if ((padUsed->GetTarget() || IsDoomMode()) && bIsPlayerAiming && !cantFire && GetWeapon()->m_eWeaponState != WEAPONSTATE_RELOADING && !bIsAutoAiming) {
 				if (!IsDoomMode()) {
-					if (weapon == WEAPONTYPE_ROCKETLAUNCHER)
-						TheCamera.SetNewPlayerWeaponMode(CCam::MODE_ROCKETLAUNCHER, 0, 0);
-					else if (weapon == WEAPONTYPE_SNIPERRIFLE || weapon == WEAPONTYPE_LASERSCOPE)
+					if (weapon == WEAPONTYPE_SNIPERRIFLE || weapon == WEAPONTYPE_LASERSCOPE)
 						TheCamera.SetNewPlayerWeaponMode(CCam::MODE_SNIPER, 0, 0);
 					else if (weapon == WEAPONTYPE_CAMERA)
 						TheCamera.SetNewPlayerWeaponMode(CCam::MODE_CAMERA, 0, 0);
