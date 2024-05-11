@@ -103,6 +103,11 @@ CPed::ServiceTalking(void)
 void
 CPed::Say(uint16 audio)
 {
+#ifdef IMPROVED_TECH_PART // Peds don't say lines when they're dead
+	if (Dead())
+		return;
+#endif
+
 	if (3.0f + TheCamera.GetPosition().z < GetPosition().z)
 		return;
 
