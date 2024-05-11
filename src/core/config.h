@@ -128,6 +128,8 @@
 		#define EX_LOADING_GAME_SAVE_ON_STARTUP
 	#endif
 
+	#define EX_PED_ANIMS_IN_CAR
+
 enum Config {
 	NUMPLAYERS = 1,
 

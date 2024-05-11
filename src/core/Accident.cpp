@@ -22,7 +22,12 @@ CAccidentManager::GetNextFreeAccident()
 void
 CAccidentManager::ReportAccident(CPed *ped)
 {
+#ifdef EX_PED_ANIMS_IN_CAR // ReportAccident
+	if (!ped->IsPlayer() && ped->CharCreatedBy != MISSION_CHAR && !ped->bRenderScorched && !ped->bBodyPartJustCameOff && ped->bAllowMedicsToReviveMe && !ped->bIsInWater &&
+		!ped->InVehicle()) {
+#else
 	if (!ped->IsPlayer() && ped->CharCreatedBy != MISSION_CHAR && !ped->bRenderScorched && !ped->bBodyPartJustCameOff && ped->bAllowMedicsToReviveMe && !ped->bIsInWater) {
+#endif
 		for (int i = 0; i < NUM_ACCIDENTS; i++) {
 			if (m_aAccidents[i].m_pVictim != nil && m_aAccidents[i].m_pVictim == ped)
 				return;

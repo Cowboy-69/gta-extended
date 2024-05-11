@@ -2822,7 +2822,13 @@ cAudioManager::ProcessVehicleHorn(cVehicleParams& params)
 			return TRUE;
 
 		if (params.m_pVehicle->m_nCarHornTimer > 0) {
+#ifdef EX_PED_ANIMS_IN_CAR // Horn
+			if (params.m_pVehicle->GetStatus() != STATUS_PLAYER &&
+				(!params.m_pVehicle->pDriver || params.m_pVehicle->pDriver && !params.m_pVehicle->pDriver->DyingOrDead())) {
+
+#else
 			if (params.m_pVehicle->GetStatus() != STATUS_PLAYER) {
+#endif
 				params.m_pVehicle->m_nCarHornTimer = Min(44, params.m_pVehicle->m_nCarHornTimer);
 				if (params.m_pVehicle->m_nCarHornTimer == 44)
 					params.m_pVehicle->m_nCarHornPattern = (m_FrameCounter + m_sQueueSample.m_nEntityIndex) & 7;
@@ -2907,7 +2913,13 @@ cAudioManager::ProcessVehicleSirenOrAlarm(cVehicleParams& params)
 			if (m_sQueueSample.m_nVolume > 0) {
 				m_sQueueSample.m_nCounter = 5;
 				if (UsesSiren(params)) {
+#ifdef EX_PED_ANIMS_IN_CAR // Horn
+					if (params.m_pVehicle->GetStatus() == STATUS_ABANDONED &&
+						(!params.m_pVehicle->pDriver || params.m_pVehicle->pDriver && !params.m_pVehicle->pDriver->DyingOrDead()))
+
+#else
 					if (params.m_pVehicle->GetStatus() == STATUS_ABANDONED)
+#endif
 						return TRUE;
 					if (veh->m_nCarHornTimer > 0 && params.m_nIndex != FIRETRUK && params.m_nIndex != MRWHOOP) {
 						m_sQueueSample.m_nSampleIndex = SFX_SIREN_FAST;

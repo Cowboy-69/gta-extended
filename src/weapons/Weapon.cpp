@@ -1632,10 +1632,14 @@ CWeapon::DoBulletImpact(CEntity *shooter, CEntity *victim,
 
 					if ( victimPed->Dead() )
 					{
-						CAnimBlendAssociation *asoc;
+						CAnimBlendAssociation *asoc = nullptr;
 						if ( RpAnimBlendClumpGetFirstAssociation(victimPed->GetClump(), ASSOC_FRONTAL) )
 							asoc = CAnimManager::BlendAnimation(victimPed->GetClump(), ASSOCGRP_STD, ANIM_STD_HIT_FLOOR_FRONT, 8.0f);
+#ifdef EX_PED_ANIMS_IN_CAR
+						else if ( !victimPed->InVehicle() )
+#else
 						else
+#endif
 							asoc = CAnimManager::BlendAnimation(victimPed->GetClump(), ASSOCGRP_STD, ANIM_STD_HIT_FLOOR,   8.0f);
 
 						if ( asoc )

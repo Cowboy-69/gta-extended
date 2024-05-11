@@ -2696,7 +2696,11 @@ CPed::PedAnimDoorOpenCB(CAnimBlendAssociation* animAssoc, void* arg)
 		if (ped->m_vehDoor != CAR_DOOR_LF && ped->m_vehDoor != CAR_DOOR_LR) {
 
 			if (pedToDragOut && !pedToDragOut->bDontDragMeOutCar) {
+#ifdef EX_PED_ANIMS_IN_CAR
+				if (pedToDragOut->m_nPedState != PED_DRIVING && pedToDragOut->m_nPedState != PED_DEAD) {
+#else
 				if (pedToDragOut->m_nPedState != PED_DRIVING) {
+#endif
 					ped->QuitEnteringCar();
 					pedToDragOut = nil;
 				} else {
@@ -2732,7 +2736,11 @@ CPed::PedAnimDoorOpenCB(CAnimBlendAssociation* animAssoc, void* arg)
 			}
 		} else if (pedToDragOut) {
 
+#ifdef EX_PED_ANIMS_IN_CAR
+			if (pedToDragOut->m_nPedState != PED_DRIVING && pedToDragOut->m_nPedState != PED_DEAD || pedToDragOut->bDontDragMeOutCar) {
+#else
 			if (pedToDragOut->m_nPedState != PED_DRIVING || pedToDragOut->bDontDragMeOutCar) {
+#endif
 				ped->QuitEnteringCar();
 				pedToDragOut = nil;
 			} else {
@@ -3056,6 +3064,9 @@ CPed::PedAnimDoorCloseCB(CAnimBlendAssociation *animAssoc, void *arg)
 					(veh->pDriver != nil && 
 						(veh->pDriver->m_objective != OBJECTIVE_LEAVE_CAR
 							&& veh->pDriver->m_objective != OBJECTIVE_LEAVE_CAR_AND_DIE
+#ifdef EX_PED_ANIMS_IN_CAR
+							&& veh->pDriver->m_nPedState != PED_DEAD
+#endif
 							|| !veh->IsRoomForPedToLeaveCar(CAR_DOOR_LF, nil))))) {
 
 			if (ped->m_objective == OBJECTIVE_ENTER_CAR_AS_DRIVER || ped->m_nPedState == PED_CARJACK)
@@ -3079,6 +3090,18 @@ CPed::PedAnimDoorCloseCB(CAnimBlendAssociation *animAssoc, void *arg)
 				ped->m_pVehicleAnim = CAnimManager::AddAnimation(ped->GetClump(), ASSOCGRP_STD, ANIM_STD_CAR_SHUFFLE_LO_RHS);
 			else
 				ped->m_pVehicleAnim = CAnimManager::AddAnimation(ped->GetClump(), ASSOCGRP_STD, ANIM_STD_CAR_SHUFFLE_RHS);
+
+#ifdef EX_PED_ANIMS_IN_CAR // If the other ped gets in from the driver's seat through the passenger seat, the dead ped will be dragged out of the car
+			if (veh->pDriver && veh->pDriver->m_nPedState == PED_DEAD) {
+				veh->pDriver->SetBeingDraggedFromCar(veh, veh->pDriver->m_vehDoor, false);
+
+				if (veh->IsCar())
+					((CAutomobile*)veh)->Damage.SetDoorStatus(DOOR_FRONT_LEFT, DOOR_STATUS_SWINGING);
+
+				// The animation of moving from the passenger seat to the driver's seat will be slowed down
+				ped->m_pVehicleAnim->speed = 0.5f;
+			}
+#endif
 
 			ped->m_pVehicleAnim->SetFinishCallback(PedSetInCarCB, ped);
 		}
@@ -3719,7 +3742,11 @@ CPed::SetCarJack(CVehicle* car)
 
 	if (m_fHealth > 0.0f && (IsPlayer() || m_objective == OBJECTIVE_KILL_CHAR_ON_FOOT || m_objective == OBJECTIVE_KILL_CHAR_ANY_MEANS ||
 					CharCreatedBy == MISSION_CHAR ||  (car->VehicleCreatedBy != MISSION_VEHICLE && car->GetModelIndex() != MI_DODO)))
+#ifdef EX_PED_ANIMS_IN_CAR
+		if (pedInSeat && !pedInSeat->IsPedDoingDriveByShooting() && (pedInSeat->m_nPedState == PED_DRIVING || pedInSeat->m_nPedState == PED_DEAD))
+#else
 		if (pedInSeat && !pedInSeat->IsPedDoingDriveByShooting() && pedInSeat->m_nPedState == PED_DRIVING)
+#endif
 			if (m_nPedState != PED_CARJACK && !m_pVehicleAnim)
 				if ((car->IsDoorReady(door) || car->IsDoorFullyOpen(door)))
 					if (!car->bIsBeingCarJacked && !(doorFlag & car->m_nGettingInFlags) && !(doorFlag & car->m_nGettingOutFlags))
@@ -3801,13 +3828,23 @@ CPed::SetBeingDraggedFromCar(CVehicle *veh, uint32 vehEnterType, bool quickJack)
 	SetMoveState(PEDMOVE_NONE);
 	LineUpPedWithCar(veh->IsBike() ? LINE_UP_TO_CAR_FALL : LINE_UP_TO_CAR_START);
 	m_pVehicleAnim = nil;
+#ifdef EX_PED_ANIMS_IN_CAR
+	if (DyingOrDead()) {
+		m_nLastPedState = PED_DEAD;
+	}
+#endif
 	SetPedState(PED_DRAG_FROM_CAR);
 	bChangedSeat = false;
 	bWillBeQuickJacked = quickJack;
 
 	SetHeading(m_fRotationCur);
 
+#ifdef EX_PED_ANIMS_IN_CAR
+	if (m_nLastPedState != PED_DEAD)
+		Say(SOUND_PED_CAR_JACKED);
+#else
 	Say(SOUND_PED_CAR_JACKED);
+#endif
 	SetRadioStation();
 
 	if(veh->IsBike())
@@ -3872,6 +3909,14 @@ CPed::BeingDraggedFromCar(void)
 	} else {
 		LineUpPedWithCar(LINE_UP_TO_CAR_2);
 	}
+
+#ifdef EX_PED_ANIMS_IN_CAR // Opening the driver's door while pushing the dead ped out of the driver's seat through the passenger seat
+	if (m_nLastPedState == PED_DEAD) {
+		if (m_pMyVehicle && m_pMyVehicle->m_nGettingInFlags & CAR_DOOR_FLAG_RF) {
+			m_pMyVehicle->ProcessOpenDoor(m_vehDoor, m_pVehicleAnim->animId, m_pVehicleAnim->currentTime);
+		}
+	}
+#endif
 
 	static float mult = 5.f;
 	if (m_objective == OBJECTIVE_LEAVE_CAR_AND_DIE) {

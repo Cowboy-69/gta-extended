@@ -285,6 +285,12 @@ CEmergencyPed::MedicAI(void)
 						bIsRunning = false;
 						SetMoveState(PEDMOVE_STILL);
 					} else if (distToEmergency < 4.5f) {
+#ifdef EX_PED_ANIMS_IN_CAR // Medics 'pulling' dead peds out of cars
+						/*if (m_pRevivedPed && m_pRevivedPed->InVehicle() && m_pRevivedPed->m_nPedState != PED_DRAG_FROM_CAR) {
+							m_pRevivedPed->SetBeingDraggedFromCar(m_pRevivedPed->m_pMyVehicle, m_pRevivedPed->m_vehDoor, false);
+						}*/
+#endif
+
 						bIsRunning = false;
 						SetMoveState(PEDMOVE_WALK);
 						if (distToEmergency < 1.0f

@@ -3237,6 +3237,17 @@ CPed::InflictDamage(CEntity *damagedBy, eWeaponType method, float damage, ePedPi
 		dieAnim = ANIM_STD_DROWN;
 #endif
 
+#ifdef EX_PED_ANIMS_IN_CAR // When a ped dies in the car, the death animation in the car will be played
+	if (InVehicle()) {
+		if (m_pMyVehicle->IsPassenger(this))
+			dieAnim = ANIM_STD_CAR_DIE_PS;
+		else
+			dieAnim = CGeneral::GetRandomTrueFalse() ? ANIM_STD_CAR_DIE_HORN_DS : ANIM_STD_CAR_DIE_DS;
+
+		dieSpeed = 1.0f;
+	}
+#endif
+
 	if (m_fArmour != 0.0f && method != WEAPONTYPE_DROWNING) {
 		if (player == this)
 			CWorld::Players[CWorld::PlayerInFocus].m_nTimeLastArmourLoss = CTimer::GetTimeInMilliseconds();
@@ -3294,6 +3305,19 @@ CPed::InflictDamage(CEntity *damagedBy, eWeaponType method, float damage, ePedPi
 							m_pMyVehicle->AutoPilot.m_nTimeTempAction = CTimer::GetTimeInMilliseconds() + 2000;
 						}
 					}
+#ifdef EX_PED_ANIMS_IN_CAR // When a ped dies in the car, the death animation in the car will be played
+					m_fHealth = 0.0f;
+					if (m_pMyVehicle && m_pMyVehicle->pDriver == this) {
+						SetRadioStation();
+						m_pMyVehicle->SetStatus(STATUS_ABANDONED);
+					}
+					SetDie(dieAnim, dieDelta, dieSpeed);
+
+					if (damagedBy == FindPlayerPed() && damagedBy != this) {
+						CWorld::Players[CWorld::PlayerInFocus].m_nHavocLevel += 10;
+						CWorld::Players[CWorld::PlayerInFocus].m_fMediaAttention += 5.f;
+					}
+#else
 					if (m_pMyVehicle->CanPedExitCar(true)) {
 						SetObjective(OBJECTIVE_LEAVE_CAR_AND_DIE, m_pMyVehicle);
 					} else {
@@ -3309,6 +3333,7 @@ CPed::InflictDamage(CEntity *damagedBy, eWeaponType method, float damage, ePedPi
 							CWorld::Players[CWorld::PlayerInFocus].m_fMediaAttention += 5.f;
 						}
 					}
+#endif
 				}
 				for (int i = 0; i < ARRAY_SIZE(pVehicle->pPassengers); i++) {
 					CPed* passenger = pVehicle->pPassengers[i];

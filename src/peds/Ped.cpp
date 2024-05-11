@@ -2286,7 +2286,11 @@ CPed::ProcessControl(void)
 	if (m_nPedState != PED_ARRESTED) {
 		if (m_nPedState == PED_DEAD) {
 			DeadPedMakesTyresBloody();
+#ifdef EX_PED_ANIMS_IN_CAR // When a ped dies in a car, a pool of blood doesn't appear
+			if (CGame::nastyGame && !bIsInWater && !InVehicle()) {
+#else
 			if (CGame::nastyGame && !bIsInWater) {
+#endif
 				uint32 remainingBloodyFpTime = CTimer::GetTimeInMilliseconds() - m_bloodyFootprintCountOrDeathTime;
 				float timeDependentDist;
 				if (remainingBloodyFpTime >= 2000) {
@@ -2350,6 +2354,13 @@ CPed::ProcessControl(void)
 				bWasStanding = false;
 				CPhysical::ProcessControl();
 			}
+
+#ifdef EX_PED_ANIMS_IN_CAR // CPhysical::ProcessControl() while m_nPedState == PED_DEAD
+			if (InVehicle()) {
+				CPhysical::ProcessControl();
+			}
+#endif
+
 			return;
 		}
 
@@ -4774,6 +4785,10 @@ CPed::PedSetDraggedOutCarCB(CAnimBlendAssociation *dragAssoc, void *arg)
 		return;
 	}
 
+#ifdef EX_PED_ANIMS_IN_CAR
+	bool bWasDead = ped->m_nLastPedState == PED_DEAD;
+#endif
+
 	if (ped->m_nPedState != PED_ARRESTED) {
 		ped->m_nLastPedState = PED_NONE;
 		if (dragAssoc)
@@ -4807,6 +4822,15 @@ CPed::PedSetDraggedOutCarCB(CAnimBlendAssociation *dragAssoc, void *arg)
 	ped->bInVehicle = false;
 	if (ped->IsPlayer())
 		AudioManager.PlayerJustLeftCar();
+
+#ifdef EX_PED_ANIMS_IN_CAR // Making a dead ped dead again after being completely dragged out of the car
+	if (bWasDead) {
+		dragAssoc->SetDeleteCallback(PedSetDraggedOutCarPositionCB, ped);
+		ped->m_fHealth = 0.0f;
+		ped->SetDie(ANIM_STD_HIT_FLOOR, 1000.0f, 2.0f);
+		return;
+	}
+#endif
 
 	if (ped->m_objective == OBJECTIVE_LEAVE_CAR_AND_DIE) {
 		dragAssoc->SetDeleteCallback(PedSetDraggedOutCarPositionCB, ped);
@@ -7816,8 +7840,10 @@ CPed::SetDie(AnimationId animId, float delta, float speed)
 	ClearAll();
 	m_fHealth = 0.0f;
 	if (m_nPedState == PED_DRIVING) {
+#ifndef EX_PED_ANIMS_IN_CAR // We don't destroy the ped after he's killed in the car
 		if (!IsPlayer() && (!m_pMyVehicle || !m_pMyVehicle->IsBike()))
 			FlagToDestroyWhenNextProcessed();
+#endif
 	} else if (bInVehicle) {
 		if (m_pVehicleAnim)
 			m_pVehicleAnim->blendDelta = -1000.0f;
@@ -7825,10 +7851,19 @@ CPed::SetDie(AnimationId animId, float delta, float speed)
 		QuitEnteringCar();
 	}
 
+#ifdef EX_PED_ANIMS_IN_CAR
+	bool bWasDragFromCar = m_nPedState == PED_DRAG_FROM_CAR;
+#endif
+
 	SetPedState(PED_DIE);
 	if (animId == ANIM_STD_NUM) {
 		bIsPedDieAnimPlaying = false;
 	} else {
+#ifdef EX_PED_ANIMS_IN_CAR // Smooth transition between normal animation and death animation
+		if (InVehicle())
+			dieAssoc = CAnimManager::AddAnimation(GetClump(), ASSOCGRP_STD, animId);
+		else
+#endif
 		dieAssoc = CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, animId, delta);
 		if (speed > 0.0f)
 			dieAssoc->speed = speed;
@@ -7840,7 +7875,12 @@ CPed::SetDie(AnimationId animId, float delta, float speed)
 		}
 	}
 
+#ifdef EX_PED_ANIMS_IN_CAR
+	if (!bWasDragFromCar)
+		Say(SOUND_PED_DEATH);
+#else
 	Say(SOUND_PED_DEATH);
+#endif
 	if (m_nLastPedState == PED_ENTER_CAR || m_nLastPedState == PED_CARJACK)
 		QuitEnteringCar();
 
@@ -7861,6 +7901,17 @@ CPed::FinishDieAnimCB(CAnimBlendAssociation *animAssoc, void *arg)
 {
 	CPed *ped = (CPed*)arg;
 
+#ifdef EX_PED_ANIMS_IN_CAR // FinishDieAnimCB
+	if (animAssoc->animId == ANIM_STD_CAR_DIE_HORN_DS) {
+		CVehicle* veh = ped->m_pMyVehicle;
+
+		veh->m_fSteerAngle = CGeneral::GetRandomNumberInRange(-DEGTORAD(veh->pHandling->fSteeringLock), DEGTORAD(veh->pHandling->fSteeringLock));
+
+		if (!ped->bBodyPartJustCameOff)
+			veh->m_nCarHornTimer = CTimer::GetTimeInMilliseconds() + 6000;
+	}
+#endif
+
 	if (ped->bIsPedDieAnimPlaying)
 		ped->bIsPedDieAnimPlaying = false;
 }
@@ -7877,8 +7928,10 @@ CPed::SetDead(void)
 		bUsesCollision = false;
 
 	m_fHealth = 0.0f;
+#ifndef EX_PED_ANIMS_IN_CAR
 	if (m_nPedState == PED_DRIVING)
 		bIsVisible = false;
+#endif
 
 	SetPedState(PED_DEAD);
 	m_pVehicleAnim = nil;
@@ -8348,6 +8401,17 @@ CPed::SeekCar(void)
 										} else {
 											SetEnterCar(vehToSeek, m_vehDoor);
 										}
+#ifdef EX_PED_ANIMS_IN_CAR
+									} else if (m_vehDoor == CAR_DOOR_LF && vehToSeek->pDriver || m_vehDoor == CAR_DOOR_RF && vehToSeek->pPassengers[0] || 
+											   m_vehDoor == CAR_DOOR_LR && vehToSeek->pPassengers[1] || m_vehDoor == CAR_DOOR_RR && vehToSeek->pPassengers[2]) {
+
+										if (vehToSeek->pPassengers[0] && vehToSeek->pPassengers[0]->bDontDragMeOutCar) {
+											if (IsPlayer())
+												SetEnterCar(vehToSeek, m_vehDoor);
+										} else {
+											SetCarJack(vehToSeek);
+										}
+#else
 									} else if (m_vehDoor == CAR_DOOR_RF && vehToSeek->pPassengers[0]) {
 										if (vehToSeek->pPassengers[0]->bDontDragMeOutCar) {
 											if (IsPlayer())
@@ -8355,6 +8419,7 @@ CPed::SeekCar(void)
 										} else {
 											SetCarJack(vehToSeek);
 										}
+#endif
 									} else {
 										SetEnterCar(vehToSeek, m_vehDoor);
 									}

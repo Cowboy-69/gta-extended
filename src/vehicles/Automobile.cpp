@@ -606,9 +606,23 @@ CAutomobile::ProcessControl(void)
 #else
 		m_fSteerAngle = 0.0f;
 #endif
+#ifdef EX_PED_ANIMS_IN_CAR // Process horn and gas pedal
+		m_fGasPedal = 0.0f;
+		if (pDriver && pDriver->Dead() && m_nCarHornTimer != 0) {
+			CPhysical::ProcessControl();
+			m_fGasPedal = m_randomSeed % 2 ? 1.0f : 0.0f;
+			m_fBrakePedal = 0.0f;
+			if (m_nCarHornTimer <= CTimer::GetTimeInMilliseconds()) {
+				m_nCarHornTimer = 0;
+			}
+		} else if(!IsAlarmOn()) {
+			m_nCarHornTimer = 0;
+		}
+#else
 		m_fGasPedal = 0.0f;
 		if(!IsAlarmOn())
 			m_nCarHornTimer = 0;
+#endif
 
 		if(bIsBeingCarJacked){
 			m_fGasPedal = 0.0f;
@@ -6537,6 +6551,12 @@ CAutomobile::ProcessOpenDoor(uint32 component, uint32 anim, float time)
 	case ANIM_STD_CRAWLOUT_RHS:
 	case ANIM_STD_ROLLOUT_LHS:
 	case ANIM_STD_ROLLOUT_RHS:
+#endif
+#ifdef EX_PED_ANIMS_IN_CAR // ProcessOpenDoor - Added jacked car anims
+	case ANIM_STD_JACKEDCAR_RHS:
+	case ANIM_STD_JACKEDCAR_LO_RHS:
+	case ANIM_STD_JACKEDCAR_LHS:
+	case ANIM_STD_JACKEDCAR_LO_LHS:
 #endif
 		ProcessDoorOpenAnimation(this, component, door, time, 0.06f, 0.43f);
 		break;
