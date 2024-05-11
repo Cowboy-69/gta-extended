@@ -85,6 +85,7 @@
 		#define CLIMBING
 		#define SWIMMING
 		#define EX_DISTANT_LIGHTS // thank https://github.com/ThirteenAG/III.VC.SA.IV.Project2DFX/releases/tag/gtavc
+		#define EX_ROCKET_LAUNCHER_THIRD_PERSON_AIM
 	#endif
 
 	#define AUTOSAVE_AND_SAVE_ANYWHERE

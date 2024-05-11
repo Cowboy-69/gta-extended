@@ -1831,6 +1831,11 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 
 			if ((padUsed->GetTarget() || IsDoomMode()) && bIsPlayerAiming && !cantFire && GetWeapon()->m_eWeaponState != WEAPONSTATE_RELOADING && !bIsAutoAiming) {
 				if (!IsDoomMode()) {
+#ifdef EX_ROCKET_LAUNCHER_THIRD_PERSON_AIM
+					if (weapon == WEAPONTYPE_ROCKETLAUNCHER && !bRocketLauncherThirdPersonAiming)
+						TheCamera.SetNewPlayerWeaponMode(CCam::MODE_ROCKETLAUNCHER, 0, 0);
+					else
+#endif
 					if (weapon == WEAPONTYPE_SNIPERRIFLE || weapon == WEAPONTYPE_LASERSCOPE)
 						TheCamera.SetNewPlayerWeaponMode(CCam::MODE_SNIPER, 0, 0);
 					else if (weapon == WEAPONTYPE_CAMERA)
@@ -2528,7 +2533,11 @@ CPlayerPed::ProcessControl(void)
 		} else {
 			re3_debug("start recording");
 			
+#ifdef VICE_EXTENDED // Vice Extended folder - wanted_paths.txt
+			folderRecord = CFileMgr::OpenFileForWriting("ViceExtended\\data\\wanted_paths.txt");
+#else
 			folderRecord = CFileMgr::OpenFileForWriting("data\\maps\\wanted_paths.txt");
+#endif
 		}
 
 		bIsPathRecording = !bIsPathRecording;

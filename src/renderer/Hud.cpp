@@ -283,8 +283,8 @@ void CHud::Draw()
 
 					if (WeaponType >= WEAPONTYPE_COLT45 && WeaponType <= WEAPONTYPE_RUGER
 						|| WeaponType == WEAPONTYPE_M60 || WeaponType == WEAPONTYPE_MINIGUN
-#ifdef FIRING_AND_AIMING // Third person rocket launcher aiming
-						|| WeaponType == WEAPONTYPE_FLAMETHROWER || WeaponType == WEAPONTYPE_ROCKETLAUNCHER) {
+#ifdef EX_ROCKET_LAUNCHER_THIRD_PERSON_AIM
+						|| WeaponType == WEAPONTYPE_FLAMETHROWER || WeaponType == WEAPONTYPE_ROCKETLAUNCHER && bRocketLauncherThirdPersonAiming) {
 #else
 						|| WeaponType == WEAPONTYPE_FLAMETHROWER) {
 #endif

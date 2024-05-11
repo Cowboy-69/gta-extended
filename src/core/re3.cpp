@@ -304,6 +304,9 @@ extern bool bEnableClimbing = ReadAndGetFeature("EnableClimbing");
 #ifdef SWIMMING
 extern bool bEnableSwimming = ReadAndGetFeature("EnableSwimming");
 #endif
+#ifdef EX_ROCKET_LAUNCHER_THIRD_PERSON_AIM
+extern bool bRocketLauncherThirdPersonAiming = ReadAndGetFeature("RocketLauncherThirdPersonAiming");
+#endif
 #endif
 
 bool ReadIniIfExists(const char *cat, const char *key, uint32 *out)

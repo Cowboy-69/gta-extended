@@ -375,6 +375,9 @@ extern bool bEnableClimbing;
 #ifdef SWIMMING
 extern bool bEnableSwimming;
 #endif
+#ifdef EX_ROCKET_LAUNCHER_THIRD_PERSON_AIM
+extern bool bRocketLauncherThirdPersonAiming;
+#endif
 #endif
 
 #define DEBUGBREAK() __debugbreak();
