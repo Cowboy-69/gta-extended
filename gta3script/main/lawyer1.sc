@@ -1773,6 +1773,8 @@ clothing_store_flag = 1
 clothes2_created = 1
 START_NEW_SCRIPT cloth1
 
+REQUEST_AUTO_SAVE
+
 RETURN
 		
 

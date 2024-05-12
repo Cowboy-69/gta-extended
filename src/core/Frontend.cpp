@@ -5982,6 +5982,7 @@ CMenuManager::ProcessUserInput(uint8 goDown, uint8 goUp, uint8 optionSelected, u
 					CTheScripts::Process();
 
 					bAutoSave = false;
+					bIsAutoSaveRequested = false;
 					IsQuickSave = false;
 					bSaveAnywhere = true;
 					SwitchToNewScreen(MENUPAGE_CHOOSE_SAVE_SLOT);

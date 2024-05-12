@@ -644,6 +644,8 @@ ENDIF
 //START_NEW_SCRIPT t4x4_mission2_loop
 //START_NEW_SCRIPT multistorey_mission_loop
 
+REQUEST_AUTO_SAVE
+
 RETURN
 		
 

@@ -964,6 +964,7 @@ ADD_SPRITE_BLIP_FOR_CONTACT_POINT -397.4 -561.3 18.7 RADAR_SPRITE_TOMMY protect_
 START_NEW_SCRIPT protect_mission2_loop
 laser_in_stock = 1
 flag_protect_mission1_passed = 1 
+REQUEST_AUTO_SAVE
 RETURN
 		
 

@@ -1130,6 +1130,7 @@ PLAY_MISSION_PASSED_TUNE 1
 CLEAR_WANTED_LEVEL player1
 REGISTER_HIGHEST_SCORE 0 player_score_bankjob2
 REGISTER_HIGHEST_SCORE 1 percentage_hits_bankjob2
+REQUEST_AUTO_SAVE
 RETURN
 
 // *************************************** Mission Cleanup *********************************

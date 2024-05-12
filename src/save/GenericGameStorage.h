@@ -8,6 +8,7 @@
 
 extern bool bAutoSave;
 extern bool bSaveAnywhere;
+extern bool bIsAutoSaveRequested;
 #else
 #define SLOT_COUNT (8)
 #endif

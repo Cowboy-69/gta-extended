@@ -86,9 +86,9 @@ wardrobe_loop:
             currentPickupInUse = 2
 
             wardrobePosX = -381.5
-            wardrobePosY = -591.9
+            wardrobePosY = -593.0
             wardrobePosZ = 25.3
-            wardrobeHeading = -90.0
+            wardrobeHeading = 0.0
 
             GOTO wardrobe_pickup_collected
         endif
@@ -360,7 +360,7 @@ wardrobe_display_info:
         SET_TEXT_CENTRE TRUE
         SET_TEXT_COLOUR 0 207 133 255
         SET_TEXT_SCALE 1.2 2.5
-        DISPLAY_TEXT 320.0 45.0 OUTFT10
+        DISPLAY_TEXT 320.0 45.0 OUTFT11
     endif
 
     // Coveralls

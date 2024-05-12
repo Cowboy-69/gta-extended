@@ -1089,6 +1089,7 @@ PLAYER_MADE_PROGRESS 1
 stubby_in_stock = 1
 katana_in_stock = 1
 START_NEW_SCRIPT baron_mission2_loop
+REQUEST_AUTO_SAVE
 RETURN
 		
 

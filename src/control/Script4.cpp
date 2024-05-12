@@ -2113,6 +2113,7 @@ int8 CRunningScript::ProcessCommands900To999(int32 command)
 		IsQuickSave = false;
 		bAutoSave = false;
 		bSaveAnywhere = false;
+		bIsAutoSaveRequested = false;
 #endif
 		return 0;
 	}

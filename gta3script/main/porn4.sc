@@ -1523,6 +1523,7 @@ ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD porncashX porncashY porncashZ	the_porn_bli
 ++ counter_60_percent
 porn_asset_acquired = 1
 flag_porn_mission4_passed = 1
+REQUEST_AUTO_SAVE
 RETURN
 		
 

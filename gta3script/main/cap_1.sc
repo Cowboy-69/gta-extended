@@ -1323,6 +1323,7 @@ ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD counterX counterY counterZ the_counter_bli
 REMOVE_PICKUP printworks_cash_pickup
 CREATE_PROTECTION_PICKUP printbuyX printbuyY printbuyZ printworks_revenue printworks_revenue printworks_cash_pickup
 //START_NEW_SCRIPT finale_mission2_loop
+REQUEST_AUTO_SAVE
 RETURN
 		
 

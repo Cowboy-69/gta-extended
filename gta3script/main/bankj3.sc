@@ -1359,6 +1359,9 @@ ELSE
 ENDIF
 
 START_NEW_SCRIPT bankjob_mission4_loop
+
+REQUEST_AUTO_SAVE
+
 RETURN
 	
 

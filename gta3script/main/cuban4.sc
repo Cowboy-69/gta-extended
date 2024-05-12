@@ -2431,6 +2431,7 @@ IF bomb_timer = 0
 	bomb_timer = 1
 ENDIF
 flag_cuban_mission4_passed = 1
+REQUEST_AUTO_SAVE
 RETURN
 		
 

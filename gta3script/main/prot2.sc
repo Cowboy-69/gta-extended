@@ -1576,6 +1576,7 @@ ADD_SPRITE_BLIP_FOR_CONTACT_POINT -348.5 -541.8 16.4 RADAR_SPRITE_TOMMY protect_
 START_NEW_SCRIPT protect_mission3_loop
 flag_protect_mission2_passed = 1
 spaz_in_stock = 1
+REQUEST_AUTO_SAVE
 RETURN
 		
 

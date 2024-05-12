@@ -1469,6 +1469,7 @@ PLAYER_MADE_PROGRESS 1
 clothes9_created = 1
 START_NEW_SCRIPT cloth8
 REMOVE_BLIP baron_contact_blip
+REQUEST_AUTO_SAVE
 RETURN
 		
 

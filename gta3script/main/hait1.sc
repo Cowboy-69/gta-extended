@@ -1422,6 +1422,7 @@ PRINT_WITH_NUMBER_BIG ( M_PASS ) 1000 5000 1 //"Mission Passed!"
 ADD_SCORE player1 1000
 CLEAR_WANTED_LEVEL player1
 START_NEW_SCRIPT haitian_mission2_loop
+REQUEST_AUTO_SAVE
 RETURN
 		
 // ************************************** MISSION CLEANUP **********************************

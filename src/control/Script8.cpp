@@ -617,6 +617,16 @@ int8 CRunningScript::ProcessCommands1400To1499(int32 command)
 	case COMMAND_CUTSCENE_SCROLL:
 		return 0;
 #endif
+	default:
+		script_assert(0);
+	}
+	return -1;
+}
+
+#ifdef EX_OPCODES
+int8 CRunningScript::ProcessCommands4000To4099(int32 command)
+{
+	switch (command) {
 #ifdef EX_PED_VARIATIONS // Script
 	case COMMAND_SET_CHAR_CLOTHING_VARIATION:
 	{
@@ -659,8 +669,27 @@ int8 CRunningScript::ProcessCommands1400To1499(int32 command)
 		CRadar::SetBlipRoute(ScriptParams[0], ScriptParams[1]);
 		return 0;
 #endif
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE // Script, autosave
+	case COMMAND_DO_AUTO_SAVE:
+		DoAutoSave();
+		return 0;
+	case COMMAND_IS_AUTO_SAVE_IN_PROGRESS:
+		// TODO
+		UpdateCompareFlag(false);
+		return 0;
+	case COMMAND_GET_IS_AUTOSAVE_OFF:
+		UpdateCompareFlag(!FrontEndMenuManager.m_PrefsAutosave);
+		return 0;
+	case COMMAND_REQUEST_AUTO_SAVE:
+		bIsAutoSaveRequested = FrontEndMenuManager.m_PrefsAutosave;
+		return 0;
+	case COMMAND_IS_AUTO_SAVE_REQUESTED:
+		UpdateCompareFlag(bIsAutoSaveRequested);
+		return 0;
+#endif
 	default:
 		script_assert(0);
 	}
 	return -1;
 }
+#endif

@@ -982,6 +982,7 @@ REGISTER_MISSION_PASSED PHIL_2
 REMOVE_BLIP phil_contact_blip
 ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD philX philY philZ the_phil_blip phil_contact_blip
 flag_phil_mission2_passed = 1
+REQUEST_AUTO_SAVE
 RETURN
 		
 

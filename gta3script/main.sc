@@ -1143,6 +1143,8 @@ START_NEW_SCRIPT stadium_loop
 
 START_NEW_SCRIPT army_base_loop
 
+START_NEW_SCRIPT autosave_loop
+
 //SAFEHOUSE BUYING SCRIPTS
 START_NEW_SCRIPT nbmnbuy_loop
 START_NEW_SCRIPT lnkvbuy_loop
@@ -6169,6 +6171,25 @@ skumsave1_save_loop_inner:
 	ENDIF // IF IS_PLAYER_PLAYING player1
 
 	GOTO skumsave1_save_loop_inner
+}
+
+// *********************************ViceEx - AUTOSAVE LOOP*******************************************
+autosave_loop:
+{
+	SCRIPT_NAME AUTOSAV
+
+autosave_loop_inner:
+	WAIT 250
+
+	IF IS_PLAYER_PLAYING player1
+		IF flag_player_on_mission = 0
+			IF IS_AUTO_SAVE_REQUESTED
+				DO_AUTO_SAVE
+			ENDIF
+		ENDIF
+	ENDIF
+
+	GOTO autosave_loop_inner
 }
 
 // ****************************************HELP TEXT*************************************************

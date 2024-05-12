@@ -1673,6 +1673,7 @@ START_NEW_SCRIPT serg_mission2_loop
 //CREATE_CLOTHES_PICKUP 106.5 253.0 21.7 4 clothes_pickup4
 clothes4_created = 1
 START_NEW_SCRIPT cloth3
+REQUEST_AUTO_SAVE
 RETURN
 		
 

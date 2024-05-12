@@ -404,6 +404,7 @@ ENDIF
 PRINT_WITH_NUMBER_BIG ( M_PASS ) 2000 5000 1 //"Mission Passed!"
 ADD_SCORE player1 2000
 START_NEW_SCRIPT bikers_mission3_loop
+REQUEST_AUTO_SAVE
 RETURN
 
 // *************************************** Mission Cleanup *********************************

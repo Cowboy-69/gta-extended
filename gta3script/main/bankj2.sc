@@ -5232,7 +5232,7 @@ REGISTER_HIGHEST_SCORE 0 player_score_bankjob2
 REGISTER_HIGHEST_SCORE 1 percentage_hits_bankjob2
 START_NEW_SCRIPT bankjob_mission3_loop
 START_NEW_SCRIPT shoot_range_loop
-
+REQUEST_AUTO_SAVE
 RETURN
 	
 

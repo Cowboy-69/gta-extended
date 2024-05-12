@@ -59,8 +59,9 @@ const int PAUSE_SAVE_SLOT = SLOT_COUNT;
 #endif
 
 #ifdef AUTOSAVE_AND_SAVE_ANYWHERE
-bool bAutoSave;
-bool bSaveAnywhere;
+bool bAutoSave = false;
+bool bSaveAnywhere = false;
+bool bIsAutoSaveRequested = false;
 #endif
 
 char DefaultPCSaveFileName[260];
@@ -702,22 +703,16 @@ RestoreForStartLoad()
 #ifdef AUTOSAVE_AND_SAVE_ANYWHERE
 void DoAutoSave()
 {
-	CTheScripts::bMissionWasPassed = false;
+	bIsAutoSaveRequested = false;
 
 	if (!FrontEndMenuManager.m_PrefsAutosave)
-		return;
-
-	if (!CStats::LastMissionPassedName[0])
-		return;
-	
-	if (CTheScripts::IsPlayerOnAMission())
 		return;
 
 	IsQuickSave = false;
 	bSaveAnywhere = false;
 	bAutoSave = true;
 	
-	int8 SaveSlot = PcSaveHelper.SaveSlot(8);
+	PcSaveHelper.SaveSlot(8);
 	PcSaveHelper.PopulateSlotInfo();
 
 	re3_debug("DoAutoSave");

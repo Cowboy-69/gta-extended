@@ -101,9 +101,6 @@ bool CTheScripts::bPlayerIsInTheStatium;
 int16 CTheScripts::CardStack[CARDS_IN_DECK * MAX_DECKS];
 int16 CTheScripts::CardStackPosition;
 #endif
-#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
-bool CTheScripts::bMissionWasPassed;
-#endif
 
 #ifdef MISSION_REPLAY
 
@@ -861,9 +858,6 @@ void CTheScripts::Init()
 	UsingMobileScript = false;
 	AlreadySavedGame = false;
 #endif
-#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
-	bMissionWasPassed = false;
-#endif
 }
 
 void CTheScripts::RemoveScriptTextureDictionary()
@@ -1077,6 +1071,10 @@ int8 CRunningScript::ProcessOneCommand()
 		retval = ProcessCommands1300To1399(command);
 	else if (command < 1500)
 		retval = ProcessCommands1400To1499(command);
+#ifdef EX_OPCODES
+	else if (command < 4100)
+		retval = ProcessCommands4000To4099(command);
+#endif
 #ifdef USE_MISSION_REPLAY_OVERRIDE_FOR_NON_MOBILE_SCRIPT
 	if (!AlreadySavedGame) // we need to ignore first "fake" command which actually just saves the game
 #endif
@@ -1594,11 +1592,6 @@ int8 CRunningScript::ProcessCommands0To99(int32 command)
 				AllowMissionReplay = MISSION_RETRY_STAGE_START_PROCESSING;
 			// I am fairly sure they forgot to set return value here
 		}
-#endif
-
-#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
-		if (CTheScripts::bMissionWasPassed) 
-			DoAutoSave();
 #endif
 
 		return 1;

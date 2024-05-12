@@ -66,6 +66,8 @@
 
 	#define EX_EXPERIMENTAL
 
+	#define EX_OPCODES
+
 	#define CROUCH
 	#define FIRING_AND_AIMING
 	#define FIRST_PERSON
@@ -74,7 +76,6 @@
 	#define IMPROVED_MENU_AND_INPUT
 	//#define NEW_MENU
 	#define EX_RADIO_ICONS
-	#define EX_GPS // thank https://github.com/DK22Pac/plugin-sdk/tree/master/examples/GPS
 	#define EX_WEAPON_SIGHT
 
 	#define IMPROVED_TECH_PART
@@ -88,8 +89,6 @@
 		#define EX_ROCKET_LAUNCHER_THIRD_PERSON_AIM
 	#endif
 
-	#define AUTOSAVE_AND_SAVE_ANYWHERE
-
 	#define VEHICLE_MODS
 	#define IMPROVED_VEHICLES
 	#define IMPROVED_VEHICLES_2
@@ -98,7 +97,12 @@
 		#define EX_VCPD_WINTERGREEN
 	#endif
 
-	#define EX_PED_VARIATIONS
+	#ifdef EX_OPCODES
+		#define EX_GPS // thank https://github.com/DK22Pac/plugin-sdk/tree/master/examples/GPS
+		#define AUTOSAVE_AND_SAVE_ANYWHERE
+		#define EX_PED_VARIATIONS
+	#endif
+
 	#define EX_PARTICLES
 
 	/*#define EX_CLUMP_WEAPON_MODELS

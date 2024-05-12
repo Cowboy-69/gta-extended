@@ -9319,23 +9319,33 @@
         <Arg Type="FLOAT" Out="true"/>
       </Args>
     </Command>
-    <Command ID="0x5B1" Name="SET_CHAR_CLOTHING_VARIATION">
+    <Command ID="0xfa0" Name="SET_CHAR_CLOTHING_VARIATION">
       <Args>
         <Arg Type="INT" Entity="CHAR"/>
         <Arg Type="INT"/>
       </Args>
     </Command>
-	<Command ID="0x5B2" Name="GET_CHAR_CLOTHING_VARIATION">
+	<Command ID="0xfa1" Name="GET_CHAR_CLOTHING_VARIATION">
       <Args>
         <Arg Type="INT" Entity="CHAR"/>
         <Arg Type="INT" Out="true"/>
       </Args>
     </Command>
-	<Command ID="0x5B3" Name="SET_BLIP_ROUTE">
+	<Command ID="0xfa2" Name="SET_BLIP_ROUTE">
       <Args>
 		<Arg Type="INT" Entity="BLIP"/>
         <Arg Type="INT" Desc="Bool"/>
       </Args>
+    </Command>
+	<Command ID="0xfa3" Name="DO_AUTO_SAVE">
+    </Command>
+	<Command ID="0xfa4" Name="IS_AUTO_SAVE_IN_PROGRESS">
+    </Command>
+	<Command ID="0xfa5" Name="GET_IS_AUTOSAVE_OFF">
+    </Command>
+	<Command ID="0xfa6" Name="REQUEST_AUTO_SAVE">
+    </Command>
+	<Command ID="0xfa7" Name="IS_AUTO_SAVE_REQUESTED">
     </Command>
   </Commands>
 </GTA3Script>

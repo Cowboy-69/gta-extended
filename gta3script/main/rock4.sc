@@ -237,6 +237,7 @@ CLEAR_WANTED_LEVEL player1
 PRINT_WITH_NUMBER_BIG ( M_PASS ) 1000 5000 1 //"Mission Passed!"
 ADD_SCORE player1 1000
 REMOVE_BLIP rock_contact_blip  // mission strand has ended so remove the contact blip
+REQUEST_AUTO_SAVE
 RETURN
 	
 

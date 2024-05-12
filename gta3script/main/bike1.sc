@@ -1587,6 +1587,8 @@ ELSE
 	START_NEW_SCRIPT bikers_mission2_loop
 ENDIF
 
+REQUEST_AUTO_SAVE
+
 RETURN
 	
 

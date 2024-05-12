@@ -1203,6 +1203,7 @@ CLEAR_WANTED_LEVEL player1
 PRINT_WITH_NUMBER_BIG ( M_PASS ) 4000 5000 1 //"Mission Passed!"
 ADD_SCORE player1 4000
 REMOVE_BLIP bikers_contact_blip  // Mission strand has finished so remove blip
+REQUEST_AUTO_SAVE
 RETURN
 	
 

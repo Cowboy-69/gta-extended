@@ -721,6 +721,8 @@ REGISTER_FASTEST_TIME 22 countdown_boat_seconds
 
 flag_cokerun_passed ++
 
+REQUEST_AUTO_SAVE
+
 RETURN
 		
 

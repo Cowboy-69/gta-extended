@@ -1613,6 +1613,7 @@ PRINT_WITH_NUMBER_BIG ( M_PASS ) 8000 5000 1 //"Mission Passed!"
 ADD_SCORE player1 8000
 SWITCH_CAR_GENERATOR gen_car161 101
 REMOVE_BLIP rock_contact_blip
+REQUEST_AUTO_SAVE
 RETURN
 
 // **************************************** MISSION CLEANUP ********************************

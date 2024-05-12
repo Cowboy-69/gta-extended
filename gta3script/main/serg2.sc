@@ -915,6 +915,9 @@ SET_ZONE_CAR_INFO GHETTO2 NIGHT (10) 100 80 0 0 0 0 0 0 0 10
 REMOVE_BLIP sergio_contact_blip 
  
 //START_NEW_SCRIPT serg_mission3_loop
+
+REQUEST_AUTO_SAVE
+
 RETURN
 
 

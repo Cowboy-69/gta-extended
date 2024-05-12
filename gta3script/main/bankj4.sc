@@ -3589,6 +3589,7 @@ clothes13_created = 1
 START_NEW_SCRIPT cloth9
 START_NEW_SCRIPT ambient_bank_loop
 
+REQUEST_AUTO_SAVE
 
 RETURN
 		
