@@ -851,6 +851,10 @@ public:
 	int m_PrefsWeaponSight;
 #endif
 
+#ifdef EX_DISPLAYED_COLLECTIBLES
+	bool bDisplayCollectibles;
+#endif
+
 #ifdef GAMEPAD_MENU
 	enum
 	{

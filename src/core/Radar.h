@@ -102,6 +102,11 @@ enum eRadarSprite
 	RADAR_SPRITE_RACE,
 	RADAR_SPRITE_PHARMACY,
 #endif
+#ifdef EX_DISPLAYED_COLLECTIBLES
+	RADAR_SPRITE_PACKAGE,
+	RADAR_SPRITE_STUNT,
+	RADAR_SPRITE_RAMPAGE,
+#endif
 	RADAR_SPRITE_COUNT
 };
 
@@ -238,6 +243,11 @@ public:
 	static CSprite2d RaceSprite;
 	static CSprite2d PharmacySprite;
 #endif
+#ifdef EX_DISPLAYED_COLLECTIBLES
+	static CSprite2d PackageSprite;
+	static CSprite2d JumpSprite;
+	static CSprite2d RampageSprite;
+#endif
 	static CSprite2d *RadarSprites[RADAR_SPRITE_COUNT];
 	static float cachedCos;
 	static float cachedSin;
@@ -314,4 +324,7 @@ public:
 	static void DrawEntityBlip(int32 blipId);
 	static void DrawCoordBlip(int32 blipId);
 	static void DrawLegend(int32, int32, int32);
+#ifdef EX_DISPLAYED_COLLECTIBLES
+	static bool CanDisplayThisCollectable(int blipId);
+#endif
 };

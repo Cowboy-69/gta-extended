@@ -23,6 +23,15 @@ VAR_INT flag_usj35_passed flag_usj36_passed
 VAR_FLOAT car_speed_usj camera_x camera_y camera_z
 VAR_FLOAT usj_start_x usj_start_y usj_start_z usj_end_x usj_end_y usj_end_z usj_jump_dist
 
+VAR_INT blip_usj_01 blip_usj_02 blip_usj_03 blip_usj_04 blip_usj_05 
+VAR_INT blip_usj_06 blip_usj_07 blip_usj_08 blip_usj_09 blip_usj_10 
+VAR_INT blip_usj_11 blip_usj_12 blip_usj_13 blip_usj_14 blip_usj_15 
+VAR_INT blip_usj_16 blip_usj_17 blip_usj_18 blip_usj_19 blip_usj_20
+VAR_INT blip_usj_21 blip_usj_22 blip_usj_23 blip_usj_24 blip_usj_25
+VAR_INT blip_usj_26 blip_usj_27 blip_usj_28 blip_usj_29 blip_usj_30
+VAR_INT blip_usj_31 blip_usj_32 blip_usj_33 blip_usj_34 blip_usj_35
+VAR_INT blip_usj_36
+
 // ****************************************Mission Start************************************
 
 flag_usj1_passed = 0
@@ -66,6 +75,114 @@ cash_reward_usj = 100
 usj_number = 0
 total_completed_usj = 0
 do_usj_reward = 0
+
+ADD_SPRITE_BLIP_FOR_COORD -1487.781 -1044.546 18.707 RADAR_SPRITE_STUNT blip_usj_01
+CHANGE_BLIP_SCALE blip_usj_01 2
+
+ADD_SPRITE_BLIP_FOR_COORD -1352.695 -755.212 28.673 RADAR_SPRITE_STUNT blip_usj_02
+CHANGE_BLIP_SCALE blip_usj_02 2
+
+ADD_SPRITE_BLIP_FOR_COORD -1216.49 -911.833 19.0 RADAR_SPRITE_STUNT blip_usj_03
+CHANGE_BLIP_SCALE blip_usj_03 2
+
+ADD_SPRITE_BLIP_FOR_COORD -1252.139 -1054.685 22.016 RADAR_SPRITE_STUNT blip_usj_04
+CHANGE_BLIP_SCALE blip_usj_04 2
+
+ADD_SPRITE_BLIP_FOR_COORD -1551.685 -1075.674 19.121 RADAR_SPRITE_STUNT blip_usj_05
+CHANGE_BLIP_SCALE blip_usj_05 2
+
+ADD_SPRITE_BLIP_FOR_COORD -1595.712 -1272.881 19.068 RADAR_SPRITE_STUNT blip_usj_06
+CHANGE_BLIP_SCALE blip_usj_06 2
+
+ADD_SPRITE_BLIP_FOR_COORD -1553.337 -1230.952 17.194 RADAR_SPRITE_STUNT blip_usj_07
+CHANGE_BLIP_SCALE blip_usj_07 2
+
+ADD_SPRITE_BLIP_FOR_COORD -1340.022 -998.257 19.115 RADAR_SPRITE_STUNT blip_usj_08
+CHANGE_BLIP_SCALE blip_usj_08 2
+
+ADD_SPRITE_BLIP_FOR_COORD 24.721 897.801 25.103 RADAR_SPRITE_STUNT blip_usj_09
+CHANGE_BLIP_SCALE blip_usj_09 2
+
+ADD_SPRITE_BLIP_FOR_COORD 317.2051 -223.2012 42.3731 RADAR_SPRITE_STUNT blip_usj_10
+CHANGE_BLIP_SCALE blip_usj_10 2
+
+ADD_SPRITE_BLIP_FOR_COORD -674.345 1162.422 29.916 RADAR_SPRITE_STUNT blip_usj_11
+CHANGE_BLIP_SCALE blip_usj_11 2
+
+ADD_SPRITE_BLIP_FOR_COORD -529.84 830.062 98.717 RADAR_SPRITE_STUNT blip_usj_12
+CHANGE_BLIP_SCALE blip_usj_12 2
+
+ADD_SPRITE_BLIP_FOR_COORD -839.022 1153.526 31.94 RADAR_SPRITE_STUNT blip_usj_13
+CHANGE_BLIP_SCALE blip_usj_13 2
+
+ADD_SPRITE_BLIP_FOR_COORD -312.447 1109.196 47.741 RADAR_SPRITE_STUNT blip_usj_14
+CHANGE_BLIP_SCALE blip_usj_14 2
+
+ADD_SPRITE_BLIP_FOR_COORD -1011.583 -30.098 15.181 RADAR_SPRITE_STUNT blip_usj_15
+CHANGE_BLIP_SCALE blip_usj_15 2
+
+ADD_SPRITE_BLIP_FOR_COORD -942.702 -114.506 15.181 RADAR_SPRITE_STUNT blip_usj_16
+CHANGE_BLIP_SCALE blip_usj_16 2
+
+ADD_SPRITE_BLIP_FOR_COORD -900.789 260.804 15.915 RADAR_SPRITE_STUNT blip_usj_17
+CHANGE_BLIP_SCALE blip_usj_17 2
+
+ADD_SPRITE_BLIP_FOR_COORD -1041.895 -569.323 21.855 RADAR_SPRITE_STUNT blip_usj_18
+CHANGE_BLIP_SCALE blip_usj_18 2
+
+ADD_SPRITE_BLIP_FOR_COORD 208.993 -963.672 19.967 RADAR_SPRITE_STUNT blip_usj_19
+CHANGE_BLIP_SCALE blip_usj_19 2
+
+ADD_SPRITE_BLIP_FOR_COORD 46.115 -964.415 25.883 RADAR_SPRITE_STUNT blip_usj_20
+CHANGE_BLIP_SCALE blip_usj_20 2
+
+ADD_SPRITE_BLIP_FOR_COORD 435.8542 -334.3212 15.8977 RADAR_SPRITE_STUNT blip_usj_21
+CHANGE_BLIP_SCALE blip_usj_21 2
+
+ADD_SPRITE_BLIP_FOR_COORD 110.481 -1230.6 35.67 RADAR_SPRITE_STUNT blip_usj_22
+CHANGE_BLIP_SCALE blip_usj_22 2
+
+ADD_SPRITE_BLIP_FOR_COORD 7.435 -1245.895 17.752 RADAR_SPRITE_STUNT blip_usj_23
+CHANGE_BLIP_SCALE blip_usj_23 2
+
+ADD_SPRITE_BLIP_FOR_COORD 9.103 -1326.505 20.361 RADAR_SPRITE_STUNT blip_usj_24
+CHANGE_BLIP_SCALE blip_usj_24 2
+
+ADD_SPRITE_BLIP_FOR_COORD -321.028 -1379.498 10.929 RADAR_SPRITE_STUNT blip_usj_25
+CHANGE_BLIP_SCALE blip_usj_25 2
+
+ADD_SPRITE_BLIP_FOR_COORD -321.028 -1276.589 10.929 RADAR_SPRITE_STUNT blip_usj_26
+CHANGE_BLIP_SCALE blip_usj_26 2
+
+ADD_SPRITE_BLIP_FOR_COORD 218.05 -1152.0 12.84 RADAR_SPRITE_STUNT blip_usj_27
+CHANGE_BLIP_SCALE blip_usj_27 2
+
+ADD_SPRITE_BLIP_FOR_COORD 259.056 -945.833 12.84 RADAR_SPRITE_STUNT blip_usj_28
+CHANGE_BLIP_SCALE blip_usj_28 2
+
+ADD_SPRITE_BLIP_FOR_COORD 444.5 -118.4 16.0 RADAR_SPRITE_STUNT blip_usj_29
+CHANGE_BLIP_SCALE blip_usj_29 2
+
+ADD_SPRITE_BLIP_FOR_COORD 284.4732 -494.1143 16.0 RADAR_SPRITE_STUNT blip_usj_30
+CHANGE_BLIP_SCALE blip_usj_30 2
+
+ADD_SPRITE_BLIP_FOR_COORD 370.79 -709.863 19.895 RADAR_SPRITE_STUNT blip_usj_31
+CHANGE_BLIP_SCALE blip_usj_31 2
+
+ADD_SPRITE_BLIP_FOR_COORD 461.589 -522.23 18.931 RADAR_SPRITE_STUNT blip_usj_32
+CHANGE_BLIP_SCALE blip_usj_32 2
+
+ADD_SPRITE_BLIP_FOR_COORD 454.105 -504.736 18.931 RADAR_SPRITE_STUNT blip_usj_33
+CHANGE_BLIP_SCALE blip_usj_33 2
+
+ADD_SPRITE_BLIP_FOR_COORD 460.91 -383.362 14.222 RADAR_SPRITE_STUNT blip_usj_34
+CHANGE_BLIP_SCALE blip_usj_34 2
+
+ADD_SPRITE_BLIP_FOR_COORD 259.041 -480.608 14.688 RADAR_SPRITE_STUNT blip_usj_35
+CHANGE_BLIP_SCALE blip_usj_35 2
+
+ADD_SPRITE_BLIP_FOR_COORD -346.818 -290.741 12.926 RADAR_SPRITE_STUNT blip_usj_36
+CHANGE_BLIP_SCALE blip_usj_36 2
 
 SET_DEATHARREST_STATE OFF
 SET_UNIQUE_JUMPS_TOTAL 36
@@ -587,6 +704,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj1_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_01
 		GOTO reward_usj
 	ENDIF
 
@@ -595,6 +713,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj2_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_02
 		GOTO reward_usj
 	ENDIF
 
@@ -603,6 +722,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj3_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_03
 		GOTO reward_usj
 	ENDIF
 
@@ -611,6 +731,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj4_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_04
 		GOTO reward_usj
 	ENDIF
 
@@ -619,6 +740,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj5_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_05
 		GOTO reward_usj
 	ENDIF
 
@@ -627,6 +749,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj6_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_06
 		GOTO reward_usj
 	ENDIF
 
@@ -635,6 +758,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj7_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_07
 		GOTO reward_usj
 	ENDIF
 
@@ -643,6 +767,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj8_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_08
 		GOTO reward_usj
 	ENDIF
 
@@ -651,6 +776,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj9_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_09
 		GOTO reward_usj
 	ENDIF
 
@@ -659,6 +785,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj10_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_10
 		GOTO reward_usj
 	ENDIF
 
@@ -667,6 +794,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj11_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_11
 		GOTO reward_usj
 	ENDIF
 
@@ -675,6 +803,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj12_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_12
 		GOTO reward_usj
 	ENDIF
 
@@ -683,6 +812,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj13_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_13
 		GOTO reward_usj
 	ENDIF
 
@@ -691,6 +821,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj14_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_14
 		GOTO reward_usj
 	ENDIF
 
@@ -699,6 +830,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj15_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_15
 		GOTO reward_usj
 	ENDIF
 
@@ -707,6 +839,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj16_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_16
 		GOTO reward_usj
 	ENDIF
 
@@ -715,6 +848,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj17_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_17
 		GOTO reward_usj
 	ENDIF
 
@@ -723,6 +857,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj18_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_18
 		GOTO reward_usj
 	ENDIF
 
@@ -731,6 +866,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj19_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_19
 		GOTO reward_usj
 	ENDIF
 
@@ -739,6 +875,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj20_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_20
 		GOTO reward_usj
 	ENDIF
 
@@ -747,6 +884,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj21_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_21
 		GOTO reward_usj
 	ENDIF
 
@@ -755,6 +893,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj22_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_22
 		GOTO reward_usj
 	ENDIF
 
@@ -763,6 +902,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj23_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_23
 		GOTO reward_usj
 	ENDIF
 
@@ -771,6 +911,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj24_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_24
 		GOTO reward_usj
 	ENDIF
 
@@ -779,6 +920,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj25_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_25
 		GOTO reward_usj
 	ENDIF
 
@@ -787,6 +929,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj26_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_26
 		GOTO reward_usj
 	ENDIF
 
@@ -795,6 +938,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj27_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_27
 		GOTO reward_usj
 	ENDIF
 
@@ -803,6 +947,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj28_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_28
 		GOTO reward_usj
 	ENDIF
 
@@ -811,6 +956,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj29_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_29
 		GOTO reward_usj
 	ENDIF
 
@@ -819,6 +965,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj30_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_30
 		GOTO reward_usj
 	ENDIF
 
@@ -827,6 +974,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj31_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_31
 		GOTO reward_usj
 	ENDIF
 
@@ -835,6 +983,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj32_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_32
 		GOTO reward_usj
 	ENDIF
 
@@ -843,6 +992,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj33_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_33
 		GOTO reward_usj
 	ENDIF
 
@@ -851,6 +1001,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj34_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_34
 		GOTO reward_usj
 	ENDIF
 
@@ -859,6 +1010,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj35_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_35
 		GOTO reward_usj
 	ENDIF
 
@@ -867,6 +1019,7 @@ IF do_usj_reward = 1//usj_jump_dist > 20.0
 		flag_usj36_passed = 1
 		++ total_completed_usj
 		PLAYER_MADE_PROGRESS 1
+		REMOVE_BLIP blip_usj_36
 		GOTO reward_usj
 	ENDIF
 ENDIF

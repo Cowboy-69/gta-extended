@@ -2001,7 +2001,17 @@ int8 CRunningScript::ProcessCommands700To799(int32 command)
 		CVector pos = *(CVector*)&ScriptParams[0];
 		if (pos.z <= MAP_Z_LOW_LIMIT)
 			pos.z = CWorld::FindGroundZForCoord(pos.x, pos.y) + PICKUP_PLACEMENT_OFFSET;
+
+#ifdef EX_DISPLAYED_COLLECTIBLES // Script, COMMAND_CREATE_COLLECTABLE1
+		int pickupHandle = CPickups::GenerateNewOne(pos, MI_COLLECTABLE1, PICKUP_COLLECTABLE1, 0);
+		CObject* pObject = CPickups::aPickUps[CPickups::GetActualPickupIndex(pickupHandle)].m_pObject;
+		int blipHandle = CRadar::SetEntityBlip(BLIP_OBJECT, CPools::GetObjectPool()->GetIndex(pObject), 6, BLIP_DISPLAY_BLIP_ONLY);
+		CRadar::ChangeBlipScale(blipHandle, 2);
+		CRadar::SetBlipSprite(blipHandle, RADAR_SPRITE_PACKAGE);
+#else
 		CPickups::GenerateNewOne(pos, MI_COLLECTABLE1, PICKUP_COLLECTABLE1, 0);
+#endif
+
 		return 0;
 	}
 	case COMMAND_SET_COLLECTABLE1_TOTAL:

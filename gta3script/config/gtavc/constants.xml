@@ -630,6 +630,14 @@
       <Constant Name="RADAR_SPRITE_RADIO_ESPANTOSO"/>
       <Constant Name="RADAR_SPRITE_RADIO_EMOTION"/>
       <Constant Name="RADAR_SPRITE_RADIO_WAVE"/>
+      <Constant Name="RADAR_SPRITE_WAYPOINT"/>
+      <Constant Name="RADAR_SPRITE_HOUSE_FOR_SALE"/>
+      <Constant Name="RADAR_SPRITE_BOMB_SHOP"/>
+      <Constant Name="RADAR_SPRITE_RACE"/>
+      <Constant Name="RADAR_SPRITE_PHARMACY"/>
+      <Constant Name="RADAR_SPRITE_PACKAGE"/>
+      <Constant Name="RADAR_SPRITE_STUNT"/>
+      <Constant Name="RADAR_SPRITE_RAMPAGE"/>
     </Enum>
     <Enum Name="FOLLOW_ROUTE">
       <Constant Name="FOLLOW_ROUTE_INVALID"/>

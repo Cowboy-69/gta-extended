@@ -6550,7 +6550,7 @@
         <Arg Type="INT" Out="true" Entity="BLIP"/>
       </Args>
     </Command>
-    <Command ID="0x3dd" Name="ADD_SPRITE_BLIP_FOR_PICKUP" Supported="false">
+    <Command ID="0x3dd" Name="ADD_SPRITE_BLIP_FOR_PICKUP">
       <Args>
         <Arg Type="INT" Entity="PICKUP"/>
         <Arg Type="INT" Enum="RADAR_SPRITE"/>

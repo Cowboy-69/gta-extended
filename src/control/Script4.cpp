@@ -2146,7 +2146,6 @@ int8 CRunningScript::ProcessCommands900To999(int32 command)
 		StoreParameters(&m_nIp, 1);
 		return 0;
 	}
-	/*
 	case COMMAND_ADD_SPRITE_BLIP_FOR_PICKUP:
 	{
 		CollectParameters(&m_nIp, 2);
@@ -2158,7 +2157,6 @@ int8 CRunningScript::ProcessCommands900To999(int32 command)
 		StoreParameters(&m_nIp, 1);
 		return 0;
 	}
-	*/
 	case COMMAND_SET_PED_DENSITY_MULTIPLIER:
 		CollectParameters(&m_nIp, 1);
 		CPopulation::PedDensityMultiplier = *(float*)&ScriptParams[0];

@@ -620,6 +620,9 @@ CMenuManager::CMenuManager()
 #ifdef EX_WEAPON_SIGHT // Menu
 	m_PrefsWeaponSight = 2;
 #endif
+#ifdef EX_DISPLAYED_COLLECTIBLES
+	bDisplayCollectibles = false;
+#endif
 }
 
 void
@@ -4492,6 +4495,13 @@ CMenuManager::AdditionalOptionInput(bool &goBack)
 					pressedL = true;
 				}
 			}
+
+#ifdef EX_DISPLAYED_COLLECTIBLES // Display switching
+			if (CPad::GetPad(0)->GetTabJustDown()) {
+				bDisplayCollectibles = !bDisplayCollectibles;
+			}
+#endif
+
 			break;
 		}
 		case MENUPAGE_SOUND_SETTINGS:

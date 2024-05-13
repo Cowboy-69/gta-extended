@@ -27,6 +27,9 @@
 #ifdef IMPROVED_TECH_PART // New blips
 #include "Pickups.h"
 #endif
+#ifdef EX_DISPLAYED_COLLECTIBLES
+#include "Stats.h"
+#endif
 
 float CRadar::m_radarRange;
 sRadarTrace CRadar::ms_RadarTrace[NUMRADARBLIPS];
@@ -81,6 +84,11 @@ CSprite2d CRadar::BombShopSprite;
 CSprite2d CRadar::RaceSprite;
 CSprite2d CRadar::PharmacySprite;
 #endif
+#ifdef EX_DISPLAYED_COLLECTIBLES
+CSprite2d CRadar::PackageSprite;
+CSprite2d CRadar::JumpSprite;
+CSprite2d CRadar::RampageSprite;
+#endif
 
 CSprite2d *CRadar::RadarSprites[RADAR_SPRITE_COUNT] = { 
 	nil,
@@ -131,6 +139,11 @@ CSprite2d *CRadar::RadarSprites[RADAR_SPRITE_COUNT] = {
 	&BombShopSprite,
 	&RaceSprite,
 	&PharmacySprite,
+#endif
+#ifdef EX_DISPLAYED_COLLECTIBLES
+	&PackageSprite,
+	&JumpSprite,
+	&RampageSprite,
 #endif
 };
 
@@ -652,6 +665,16 @@ void CRadar::DrawBlips()
 			if (!ms_RadarTrace[blipId].m_bInUse)
 				continue;
 
+#ifdef EX_DISPLAYED_COLLECTIBLES // Display blips only on the map
+			if (ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_PACKAGE ||
+				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_STUNT ||
+				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_RAMPAGE) {
+
+				if (!CanDisplayThisCollectable(blipId))
+					continue;
+			}
+#endif
+
 			switch (ms_RadarTrace[blipId].m_eBlipType) {
 				case BLIP_CAR:
 				case BLIP_CHAR:
@@ -674,6 +697,16 @@ void CRadar::DrawBlips()
 		for (int blipId = 0; blipId < NUMRADARBLIPS; blipId++) {
 			if (!ms_RadarTrace[blipId].m_bInUse)
 				continue;
+
+#ifdef EX_DISPLAYED_COLLECTIBLES // Display blips only on the map
+			if (ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_PACKAGE ||
+				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_STUNT ||
+				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_RAMPAGE) {
+
+				if (!CanDisplayThisCollectable(blipId))
+					continue;
+			}
+#endif
 
 			switch (ms_RadarTrace[blipId].m_eBlipType) {
 				case BLIP_COORD:
@@ -1420,6 +1453,11 @@ CRadar::LoadTextures()
 	RaceSprite.SetTexture("race");
 	PharmacySprite.SetTexture("pharmacy");
 #endif
+#ifdef EX_DISPLAYED_COLLECTIBLES
+	PackageSprite.SetTexture("package");
+	JumpSprite.SetTexture("jump");
+	RampageSprite.SetTexture("rampage");
+#endif
 	CTxdStore::PopCurrentTxd();
 }
 
@@ -1622,6 +1660,11 @@ void CRadar::Shutdown()
 	BombShopSprite.Delete();
 	RaceSprite.Delete();
 	PharmacySprite.Delete();
+#endif
+#ifdef EX_DISPLAYED_COLLECTIBLES
+	PackageSprite.Delete();
+	JumpSprite.Delete();
+	RampageSprite.Delete();
 #endif
 	RemoveRadarSections();
 }
@@ -2114,8 +2157,38 @@ CRadar::DrawLegend(int32 x, int32 y, int32 sprite)
 			text = TheText.Get("LG_42");
 		break;
 #endif
+#ifdef EX_DISPLAYED_COLLECTIBLES // DrawLegend
+		case RADAR_SPRITE_PACKAGE:
+			text = TheText.Get("LG_43");
+			break;
+		case RADAR_SPRITE_STUNT:
+			text = TheText.Get("LG_44");
+			break;
+		case RADAR_SPRITE_RAMPAGE:
+			text = TheText.Get("LG_45");
+			break;
+#endif
 		default:
 		break;
 	}
 	CFont::PrintString(SCREEN_SCALE_X(20.f) + x, SCREEN_SCALE_Y(3.0f) + y, text);
 }
+
+#ifdef EX_DISPLAYED_COLLECTIBLES
+bool CRadar::CanDisplayThisCollectable(int blipId)
+{
+	if (!FrontEndMenuManager.bDisplayCollectibles || !FrontEndMenuManager.m_bMenuMapActive)
+		return false;
+
+	if (ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_PACKAGE && FindPlayerPed()->GetPlayerInfoForThisPlayerPed()->m_nCollectedPackages > 0)
+		return true;
+
+	if (ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_STUNT && CStats::NumberOfUniqueJumpsFound > 0)
+		return true;
+
+	if (ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_RAMPAGE && CStats::NumberKillFrenziesPassed > 0)
+		return true;
+
+	return false;
+}
+#endif
