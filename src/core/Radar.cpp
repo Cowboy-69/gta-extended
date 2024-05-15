@@ -666,12 +666,12 @@ void CRadar::DrawBlips()
 				continue;
 
 #ifdef EX_DISPLAYED_COLLECTIBLES // Display blips only on the map
-			if (ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_PACKAGE ||
+			if ((!FrontEndMenuManager.bDisplayCollectibles || !FrontEndMenuManager.m_bMenuMapActive) &&
+				(ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_PACKAGE ||
 				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_STUNT ||
-				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_RAMPAGE) {
+				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_RAMPAGE)) {
 
-				if (!CanDisplayThisCollectable(blipId))
-					continue;
+				continue;
 			}
 #endif
 
@@ -699,12 +699,12 @@ void CRadar::DrawBlips()
 				continue;
 
 #ifdef EX_DISPLAYED_COLLECTIBLES // Display blips only on the map
-			if (ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_PACKAGE ||
+			if ((!FrontEndMenuManager.bDisplayCollectibles || !FrontEndMenuManager.m_bMenuMapActive) &&
+				(ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_PACKAGE ||
 				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_STUNT ||
-				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_RAMPAGE) {
+				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_RAMPAGE)) {
 
-				if (!CanDisplayThisCollectable(blipId))
-					continue;
+				continue;
 			}
 #endif
 
@@ -2173,22 +2173,3 @@ CRadar::DrawLegend(int32 x, int32 y, int32 sprite)
 	}
 	CFont::PrintString(SCREEN_SCALE_X(20.f) + x, SCREEN_SCALE_Y(3.0f) + y, text);
 }
-
-#ifdef EX_DISPLAYED_COLLECTIBLES
-bool CRadar::CanDisplayThisCollectable(int blipId)
-{
-	if (!FrontEndMenuManager.bDisplayCollectibles || !FrontEndMenuManager.m_bMenuMapActive)
-		return false;
-
-	if (ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_PACKAGE && FindPlayerPed()->GetPlayerInfoForThisPlayerPed()->m_nCollectedPackages > 0)
-		return true;
-
-	if (ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_STUNT && CStats::NumberOfUniqueJumpsFound > 0)
-		return true;
-
-	if (ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_RAMPAGE && CStats::NumberKillFrenziesPassed > 0)
-		return true;
-
-	return false;
-}
-#endif

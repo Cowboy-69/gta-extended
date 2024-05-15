@@ -35,6 +35,9 @@
 #include "Messages.h"
 #include "Streaming.h"
 #include "SaveBuf.h"
+#ifdef EX_DISPLAYED_COLLECTIBLES
+#include "Radar.h"
+#endif
 
 #ifdef COMPATIBLE_SAVES
 #define PICKUPS_SAVE_SIZE 0x4440
@@ -513,6 +516,7 @@ CPickup::Update(CPlayerPed *player, CVehicle *vehicle, int playerId)
 				Remove();
 				break;
 			case PICKUP_COLLECTABLE1:
+			{
 				CWorld::Players[playerId].m_nCollectedPackages++;
 				CWorld::Players[playerId].m_nMoney += 100;
 
@@ -523,10 +527,17 @@ CPickup::Update(CPlayerPed *player, CVehicle *vehicle, int playerId)
 				} else
 					CGarages::TriggerMessage("CO_ONE", CWorld::Players[CWorld::PlayerInFocus].m_nCollectedPackages, 5000, CWorld::Players[CWorld::PlayerInFocus].m_nTotalPackages);
 
+#ifdef EX_DISPLAYED_COLLECTIBLES // Creating a blip when picking up a hidden package
+				int blipHandle = CRadar::SetCoordBlip(BLIP_COORD, m_vecPos, 6, BLIP_DISPLAY_BOTH);
+				CRadar::ChangeBlipScale(blipHandle, 2);
+				CRadar::SetBlipSprite(blipHandle, RADAR_SPRITE_PACKAGE);
+#endif
+
 				result = true;
 				Remove();
 				DMAudio.PlayFrontEndSound(SOUND_PICKUP_HIDDEN_PACKAGE, 0);
 				break;
+			}
 			case PICKUP_MONEY:
 				CWorld::Players[playerId].m_nMoney += m_nQuantity;
 				sprintf(gString, "$%d", m_nQuantity);

@@ -30,14 +30,6 @@ VAR_INT rampage_21_kills rampage_22_kills rampage_23_kills rampage_24_kills ramp
 VAR_INT rampage_26_kills rampage_27_kills rampage_28_kills rampage_29_kills rampage_30_kills
 VAR_INT rampage_31_kills rampage_32_kills rampage_33_kills rampage_34_kills rampage_35_kills
 
-VAR_INT rampage_blip_01 rampage_blip_02 rampage_blip_03 rampage_blip_04 rampage_blip_05 
-VAR_INT rampage_blip_06 rampage_blip_07 rampage_blip_08 rampage_blip_09 rampage_blip_10 
-VAR_INT rampage_blip_11 rampage_blip_12 rampage_blip_13 rampage_blip_14 rampage_blip_15 
-VAR_INT rampage_blip_16 rampage_blip_17 rampage_blip_18 rampage_blip_19 rampage_blip_20
-VAR_INT rampage_blip_21 rampage_blip_22 rampage_blip_23 rampage_blip_24 rampage_blip_25
-VAR_INT rampage_blip_26 rampage_blip_27 rampage_blip_28 rampage_blip_29 rampage_blip_30
-VAR_INT rampage_blip_31 rampage_blip_32 rampage_blip_33 rampage_blip_34 rampage_blip_35
-
 VAR_INT rampage_model_selection	rampage_pedtype rampage_pedmodel_1 rampage_pedmodel_2 rampage_pedmodel_3 rampage_pedmodel_4
 VAR_INT rampage_frame_counter rampage_flag rampage_pickup rampage_weapon_model rampage_weapontype rampage_kills
 VAR_INT rampage_blip
@@ -124,147 +116,6 @@ CREATE_PICKUP killfrenzy PICKUP_ONCE -1483.470 -881.677 14.87 rampage_33 // GROU
 CREATE_PICKUP killfrenzy PICKUP_ONCE -194.701 -1085.067 15.66 rampage_34 // OCEAN VIEW MEDICAL FOUNDATION - TALL WHITE BUIDING WASHTON
 CREATE_PICKUP killfrenzy PICKUP_ONCE -983.373 -353.997 13.84 rampage_35 // AROUND THE BACK OF THE BANK NR RED ROOFS AND LOADING BAY
 
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_01 RADAR_SPRITE_RAMPAGE rampage_blip_01
-CHANGE_BLIP_DISPLAY rampage_blip_01 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_01 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_02 RADAR_SPRITE_RAMPAGE rampage_blip_02
-CHANGE_BLIP_DISPLAY rampage_blip_02 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_02 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_03 RADAR_SPRITE_RAMPAGE rampage_blip_03
-CHANGE_BLIP_DISPLAY rampage_blip_03 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_03 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_04 RADAR_SPRITE_RAMPAGE rampage_blip_04
-CHANGE_BLIP_DISPLAY rampage_blip_04 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_04 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_05 RADAR_SPRITE_RAMPAGE rampage_blip_05
-CHANGE_BLIP_DISPLAY rampage_blip_05 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_05 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_06 RADAR_SPRITE_RAMPAGE rampage_blip_06
-CHANGE_BLIP_DISPLAY rampage_blip_06 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_06 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_07 RADAR_SPRITE_RAMPAGE rampage_blip_07
-CHANGE_BLIP_DISPLAY rampage_blip_07 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_07 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_08 RADAR_SPRITE_RAMPAGE rampage_blip_08
-CHANGE_BLIP_DISPLAY rampage_blip_08 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_08 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_09 RADAR_SPRITE_RAMPAGE rampage_blip_09
-CHANGE_BLIP_DISPLAY rampage_blip_09 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_09 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_10 RADAR_SPRITE_RAMPAGE rampage_blip_10
-CHANGE_BLIP_DISPLAY rampage_blip_10 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_10 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_11 RADAR_SPRITE_RAMPAGE rampage_blip_11
-CHANGE_BLIP_DISPLAY rampage_blip_11 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_11 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_12 RADAR_SPRITE_RAMPAGE rampage_blip_12
-CHANGE_BLIP_DISPLAY rampage_blip_12 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_12 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_13 RADAR_SPRITE_RAMPAGE rampage_blip_13
-CHANGE_BLIP_DISPLAY rampage_blip_13 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_13 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_14 RADAR_SPRITE_RAMPAGE rampage_blip_14
-CHANGE_BLIP_DISPLAY rampage_blip_14 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_14 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_15 RADAR_SPRITE_RAMPAGE rampage_blip_15
-CHANGE_BLIP_DISPLAY rampage_blip_15 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_15 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_16 RADAR_SPRITE_RAMPAGE rampage_blip_16
-CHANGE_BLIP_DISPLAY rampage_blip_16 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_16 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_17 RADAR_SPRITE_RAMPAGE rampage_blip_17
-CHANGE_BLIP_DISPLAY rampage_blip_17 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_17 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_18 RADAR_SPRITE_RAMPAGE rampage_blip_18
-CHANGE_BLIP_DISPLAY rampage_blip_18 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_18 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_19 RADAR_SPRITE_RAMPAGE rampage_blip_19
-CHANGE_BLIP_DISPLAY rampage_blip_19 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_19 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_20 RADAR_SPRITE_RAMPAGE rampage_blip_20
-CHANGE_BLIP_DISPLAY rampage_blip_20 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_20 2
-
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_21 RADAR_SPRITE_RAMPAGE rampage_blip_21
-CHANGE_BLIP_DISPLAY rampage_blip_21 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_21 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_22 RADAR_SPRITE_RAMPAGE rampage_blip_22
-CHANGE_BLIP_DISPLAY rampage_blip_22 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_22 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_23 RADAR_SPRITE_RAMPAGE rampage_blip_23
-CHANGE_BLIP_DISPLAY rampage_blip_23 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_23 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_24 RADAR_SPRITE_RAMPAGE rampage_blip_24
-CHANGE_BLIP_DISPLAY rampage_blip_24 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_24 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_25 RADAR_SPRITE_RAMPAGE rampage_blip_25
-CHANGE_BLIP_DISPLAY rampage_blip_25 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_25 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_26 RADAR_SPRITE_RAMPAGE rampage_blip_26
-CHANGE_BLIP_DISPLAY rampage_blip_26 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_26 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_27 RADAR_SPRITE_RAMPAGE rampage_blip_27
-CHANGE_BLIP_DISPLAY rampage_blip_27 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_27 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_28 RADAR_SPRITE_RAMPAGE rampage_blip_28
-CHANGE_BLIP_DISPLAY rampage_blip_28 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_28 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_29 RADAR_SPRITE_RAMPAGE rampage_blip_29
-CHANGE_BLIP_DISPLAY rampage_blip_29 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_29 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_30 RADAR_SPRITE_RAMPAGE rampage_blip_30
-CHANGE_BLIP_DISPLAY rampage_blip_30 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_30 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_31 RADAR_SPRITE_RAMPAGE rampage_blip_31
-CHANGE_BLIP_DISPLAY rampage_blip_31 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_31 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_32 RADAR_SPRITE_RAMPAGE rampage_blip_32
-CHANGE_BLIP_DISPLAY rampage_blip_32 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_32 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_33 RADAR_SPRITE_RAMPAGE rampage_blip_33
-CHANGE_BLIP_DISPLAY rampage_blip_33 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_33 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_34 RADAR_SPRITE_RAMPAGE rampage_blip_34
-CHANGE_BLIP_DISPLAY rampage_blip_34 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_34 2
-
-ADD_SPRITE_BLIP_FOR_PICKUP rampage_35 RADAR_SPRITE_RAMPAGE rampage_blip_35
-CHANGE_BLIP_DISPLAY rampage_blip_35 BLIP_ONLY
-CHANGE_BLIP_SCALE rampage_blip_35 2
-
 
 
 SET_TOTAL_NUMBER_OF_KILL_FRENZIES 35
@@ -333,11 +184,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = 218.22 
 			rampage_pickup_y = -1613.76
 			rampage_pickup_z = 11.06//ON THE HILL TOWARDS THE LIGHT HOUSE
-			rampage_blip = rampage_blip_01
 			GOSUB rampage_gosub
 			rampage_01_flag	= rampage_flag
 			rampage_01 = rampage_pickup
-			rampage_blip_01 = rampage_blip
 		ENDIF
 
 		IF rampage_02_flag = 0 //CARS
@@ -349,11 +198,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -1435.29	
 			rampage_pickup_y = -833.645
 			rampage_pickup_z = 30.06//ON TOP OF THE AIPORT ROOF
-			rampage_blip = rampage_blip_02
 			GOSUB rampage_gosub
 			rampage_02_flag	= rampage_flag
 			rampage_02 = rampage_pickup
-			rampage_blip_02 = rampage_blip
 		ENDIF
 	ENDIF
 
@@ -367,11 +214,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = 234.86 
 			rampage_pickup_y = 34.22
 			rampage_pickup_z = 9.98//THE DEAD END ROUNDABOUT DRIVEBY
-			rampage_blip = rampage_blip_03
 			GOSUB rampage_gosub
 			rampage_03_flag	= rampage_flag
 			rampage_03 = rampage_pickup
-			rampage_blip_03 = rampage_blip
 		ENDIF
 
 		IF rampage_04_flag = 0 //NORMAL
@@ -383,11 +228,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = 479.69 
 			rampage_pickup_y = 1110.18
 			rampage_pickup_z = 17.33 //NEXT TO THE SHOPPING MALL NORTH BEACH
-			rampage_blip = rampage_blip_04
 			GOSUB rampage_gosub
 			rampage_04_flag	= rampage_flag
 			rampage_04 = rampage_pickup
-			rampage_blip_04 = rampage_blip
 		ENDIF
 	ENDIF
 
@@ -401,11 +244,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = 370.63 
 			rampage_pickup_y = 1125.86
 			rampage_pickup_z = 26.5	//IN THE MALL IN THE BUSHES
-			rampage_blip = rampage_blip_05
 			GOSUB rampage_gosub
 			rampage_05_flag	= rampage_flag
 			rampage_05 = rampage_pickup
-			rampage_blip_05 = rampage_blip
 		ENDIF
 
 		IF rampage_06_flag = 0 //NORMAL
@@ -417,11 +258,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = 144.449 
 			rampage_pickup_y = -545.234 
 			rampage_pickup_z = 14.751   //HOTEL FOYER NEXT TO BUNCH OF TOOLS
-			rampage_blip = rampage_blip_06
 			GOSUB rampage_gosub
 			rampage_06_flag	= rampage_flag
 			rampage_06 = rampage_pickup
-			rampage_blip_06 = rampage_blip
 		ENDIF
 	ENDIF
 
@@ -435,11 +274,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -1100.625 
 			rampage_pickup_y = 1453.43 
 			rampage_pickup_z = 8.73   //TO THE RIGHT OF THE STADIUM NEXT TO THE DOCK
-			rampage_blip = rampage_blip_07
 			GOSUB rampage_gosub
 			rampage_07_flag	= rampage_flag
 			rampage_07 = rampage_pickup
-			rampage_blip_07 = rampage_blip
 		ENDIF
 
 		IF rampage_08_flag = 0 //DRIVEBY
@@ -451,11 +288,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -908.317 
 			rampage_pickup_y = 744.149 
 			rampage_pickup_z = 11.092   //ALLEYWAY NEXT TO THE PIZZAPLACE IN SOUTH DOWNTOWN
-			rampage_blip = rampage_blip_08
 			GOSUB rampage_gosub
 			rampage_08_flag	= rampage_flag
 			rampage_08 = rampage_pickup
-			rampage_blip_08 = rampage_blip
 		ENDIF
 	ENDIF
 
@@ -469,11 +304,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -508.768 
 			rampage_pickup_y = 1149.203 
 			rampage_pickup_z = 18.172  // DOWNTOWN UP THE STAIRS AND ROUND THAT BIT
-			rampage_blip = rampage_blip_09
 			GOSUB rampage_gosub
 			rampage_09_flag	= rampage_flag
 			rampage_09 = rampage_pickup
-			rampage_blip_09 = rampage_blip
 		ENDIF
 
 		IF rampage_10_flag = 0 //CARS
@@ -485,11 +318,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -789.41 
 			rampage_pickup_y = 592.56 
 			rampage_pickup_z = 11.10   //OPEN CARPARK IN DOWNTOWN UNDER THE ENTRANCE
-			rampage_blip = rampage_blip_10
 			GOSUB rampage_gosub
 			rampage_10_flag	= rampage_flag
 			rampage_10 = rampage_pickup
-			rampage_blip_10 = rampage_blip
 		ENDIF
 	ENDIF
 
@@ -503,11 +334,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -1011.37 
 			rampage_pickup_y = -170.64 
 			rampage_pickup_z = 10.99   //AROUND THE ALLEYS IN HAITI
-			rampage_blip = rampage_blip_11
 			GOSUB rampage_gosub
 			rampage_11_flag	= rampage_flag
 			rampage_11 = rampage_pickup
-			rampage_blip_11 = rampage_blip
 		ENDIF
 
 		IF rampage_12_flag = 0 //NORMAL
@@ -519,11 +348,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = 68.702 
 			rampage_pickup_y = -1119.231 
 			rampage_pickup_z = 10.458   //AROUND THE DOOR IN OAKDALE OPP RAPHAELS
-			rampage_blip = rampage_blip_12
 			GOSUB rampage_gosub
 			rampage_12_flag	= rampage_flag
 			rampage_12 = rampage_pickup
-			rampage_blip_12 = rampage_blip
 		ENDIF
 	ENDIF
 
@@ -537,11 +364,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = 85.623 
 			rampage_pickup_y = -1259.86 
 			rampage_pickup_z = 17.092   //ON TOP OF ROOF AS YOU JUMP FROM THE CAR PARK (SNIPER)
-			rampage_blip = rampage_blip_13
 			GOSUB rampage_gosub
 			rampage_13_flag	= rampage_flag
 			rampage_13 = rampage_pickup
-			rampage_blip_13 = rampage_blip
 		ENDIF
 
 		IF rampage_14_flag = 0 //RUN OVER BY CAR
@@ -553,11 +378,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -679.66 
 			rampage_pickup_y = -419.712 
 			rampage_pickup_z = 10.469   //BEHIND THE CAR IN STAR ISLAND
-			rampage_blip = rampage_blip_14
 			GOSUB rampage_gosub
 			rampage_14_flag	= rampage_flag
 			rampage_14 = rampage_pickup
-			rampage_blip_14 = rampage_blip
 		ENDIF
 	ENDIF
 
@@ -571,11 +394,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -1176.341  
 			rampage_pickup_y = -702.975
 			rampage_pickup_z = 22.662   //ONTOP OF ROOF IN LITTLE HAVANA
-			rampage_blip = rampage_blip_15
 			GOSUB rampage_gosub
 			rampage_15_flag	= rampage_flag
 			rampage_15 = rampage_pickup
-			rampage_blip_15 = rampage_blip
 		ENDIF
 
 		IF rampage_16_flag = 0 //CARS
@@ -587,11 +408,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -626.642  
 			rampage_pickup_y = -1354.85
 			rampage_pickup_z = 16.373   // ON THE BOAT BEHIND A WALL
-			rampage_blip = rampage_blip_16
 			GOSUB rampage_gosub
 			rampage_16_flag	= rampage_flag
 			rampage_16 = rampage_pickup
-			rampage_blip_16 = rampage_blip
 		ENDIF
 	ENDIF
 
@@ -605,11 +424,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -1519.33  
 			rampage_pickup_y = -292.236
 			rampage_pickup_z = 14.86   //BEHIND TREE NEAR TERMINAL B
-			rampage_blip = rampage_blip_17
 			GOSUB rampage_gosub
 			rampage_17_flag	= rampage_flag
 			rampage_17 = rampage_pickup
-			rampage_blip_17 = rampage_blip
 		ENDIF
 
 		IF rampage_18_flag = 0 //NORMAL
@@ -621,11 +438,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -956.113  
 			rampage_pickup_y = -1206.33
 			rampage_pickup_z = 14.86   // ON THE RIDGE BEHIND A TREE
-			rampage_blip = rampage_blip_18
 			GOSUB rampage_gosub
 			rampage_18_flag	= rampage_flag
 			rampage_18 = rampage_pickup
-			rampage_blip_18 = rampage_blip
 		ENDIF
 	ENDIF
 
@@ -639,11 +454,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -890.184 
 			rampage_pickup_y = -489.655 
 			rampage_pickup_z = 36.20   //ON BUILDING ON MAINLAND RD NEED TO STUNT JUMP (SNIPE)
-			rampage_blip = rampage_blip_19
 			GOSUB rampage_gosub
 			rampage_19_flag	= rampage_flag
 			rampage_19 = rampage_pickup
-			rampage_blip_19 = rampage_blip
 		ENDIF
 
 		IF rampage_20_flag = 0 //NORMAL
@@ -655,11 +468,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = 3.426  
 			rampage_pickup_y = -1147.00
 			rampage_pickup_z = 10.45   //OCEAN BEACH IN THE GREEN HOUSES BEHIND A TREE
-			rampage_blip = rampage_blip_20
 			GOSUB rampage_gosub
 			rampage_20_flag	= rampage_flag
 			rampage_20 = rampage_pickup
-			rampage_blip_20 = rampage_blip
 		ENDIF
 	ENDIF
 
@@ -673,11 +484,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = 468.656 
 			rampage_pickup_y = -1608.79 
 			rampage_pickup_z = 11.03  // DOWN THE BTM OF THE BEACH SOUTH SIDE
-			rampage_blip = rampage_blip_21
 			GOSUB rampage_gosub
 			rampage_21_flag	= rampage_flag
 			rampage_21 = rampage_pickup
-			rampage_blip_21 = rampage_blip
 		ENDIF
 
 		IF rampage_22_flag = 0 //NORMAL
@@ -689,11 +498,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = 587.795  
 			rampage_pickup_y = 1206.26
 			rampage_pickup_z = 15.64  // UP THE TOP OF THE NORTH BEACH
-			rampage_blip = rampage_blip_22
 			GOSUB rampage_gosub
 			rampage_22_flag	= rampage_flag
 			rampage_22 = rampage_pickup
-			rampage_blip_22 = rampage_blip
 		ENDIF
 	ENDIF
 
@@ -707,11 +514,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = 300.673  
 			rampage_pickup_y = 1324.88
 			rampage_pickup_z = 22.919  // NORTH BEACH BEHIND BUILDING NEAR CAR PARK
-			rampage_blip = rampage_blip_23
 			GOSUB rampage_gosub
 			rampage_23_flag	= rampage_flag
 			rampage_23 = rampage_pickup
-			rampage_blip_23 = rampage_blip
 		ENDIF
 
 		IF rampage_24_flag = 0 //NORMAL
@@ -723,11 +528,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = 217.247  
 			rampage_pickup_y = 261.372
 			rampage_pickup_z = 8.710  // ON THE JETTY DOCK BIT NR GOLF COURSE BEACH SIDE
-			rampage_blip = rampage_blip_24
 			GOSUB rampage_gosub
 			rampage_24_flag	= rampage_flag
 			rampage_24 = rampage_pickup
-			rampage_blip_24 = rampage_blip
 		ENDIF
 	ENDIF
 
@@ -741,11 +544,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -366.44 
 			rampage_pickup_y = -1742.10 
 			rampage_pickup_z = 11.426  // ON ONE OF THE WATER HOUSES SOUTH
-			rampage_blip = rampage_blip_25
 			GOSUB rampage_gosub
 			rampage_25_flag	= rampage_flag
 			rampage_25 = rampage_pickup
-			rampage_blip_25 = rampage_blip
 		ENDIF
 
 		IF rampage_26_flag = 0 //NORMAL
@@ -757,11 +558,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -448.796 
 			rampage_pickup_y = 1249.27 
 			rampage_pickup_z = 11.75  // DOWNTOWN NORTH BUILDING WITH STATUE IN IT
-			rampage_blip = rampage_blip_26
 			GOSUB rampage_gosub
 			rampage_26_flag	= rampage_flag
 			rampage_26 = rampage_pickup
-			rampage_blip_26 = rampage_blip
 		ENDIF
 	ENDIF
 
@@ -775,11 +574,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -674.22 
 			rampage_pickup_y = 1162.70 
 			rampage_pickup_z = 28.15  // ON SOME BUILDING IN DOWN TOWN SNIPE OPP AMUNATION
-			rampage_blip = rampage_blip_27
 			GOSUB rampage_gosub
 			rampage_27_flag	= rampage_flag
 			rampage_27 = rampage_pickup
-			rampage_blip_27 = rampage_blip
 		ENDIF
 
 		IF rampage_28_flag = 0 //NORMAL
@@ -791,11 +588,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -1143.48 
 			rampage_pickup_y = -410.87 
 			rampage_pickup_z = 10.95  // IN THE BASKETBALL COURT IN LITTLEHA
-			rampage_blip = rampage_blip_28
 			GOSUB rampage_gosub
 			rampage_28_flag	= rampage_flag
 			rampage_28 = rampage_pickup
-			rampage_blip_28 = rampage_blip
 		ENDIF
 	ENDIF
 
@@ -809,11 +604,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = 624.26  
 			rampage_pickup_y = -230.158
 			rampage_pickup_z = 23.915  // ON THE HIGH DIVE BOARDS OFF THE BEACH
-			rampage_blip = rampage_blip_29
 			GOSUB rampage_gosub
 			rampage_29_flag	= rampage_flag
 			rampage_29 = rampage_pickup
-			rampage_blip_29 = rampage_blip
 		ENDIF
 
 		IF rampage_30_flag = 0 //NORMAL
@@ -825,11 +618,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -34.130  
 			rampage_pickup_y = -948.707
 			rampage_pickup_z = 21.772  // ON TOP OF THE MINI-MALL IN WSHINGTON
-			rampage_blip = rampage_blip_30
 			GOSUB rampage_gosub
 			rampage_30_flag	= rampage_flag
 			rampage_30 = rampage_pickup
-			rampage_blip_30 = rampage_blip
 		ENDIF
 	ENDIF
 
@@ -846,11 +637,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = 593.315  
 			rampage_pickup_y = -352.826
 			rampage_pickup_z = 13.711  // TOP OF OCEAN DRIVE NXT TO BUILDING BHD BUSHES
-			rampage_blip = rampage_blip_31
 			GOSUB rampage_gosub
 			rampage_31_flag	= rampage_flag
 			rampage_31 = rampage_pickup
-			rampage_blip_31 = rampage_blip
 		ENDIF
 
 		IF rampage_32_flag = 0 //NORMAL
@@ -862,11 +651,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -1234.830  
 			rampage_pickup_y = -90.378
 			rampage_pickup_z = 11.43  // ON THE COBBLED AREA MAINLAND ROUND CORNER FROM THAT RED BRIDGE
-			rampage_blip = rampage_blip_32
 			GOSUB rampage_gosub
 			rampage_32_flag	= rampage_flag
 			rampage_32 = rampage_pickup
-			rampage_blip_32 = rampage_blip
 		ENDIF
 	ENDIF
 
@@ -880,11 +667,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -1483.470    
 			rampage_pickup_y = -881.677
 			rampage_pickup_z = 14.87 // GROUND FLOOR AIRPORT BEHIND THE CHECK IN DESKS AROUND THE BACK  
-			rampage_blip = rampage_blip_33
 			GOSUB rampage_gosub
 			rampage_33_flag	= rampage_flag
 			rampage_33 = rampage_pickup
-			rampage_blip_33 = rampage_blip
 		ENDIF
 
 		IF rampage_34_flag = 0 //NORMAL
@@ -896,11 +681,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -194.701  
 			rampage_pickup_y = -1085.067
 			rampage_pickup_z = 15.66  // OCEAN VIEW MEDICAL FOUNDATION - TALL WHITE BUIDING WASHTON
-			rampage_blip = rampage_blip_34
 			GOSUB rampage_gosub
 			rampage_34_flag	= rampage_flag
 			rampage_34 = rampage_pickup
-			rampage_blip_34 = rampage_blip
 		ENDIF
 	ENDIF
 
@@ -914,11 +697,9 @@ WHILE total_rampages_passed < 35
 			rampage_pickup_x = -983.373  
 			rampage_pickup_y = -353.997
 			rampage_pickup_z = 13.84  // AROUND THE BACK OF THE BANK NR RED ROOFS AND LOADING BAY
-			rampage_blip = rampage_blip_35
 			GOSUB rampage_gosub
 			rampage_35_flag	= rampage_flag
 			rampage_35 = rampage_pickup
-			rampage_blip_35 = rampage_blip
 		ENDIF
 	ENDIF
 
@@ -1078,6 +859,10 @@ IF HAS_PICKUP_BEEN_COLLECTED rampage_pickup
 	IF frenzy_status = 2
 		rampage_flag = 1
 
+		ADD_SPRITE_BLIP_FOR_COORD rampage_pickup_x rampage_pickup_y rampage_pickup_z RADAR_SPRITE_RAMPAGE rampage_blip
+		CHANGE_BLIP_DISPLAY rampage_blip BLIP_ONLY
+		CHANGE_BLIP_SCALE rampage_blip 2
+
 		++ total_rampages_passed
 		rampage_reward = total_rampages_passed * 50
 		IF IS_PLAYER_PLAYING player1
@@ -1104,11 +889,6 @@ IF HAS_PICKUP_BEEN_COLLECTED rampage_pickup
 		PRINT_BIG RAMP_F 5000 5
 		REMOVE_PICKUP rampage_pickup
 		CREATE_PICKUP killfrenzy PICKUP_ONCE rampage_pickup_x rampage_pickup_y rampage_pickup_z rampage_pickup
-
-		REMOVE_BLIP rampage_blip
-		ADD_SPRITE_BLIP_FOR_PICKUP rampage_pickup RADAR_SPRITE_RAMPAGE rampage_blip
-		CHANGE_BLIP_DISPLAY rampage_blip BLIP_ONLY
-		CHANGE_BLIP_SCALE rampage_blip 2
 	ENDIF
 	FORCE_RANDOM_PED_TYPE -1
 	MARK_MODEL_AS_NO_LONGER_NEEDED rampage_pedmodel_1

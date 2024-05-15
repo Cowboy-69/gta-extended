@@ -324,7 +324,4 @@ public:
 	static void DrawEntityBlip(int32 blipId);
 	static void DrawCoordBlip(int32 blipId);
 	static void DrawLegend(int32, int32, int32);
-#ifdef EX_DISPLAYED_COLLECTIBLES
-	static bool CanDisplayThisCollectable(int blipId);
-#endif
 };

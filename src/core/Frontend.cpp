@@ -4497,7 +4497,7 @@ CMenuManager::AdditionalOptionInput(bool &goBack)
 			}
 
 #ifdef EX_DISPLAYED_COLLECTIBLES // Display switching
-			if (CPad::GetPad(0)->GetTabJustDown()) {
+			if (CPad::GetPad(0)->GetTabJustDown() || CPad::GetPad(0)->GetSelectJustDown()) {
 				bDisplayCollectibles = !bDisplayCollectibles;
 			}
 #endif
