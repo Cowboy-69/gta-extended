@@ -227,7 +227,7 @@ GenericSave(int file)
 	PopulateRadioStationPositionList();
 	WriteDataToBufferPointer(buf, RadioStationPosition);
 #ifdef VICE_EXTENDED // Vice Extended version
-	CGame::viceExtendedVersion = VICEEX_VER_2_7;
+	CGame::viceExtendedVersion = VICEEX_VER_3_0;
 	WriteDataToBufferPointer(buf, CGame::viceExtendedVersion);
 #endif
 #ifdef AUTOSAVE_AND_SAVE_ANYWHERE

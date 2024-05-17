@@ -39,7 +39,7 @@ enum eViceExtendedVersion {
 	VICEEX_VER_2_1,
 	VICEEX_VER_2_5,
 	VICEEX_VER_2_6,
-	VICEEX_VER_2_7,
+	VICEEX_VER_3_0,
 };
 #endif
 
