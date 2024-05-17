@@ -81,18 +81,22 @@
 	#define IMPROVED_TECH_PART
 	#define WANTED_PATHS
 
+	#define VEHICLE_MODS
+	#define IMPROVED_VEHICLES
+	#define IMPROVED_VEHICLES_2
+	#define NEW_VEHICLE_LOADER
+
 	#define FEATURES_INI
 	#ifdef FEATURES_INI
 		#define CLIMBING
 		#define SWIMMING
 		#define EX_DISTANT_LIGHTS // thank https://github.com/ThirteenAG/III.VC.SA.IV.Project2DFX/releases/tag/gtavc
 		#define EX_ROCKET_LAUNCHER_THIRD_PERSON_AIM
+		#ifdef VEHICLE_MODS
+			#define EX_RANDOM_VEHICLE_MODS_IN_TRAFFIC
+		#endif
 	#endif
 
-	#define VEHICLE_MODS
-	#define IMPROVED_VEHICLES
-	#define IMPROVED_VEHICLES_2
-	#define NEW_VEHICLE_LOADER
 	#ifdef NEW_VEHICLE_LOADER
 		#define EX_VCPD_WINTERGREEN
 	#endif

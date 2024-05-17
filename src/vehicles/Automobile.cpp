@@ -8818,6 +8818,11 @@ eLightStatus CAutomobile::GetFrameLightStatus(eCarNodes frameNode)
 #if defined VEHICLE_MODS && defined IMPROVED_VEHICLES
 void CAutomobile::TrySetRandomCarMod(bool bForce)
 {
+#ifdef EX_RANDOM_VEHICLE_MODS_IN_TRAFFIC
+	if (!bRandomVehicleModsInTraffic)
+		return;
+#endif
+
 	if (!CGarages::IsCarModifiable(this))
 		return;
 

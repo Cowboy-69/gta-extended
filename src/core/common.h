@@ -378,6 +378,9 @@ extern bool bEnableSwimming;
 #ifdef EX_ROCKET_LAUNCHER_THIRD_PERSON_AIM
 extern bool bRocketLauncherThirdPersonAiming;
 #endif
+#ifdef EX_RANDOM_VEHICLE_MODS_IN_TRAFFIC
+extern bool bRandomVehicleModsInTraffic;
+#endif
 #endif
 
 #define DEBUGBREAK() __debugbreak();
