@@ -179,6 +179,148 @@ void CControllerConfigManager::LoadSettings(int32 file)
 
 void CControllerConfigManager::InitDefaultControlConfiguration()
 {
+#ifdef VICE_EXTENDED // InitDefaultControlConfiguration
+	SetControllerKeyAssociatedWithAction    (VEHICLE_LOOKLEFT,                    'Q',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_LOOKLEFT,                    rsPADEND,   OPTIONAL_EXTRA);
+										    						          
+	SetControllerKeyAssociatedWithAction    (VEHICLE_LOOKRIGHT,                   'E',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_LOOKRIGHT,                   rsPADDOWN,  OPTIONAL_EXTRA);
+																              
+	if ( _dwOperatingSystemVersion == OS_WIN98 )											              
+		SetControllerKeyAssociatedWithAction(VEHICLE_HORN,                        rsSHIFT,    OPTIONAL_EXTRA); // BUG: must be KEYBOARD ?											              
+	else		
+	{
+		SetControllerKeyAssociatedWithAction(VEHICLE_HORN,                        rsLSHIFT,   KEYBOARD);
+		SetControllerKeyAssociatedWithAction(VEHICLE_HORN,                        rsRSHIFT,   OPTIONAL_EXTRA);
+	}													              
+	
+	SetControllerKeyAssociatedWithAction    (VEHICLE_HANDBRAKE,                   ' ',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_HANDBRAKE,                   rsRCTRL,    OPTIONAL_EXTRA);
+															                      
+	SetControllerKeyAssociatedWithAction    (VEHICLE_ENTER_EXIT,                  'F',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_ENTER_EXIT,                  rsENTER,    OPTIONAL_EXTRA);
+										    					                  
+	SetControllerKeyAssociatedWithAction    (VEHICLE_ACCELERATE,                  'W',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_ACCELERATE,                  rsUP,       OPTIONAL_EXTRA);
+																		          
+	SetControllerKeyAssociatedWithAction    (VEHICLE_CHANGE_RADIO_STATION,        'R',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_CHANGE_RADIO_STATION,        rsINS,      OPTIONAL_EXTRA);
+	
+	SetControllerKeyAssociatedWithAction    (VEHICLE_BRAKE,                       'S',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_BRAKE,                       rsDOWN,     OPTIONAL_EXTRA);
+
+#ifdef IMPROVED_MENU_AND_INPUT
+	SetControllerKeyAssociatedWithAction    (VEHICLE_LOOKBEHIND,                  'C',		  KEYBOARD);
+#endif
+
+#if defined IMPROVED_MENU_AND_INPUT && defined IMPROVED_VEHICLES_2 // Turn and emergency signals for player
+	SetControllerKeyAssociatedWithAction    (VEHICLE_LEFT_TURNSIGNALS,            'Z',		  KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_RIGHT_TURNSIGNALS,           'X',		  KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_EMERGENCYLIGHTS,             'Y',		  KEYBOARD);
+#endif
+																		          
+	SetControllerKeyAssociatedWithAction    (TOGGLE_SUBMISSIONS,                  rsPLUS,     KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (TOGGLE_SUBMISSIONS,                  rsCAPSLK,   OPTIONAL_EXTRA);
+																		          
+	SetControllerKeyAssociatedWithAction    (GO_LEFT,                             'A',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (GO_LEFT,                             rsLEFT,     OPTIONAL_EXTRA);
+																		          
+	SetControllerKeyAssociatedWithAction    (GO_RIGHT,                            'D',		  KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (GO_RIGHT,                            rsRIGHT,    OPTIONAL_EXTRA);
+																		          
+	SetControllerKeyAssociatedWithAction    (GO_FORWARD,                          'W',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (GO_FORWARD,                          rsUP,       OPTIONAL_EXTRA);
+	
+	SetControllerKeyAssociatedWithAction    (GO_BACK,                             'S',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (GO_BACK,                             rsDOWN,     OPTIONAL_EXTRA);
+
+																		          
+#ifdef IMPROVED_MENU_AND_INPUT
+	SetControllerKeyAssociatedWithAction    (NETWORK_TALK,                        'K',        KEYBOARD);
+
+	SetControllerKeyAssociatedWithAction    (RADAR_ZOOM_OUT,                      'T',        KEYBOARD);
+
+	SetControllerKeyAssociatedWithAction    (PED_RELOAD,						  'R',        KEYBOARD);
+
+	SetControllerKeyAssociatedWithAction    (PED_WALK,							  rsLALT,     KEYBOARD);
+
+	SetControllerKeyAssociatedWithAction    (PED_LOOKBEHIND,                      'C',		  KEYBOARD);
+#else
+	SetControllerKeyAssociatedWithAction    (NETWORK_TALK,                        'T',        KEYBOARD);
+
+	SetControllerKeyAssociatedWithAction    (PED_LOOKBEHIND,                      rsPADEND,   KEYBOARD);
+#endif
+	SetControllerKeyAssociatedWithAction    (PED_LOOKBEHIND,                      rsCAPSLK,   OPTIONAL_EXTRA);
+
+#ifdef IMPROVED_MENU_AND_INPUT
+	SetControllerKeyAssociatedWithAction    (PED_DUCK,                            rsLCTRL,	  KEYBOARD);
+#else
+	SetControllerKeyAssociatedWithAction    (PED_DUCK,                            'C',        KEYBOARD);
+#endif
+					
+	SetControllerKeyAssociatedWithAction    (PED_FIREWEAPON,                      rsPADINS,   KEYBOARD);
+#ifndef IMPROVED_MENU_AND_INPUT
+	SetControllerKeyAssociatedWithAction    (PED_FIREWEAPON,                      rsLCTRL,    OPTIONAL_EXTRA);
+#endif
+#ifdef BIND_VEHICLE_FIREWEAPON
+	SetControllerKeyAssociatedWithAction    (VEHICLE_FIREWEAPON,                  rsLCTRL,    KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (VEHICLE_FIREWEAPON,                  rsPADINS,   OPTIONAL_EXTRA);
+#endif
+#ifdef IMPROVED_MENU_AND_INPUT
+	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_LEFT,               'Q', KEYBOARD);
+
+	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_RIGHT,              'E', OPTIONAL_EXTRA); // BUG: must be KEYBOARD ?
+#else
+	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_LEFT,               rsPADDEL,   KEYBOARD);
+
+	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_RIGHT,              rsPADENTER, OPTIONAL_EXTRA); // BUG: must be KEYBOARD ?
+#endif
+																		          
+	SetControllerKeyAssociatedWithAction    (PED_LOCK_TARGET,                     rsDEL,      KEYBOARD);
+	
+	SetControllerKeyAssociatedWithAction    (PED_JUMPING,                         ' ',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (PED_JUMPING,                         rsRCTRL,    OPTIONAL_EXTRA);
+
+	SetControllerKeyAssociatedWithAction    (PED_ANSWER_PHONE,                    rsTAB,      KEYBOARD);
+																              
+	if ( _dwOperatingSystemVersion == OS_WIN98 )											              
+		SetControllerKeyAssociatedWithAction(PED_SPRINT,                          rsSHIFT,    OPTIONAL_EXTRA); // BUG: must be KEYBOARD ?											              
+	else		
+	{
+		SetControllerKeyAssociatedWithAction(PED_SPRINT,                          rsLSHIFT,   KEYBOARD);
+	}
+
+	SetControllerKeyAssociatedWithAction    (PED_CYCLE_TARGET_LEFT,               '[',        KEYBOARD);
+
+	SetControllerKeyAssociatedWithAction    (PED_CYCLE_TARGET_RIGHT,              ']',        OPTIONAL_EXTRA); // BUG: must be KEYBOARD ?
+																			      
+	SetControllerKeyAssociatedWithAction    (PED_CENTER_CAMERA_BEHIND_PLAYER,     '#',        KEYBOARD);
+	
+	SetControllerKeyAssociatedWithAction    (PED_SNIPER_ZOOM_IN,                  'Z',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (PED_SNIPER_ZOOM_IN,                  rsPGUP,     OPTIONAL_EXTRA);
+										    
+	SetControllerKeyAssociatedWithAction    (PED_SNIPER_ZOOM_OUT,                 'X',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (PED_SNIPER_ZOOM_OUT,                 rsPGDN,     OPTIONAL_EXTRA);
+										    
+	SetControllerKeyAssociatedWithAction    (PED_1RST_PERSON_LOOK_LEFT,           rsPADLEFT,  KEYBOARD);
+
+	SetControllerKeyAssociatedWithAction    (PED_1RST_PERSON_LOOK_RIGHT,          rsPADRIGHT, KEYBOARD);
+										    
+	SetControllerKeyAssociatedWithAction    (PED_1RST_PERSON_LOOK_UP,             rsPADUP,    KEYBOARD);
+
+	SetControllerKeyAssociatedWithAction    (PED_1RST_PERSON_LOOK_DOWN,           rsPAD5,     KEYBOARD);
+										    
+	SetControllerKeyAssociatedWithAction    (VEHICLE_TURRETLEFT,                  rsPADLEFT,  KEYBOARD);
+
+	SetControllerKeyAssociatedWithAction    (VEHICLE_TURRETRIGHT,                 rsPAD5,     KEYBOARD);
+										    
+	SetControllerKeyAssociatedWithAction    (VEHICLE_TURRETUP,                    rsPADPGUP,  KEYBOARD);
+
+	SetControllerKeyAssociatedWithAction    (VEHICLE_TURRETDOWN,                  rsPADRIGHT, KEYBOARD);
+	
+	SetControllerKeyAssociatedWithAction    (CAMERA_CHANGE_VIEW_ALL_SITUATIONS,   'V',        KEYBOARD);
+	SetControllerKeyAssociatedWithAction    (CAMERA_CHANGE_VIEW_ALL_SITUATIONS,   rsHOME,     OPTIONAL_EXTRA);
+#else
 	SetControllerKeyAssociatedWithAction    (VEHICLE_LOOKLEFT,                    rsPADEND,   KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (VEHICLE_LOOKLEFT,                    'Q',        OPTIONAL_EXTRA);
 										    						              
@@ -207,16 +349,6 @@ void CControllerConfigManager::InitDefaultControlConfiguration()
 																		          
 	SetControllerKeyAssociatedWithAction    (VEHICLE_BRAKE,                       rsDOWN,     KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (VEHICLE_BRAKE,                       'S',        OPTIONAL_EXTRA);
-
-#ifdef IMPROVED_MENU_AND_INPUT
-	SetControllerKeyAssociatedWithAction    (VEHICLE_LOOKBEHIND,                  'C',		  KEYBOARD);
-#endif
-
-#if defined IMPROVED_MENU_AND_INPUT && defined IMPROVED_VEHICLES_2 // Turn and emergency signals for player
-	SetControllerKeyAssociatedWithAction    (VEHICLE_LEFT_TURNSIGNALS,                  'Z',		  KEYBOARD);
-	SetControllerKeyAssociatedWithAction    (VEHICLE_RIGHT_TURNSIGNALS,                  'X',		  KEYBOARD);
-	SetControllerKeyAssociatedWithAction    (VEHICLE_EMERGENCYLIGHTS,                  'Y',		  KEYBOARD);
-#endif
 																		          
 	SetControllerKeyAssociatedWithAction    (TOGGLE_SUBMISSIONS,                  rsPLUS,     KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (TOGGLE_SUBMISSIONS,                  rsCAPSLK,   OPTIONAL_EXTRA);
@@ -234,46 +366,18 @@ void CControllerConfigManager::InitDefaultControlConfiguration()
 	SetControllerKeyAssociatedWithAction    (GO_BACK,                             'S',        OPTIONAL_EXTRA);
 
 																		          
-#ifdef IMPROVED_MENU_AND_INPUT
-	SetControllerKeyAssociatedWithAction    (NETWORK_TALK,                        'K',        KEYBOARD);
-
-	SetControllerKeyAssociatedWithAction    (RADAR_ZOOM_OUT,                      'T',        KEYBOARD);
-
-	SetControllerKeyAssociatedWithAction    (PED_RELOAD,						  'R',        KEYBOARD);
-
-	SetControllerKeyAssociatedWithAction    (PED_WALK,							  rsLALT,     KEYBOARD);
-
-	SetControllerKeyAssociatedWithAction    (PED_LOOKBEHIND,                      'C', KEYBOARD);
-#else
 	SetControllerKeyAssociatedWithAction    (NETWORK_TALK,                        'T',        KEYBOARD);
 
 	SetControllerKeyAssociatedWithAction    (PED_LOOKBEHIND,                      rsPADEND,   KEYBOARD);
-#endif
 	SetControllerKeyAssociatedWithAction    (PED_LOOKBEHIND,                      rsCAPSLK,   OPTIONAL_EXTRA);
 
-#ifdef IMPROVED_MENU_AND_INPUT
-	SetControllerKeyAssociatedWithAction    (PED_DUCK,                            rsLCTRL,        KEYBOARD);
-#else
 	SetControllerKeyAssociatedWithAction    (PED_DUCK,                            'C',        KEYBOARD);
-#endif
 					
 	SetControllerKeyAssociatedWithAction    (PED_FIREWEAPON,                      rsPADINS,   KEYBOARD);
-#ifndef IMPROVED_MENU_AND_INPUT
 	SetControllerKeyAssociatedWithAction    (PED_FIREWEAPON,                      rsLCTRL,    OPTIONAL_EXTRA);
-#endif
-#ifdef BIND_VEHICLE_FIREWEAPON
-	SetControllerKeyAssociatedWithAction    (VEHICLE_FIREWEAPON,                  rsPADINS,   KEYBOARD);
-	SetControllerKeyAssociatedWithAction    (VEHICLE_FIREWEAPON,                  rsLCTRL,    OPTIONAL_EXTRA);
-#endif
-#ifdef IMPROVED_MENU_AND_INPUT
-	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_LEFT,               'Q', KEYBOARD);
-
-	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_RIGHT,              'E', OPTIONAL_EXTRA); // BUG: must be KEYBOARD ?
-#else
 	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_LEFT,               rsPADDEL,   KEYBOARD);
 
 	SetControllerKeyAssociatedWithAction    (PED_CYCLE_WEAPON_RIGHT,              rsPADENTER, OPTIONAL_EXTRA); // BUG: must be KEYBOARD ?
-#endif
 																		          
 	SetControllerKeyAssociatedWithAction    (PED_LOCK_TARGET,                     rsDEL,      KEYBOARD);
 																		          
@@ -324,6 +428,7 @@ void CControllerConfigManager::InitDefaultControlConfiguration()
 										    
 	SetControllerKeyAssociatedWithAction    (CAMERA_CHANGE_VIEW_ALL_SITUATIONS,   rsHOME,     KEYBOARD);
 	SetControllerKeyAssociatedWithAction    (CAMERA_CHANGE_VIEW_ALL_SITUATIONS,   'V',        OPTIONAL_EXTRA);
+#endif
 
 	for (int32 i = 0; i < MAX_SIMS; i++)
 	{

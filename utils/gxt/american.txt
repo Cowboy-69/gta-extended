@@ -4484,10 +4484,10 @@ Press the ~h~~k~~VEHICLE_TURRETUP~ ~w~button and the ~h~~k~~VEHICLE_TURRETDOWN~ 
 Press the ~h~~k~~VEHICLE_TURRETUP~ ~w~button and the ~h~~k~~VEHICLE_TURRETDOWN~ ~w~button, to shift your weight on a bike.
 
 [HELP35]
-Press the ~h~~k~~GO_LEFT~~w~, and the ~h~~k~~GO_RIGHT~~w~, to steer the vehicle.
+Press the ~h~~k~~GO_LEFT~,~w~ and the ~h~~k~~GO_RIGHT~,~w~ to steer the vehicle.
 
 [HELP36]
-Press the ~h~~k~~GO_LEFT~~w~, and the ~h~~k~~GO_RIGHT~~w~, to steer the vehicle.
+Press the ~h~~k~~GO_LEFT~,~w~ and the ~h~~k~~GO_RIGHT~,~w~ to steer the vehicle.
 
 [HELP42]
 Follow the ~q~pink blip~w~ to find the hotel.
