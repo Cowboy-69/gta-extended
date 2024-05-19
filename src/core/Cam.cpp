@@ -6238,8 +6238,14 @@ CCam::Process_FollowCar_SA(const CVector& CameraTarget, float TargetOrientation,
 
 #ifdef FIRING_AND_AIMING // smoothly move the camera while aiming
 	if (FindPlayerPed()->bIsPlayerAiming) {
-		CVector cameraOffset = -car->GetRight() * 0.8f + car->GetUp() * 0.4f;
-		if (CurrentAimOffset.Magnitude() < 0.8f) {
+		CVector cameraOffset;
+
+		if (car->IsBike())
+			cameraOffset = car->GetRight() * 0.4f + car->GetUp() * 0.4f;
+		else
+			cameraOffset = -car->GetRight() * 0.8f + car->GetUp() * 0.4f;
+
+		if (car->IsBike() && CurrentAimOffset.Magnitude() < 0.4f || !car->IsBike() && CurrentAimOffset.Magnitude() < 0.8f) {
 			CurrentAimOffset = InterpVector(CurrentAimOffset, cameraOffset, 3.0f);
 			TargetCoors += CurrentAimOffset;
 		} else {
