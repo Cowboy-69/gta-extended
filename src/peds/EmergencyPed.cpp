@@ -385,7 +385,11 @@ CEmergencyPed::MedicAI(void)
 				break;
 			case EMERGENCY_PED_STOP_CPR:
 				m_nEmergencyPedState = EMERGENCY_PED_STOP;
+#ifdef CROUCH // Medics stand up after doing CPR
+				bIsDucking = false;
+#else
 				bIsDucking = true;
+#endif
 				break;
 			case EMERGENCY_PED_STAND_STILL:
 				if (!m_pRevivedPed || m_pRevivedPed->m_fHealth > 0.0f)
