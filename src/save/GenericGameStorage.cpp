@@ -382,7 +382,7 @@ GenericLoad()
 #ifdef VICE_EXTENDED // Vice Extended version
 	ReadDataFromBufferPointer(buf, CGame::viceExtendedVersion);
 
-	if (CGame::viceExtendedVersion <= VICEEX_VER_2_6)
+	if (CGame::viceExtendedVersion < VICEEX_VER_3_0)
 		USERERROR("This save is not supported for this version!");
 #endif
 #ifdef AUTOSAVE_AND_SAVE_ANYWHERE

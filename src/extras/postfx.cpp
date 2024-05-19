@@ -27,6 +27,9 @@ static RwImVertexIndex Index[6] = { 0, 1, 2, 0, 2, 3 };
 #ifdef RW_D3D9
 void *colourfilterVC_PS;
 void *contrast_PS;
+#ifdef EX_YCBCR_CORRECTION
+void *grading_PS;
+#endif
 #endif
 #ifdef RW_OPENGL
 int32 u_blurcolor;
@@ -34,6 +37,16 @@ int32 u_contrastAdd;
 int32 u_contrastMult;
 rw::gl3::Shader *colourFilterVC;
 rw::gl3::Shader *contrast;
+#endif
+
+#ifdef EX_YCBCR_CORRECTION
+bool CPostFX::m_bYCbCrFilter = false;
+float CPostFX::m_lumaScale = 219.0f / 255.0f;
+float CPostFX::m_lumaOffset = 16.0f / 255.0f;
+float CPostFX::m_cbScale = 1.23f;
+float CPostFX::m_cbOffset = 0.0f;
+float CPostFX::m_crScale = 1.23f;
+float CPostFX::m_crOffset = 0.0f;
 #endif
 
 void
@@ -150,6 +163,10 @@ CPostFX::Open(RwCamera *cam)
 	colourfilterVC_PS = rw::d3d::createPixelShader(colourfilterVC_PS_cso);
 #include "shaders/obj/contrastPS.inc"
 	contrast_PS = rw::d3d::createPixelShader(contrastPS_cso);
+#ifdef EX_YCBCR_CORRECTION
+#include "shaders/obj/gradingPS.inc"
+	grading_PS = rw::d3d::createPixelShader(gradingPS_cso);
+#endif
 #endif
 #ifdef RW_OPENGL
 	using namespace rw::gl3;
@@ -171,6 +188,9 @@ CPostFX::Open(RwCamera *cam)
 	contrast = Shader::create(vs, fs);
 	assert(contrast);
 	}
+#ifdef EX_YCBCR_CORRECTION
+	// TODO
+#endif
 
 #endif
 }
@@ -195,6 +215,12 @@ CPostFX::Close(void)
 		rw::d3d::destroyPixelShader(contrast_PS);
 		contrast_PS = nil;
 	}
+#ifdef EX_YCBCR_CORRECTION
+	if (grading_PS) {
+		rw::d3d::destroyPixelShader(grading_PS);
+		grading_PS = nil;
+	}
+#endif
 #endif
 #ifdef RW_OPENGL
 	if(colourFilterVC){
@@ -205,6 +231,9 @@ CPostFX::Close(void)
 		contrast->destroy();
 		contrast = nil;
 	}
+#ifdef EX_YCBCR_CORRECTION
+	// TODO
+#endif
 #endif
 }
 
@@ -386,6 +415,27 @@ CPostFX::GetBackBuffer(RwCamera *cam)
 	RwRasterPopContext();
 }
 
+#ifdef EX_YCBCR_CORRECTION
+static RwMatrix RGB2YUV = {
+	{  0.299f,	-0.168736f,	 0.500f }, 0,
+	{  0.587f,	-0.331264f,	-0.418688f }, 0,
+	{  0.114f,	 0.500f,	-0.081312f }, 0,
+	{  0.000f,	 0.000f,	 0.000f }, 0,
+};
+
+static RwMatrix YUV2RGB = {
+	{  1.000f,	 1.000f,	 1.000f }, 0,
+	{  0.000f,	-0.344136f,	 1.772f }, 0,
+	{  1.402f,	-0.714136f,	 0.000f }, 0,
+	{  0.000f,	 0.000f,	 0.000f }, 0,
+};
+
+struct Grade
+{
+	rw::float32 r, g, b, a;
+};
+#endif
+
 void
 CPostFX::Render(RwCamera *cam, uint32 red, uint32 green, uint32 blue, uint32 blur, int32 type, uint32 bluralpha)
 {
@@ -454,6 +504,69 @@ CPostFX::Render(RwCamera *cam, uint32 red, uint32 green, uint32 blue, uint32 blu
 		bJustInitialised = true;
 
 	POP_RENDERGROUP();
+
+#ifdef EX_YCBCR_CORRECTION // Render
+	if (m_bYCbCrFilter) {
+		RwRasterPushContext(pFrontBuffer);
+		RwRasterRenderFast(RwCameraGetRaster(cam), 0, 0);
+		RwRasterPopContext();
+
+		RwRenderStateSet(rwRENDERSTATETEXTUREFILTER, (void*)rwFILTERNEAREST);
+		RwRenderStateSet(rwRENDERSTATEFOGENABLE, (void*)FALSE);
+		RwRenderStateSet(rwRENDERSTATEZTESTENABLE, (void*)FALSE);
+		RwRenderStateSet(rwRENDERSTATEZWRITEENABLE, (void*)FALSE);
+		RwRenderStateSet(rwRENDERSTATETEXTURERASTER, (void*)pFrontBuffer);
+		RwRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, (void*)FALSE);
+
+		RwMatrix m = RGB2YUV;
+
+		RwMatrix m2;
+		m2.right.x = m_lumaScale;
+		m2.up.x = 0.0f;
+		m2.at.x = 0.0f;
+		m2.pos.x = m_lumaOffset;
+		m2.right.y = 0.0f;
+		m2.up.y = m_cbScale;
+		m2.at.y = 0.0f;
+		m2.pos.y = m_cbOffset;
+		m2.right.z = 0.0f;
+		m2.up.z = 0.0f;
+		m2.at.z = m_crScale;
+		m2.pos.z = m_crOffset;
+
+		RwMatrixOptimize(&m2, nil);
+
+		RwMatrixTransform(&m, &m2, rwCOMBINEPOSTCONCAT);
+		RwMatrixTransform(&m, &YUV2RGB, rwCOMBINEPOSTCONCAT);
+		Grade red2, green2, blue2;
+		red2.r = m.right.x;
+		red2.g = m.up.x;
+		red2.b = m.at.x;
+		red2.a = m.pos.x;
+		green2.r = m.right.y;
+		green2.g = m.up.y;
+		green2.b = m.at.y;
+		green2.a = m.pos.y;
+		blue2.r = m.right.z;
+		blue2.g = m.up.z;
+		blue2.b = m.at.z;
+		blue2.a = m.pos.z;
+
+		rw::d3d::d3ddevice->SetPixelShaderConstantF(0, (float*)&red2, 1);
+		rw::d3d::d3ddevice->SetPixelShaderConstantF(1, (float*)&green2, 1);
+		rw::d3d::d3ddevice->SetPixelShaderConstantF(2, (float*)&blue2, 1);
+
+		rw::d3d::im2dOverridePS = grading_PS;
+		RwIm2DRenderIndexedPrimitive(rwPRIMTYPETRILIST, Vertex, 4, Index, 6);
+		rw::d3d::im2dOverridePS = nil;
+
+		RwRenderStateSet(rwRENDERSTATETEXTUREFILTER, (void*)rwFILTERLINEAR);
+		RwRenderStateSet(rwRENDERSTATEZTESTENABLE, (void*)TRUE);
+		RwRenderStateSet(rwRENDERSTATEZWRITEENABLE, (void*)TRUE);
+		RwRenderStateSet(rwRENDERSTATETEXTURERASTER, (void*)NULL);
+		RwRenderStateSet(rwRENDERSTATEVERTEXALPHAENABLE, (void*)TRUE);
+	}
+#endif
 }
 
 int CPostFX::PrevRed[NUMAVERAGE], CPostFX::AvgRed;

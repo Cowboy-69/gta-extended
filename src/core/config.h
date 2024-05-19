@@ -141,6 +141,8 @@
 
 	#define EX_DISPLAYED_COLLECTIBLES
 
+	#define EX_YCBCR_CORRECTION // thank https://github.com/aap/skygfx/
+
 enum Config {
 	NUMPLAYERS = 1,
 

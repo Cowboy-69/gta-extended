@@ -694,7 +694,15 @@ bool LoadINISettings()
 #ifdef IMPROVED_TECH_PART
 	ReadIniIfExists("Rendering", "MaxFPS", &RsGlobal.maxFPS);
 #endif
-
+#ifdef EX_YCBCR_CORRECTION // ini
+	ReadIniIfExists("Rendering", "YCbCrCorrection", &CPostFX::m_bYCbCrFilter);
+	ReadIniIfExists("Rendering", "lumaScale", &CPostFX::m_lumaScale);
+	ReadIniIfExists("Rendering", "lumaOffset", &CPostFX::m_lumaOffset);
+	ReadIniIfExists("Rendering", "CbScale", &CPostFX::m_cbScale);
+	ReadIniIfExists("Rendering", "CbOffset", &CPostFX::m_cbOffset);
+	ReadIniIfExists("Rendering", "CrScale", &CPostFX::m_crScale);
+	ReadIniIfExists("Rendering", "CrOffset", &CPostFX::m_crOffset);
+#endif
 #ifdef PROPER_SCALING
 	ReadIniIfExists("Draw", "ProperScaling", &CDraw::ms_bProperScaling);	
 #endif
@@ -851,7 +859,15 @@ void SaveINISettings()
 #ifdef IMPROVED_TECH_PART
 	StoreIni("Rendering", "MaxFPS", RsGlobal.maxFPS);
 #endif
-
+#ifdef EX_YCBCR_CORRECTION // ini
+	StoreIni("Rendering", "YCbCrCorrection", CPostFX::m_bYCbCrFilter);
+	StoreIni("Rendering", "lumaScale", CPostFX::m_lumaScale);
+	StoreIni("Rendering", "lumaOffset", CPostFX::m_lumaOffset);
+	StoreIni("Rendering", "CbScale", CPostFX::m_cbScale);
+	StoreIni("Rendering", "CbOffset", CPostFX::m_cbOffset);
+	StoreIni("Rendering", "CrScale", CPostFX::m_crScale);
+	StoreIni("Rendering", "CrOffset", CPostFX::m_crOffset);
+#endif
 #ifdef PROPER_SCALING	
 	StoreIni("Draw", "ProperScaling", CDraw::ms_bProperScaling);	
 #endif
@@ -1356,6 +1372,15 @@ extern bool gbRenderWorld2;
 		DebugMenuAddVar("Render", "Mult", &CustomPipes::LightmapMult, nil, 0.1f, 0, 1.0f);
 		DebugMenuAddVarBool8("Render", "Neo Road Gloss enable", &CustomPipes::GlossEnable, nil);
 		DebugMenuAddVar("Render", "Mult", &CustomPipes::GlossMult, nil, 0.1f, 0, 1.0f);
+#endif
+#ifdef EX_YCBCR_CORRECTION // Debug menu
+		DebugMenuAddVarBool8("Render", "YCbCrCorrection", &CPostFX::m_bYCbCrFilter, nil);
+		DebugMenuAddVar("Render", "LumaScale", &CPostFX::m_lumaScale, nil, 0.004f, 0.0f, 10.0f);
+		DebugMenuAddVar("Render", "LumaOffset", &CPostFX::m_lumaOffset, nil, 0.004f, -1.0f, 1.0f);
+		DebugMenuAddVar("Render", "CbScale", &CPostFX::m_cbScale, nil, 0.004f, 0.0f, 10.0f);
+		DebugMenuAddVar("Render", "CbOffset", &CPostFX::m_cbOffset, nil, 0.004f, -1.0f, 1.0f);
+		DebugMenuAddVar("Render", "CrScale", &CPostFX::m_crScale, nil, 0.004f, 0.0f, 10.0f);
+		DebugMenuAddVar("Render", "CrOffset", &CPostFX::m_crOffset, nil, 0.004f, -1.0f, 1.0f);
 #endif
 		DebugMenuAddVarBool8("Debug Render", "Show Ped Paths", &gbShowPedPaths, nil);
 		DebugMenuAddVarBool8("Debug Render", "Show Car Paths", &gbShowCarPaths, nil);

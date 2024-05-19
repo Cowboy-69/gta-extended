@@ -73,7 +73,7 @@ RwV3d *RwMatrixGetUp(RwMatrix * matrix) { return &matrix->up; }
 RwV3d *RwMatrixGetAt(RwMatrix * matrix) { return &matrix->at; }
 RwV3d *RwMatrixGetPos(RwMatrix * matrix) { return &matrix->pos; }
 RwMatrix *RwMatrixUpdate(RwMatrix * matrix) { matrix->update(); return matrix; }
-//RwMatrix *RwMatrixOptimize(RwMatrix * matrix, const RwMatrixTolerance *tolerance);
+RwMatrix *RwMatrixOptimize(RwMatrix * matrix, const RwMatrixTolerance *tolerance) { matrix->optimize(); return matrix; }
 
 
 

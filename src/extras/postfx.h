@@ -28,6 +28,16 @@ public:
 	static int Next;
 	static int NumValues;
 
+#ifdef EX_YCBCR_CORRECTION
+	static bool m_bYCbCrFilter;
+	static float m_lumaScale;
+	static float m_lumaOffset;
+	static float m_cbScale;
+	static float m_cbOffset;
+	static float m_crScale;
+	static float m_crOffset;
+#endif
+
 	static void InitOnce(void);
 	static void Open(RwCamera *cam);
 	static void Close(void);
