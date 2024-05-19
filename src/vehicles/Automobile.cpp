@@ -5182,7 +5182,7 @@ CAutomobile::DoDriveByShootings(void)
 #ifdef FIRING_AND_AIMING // hide/show weapon in vehicle
 	if (!FindPlayerPed()->m_pWeaponModel && (FindPlayerPed()->bIsPlayerAiming || (lookingLeft || lookingRight)))
 		pDriver->AddWeaponModel(weapon->GetInfo()->m_nModelId);
-	else if (FindPlayerPed()->m_pWeaponModel && !FindPlayerPed()->bIsPlayerAiming)
+	else if (FindPlayerPed()->m_pWeaponModel && !FindPlayerPed()->bIsPlayerAiming && !lookingLeft && !lookingRight)
 		pDriver->RemoveWeaponModel(weapon->GetInfo()->m_nModelId);
 #endif
 
