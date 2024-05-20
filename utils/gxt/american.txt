@@ -14539,7 +14539,7 @@ Bomb shop
 Race
 
 [LG_42]
-Pharmacy
+Store
 
 [FEC_LTS]
 Left turn signals

@@ -14,6 +14,7 @@ VAR_INT LStickX LStickY RStickX RStickY	ArmourToAdd	cost_of_tool robbed_hardshop
 VAR_INT ammu_gun1 ammu_gun2 ammu_gun3 ammu_gun4 ammu_gun5 ammu_gun6 ammu_gun7
 VAR_FLOAT shop_blokeX shop_blokeY shop_blokeZ playera_x playera_y playera_z
 VAR_INT shotgun_in_stock ruger_in_stock	bbat_in_stock machete_in_stock mp5_in_stock python_in_stock	frenzy_status_ammu
+VAR_INT store_blip2
 
 current_time = 0
 time_since_murdering_shopkeeper1 = -30000
@@ -3277,6 +3278,7 @@ add_stat_point2:
 	 	ADD_STORES_KNOCKED_OFF 1
 		robbed_every_shop ++
 		robbed_hardshop_1 = 1
+		ADD_SPRITE_BLIP_FOR_COORD hard1X hard1Y hard1Z RADAR_SPRITE_STORE store_blip2
 	ENDIF
 
 	// MALL
@@ -3285,6 +3287,7 @@ add_stat_point2:
 	 	ADD_STORES_KNOCKED_OFF 1
 		robbed_every_shop ++
 		robbed_hardshop_2 = 1
+		ADD_SPRITE_BLIP_FOR_COORD 357.7 1016.6 30.1 RADAR_SPRITE_STORE store_blip2
 	ENDIF
 
 	//HAVANA
@@ -3293,6 +3296,7 @@ add_stat_point2:
 	 	ADD_STORES_KNOCKED_OFF 1
 		robbed_every_shop ++
 		robbed_hardshop_3 = 1
+		ADD_SPRITE_BLIP_FOR_COORD hard3X hard3Y hard3Z RADAR_SPRITE_STORE store_blip2
 	ENDIF
 
 RETURN

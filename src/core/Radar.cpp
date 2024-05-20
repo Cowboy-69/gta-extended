@@ -82,7 +82,7 @@ CSprite2d CRadar::WaypointSprite;
 CSprite2d CRadar::HouseForSaleSprite;
 CSprite2d CRadar::BombShopSprite;
 CSprite2d CRadar::RaceSprite;
-CSprite2d CRadar::PharmacySprite;
+CSprite2d CRadar::StoreSprite;
 #endif
 #ifdef EX_DISPLAYED_COLLECTIBLES
 CSprite2d CRadar::PackageSprite;
@@ -138,7 +138,7 @@ CSprite2d *CRadar::RadarSprites[RADAR_SPRITE_COUNT] = {
 	&HouseForSaleSprite,
 	&BombShopSprite,
 	&RaceSprite,
-	&PharmacySprite,
+	&StoreSprite,
 #endif
 #ifdef EX_DISPLAYED_COLLECTIBLES
 	&PackageSprite,
@@ -669,7 +669,8 @@ void CRadar::DrawBlips()
 			if ((!FrontEndMenuManager.bDisplayCollectibles || !FrontEndMenuManager.m_bMenuMapActive) &&
 				(ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_PACKAGE ||
 				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_STUNT ||
-				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_RAMPAGE)) {
+				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_RAMPAGE ||
+				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_STORE)) {
 
 				continue;
 			}
@@ -702,7 +703,8 @@ void CRadar::DrawBlips()
 			if ((!FrontEndMenuManager.bDisplayCollectibles || !FrontEndMenuManager.m_bMenuMapActive) &&
 				(ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_PACKAGE ||
 				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_STUNT ||
-				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_RAMPAGE)) {
+				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_RAMPAGE ||
+				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_STORE)) {
 
 				continue;
 			}
@@ -1451,7 +1453,7 @@ CRadar::LoadTextures()
 	HouseForSaleSprite.SetTexture("property");
 	BombShopSprite.SetTexture("bomb");
 	RaceSprite.SetTexture("race");
-	PharmacySprite.SetTexture("pharmacy");
+	StoreSprite.SetTexture("store");
 #endif
 #ifdef EX_DISPLAYED_COLLECTIBLES
 	PackageSprite.SetTexture("package");
@@ -1659,7 +1661,7 @@ void CRadar::Shutdown()
 	HouseForSaleSprite.Delete();
 	BombShopSprite.Delete();
 	RaceSprite.Delete();
-	PharmacySprite.Delete();
+	StoreSprite.Delete();
 #endif
 #ifdef EX_DISPLAYED_COLLECTIBLES
 	PackageSprite.Delete();
@@ -2153,7 +2155,7 @@ CRadar::DrawLegend(int32 x, int32 y, int32 sprite)
 		case RADAR_SPRITE_RACE:
 			text = TheText.Get("LG_41");
 		break;
-		case RADAR_SPRITE_PHARMACY:
+		case RADAR_SPRITE_STORE:
 			text = TheText.Get("LG_42");
 		break;
 #endif

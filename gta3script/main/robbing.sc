@@ -6,6 +6,7 @@ VAR_INT shop_bloke1	time_difference3 time_difference4 time_difference5 robbed_mo
 VAR_INT robbed_money1_created robbed_money2_created robbed_money3_created robbed_money4_created
 VAR_INT robbed_shop_1 robbed_shop_2 robbed_shop_3 robbed_shop_4 robbed_shop_5 robbed_shop_6 robbed_shop_7 
 VAR_INT robbed_shop_8 robbed_shop_9 robbed_shop_10 robbed_shop_11 robbed_shop_12
+VAR_INT store_blip1
 
 time_since_murdering_shopkeeper3 = -60000
 time_since_murdering_shopkeeper4 = -60000
@@ -718,6 +719,7 @@ AND robbed_shop_1 = 0
  	ADD_STORES_KNOCKED_OFF 1
 	robbed_every_shop ++
 	robbed_shop_1 = 1
+	ADD_SPRITE_BLIP_FOR_COORD -859.2 -632.7 10.6 RADAR_SPRITE_STORE store_blip1
 ENDIF
 
 // Jewllers	//DOWNTOW
@@ -726,6 +728,7 @@ AND robbed_shop_2 = 0
  	ADD_STORES_KNOCKED_OFF 1
 	robbed_every_shop ++
 	robbed_shop_2 = 1
+	ADD_SPRITE_BLIP_FOR_COORD -854.3 850.0 10.6 RADAR_SPRITE_STORE store_blip1
 ENDIF
 
 // Chemist //DOWNTOWN
@@ -734,6 +737,7 @@ AND robbed_shop_3 = 0
  	ADD_STORES_KNOCKED_OFF 1
 	robbed_every_shop ++
 	robbed_shop_3 = 1
+	ADD_SPRITE_BLIP_FOR_COORD -830.4 741.9 10.6 RADAR_SPRITE_STORE store_blip1
 ENDIF
 
 // Chemist //HAITI
@@ -742,6 +746,7 @@ AND robbed_shop_4 = 0
  	ADD_STORES_KNOCKED_OFF 1
 	robbed_every_shop ++
 	robbed_shop_4 = 1
+	ADD_SPRITE_BLIP_FOR_COORD -846.6 -72.6 10.8 RADAR_SPRITE_STORE store_blip1
 ENDIF
 
 // Jewllers	//VICEPOINT
@@ -750,6 +755,7 @@ AND robbed_shop_5 = 0
  	ADD_STORES_KNOCKED_OFF 1
 	robbed_every_shop ++
 	robbed_shop_5 = 1
+	ADD_SPRITE_BLIP_FOR_COORD 379.9 210.2 10.6 RADAR_SPRITE_STORE store_blip1
 ENDIF
 
 // Chemist //VICEPOINT
@@ -758,6 +764,7 @@ AND robbed_shop_6 = 0
  	ADD_STORES_KNOCKED_OFF 1
 	robbed_every_shop ++
 	robbed_shop_6 = 1
+	ADD_SPRITE_BLIP_FOR_COORD 383.2 759.7 11.0 RADAR_SPRITE_STORE store_blip1
 ENDIF
 
 // 7-11	//VICEPOINT
@@ -766,6 +773,7 @@ AND robbed_shop_7 = 0
  	ADD_STORES_KNOCKED_OFF 1
 	robbed_every_shop ++
 	robbed_shop_7 = 1
+	ADD_SPRITE_BLIP_FOR_COORD 449.7 781.5 12.2 RADAR_SPRITE_STORE store_blip1
 ENDIF
 
 // Music store //MALL
@@ -774,6 +782,7 @@ AND robbed_shop_8 = 0
  	ADD_STORES_KNOCKED_OFF 1
 	robbed_every_shop ++
 	robbed_shop_8 = 1
+	ADD_SPRITE_BLIP_FOR_COORD 352.7 1111.3 24.5 RADAR_SPRITE_STORE store_blip1
 ENDIF
 
 // Gash	//MALL
@@ -782,6 +791,7 @@ AND robbed_shop_9 = 0
  	ADD_STORES_KNOCKED_OFF 1
 	robbed_every_shop ++
 	robbed_shop_9 = 1
+	ADD_SPRITE_BLIP_FOR_COORD 423.5 1039.4 18.1 RADAR_SPRITE_STORE store_blip1
 ENDIF
 
 // Jewllers	//MALL
@@ -790,6 +800,7 @@ AND robbed_shop_10 = 0
  	ADD_STORES_KNOCKED_OFF 1
 	robbed_every_shop ++
 	robbed_shop_10 = 1
+	ADD_SPRITE_BLIP_FOR_COORD 468.7 1206.6 18.2 RADAR_SPRITE_STORE store_blip1
 ENDIF
 
 // Cuban Cafe //HAVANA
@@ -798,6 +809,7 @@ AND robbed_shop_11 = 0
  	ADD_STORES_KNOCKED_OFF 1
 	robbed_every_shop ++
 	robbed_shop_11 = 1
+	ADD_SPRITE_BLIP_FOR_COORD -1167.5 -613.5 11.0 RADAR_SPRITE_STORE store_blip1
 ENDIF
 
 // Laundrete //HAVANA
@@ -806,6 +818,7 @@ AND robbed_shop_12 = 0
  	ADD_STORES_KNOCKED_OFF 1
 	robbed_every_shop ++
 	robbed_shop_12 = 1
+	ADD_SPRITE_BLIP_FOR_COORD -1192.2 -323.7 11.1 RADAR_SPRITE_STORE store_blip1
 ENDIF
 
 RETURN

@@ -634,7 +634,7 @@
       <Constant Name="RADAR_SPRITE_HOUSE_FOR_SALE"/>
       <Constant Name="RADAR_SPRITE_BOMB_SHOP"/>
       <Constant Name="RADAR_SPRITE_RACE"/>
-      <Constant Name="RADAR_SPRITE_PHARMACY"/>
+      <Constant Name="RADAR_SPRITE_STORE"/>
       <Constant Name="RADAR_SPRITE_PACKAGE"/>
       <Constant Name="RADAR_SPRITE_STUNT"/>
       <Constant Name="RADAR_SPRITE_RAMPAGE"/>

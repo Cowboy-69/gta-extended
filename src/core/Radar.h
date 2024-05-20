@@ -100,7 +100,7 @@ enum eRadarSprite
 	RADAR_SPRITE_HOUSE_FOR_SALE,
 	RADAR_SPRITE_BOMB_SHOP,
 	RADAR_SPRITE_RACE,
-	RADAR_SPRITE_PHARMACY,
+	RADAR_SPRITE_STORE,
 #endif
 #ifdef EX_DISPLAYED_COLLECTIBLES
 	RADAR_SPRITE_PACKAGE,
@@ -241,7 +241,7 @@ public:
 	static CSprite2d HouseForSaleSprite;
 	static CSprite2d BombShopSprite;
 	static CSprite2d RaceSprite;
-	static CSprite2d PharmacySprite;
+	static CSprite2d StoreSprite;
 #endif
 #ifdef EX_DISPLAYED_COLLECTIBLES
 	static CSprite2d PackageSprite;

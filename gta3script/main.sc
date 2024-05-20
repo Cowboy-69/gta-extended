@@ -490,7 +490,7 @@ VAR_INT the_bankjob_blip the_phil_blip the_porn_blip the_protection_blip the_cou
 VAR_INT the_biker_blip the_rock_blip the_cuban_blip the_haitian_blip the_assasin_blip the_taxiwar_blip
 VAR_INT weapon_shop1_blip weapon_shop2_blip weapon_shop3_blip hardware_shop1 hardware_shop2 hardware_shop3
 VAR_INT spray_shop1 spray_shop2 spray_shop3 spray_shop5	hotel_save_pickup remove_hotel_pickup
-VAR_INT pharmacy_shop1 pharmacy_shop2 pharmacy_shop3 bomb_shop_blip stadium_blip clothing_store_blip // ViceEx, pharmacy blips, bomb shop blip, stadium blip and clothing store blip
+VAR_INT bomb_shop_blip stadium_blip clothing_store_blip // ViceEx, bomb shop blip, stadium blip and clothing store blip
 
 VAR_FLOAT x y z the_yacht_x the_yacht_y the_yacht_z
 VAR_INT car
