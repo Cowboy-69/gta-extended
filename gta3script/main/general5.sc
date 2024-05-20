@@ -194,7 +194,7 @@ the_yacht_y_start = the_yacht_y
 the_yacht_z_start = the_yacht_z
 
 SET_THREAT_REACTION_RANGE_MULTIPLIER 6.0
-SET_TIME_OF_DAY 06 00
+SET_TIME_OF_DAY 6 00
 FORCE_WEATHER_NOW WEATHER_SUNNY
 
 ////////////////////////////////////////////////////////////////////////////////////////////
