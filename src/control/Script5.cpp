@@ -2077,6 +2077,9 @@ bool CRunningScript::CheckDamagedWeaponType(int32 actual, int32 type)
 	case WEAPONTYPE_CAMERA:
 	case WEAPONTYPE_EXPLOSION:
 	case WEAPONTYPE_UZI_DRIVEBY:
+#ifdef EX_WEAPON_AK47 // Script: CheckDamagedWeaponType
+	case WEAPONTYPE_AK47:
+#endif
 		return true;
 	case WEAPONTYPE_HEALTH:
 	case WEAPONTYPE_ARMOUR:

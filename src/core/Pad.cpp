@@ -297,6 +297,44 @@ void WeaponCheat3()
 #endif
 }
 
+#ifdef EX_CHEAT_WEAPON_4
+void WeaponCheat4()
+{
+	CHud::SetHelpMessage(TheText.Get("CHEAT2"), true);
+
+	CStreaming::RequestModel(MI_MACHETE, STREAMFLAGS_DONT_REMOVE);
+	CStreaming::RequestModel(MI_TEARGAS, STREAMFLAGS_DONT_REMOVE);
+#ifdef EX_WEAPON_AK47 // WeaponCheat4
+	CStreaming::RequestModel(MI_AK47, STREAMFLAGS_DONT_REMOVE);
+#endif
+	CStreaming::RequestModel(MI_M60, STREAMFLAGS_DONT_REMOVE);
+	CStreaming::RequestModel(MI_CAMERA, STREAMFLAGS_DONT_REMOVE);
+	CStreaming::LoadAllRequestedModels(false);
+
+	FindPlayerPed()->GiveWeapon(WEAPONTYPE_MACHETE, 1);
+	FindPlayerPed()->GiveWeapon(WEAPONTYPE_TEARGAS, 5);
+#ifdef EX_WEAPON_AK47 // WeaponCheat4
+	FindPlayerPed()->GiveWeapon(WEAPONTYPE_AK47, 150);
+#endif
+	FindPlayerPed()->GiveWeapon(WEAPONTYPE_M60, 100);
+	FindPlayerPed()->GiveWeapon(WEAPONTYPE_CAMERA, 50);
+
+	CStreaming::SetModelIsDeletable(MI_MACHETE);
+	CStreaming::SetModelIsDeletable(MI_TEARGAS);
+#ifdef EX_WEAPON_AK47 // WeaponCheat4
+	CStreaming::SetModelIsDeletable(MI_AK47);
+#endif
+	CStreaming::SetModelIsDeletable(MI_M60);
+	CStreaming::SetModelIsDeletable(MI_CAMERA);
+
+#ifdef MOBILE_IMPROVEMENTS
+	if (FindPlayerVehicle()) {
+		FindPlayerPed()->RemoveWeaponWhenEnteringVehicle();
+	}
+#endif
+}
+#endif
+
 void HealthCheat()
 {
 	CHud::SetHelpMessage(TheText.Get("CHEAT3"), true);
@@ -1864,6 +1902,12 @@ void CPad::AddToPCCheatString(char c)
 	// BIGHEADS
 	if (!_CHEATCMP("SDAEHGIB"))
 		BigHeadsCheat();
+#endif
+
+#ifdef EX_CHEAT_WEAPON_4
+	// "CRAZYTOOLS"
+	if (!_CHEATCMP("SLOOTYZARC"))
+		WeaponCheat4();
 #endif
 
 #undef _CHEATCMP

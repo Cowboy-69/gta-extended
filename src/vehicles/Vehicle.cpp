@@ -1184,6 +1184,9 @@ CVehicle::InflictDamage(CEntity *damagedBy, eWeaponType weaponType, float damage
 	case WEAPONTYPE_MINIGUN:
 	case WEAPONTYPE_HELICANNON:
 	case WEAPONTYPE_UZI_DRIVEBY:
+#ifdef EX_WEAPON_AK47 // CVehicle::InflictDamage
+	case WEAPONTYPE_AK47:
+#endif
 		if (bBulletProof)
 			return;
 		bFrightensDriver = true;
@@ -1237,6 +1240,9 @@ CVehicle::InflictDamage(CEntity *damagedBy, eWeaponType weaponType, float damage
 			break;
 		case WEAPONTYPE_M4:
 		case WEAPONTYPE_RUGER:
+#ifdef EX_WEAPON_AK47 // CVehicle::InflictDamage
+		case WEAPONTYPE_AK47:
+#endif
 			if(!((CPed*)damagedBy)->IsPlayer())
 				accuracy = 15;
 			break;

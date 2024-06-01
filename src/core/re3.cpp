@@ -927,6 +927,9 @@ void SaveINISettings()
 void WeaponCheat1();
 void WeaponCheat2();
 void WeaponCheat3();
+#ifdef EX_CHEAT_WEAPON_4
+void WeaponCheat4();
+#endif
 void HealthCheat();
 void VehicleCheat(int model);
 void BlowUpCarsCheat();
@@ -1205,6 +1208,9 @@ DebugMenuPopulate(void)
 		DebugMenuAddCmd("Cheats", "Weapon set 1", WeaponCheat1);
 		DebugMenuAddCmd("Cheats", "Weapon set 2", WeaponCheat2);
 		DebugMenuAddCmd("Cheats", "Weapon set 3", WeaponCheat3);
+#ifdef EX_CHEAT_WEAPON_4
+		DebugMenuAddCmd("Cheats", "Weapon set 4", WeaponCheat4);
+#endif
 		DebugMenuAddCmd("Cheats", "Money", MoneyCheat);
 		DebugMenuAddCmd("Cheats", "Health", HealthCheat);
 		DebugMenuAddCmd("Cheats", "Wanted level up", WantedLevelUpCheat);

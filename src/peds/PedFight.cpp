@@ -3005,6 +3005,9 @@ CPed::InflictDamage(CEntity *damagedBy, eWeaponType method, float damage, ePedPi
 			case WEAPONTYPE_M60:
 			case WEAPONTYPE_MINIGUN:
 			case WEAPONTYPE_UZI_DRIVEBY:
+#ifdef EX_WEAPON_AK47 // CPed::InflictDamage
+			case WEAPONTYPE_AK47:
+#endif
 
 				if (bBulletProof)
 					return false;
@@ -3013,6 +3016,9 @@ CPed::InflictDamage(CEntity *damagedBy, eWeaponType method, float damage, ePedPi
 				if (IsPlayer() || bNoCriticalHits)
 					dontRemoveLimb = true;
 				else if (method != WEAPONTYPE_M4 && method != WEAPONTYPE_RUGER && method != WEAPONTYPE_SNIPERRIFLE &&
+#ifdef EX_WEAPON_AK47 // CPed::InflictDamage
+						method != WEAPONTYPE_AK47 &&
+#endif
 						method != WEAPONTYPE_LASERSCOPE) {
 					if (method == WEAPONTYPE_SHOTGUN)
 						dontRemoveLimb = CGeneral::GetRandomNumber() & 7;

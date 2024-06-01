@@ -1,5 +1,8 @@
 #pragma once
 #include "Sprite2d.h"
+#ifdef EX_NEW_WEAPONS
+#include "ModelIndices.h"
+#endif
 
 #define HELP_MSG_LENGTH 256
 
@@ -44,7 +47,11 @@ enum eSprites
 	HUD_LASERDOT,
 	HUD_VIEWFINDER,
 	HUD_BLEEDER,
+#ifdef EX_NEW_WEAPONS // NUM_HUD_SPRITES
+	NUM_HUD_SPRITES = 69 + (NUM_NEW_WEAPONS - MI_FIRST_NEW_WEAPON - 1), // Except for MI_RCGRENADE
+#else
 	NUM_HUD_SPRITES = 69,
+#endif
 };
 
 #ifdef EX_WEAPON_SIGHT

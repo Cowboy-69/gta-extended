@@ -170,7 +170,7 @@ struct
   { "sword", "swordA" },
   { "chainsaw", "chainsawA" },
   { "grenade", "grenadeA" },
- #ifdef EX_WEAPON_RCGRENADE // Icon
+#ifdef EX_WEAPON_RCGRENADE // Icon
   { "rcgrenade", "rcgrenadeA" },
 #else
   { "grenade", "grenadeA" },
@@ -229,7 +229,10 @@ struct
   { "sitelaser", "sitelaserm" },
   { "laserdot", "laserdotm" },
   { "viewfinder_128", "viewfinder_128m" },
-  { "bleeder", "" }
+  { "bleeder", "" },
+#ifdef EX_WEAPON_AK47
+  { "ak47", "ak47A" },
+#endif
 };
 
 RwTexture *gpSniperSightTex;
@@ -287,6 +290,9 @@ void CHud::Draw()
 
 					if (WeaponType >= WEAPONTYPE_COLT45 && WeaponType <= WEAPONTYPE_RUGER
 						|| WeaponType == WEAPONTYPE_M60 || WeaponType == WEAPONTYPE_MINIGUN
+#ifdef EX_WEAPON_AK47 // Crosshair
+						|| WeaponType == WEAPONTYPE_AK47
+#endif
 #ifdef EX_ROCKET_LAUNCHER_THIRD_PERSON_AIM
 						|| WeaponType == WEAPONTYPE_FLAMETHROWER || WeaponType == WEAPONTYPE_ROCKETLAUNCHER && bRocketLauncherThirdPersonAiming) {
 #else
@@ -350,7 +356,12 @@ void CHud::Draw()
 				}
 				else
 #endif
-				if (playerPed && (WeaponType == WEAPONTYPE_M4 || WeaponType == WEAPONTYPE_RUGER || WeaponType == WEAPONTYPE_M60)) {
+				if (playerPed && (WeaponType == WEAPONTYPE_M4 || WeaponType == WEAPONTYPE_RUGER ||
+#ifdef EX_WEAPON_AK47 // Crosshair
+					WeaponType == WEAPONTYPE_AK47 ||
+#endif
+					WeaponType == WEAPONTYPE_M60)) {
+
 					rect.left = f3rdX - SCREEN_SCALE_X(32.0f * 0.6f);
 					rect.top = f3rdY - SCREEN_SCALE_Y(32.0f  * 0.6f);
 					rect.right = f3rdX + SCREEN_SCALE_X(32.0f * 0.6f);

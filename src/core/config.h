@@ -149,7 +149,12 @@
 		#define EX_NEW_WEAPONS
 		#ifdef EX_NEW_WEAPONS
 			#define EX_WEAPON_RCGRENADE
+			#define EX_WEAPON_AK47
 		#endif
+	#endif
+
+	#if defined NEW_CHEATS && defined EX_NEW_WEAPONS
+		#define EX_CHEAT_WEAPON_4
 	#endif
 
 enum Config {

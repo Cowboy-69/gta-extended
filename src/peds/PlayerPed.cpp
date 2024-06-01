@@ -1052,6 +1052,9 @@ CPlayerPed::DoWeaponSmoothSpray(void)
 				return PI / 112.f;
 			case WEAPONTYPE_M4:
 			case WEAPONTYPE_RUGER:
+#ifdef EX_WEAPON_AK47 // DoWeaponSmoothSpray
+			case WEAPONTYPE_AK47:
+#endif
 				return PI / 112.f;
 			case WEAPONTYPE_FLAMETHROWER:
 				return PI / 80.f;

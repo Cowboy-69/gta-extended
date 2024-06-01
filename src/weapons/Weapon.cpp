@@ -297,6 +297,9 @@ CWeapon::Fire(CEntity *shooter, CVector *fireSource)
 			case WEAPONTYPE_M60:
 			case WEAPONTYPE_MINIGUN:
 			case WEAPONTYPE_HELICANNON:
+#ifdef EX_WEAPON_AK47 // Fire
+			case WEAPONTYPE_AK47:
+#endif
 			{
 				if ((TheCamera.PlayerWeaponMode.Mode == CCam::MODE_HELICANNON_1STPERSON || TheCamera.PlayerWeaponMode.Mode == CCam::MODE_M16_1STPERSON)
 					&& shooter == FindPlayerPed()) {
@@ -439,6 +442,9 @@ CWeapon::Fire(CEntity *shooter, CVector *fireSource)
 				case WEAPONTYPE_LASERSCOPE:
 				case WEAPONTYPE_M60:
 				case WEAPONTYPE_MINIGUN:
+#ifdef EX_WEAPON_AK47 // RoundsFiredByPlayer
+				case WEAPONTYPE_AK47:
+#endif
 					CStats::RoundsFiredByPlayer++;
 					break;
 					
@@ -1118,7 +1124,11 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 			CheckForShootingVehicleOccupant(&victim, &point, m_eWeaponType, source, target);
 
 		int32 rotSpeed = 1;
+#ifdef EX_WEAPON_AK47 // FireInstantHit
+		if ( m_eWeaponType == WEAPONTYPE_M4 || m_eWeaponType == WEAPONTYPE_AK47 )
+#else
 		if ( m_eWeaponType == WEAPONTYPE_M4 )
+#endif
 			rotSpeed = 4;
 
 		CVector bulletPos;
@@ -1163,7 +1173,11 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 			CWorld::pIgnoreEntity = nil;
 
 			int32 rotSpeed = 1;
+#ifdef EX_WEAPON_AK47 // FireInstantHit
+			if (m_eWeaponType == WEAPONTYPE_M4 || m_eWeaponType == WEAPONTYPE_AK47)
+#else
 			if (m_eWeaponType == WEAPONTYPE_M4)
+#endif
 				rotSpeed = 4;
 
 			CVector bulletPos;
@@ -1200,7 +1214,11 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 			CWorld::bIncludeBikers = false;
 
 			int32 rotSpeed = 1;
+#ifdef EX_WEAPON_AK47 // FireInstantHit
+			if (m_eWeaponType == WEAPONTYPE_M4 || m_eWeaponType == WEAPONTYPE_AK47)
+#else
 			if (m_eWeaponType == WEAPONTYPE_M4)
+#endif
 				rotSpeed = 4;
 
 			CVector bulletPos;
@@ -1250,6 +1268,9 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 		case WEAPONTYPE_M60:
 		case WEAPONTYPE_MINIGUN:
 		case WEAPONTYPE_HELICANNON:
+#ifdef EX_WEAPON_AK47 // FireInstantHit
+		case WEAPONTYPE_AK47:
+#endif
 		{
 			static uint8 counter = 0;
 
@@ -1568,7 +1589,11 @@ CWeapon::DoBulletImpact(CEntity *shooter, CEntity *victim,
 								asoc->blendAmount = 0.0f;
 								asoc->blendDelta  = 8.0f;
 
+#ifdef EX_WEAPON_AK47 // ANIM_STD_HITBYGUN_FRONT
+								if ( m_eWeaponType == WEAPONTYPE_M4 || m_eWeaponType == WEAPONTYPE_AK47)
+#else
 								if ( m_eWeaponType == WEAPONTYPE_M4 )
+#endif
 									victimPlayer->m_nHitAnimDelayTimer = CTimer::GetTimeInMilliseconds() + 2500;
 								else
 									victimPlayer->m_nHitAnimDelayTimer = CTimer::GetTimeInMilliseconds() + 1000;
@@ -3437,6 +3462,9 @@ CWeapon::IsType2Handed(void)
 {
 	return m_eWeaponType == WEAPONTYPE_FLAMETHROWER || m_eWeaponType == WEAPONTYPE_HELICANNON || m_eWeaponType == WEAPONTYPE_M60 ||
 		m_eWeaponType == WEAPONTYPE_M4 || IsShotgun(m_eWeaponType) ||
+#ifdef EX_WEAPON_AK47 // IsType2Handed
+		m_eWeaponType == WEAPONTYPE_AK47 ||
+#endif
 		m_eWeaponType == WEAPONTYPE_RUGER || m_eWeaponType == WEAPONTYPE_SNIPERRIFLE || m_eWeaponType == WEAPONTYPE_LASERSCOPE;
 }
 

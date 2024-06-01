@@ -50,14 +50,20 @@ uint16 CWeaponInfo::ms_aReloadSampleTime[WEAPONTYPE_TOTALWEAPONS] =
 	0,			// MINIGUN
 	0,			// DETONATOR
 	0,			// HELICANNON
-	0			// CAMERA
+	0,			// CAMERA
+#ifdef EX_WEAPON_AK47 // WeaponInfo
+	89,			// AK47
+#endif
 };
 
 // Yeah...
 int32 CWeaponInfo::ms_aMaxAmmoForWeapon[WEAPONTYPE_TOTALWEAPONS] =
 {
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1, -1
+	-1, -1, -1, -1, -1, -1, -1, -1, -1,
+#ifdef EX_WEAPON_AK47 // WeaponInfo
+	-1,
+#endif
 };
 
 CWeaponInfo aWeaponInfo[WEAPONTYPE_TOTALWEAPONS];
@@ -100,6 +106,9 @@ char CWeaponInfo::ms_aWeaponNames[WEAPONTYPE_TOTALWEAPONS][32] =
 	"Detonator",
 	"HeliCannon",
 	"Camera",
+#ifdef EX_WEAPON_AK47 // WeaponInfo
+	"Ak47",
+#endif
 };
 
 CWeaponInfo*
