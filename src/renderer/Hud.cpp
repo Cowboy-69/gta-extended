@@ -170,7 +170,11 @@ struct
   { "sword", "swordA" },
   { "chainsaw", "chainsawA" },
   { "grenade", "grenadeA" },
+ #ifdef EX_WEAPON_RCGRENADE // Icon
+  { "rcgrenade", "rcgrenadeA" },
+#else
   { "grenade", "grenadeA" },
+#endif
   { "teargas", "teargasA" },
   { "molotov", "molotovA" },
   { "rocket", "rocketA" },

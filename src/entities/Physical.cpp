@@ -1685,10 +1685,18 @@ CPhysical::ProcessCollisionSectorList(CPtrList *lists)
 						}
 					}
 				}
+#ifdef EX_WEAPON_RCGRENADE // ProcessCollisionSectorList
+			}else if((A->GetModelIndex() == MI_GRENADE || A->GetModelIndex() == MI_RCGRENADE) && B->IsPed() &&
+#else
 			}else if(A->GetModelIndex() == MI_GRENADE && B->IsPed() &&
+#endif
 			  A->GetPosition().z < B->GetPosition().z){
 				skipCollision = true;
+#ifdef EX_WEAPON_RCGRENADE // ProcessCollisionSectorList
+			}else if((B->GetModelIndex() == MI_GRENADE || B->GetModelIndex() == MI_RCGRENADE) && A->IsPed() &&
+#else
 			}else if(B->GetModelIndex() == MI_GRENADE && A->IsPed() &&
+#endif
 			  B->GetPosition().z < A->GetPosition().z){
 				skipCollision = true;
 				A->bSkipLineCol = true;

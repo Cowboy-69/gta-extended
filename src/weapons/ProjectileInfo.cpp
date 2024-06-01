@@ -186,10 +186,19 @@ CProjectileInfo::AddProjectile(CEntity *entity, eWeaponType weapon, CVector pos,
 		case WEAPONTYPE_MOLOTOV:
 		ms_apProjectile[i] = new CProjectile(MI_MOLOTOV);
 		break;
+#ifdef EX_WEAPON_RCGRENADE // AddProjectile
+		case WEAPONTYPE_GRENADE:
+		ms_apProjectile[i] = new CProjectile(MI_GRENADE);
+		break;
+		case WEAPONTYPE_DETONATOR_GRENADE:
+		ms_apProjectile[i] = new CProjectile(MI_RCGRENADE);
+		break;
+#else
 		case WEAPONTYPE_GRENADE:
 		case WEAPONTYPE_DETONATOR_GRENADE:
 		ms_apProjectile[i] = new CProjectile(MI_GRENADE);
 		break;
+#endif
 		default: break;
 	}
 

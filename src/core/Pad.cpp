@@ -205,7 +205,11 @@ void WeaponCheat2()
 	CHud::SetHelpMessage(TheText.Get("CHEAT2"), true);
 
 	CStreaming::RequestModel(MI_KATANA, STREAMFLAGS_DONT_REMOVE);
+#ifdef EX_WEAPON_RCGRENADE // WeaponCheat2
+	CStreaming::RequestModel(MI_RCGRENADE, STREAMFLAGS_DONT_REMOVE);
+#else
 	CStreaming::RequestModel(MI_GRENADE, STREAMFLAGS_DONT_REMOVE);
+#endif
 	CStreaming::RequestModel(MI_BOMB, STREAMFLAGS_DONT_REMOVE);
 	CStreaming::RequestModel(MI_PYTHON, STREAMFLAGS_DONT_REMOVE);
 	CStreaming::RequestModel(MI_STUBBY_SHOTGUN, STREAMFLAGS_DONT_REMOVE);
@@ -229,7 +233,11 @@ void WeaponCheat2()
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_ROCKETLAUNCHER, 5);
 
 	CStreaming::SetModelIsDeletable(MI_KATANA);
+#ifdef EX_WEAPON_RCGRENADE // WeaponCheat2
+	CStreaming::SetModelIsDeletable(MI_RCGRENADE);
+#else
 	CStreaming::SetModelIsDeletable(MI_GRENADE);
+#endif
 	CStreaming::SetModelIsDeletable(MI_BOMB);
 	CStreaming::SetModelIsDeletable(MI_PYTHON);
 	CStreaming::SetModelIsDeletable(MI_STUBBY_SHOTGUN);

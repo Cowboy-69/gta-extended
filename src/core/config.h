@@ -145,6 +145,13 @@
 
 	#define EX_YCBCR_CORRECTION // thank https://github.com/aap/skygfx/
 
+	#ifdef EX_SECOND_SAMPLE_BANK
+		#define EX_NEW_WEAPONS
+		#ifdef EX_NEW_WEAPONS
+			#define EX_WEAPON_RCGRENADE
+		#endif
+	#endif
+
 enum Config {
 	NUMPLAYERS = 1,
 
@@ -161,7 +168,7 @@ enum Config {
 	SIMPLEMODELSIZE = 10000,
 	TIMEMODELSIZE = 10000,
 	CLUMPMODELSIZE = 100,
-	WEAPONMODELSIZE = 37,
+	WEAPONMODELSIZE = 77,
 	PEDMODELSIZE = 130,
 	VEHICLEMODELSIZE = 210,
 	TWODFXSIZE = 3000,

@@ -1744,7 +1744,12 @@ CWeapon::DoBulletImpact(CEntity *shooter, CEntity *victim,
 						}
 
 #ifdef IMPROVED_TECH_PART // When a projectile is fired, the projectile explodes (FireInstantHit)
+#ifdef EX_WEAPON_RCGRENADE // When a projectile is fired, the projectile explodes (FireInstantHit)
+						if (victimObject->m_modelIndex == MI_GRENADE || victimObject->m_modelIndex == MI_MOLOTOV || victimObject->m_modelIndex == MI_MISSILE ||
+							victimObject->m_modelIndex == MI_RCGRENADE) {
+#else
 						if (victimObject->m_modelIndex == MI_GRENADE || victimObject->m_modelIndex == MI_MOLOTOV || victimObject->m_modelIndex == MI_MISSILE) {
+#endif
 							for (uint8 i = 0; i < NUM_PROJECTILES; i++) {
 								if (!CProjectileInfo::GetProjectileInfo(i)->ms_apProjectile[i])
 									continue;
@@ -2182,7 +2187,12 @@ CWeapon::FireShotgun(CEntity *shooter, CVector *fireSource)
 								}
 
 #ifdef IMPROVED_TECH_PART // When a projectile is fired, the projectile explodes (shotgun)
+#ifdef EX_WEAPON_RCGRENADE // When a projectile is fired, the projectile explodes (shotgun)
+								if (victimObject->m_modelIndex == MI_GRENADE || victimObject->m_modelIndex == MI_MOLOTOV || victimObject->m_modelIndex == MI_MISSILE ||
+									victimObject->m_modelIndex == MI_RCGRENADE) {
+#else
 								if (victimObject->m_modelIndex == MI_GRENADE || victimObject->m_modelIndex == MI_MOLOTOV || victimObject->m_modelIndex == MI_MISSILE) {
+#endif
 									for (uint8 i = 0; i < NUM_PROJECTILES; i++) {
 										if (!CProjectileInfo::GetProjectileInfo(i)->ms_apProjectile[i])
 											continue;

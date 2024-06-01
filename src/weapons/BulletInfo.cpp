@@ -224,7 +224,12 @@ void CBulletInfo::Update(void)
 							}
 
 #ifdef IMPROVED_TECH_PART // When a projectile is fired, the projectile explodes (Sniper)
+#ifdef EX_WEAPON_RCGRENADE // When a projectile is fired, the projectile explodes (Sniper)
+							if (pHitObject->m_modelIndex == MI_GRENADE || pHitObject->m_modelIndex == MI_MOLOTOV || pHitObject->m_modelIndex == MI_MISSILE ||
+								pHitObject->m_modelIndex == MI_RCGRENADE) {
+#else
 							if (pHitObject->m_modelIndex == MI_GRENADE || pHitObject->m_modelIndex == MI_MOLOTOV || pHitObject->m_modelIndex == MI_MISSILE) {
+#endif
 								for (uint8 i = 0; i < NUM_PROJECTILES; i++) {
 									if (!CProjectileInfo::GetProjectileInfo(i)->ms_apProjectile[i])
 										continue;

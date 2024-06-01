@@ -300,6 +300,9 @@ CEntity::HasPreRenderEffects(void)
 	   GetModelIndex() == MI_GRENADE ||
 	   GetModelIndex() == MI_MOLOTOV ||
 	   GetModelIndex() == MI_MISSILE ||
+#ifdef EX_WEAPON_RCGRENADE // HasPreRenderEffects
+	   GetModelIndex() == MI_RCGRENADE ||
+#endif
 	   GetModelIndex() == MI_BEACHBALL ||
 	   IsGlass(GetModelIndex()) ||
 	   IsObject() && ((CObject*)this)->bIsPickup ||
@@ -366,7 +369,11 @@ CEntity::PreRender(void)
 			CPickups::DoPickUpEffects(this);
 			GetMatrix().UpdateRW();
 			UpdateRwFrame();
+#ifdef EX_WEAPON_RCGRENADE // PreRender
+		} else if (GetModelIndex() == MI_GRENADE || GetModelIndex() == MI_RCGRENADE) {
+#else
 		} else if (GetModelIndex() == MI_GRENADE) {
+#endif
 			CMotionBlurStreaks::RegisterStreak((uintptr)this,
 				100, 100, 100,
 				GetPosition() - 0.07f * TheCamera.GetRight(),
