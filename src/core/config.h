@@ -62,6 +62,8 @@
 
 	// These macros are used to navigation; Disabling them individually is not recommended
 
+	#define EX_SECOND_SAMPLE_BANK // ViceEx.RAW and ViceEx.SDT
+
 	#define UTILS // Useful tools
 
 	#define EX_EXPERIMENTAL
