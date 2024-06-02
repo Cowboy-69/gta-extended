@@ -1193,6 +1193,9 @@ CVehicle::InflictDamage(CEntity *damagedBy, eWeaponType weaponType, float damage
 #ifdef EX_WEAPON_SHOTGUN2 // CVehicle::InflictDamage
 	case WEAPONTYPE_SHOTGUN2:
 #endif
+#ifdef EX_WEAPON_UZIOLD // CVehicle::InflictDamage
+	case WEAPONTYPE_UZIOLD:
+#endif
 		if (bBulletProof)
 			return;
 		bFrightensDriver = true;
@@ -1245,6 +1248,9 @@ CVehicle::InflictDamage(CEntity *damagedBy, eWeaponType weaponType, float damage
 		case WEAPONTYPE_SILENCED_INGRAM:
 		case WEAPONTYPE_MP5:
 		case WEAPONTYPE_UZI_DRIVEBY:
+#ifdef EX_WEAPON_UZIOLD // CVehicle::InflictDamage
+		case WEAPONTYPE_UZIOLD:
+#endif
 			accuracy = 15;
 			break;
 		case WEAPONTYPE_M4:

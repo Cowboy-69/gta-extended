@@ -60,6 +60,9 @@ uint16 CWeaponInfo::ms_aReloadSampleTime[WEAPONTYPE_TOTALWEAPONS] =
 #ifdef EX_WEAPON_SHOTGUN2 // WeaponInfo
 	650,		// SHOTGUN2
 #endif
+#ifdef EX_WEAPON_UZIOLD // WeaponInfo
+	400,		// UZIOLD
+#endif
 };
 
 // Yeah...
@@ -74,6 +77,9 @@ int32 CWeaponInfo::ms_aMaxAmmoForWeapon[WEAPONTYPE_TOTALWEAPONS] =
 	-1,
 #endif
 #ifdef EX_WEAPON_SHOTGUN2 // WeaponInfo
+	-1,
+#endif
+#ifdef EX_WEAPON_UZIOLD // WeaponInfo
 	-1,
 #endif
 };
@@ -126,6 +132,9 @@ char CWeaponInfo::ms_aWeaponNames[WEAPONTYPE_TOTALWEAPONS][32] =
 #endif
 #ifdef EX_WEAPON_SHOTGUN2 // WeaponInfo
 	"Shotgun2",
+#endif
+#ifdef EX_WEAPON_UZIOLD // WeaponInfo
+	"Uziold",
 #endif
 };
 

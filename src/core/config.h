@@ -152,6 +152,7 @@
 			#define EX_WEAPON_AK47
 			#define EX_WEAPON_M16
 			#define EX_WEAPON_SHOTGUN2
+			#define EX_WEAPON_UZIOLD
 		#endif
 	#endif
 

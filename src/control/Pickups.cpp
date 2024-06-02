@@ -72,6 +72,9 @@ uint16 AmmoForWeapon[WEAPONTYPE_TOTALWEAPONS + 1] = { 0,  1,  1,  1,   1,   1,  
 #ifdef EX_WEAPON_SHOTGUN2 // Pickup - AmmoForWeapon_OnStreet
 													 20,
 #endif
+#ifdef EX_WEAPON_UZIOLD // Pickup - AmmoForWeapon_OnStreet
+													 120,
+#endif
 													 0 };
 
 uint16 AmmoForWeapon_OnStreet[WEAPONTYPE_TOTALWEAPONS + 1] = { 0,  1,  1,  1,   1,  1,  1,  1,  1,  1,  1,  1, 4,   4,   4,   4, 4,   34, 12,
@@ -83,7 +86,10 @@ uint16 AmmoForWeapon_OnStreet[WEAPONTYPE_TOTALWEAPONS + 1] = { 0,  1,  1,  1,   
 															  60,
 #endif
 #ifdef EX_WEAPON_SHOTGUN2 // Pickup - AmmoForWeapon_OnStreet
-															  10,
+															  50,
+#endif
+#ifdef EX_WEAPON_UZIOLD // Pickup - AmmoForWeapon_OnStreet
+															  60,
 #endif
 															  0 };
 
@@ -98,6 +104,9 @@ uint16 CostOfWeapon[WEAPONTYPE_TOTALWEAPONS + 3] = { 0,     10,    10,   10,   1
 #endif
 #ifdef EX_WEAPON_SHOTGUN2 // Pickup - CostOfWeapon
 													1250,
+#endif
+#ifdef EX_WEAPON_UZIOLD // Pickup - CostOfWeapon
+													800,
 #endif
 													20,  10,  0 };
 
@@ -151,6 +160,9 @@ struct
 #endif
 #ifdef EX_WEAPON_SHOTGUN2 // Pickup color
 	{ 45, 155, 90, 1.0f },
+#endif
+#ifdef EX_WEAPON_UZIOLD // Pickup color
+	{ 27, 89, 130, 1.0f },
 #endif
 	{ 255, 100, 100, 1.0f },
 	{ 128, 255, 128, 1.0f },

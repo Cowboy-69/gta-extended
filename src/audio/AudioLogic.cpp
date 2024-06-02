@@ -4663,6 +4663,9 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 				break;
 			case WEAPONTYPE_TEC9:
 			case WEAPONTYPE_SILENCED_INGRAM:
+#ifdef EX_WEAPON_UZIOLD // Audio
+			case WEAPONTYPE_UZIOLD:
+#endif
 				m_sQueueSample.m_nSampleIndex = SFX_TEC_TAIL;
 				break;
 			case WEAPONTYPE_M4:
@@ -4938,6 +4941,9 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 				break;
 			case WEAPONTYPE_UZI:
 			case WEAPONTYPE_MINIGUN:
+#ifdef EX_WEAPON_UZIOLD // Audio
+			case WEAPONTYPE_UZIOLD:
+#endif
 				m_sQueueSample.m_nSampleIndex = SFX_UZI_LEFT;
 				m_sQueueSample.m_nBankIndex = SFX_BANK_0;
 				m_sQueueSample.m_nCounter = iSound++;
@@ -5086,6 +5092,9 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 			case WEAPONTYPE_HELICANNON:
 #ifdef EX_WEAPON_AK47 // Audio
 			case WEAPONTYPE_AK47:
+#endif
+#ifdef EX_WEAPON_UZIOLD // Audio
+			case WEAPONTYPE_UZIOLD:
 #endif
 				m_sQueueSample.m_nSampleIndex = SFX_AK47_RELOAD;
 				m_sQueueSample.m_nFrequency = 39243;

@@ -1052,6 +1052,9 @@ CPlayerPed::DoWeaponSmoothSpray(void)
 				return PI / 112.f;
 			case WEAPONTYPE_UZI:
 			case WEAPONTYPE_MP5:
+#ifdef EX_WEAPON_UZIOLD // DoWeaponSmoothSpray
+			case WEAPONTYPE_UZIOLD:
+#endif
 				return PI / 112.f;
 			case WEAPONTYPE_M4:
 			case WEAPONTYPE_RUGER:
@@ -1703,6 +1706,9 @@ CPlayerPed::ProcessAnimGroups(void)
 				&& GetWeapon()->m_eWeaponType != WEAPONTYPE_PYTHON && GetWeapon()->m_eWeaponType != WEAPONTYPE_TEC9
 				&& GetWeapon()->m_eWeaponType != WEAPONTYPE_SILENCED_INGRAM && GetWeapon()->m_eWeaponType != WEAPONTYPE_MP5
 				&& GetWeapon()->m_eWeaponType != WEAPONTYPE_GOLFCLUB && GetWeapon()->m_eWeaponType != WEAPONTYPE_KATANA
+#ifdef EX_WEAPON_UZIOLD // WeaponInfo
+				&& GetWeapon()->m_eWeaponType != WEAPONTYPE_UZIOLD
+#endif
 				&& GetWeapon()->m_eWeaponType != WEAPONTYPE_CAMERA) {
 				if (!GetWeapon()->IsType2Handed()) {
 					groupToSet = ASSOCGRP_PLAYER;
@@ -1922,7 +1928,11 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 
 				if (bIsDucking) {
 					TheCamera.Cams[TheCamera.ActiveCam].m_fTargetCameraPosZ = 0.55f;
-				} else if (weapon != WEAPONTYPE_COLT45 && weapon != WEAPONTYPE_TEC9 && weapon != WEAPONTYPE_SILENCED_INGRAM) {
+				} else if (weapon != WEAPONTYPE_COLT45 && weapon != WEAPONTYPE_TEC9 && weapon != WEAPONTYPE_SILENCED_INGRAM
+#ifdef EX_WEAPON_UZIOLD // Aiming
+						  && weapon != WEAPONTYPE_UZIOLD
+#endif
+						   ) {
 					if (m_fMoveSpeed > 0.0f)
 						CAnimManager::BlendAnimation(GetClump(), m_animGroup, ANIM_STD_RUN, 4.0f);
 					else

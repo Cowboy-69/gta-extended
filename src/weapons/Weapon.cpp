@@ -306,6 +306,9 @@ CWeapon::Fire(CEntity *shooter, CVector *fireSource)
 #ifdef EX_WEAPON_M16 // Fire
 			case WEAPONTYPE_M16:
 #endif
+#ifdef EX_WEAPON_UZIOLD // Fire
+			case WEAPONTYPE_UZIOLD:
+#endif
 			{
 				if ((TheCamera.PlayerWeaponMode.Mode == CCam::MODE_HELICANNON_1STPERSON || TheCamera.PlayerWeaponMode.Mode == CCam::MODE_M16_1STPERSON)
 					&& shooter == FindPlayerPed()) {
@@ -456,6 +459,9 @@ CWeapon::Fire(CEntity *shooter, CVector *fireSource)
 #endif
 #ifdef EX_WEAPON_SHOTGUN2 // RoundsFiredByPlayer
 				case WEAPONTYPE_SHOTGUN2:
+#endif
+#ifdef EX_WEAPON_UZIOLD // RoundsFiredByPlayer
+				case WEAPONTYPE_UZIOLD:
 #endif
 					CStats::RoundsFiredByPlayer++;
 					break;
@@ -1320,6 +1326,9 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 		case WEAPONTYPE_TEC9:
 		case WEAPONTYPE_SILENCED_INGRAM:
 		case WEAPONTYPE_MP5:
+#ifdef EX_WEAPON_UZIOLD // FireInstantHit
+		case WEAPONTYPE_UZIOLD:
+#endif
 		{
 			CPointLights::AddLight(CPointLights::LIGHT_POINT,
 					*fireSource, CVector(0.0f, 0.0f, 0.0f), 5.0f,
