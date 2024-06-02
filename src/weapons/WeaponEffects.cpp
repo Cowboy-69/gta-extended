@@ -80,7 +80,10 @@ CWeaponEffects::Render(void)
 		1.0f,
 		0.6f,
 		0.7f,
-		0.0f, 0.0f
+		0.0f, 0.0f,
+#ifdef EX_WEAPON_AK47 // Crosshair during autoaim
+		0.5f,
+#endif
 	};
 
 

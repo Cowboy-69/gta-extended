@@ -62,14 +62,26 @@ uint32 CPickups::StaticCamStartTime;
 tPickupMessage CPickups::aMessages[NUMPICKUPMESSAGES];
 
 uint16 AmmoForWeapon[WEAPONTYPE_TOTALWEAPONS + 1] = { 0,  1,  1,  1,   1,   1,   1,   1,   1,   1,  1,  1, 8,   8,   8,    8, 8,   68, 24,
-													 32, 28, 20, 200, 120, 120, 120, 120, 120, 40, 28, 8, 300, 200, 1000, 1, 400, 36, 0 };
+													 32, 28, 20, 200, 120, 120, 120, 120, 120, 40, 28, 8, 300, 200, 1000, 1, 400, 36, 
+#ifdef EX_WEAPON_AK47 // Pickup - AmmoForWeapon
+													 120,
+#endif
+													 0 };
 
 uint16 AmmoForWeapon_OnStreet[WEAPONTYPE_TOTALWEAPONS + 1] = { 0,  1,  1,  1,   1,  1,  1,  1,  1,  1,  1,  1, 4,   4,   4,   4, 4,   34, 12,
-															  16, 14, 10, 100, 60, 60, 60, 60, 60, 20, 14, 4, 150, 100, 500, 1, 400, 36, 0 };
+															  16, 14, 10, 100, 60, 60, 60, 60, 60, 20, 14, 4, 150, 100, 500, 1, 400, 36, 
+#ifdef EX_WEAPON_AK47 // Pickup - AmmoForWeapon_OnStreet
+															  60,
+#endif
+															  0 };
 
 uint16 CostOfWeapon[WEAPONTYPE_TOTALWEAPONS + 3] = { 0,     10,    10,   10,   10,   10,    10,   10,    10,  10,  10,  10,   1000, 1000,
 													1000,  500,   8000, 250,  400,  1200,  1250, 1250,  800, 800, 650, 1200, 5000, 400,
-													10000, 10000, 8000, 8000, 8000, 10000, 1000, 11000, 500, 20,  10,  0 };
+													10000, 10000, 8000, 8000, 8000, 10000, 1000, 11000, 500, 
+#ifdef EX_WEAPON_AK47 // Pickup - CostOfWeapon
+													4000,
+#endif
+													20,  10,  0 };
 
 struct
 {
@@ -113,6 +125,9 @@ struct
 	{ 69, 69, 69, 1.0f },
 	{ 69, 69, 69, 1.0f },
 	{ 69, 69, 69, 1.0f },
+#ifdef EX_WEAPON_AK47 // Pickup color
+	{ 254, 137, 0, 1.0f },
+#endif
 	{ 255, 100, 100, 1.0f },
 	{ 128, 255, 128, 1.0f },
 	{ 100, 100, 255, 1.0f },
