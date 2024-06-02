@@ -77,7 +77,11 @@ public:
 	static void BlowUpExplosiveThings(CEntity *thing);
 	bool HasWeaponAmmoToBeUsed(void);
 	
-	static bool IsShotgun(int weapon) { return weapon == WEAPONTYPE_SHOTGUN || weapon == WEAPONTYPE_SPAS12_SHOTGUN || weapon == WEAPONTYPE_STUBBY_SHOTGUN; }
+	static bool IsShotgun(int weapon) { return weapon == WEAPONTYPE_SHOTGUN || weapon == WEAPONTYPE_SPAS12_SHOTGUN || weapon == WEAPONTYPE_STUBBY_SHOTGUN
+#ifdef EX_WEAPON_SHOTGUN2 // IsShotgun
+										|| weapon == WEAPONTYPE_SHOTGUN2
+#endif
+										; }
 
 	static bool ProcessLineOfSight(CVector const &point1, CVector const &point2, CColPoint &point, CEntity *&entity, eWeaponType type, CEntity *shooter, bool checkBuildings, bool checkVehicles, bool checkPeds, bool checkObjects, bool checkDummies, bool ignoreSeeThrough, bool ignoreSomeObjects);
 

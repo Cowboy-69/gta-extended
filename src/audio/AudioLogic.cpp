@@ -5044,6 +5044,9 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 				break;
 			case WEAPONTYPE_SHOTGUN:
 			case WEAPONTYPE_STUBBY_SHOTGUN:
+#ifdef EX_WEAPON_SHOTGUN2 // Audio
+			case WEAPONTYPE_SHOTGUN2:
+#endif
 				m_sQueueSample.m_nSampleIndex = SFX_SHOTGUN_LEFT;
 				m_sQueueSample.m_nBankIndex = SFX_BANK_0;
 				m_sQueueSample.m_nCounter = iSound++;
@@ -5097,6 +5100,9 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 			case WEAPONTYPE_SPAS12_SHOTGUN:
 			case WEAPONTYPE_STUBBY_SHOTGUN:
 			case WEAPONTYPE_RUGER:
+#ifdef EX_WEAPON_SHOTGUN2 // Audio
+			case WEAPONTYPE_SHOTGUN2:
+#endif
 				m_sQueueSample.m_nSampleIndex = SFX_AK47_RELOAD;
 				m_sQueueSample.m_nFrequency = 30290;
 				break;

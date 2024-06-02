@@ -3011,6 +3011,9 @@ CPed::InflictDamage(CEntity *damagedBy, eWeaponType method, float damage, ePedPi
 #ifdef EX_WEAPON_M16 // CPed::InflictDamage
 			case WEAPONTYPE_M16:
 #endif
+#ifdef EX_WEAPON_SHOTGUN2 // CPed::InflictDamage
+			case WEAPONTYPE_SHOTGUN2:
+#endif
 
 				if (bBulletProof)
 					return false;

@@ -151,6 +151,7 @@
 			#define EX_WEAPON_RCGRENADE
 			#define EX_WEAPON_AK47
 			#define EX_WEAPON_M16
+			#define EX_WEAPON_SHOTGUN2
 		#endif
 	#endif
 

@@ -87,6 +87,9 @@ CWeaponEffects::Render(void)
 #ifdef EX_WEAPON_M16 // Crosshair during autoaim
 		0.5f,
 #endif
+#ifdef EX_WEAPON_SHOTGUN2 // Crosshair during autoaim
+		0.9f,
+#endif
 	};
 
 

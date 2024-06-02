@@ -268,6 +268,9 @@ CWeapon::Fire(CEntity *shooter, CVector *fireSource)
 			case WEAPONTYPE_SHOTGUN:
 			case WEAPONTYPE_SPAS12_SHOTGUN:
 			case WEAPONTYPE_STUBBY_SHOTGUN:
+#ifdef EX_WEAPON_SHOTGUN2 // Fire
+			case WEAPONTYPE_SHOTGUN2:
+#endif
 			{
 				addFireRateAsDelay = true;
 				fired = FireShotgun(shooter, source);
@@ -450,6 +453,9 @@ CWeapon::Fire(CEntity *shooter, CVector *fireSource)
 #endif
 #ifdef EX_WEAPON_M16 // RoundsFiredByPlayer
 				case WEAPONTYPE_M16:
+#endif
+#ifdef EX_WEAPON_SHOTGUN2 // RoundsFiredByPlayer
+				case WEAPONTYPE_SHOTGUN2:
 #endif
 					CStats::RoundsFiredByPlayer++;
 					break;
@@ -1933,6 +1939,13 @@ CWeapon::FireShotgun(CEntity *shooter, CVector *fireSource)
 			checkObstacleOnShootNo = 2;
 			shootsAtOnce = 5;
 			break;
+#ifdef EX_WEAPON_SHOTGUN2 // FireShotgun
+		case WEAPONTYPE_SHOTGUN2:
+			angleRange = DEGTORAD(18.0f);
+			checkObstacleOnShootNo = 2;
+			shootsAtOnce = 5;
+			break;
+#endif
 		default:
 			break;
 	}

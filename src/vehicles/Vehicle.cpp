@@ -1190,6 +1190,9 @@ CVehicle::InflictDamage(CEntity *damagedBy, eWeaponType weaponType, float damage
 #ifdef EX_WEAPON_M16 // CVehicle::InflictDamage
 	case WEAPONTYPE_M16:
 #endif
+#ifdef EX_WEAPON_SHOTGUN2 // CVehicle::InflictDamage
+	case WEAPONTYPE_SHOTGUN2:
+#endif
 		if (bBulletProof)
 			return;
 		bFrightensDriver = true;
@@ -1232,6 +1235,9 @@ CVehicle::InflictDamage(CEntity *damagedBy, eWeaponType weaponType, float damage
 		case WEAPONTYPE_STUBBY_SHOTGUN:
 		case WEAPONTYPE_M60:
 		case WEAPONTYPE_HELICANNON:
+#ifdef EX_WEAPON_SHOTGUN2 // CVehicle::InflictDamage
+		case WEAPONTYPE_SHOTGUN2:
+#endif
 			accuracy = 25;
 			break;
 		case WEAPONTYPE_TEC9:

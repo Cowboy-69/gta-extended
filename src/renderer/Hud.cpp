@@ -236,6 +236,9 @@ struct
 #ifdef EX_WEAPON_M16 // Icon
   { "m16", "m16A" },
 #endif
+#ifdef EX_WEAPON_SHOTGUN2 // Icon
+  { "shotgun2", "shotgun2A" },
+#endif
 };
 
 RwTexture *gpSniperSightTex;
@@ -298,6 +301,9 @@ void CHud::Draw()
 #endif
 #ifdef EX_WEAPON_M16 // Crosshair
 						|| WeaponType == WEAPONTYPE_M16
+#endif
+#ifdef EX_WEAPON_SHOTGUN2 // Crosshair
+						|| WeaponType == WEAPONTYPE_SHOTGUN2
 #endif
 #ifdef EX_ROCKET_LAUNCHER_THIRD_PERSON_AIM
 						|| WeaponType == WEAPONTYPE_FLAMETHROWER || WeaponType == WEAPONTYPE_ROCKETLAUNCHER && bRocketLauncherThirdPersonAiming) {

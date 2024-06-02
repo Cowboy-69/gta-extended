@@ -2083,6 +2083,9 @@ bool CRunningScript::CheckDamagedWeaponType(int32 actual, int32 type)
 #ifdef EX_WEAPON_M16 // Script: CheckDamagedWeaponType
 	case WEAPONTYPE_M16:
 #endif
+#ifdef EX_WEAPON_SHOTGUN2 // Script: CheckDamagedWeaponType
+	case WEAPONTYPE_SHOTGUN2:
+#endif
 		return true;
 	case WEAPONTYPE_HEALTH:
 	case WEAPONTYPE_ARMOUR:

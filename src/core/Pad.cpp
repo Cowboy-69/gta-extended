@@ -316,6 +316,9 @@ void WeaponCheat4()
 
 	CStreaming::RequestModel(MI_MACHETE, STREAMFLAGS_DONT_REMOVE);
 	CStreaming::RequestModel(MI_TEARGAS, STREAMFLAGS_DONT_REMOVE);
+#ifdef EX_WEAPON_SHOTGUN2 // WeaponCheat4
+	CStreaming::RequestModel(MI_SHOTGUN2, STREAMFLAGS_DONT_REMOVE);
+#endif
 #ifdef EX_WEAPON_M16 // WeaponCheat4
 	CStreaming::RequestModel(MI_M16, STREAMFLAGS_DONT_REMOVE);
 #endif
@@ -325,6 +328,9 @@ void WeaponCheat4()
 
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_MACHETE, 1);
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_TEARGAS, 5);
+#ifdef EX_WEAPON_SHOTGUN2 // WeaponCheat4
+	FindPlayerPed()->GiveWeapon(WEAPONTYPE_SHOTGUN2, 20);
+#endif
 #ifdef EX_WEAPON_M16 // WeaponCheat4
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_M16, 150);
 #endif
@@ -333,6 +339,9 @@ void WeaponCheat4()
 
 	CStreaming::SetModelIsDeletable(MI_MACHETE);
 	CStreaming::SetModelIsDeletable(MI_TEARGAS);
+#ifdef EX_WEAPON_SHOTGUN2 // WeaponCheat4
+	CStreaming::SetModelIsDeletable(MI_SHOTGUN2);
+#endif
 #ifdef EX_WEAPON_M16 // WeaponCheat4
 	CStreaming::SetModelIsDeletable(MI_M16);
 #endif

@@ -1046,6 +1046,9 @@ CPlayerPed::DoWeaponSmoothSpray(void)
 			case WEAPONTYPE_SHOTGUN:
 			case WEAPONTYPE_SPAS12_SHOTGUN:
 			case WEAPONTYPE_STUBBY_SHOTGUN:
+#ifdef EX_WEAPON_SHOTGUN2 // DoWeaponSmoothSpray
+			case WEAPONTYPE_SHOTGUN2:
+#endif
 				return PI / 112.f;
 			case WEAPONTYPE_UZI:
 			case WEAPONTYPE_MP5:
