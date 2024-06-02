@@ -1196,6 +1196,9 @@ CVehicle::InflictDamage(CEntity *damagedBy, eWeaponType weaponType, float damage
 #ifdef EX_WEAPON_UZIOLD // CVehicle::InflictDamage
 	case WEAPONTYPE_UZIOLD:
 #endif
+#ifdef EX_WEAPON_DEAGLE // CVehicle::InflictDamage
+	case WEAPONTYPE_DEAGLE:
+#endif
 		if (bBulletProof)
 			return;
 		bFrightensDriver = true;
@@ -1231,6 +1234,9 @@ CVehicle::InflictDamage(CEntity *damagedBy, eWeaponType weaponType, float damage
 			accuracy = 10;
 			break;
 		case WEAPONTYPE_PYTHON:
+#ifdef EX_WEAPON_DEAGLE // CVehicle::InflictDamage
+		case WEAPONTYPE_DEAGLE:
+#endif
 			if(!((CPed*)damagedBy)->IsPlayer())
 				accuracy = 64;
 			break;

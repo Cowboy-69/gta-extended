@@ -1292,10 +1292,10 @@ void CPhotoMode::ProcessInput()
 					weaponID = WEAPONTYPE_GRENADE; // skip WEAPONTYPE_DETONATOR_GRENADE
 				else if (weaponID == WEAPONTYPE_COLT45)
 					weaponID = WEAPONTYPE_MOLOTOV; // skip WEAPONTYPE_ROCKET
-				else if (weaponID == WEAPONTYPE_CAMERA)
-					weaponID = WEAPONTYPE_DETONATOR; // skip WEAPONTYPE_HELICANNON
+				else if (weaponID == (WEAPONTYPE_TOTALWEAPONS - 1))
+					weaponID = WEAPONTYPE_TOTALWEAPONS - 2; // skip WEAPONTYPE_HELICANNON
 				else if (weaponID == WEAPONTYPE_UNARMED)
-					weaponID = WEAPONTYPE_CAMERA;
+					weaponID = WEAPONTYPE_TOTALWEAPONS - 1;
 				else
 					weaponID--;
 
@@ -1456,8 +1456,8 @@ void CPhotoMode::ProcessInput()
 				else if (weaponID == WEAPONTYPE_MOLOTOV)
 					weaponID = WEAPONTYPE_COLT45; // skip WEAPONTYPE_ROCKET
 				else if (weaponID == WEAPONTYPE_DETONATOR)
-					weaponID = WEAPONTYPE_CAMERA; // skip WEAPONTYPE_HELICANNON
-				else if (weaponID >= WEAPONTYPE_CAMERA)
+					weaponID = WEAPONTYPE_TOTALWEAPONS - 1; // skip WEAPONTYPE_HELICANNON
+				else if (weaponID >= (WEAPONTYPE_TOTALWEAPONS - 1))
 					weaponID = WEAPONTYPE_UNARMED;
 				else
 					weaponID++;

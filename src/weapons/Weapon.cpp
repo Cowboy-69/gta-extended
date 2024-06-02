@@ -309,6 +309,9 @@ CWeapon::Fire(CEntity *shooter, CVector *fireSource)
 #ifdef EX_WEAPON_UZIOLD // Fire
 			case WEAPONTYPE_UZIOLD:
 #endif
+#ifdef EX_WEAPON_DEAGLE // Fire
+			case WEAPONTYPE_DEAGLE:
+#endif
 			{
 				if ((TheCamera.PlayerWeaponMode.Mode == CCam::MODE_HELICANNON_1STPERSON || TheCamera.PlayerWeaponMode.Mode == CCam::MODE_M16_1STPERSON)
 					&& shooter == FindPlayerPed()) {
@@ -462,6 +465,9 @@ CWeapon::Fire(CEntity *shooter, CVector *fireSource)
 #endif
 #ifdef EX_WEAPON_UZIOLD // RoundsFiredByPlayer
 				case WEAPONTYPE_UZIOLD:
+#endif
+#ifdef EX_WEAPON_DEAGLE // RoundsFiredByPlayer
+				case WEAPONTYPE_DEAGLE:
 #endif
 					CStats::RoundsFiredByPlayer++;
 					break;
@@ -1370,6 +1376,9 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 		case WEAPONTYPE_PYTHON:
 		case WEAPONTYPE_SNIPERRIFLE:
 		case WEAPONTYPE_LASERSCOPE:
+#ifdef EX_WEAPON_DEAGLE // FireInstantHit
+		case WEAPONTYPE_DEAGLE:
+#endif
 		{
 			CPointLights::AddLight(CPointLights::LIGHT_POINT,
 					*fireSource, CVector(0.0f, 0.0f, 0.0f), 5.0f,
@@ -1592,7 +1601,11 @@ CWeapon::DoBulletImpact(CEntity *shooter, CEntity *victim,
 				else
 				{
 					if ( victimPed->bCanBeShotInVehicle && (IsShotgun(m_eWeaponType) ||
-						(!victimPed->IsPlayer() && (m_eWeaponType == WEAPONTYPE_HELICANNON || m_eWeaponType == WEAPONTYPE_M60 || m_eWeaponType == WEAPONTYPE_PYTHON))))
+						(!victimPed->IsPlayer() && (m_eWeaponType == WEAPONTYPE_HELICANNON || m_eWeaponType == WEAPONTYPE_M60 || m_eWeaponType == WEAPONTYPE_PYTHON
+#ifdef EX_WEAPON_DEAGLE // DoBulletImpact - Apply force
+						|| m_eWeaponType == WEAPONTYPE_DEAGLE
+#endif	
+						))))
 					{
 						posOffset.Normalise();
 						victimPed->bIsStanding = false;
@@ -3326,6 +3339,9 @@ CWeapon::Update(int32 audioEntity, CPed *pedToAdjustSound)
 							break;
 						case ASSOCGRP_COLT:
 						case ASSOCGRP_TEC:
+#ifdef EX_WEAPON_DEAGLE // Anims
+						case ASSOCGRP_DEAGLE:
+#endif
 							soundStart = fReloadAnimSampleFraction[1];
 							break;
 						case ASSOCGRP_UZI:

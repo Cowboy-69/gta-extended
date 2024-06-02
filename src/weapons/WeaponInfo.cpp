@@ -63,6 +63,9 @@ uint16 CWeaponInfo::ms_aReloadSampleTime[WEAPONTYPE_TOTALWEAPONS] =
 #ifdef EX_WEAPON_UZIOLD // WeaponInfo
 	400,		// UZIOLD
 #endif
+#ifdef EX_WEAPON_DEAGLE // WeaponInfo
+	250,		// DEAGLE
+#endif
 };
 
 // Yeah...
@@ -80,6 +83,9 @@ int32 CWeaponInfo::ms_aMaxAmmoForWeapon[WEAPONTYPE_TOTALWEAPONS] =
 	-1,
 #endif
 #ifdef EX_WEAPON_UZIOLD // WeaponInfo
+	-1,
+#endif
+#ifdef EX_WEAPON_DEAGLE // WeaponInfo
 	-1,
 #endif
 };
@@ -135,6 +141,9 @@ char CWeaponInfo::ms_aWeaponNames[WEAPONTYPE_TOTALWEAPONS][32] =
 #endif
 #ifdef EX_WEAPON_UZIOLD // WeaponInfo
 	"Uziold",
+#endif
+#ifdef EX_WEAPON_DEAGLE // WeaponInfo
+	"DesertEagle",
 #endif
 };
 

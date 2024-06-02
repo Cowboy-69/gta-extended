@@ -504,6 +504,9 @@ void CBulletTraces::AddTrace(CVector* start, CVector* end, int32 weaponType, cla
 #ifdef EX_WEAPON_SHOTGUN2 // AddTrace
 	case WEAPONTYPE_SHOTGUN2:
 #endif
+#ifdef EX_WEAPON_DEAGLE // AddTrace
+	case WEAPONTYPE_DEAGLE:
+#endif
 		CBulletTraces::AddTrace(start, end, 0.7f, 1000, 200);
 		break;
 	case WEAPONTYPE_M4:

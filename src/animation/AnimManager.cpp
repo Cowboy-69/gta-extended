@@ -749,6 +749,14 @@ char const* aPythonAnimations[] = {
 	"python_reload",
 	"python_crouchreload",
 };
+#ifdef EX_WEAPON_DEAGLE // Anims
+char const* aDeagleAnimations[] = {
+	"deagle_fire",
+	"deagle_crouchfire",
+	"deagle_reload",
+	"deagle_crouchreload",
+};
+#endif
 char const* aColtAnimations[] = {
 	"colt45_fire",
 	"colt45_crouchfire",
@@ -1087,6 +1095,9 @@ const AnimAssocDefinition CAnimManager::ms_aAnimAssocDefinitions[NUM_ANIM_ASSOC_
 	{ "golfclub", "baseball", MI_COP, awc(aGolfclubAnimations), aSwingAnimDescs },
 	{ "chainsaw", "chainsaw", MI_COP, awc(aChainsawAnimations), aMeleeAnimDescs },
 	{ "python", "python", MI_COP, awc(aPythonAnimations), aWeaponAnimDescs },
+#ifdef EX_WEAPON_DEAGLE // Anims
+	{ "deagle", "deagle", MI_COP, awc(aDeagleAnimations), aWeaponAnimDescs },
+#endif
 	{ "colt45", "colt45", MI_COP, awc(aColtAnimations), aWeaponAnimDescs },
 	{ "shotgun", "shotgun", MI_COP, awc(aShotgunAnimations), aWeaponAnimDescs },
 	{ "buddy", "buddy", MI_COP, awc(aBuddyAnimations), aWeaponAnimDescs },

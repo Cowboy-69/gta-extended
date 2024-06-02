@@ -695,6 +695,9 @@ enum
 #ifdef EX_WEAPON_UZIOLD
 	MI_UZIOLD = MI_FIRST_NEW_WEAPON + 4,
 #endif
+#ifdef EX_WEAPON_DEAGLE
+	MI_DEAGLE = MI_FIRST_NEW_WEAPON + 5,
+#endif
 	NUM_NEW_WEAPONS,
 #endif
 };

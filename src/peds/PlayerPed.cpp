@@ -1042,6 +1042,9 @@ CPlayerPed::DoWeaponSmoothSpray(void)
 					return PI / 80.f;
 
 			case WEAPONTYPE_PYTHON:
+#ifdef EX_WEAPON_DEAGLE // DoWeaponSmoothSpray
+			case WEAPONTYPE_DEAGLE:
+#endif
 				return PI / 112.f;
 			case WEAPONTYPE_SHOTGUN:
 			case WEAPONTYPE_SPAS12_SHOTGUN:
@@ -1708,6 +1711,9 @@ CPlayerPed::ProcessAnimGroups(void)
 				&& GetWeapon()->m_eWeaponType != WEAPONTYPE_GOLFCLUB && GetWeapon()->m_eWeaponType != WEAPONTYPE_KATANA
 #ifdef EX_WEAPON_UZIOLD // WeaponInfo
 				&& GetWeapon()->m_eWeaponType != WEAPONTYPE_UZIOLD
+#endif
+#ifdef EX_WEAPON_DEAGLE // WeaponInfo
+				&& GetWeapon()->m_eWeaponType != WEAPONTYPE_DEAGLE
 #endif
 				&& GetWeapon()->m_eWeaponType != WEAPONTYPE_CAMERA) {
 				if (!GetWeapon()->IsType2Handed()) {
