@@ -230,8 +230,11 @@ struct
   { "laserdot", "laserdotm" },
   { "viewfinder_128", "viewfinder_128m" },
   { "bleeder", "" },
-#ifdef EX_WEAPON_AK47
+#ifdef EX_WEAPON_AK47 // Icon
   { "ak47", "ak47A" },
+#endif
+#ifdef EX_WEAPON_M16 // Icon
+  { "m16", "m16A" },
 #endif
 };
 
@@ -292,6 +295,9 @@ void CHud::Draw()
 						|| WeaponType == WEAPONTYPE_M60 || WeaponType == WEAPONTYPE_MINIGUN
 #ifdef EX_WEAPON_AK47 // Crosshair
 						|| WeaponType == WEAPONTYPE_AK47
+#endif
+#ifdef EX_WEAPON_M16 // Crosshair
+						|| WeaponType == WEAPONTYPE_M16
 #endif
 #ifdef EX_ROCKET_LAUNCHER_THIRD_PERSON_AIM
 						|| WeaponType == WEAPONTYPE_FLAMETHROWER || WeaponType == WEAPONTYPE_ROCKETLAUNCHER && bRocketLauncherThirdPersonAiming) {
@@ -359,6 +365,9 @@ void CHud::Draw()
 				if (playerPed && (WeaponType == WEAPONTYPE_M4 || WeaponType == WEAPONTYPE_RUGER ||
 #ifdef EX_WEAPON_AK47 // Crosshair
 					WeaponType == WEAPONTYPE_AK47 ||
+#endif
+#ifdef EX_WEAPON_M16
+					WeaponType == WEAPONTYPE_M16 ||
 #endif
 					WeaponType == WEAPONTYPE_M60)) {
 

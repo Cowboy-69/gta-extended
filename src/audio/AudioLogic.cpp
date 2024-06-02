@@ -594,7 +594,12 @@ enum
 	PED_ONE_SHOT_WEAPON_UZI_VOLUME = 70,
 	PED_ONE_SHOT_WEAPON_SHOTGUN_VOLUME = 100,
 	PED_ONE_SHOT_WEAPON_M4_VOLUME = 90,
+#ifdef EX_WEAPON_M16 // Audio
+	PED_ONE_SHOT_WEAPON_M16_VOLUME = 80,
+	PED_ONE_SHOT_WEAPON_M60_VOLUME = MAX_VOLUME,
+#else
 	PED_ONE_SHOT_WEAPON_M16_VOLUME = MAX_VOLUME,
+#endif
 #ifdef EX_WEAPON_AK47 // Audio
 	//PED_ONE_SHOT_WEAPON_AK47_MAX_DIST = 80,
 	PED_ONE_SHOT_WEAPON_AK47_VOLUME = 70,
@@ -4667,6 +4672,9 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 #ifdef EX_WEAPON_AK47 // Audio
 			case WEAPONTYPE_AK47:
 #endif
+#ifdef EX_WEAPON_M16 // Audio
+			case WEAPONTYPE_M16:
+#endif
 				m_sQueueSample.m_nSampleIndex = SFX_RUGER_TAIL;
 				break;
 				break;
@@ -4825,8 +4833,13 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 				maxDist = SQR(PED_ONE_SHOT_WEAPON_BULLET_ECHO_MAX_DIST);
 				m_sQueueSample.m_nLoopCount = 1;
 				RESET_LOOP_OFFSETS
+#ifdef EX_WEAPON_M16 // Audio - PED_ONE_SHOT_WEAPON_M60_VOLUME
+				Vol = PED_ONE_SHOT_WEAPON_M60_VOLUME;
+				SET_EMITTING_VOLUME(PED_ONE_SHOT_WEAPON_M60_VOLUME);
+#else
 				Vol = PED_ONE_SHOT_WEAPON_M16_VOLUME;
 				SET_EMITTING_VOLUME(PED_ONE_SHOT_WEAPON_M16_VOLUME);
+#endif
 				m_sQueueSample.m_bIs2D = FALSE;
 				m_sQueueSample.m_bStatic = TRUE;
 				stereo = TRUE;
@@ -4988,6 +5001,27 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 				stereo = TRUE;
 				break;
 #endif
+#ifdef EX_WEAPON_M16 // Audio
+			case WEAPONTYPE_M16:
+				m_sQueueSample.m_nSampleIndex = SFX_M16_LEFT;
+				m_sQueueSample.m_nBankIndex = SFX_BANK_0;
+				m_sQueueSample.m_nCounter = iSound++;
+				narrowSoundRange = TRUE;
+				m_sQueueSample.m_nFrequency = SampleManager.GetSampleBaseFrequency(SFX_M16_LEFT);
+				m_sQueueSample.m_nFrequency += RandomDisplacement(m_sQueueSample.m_nFrequency >> 5);
+				m_sQueueSample.m_nPriority = 3;
+				m_sQueueSample.m_fSpeedMultiplier = 0.0f;
+				m_sQueueSample.m_MaxDistance = PED_ONE_SHOT_WEAPON_BULLET_ECHO_MAX_DIST;
+				maxDist = SQR(PED_ONE_SHOT_WEAPON_BULLET_ECHO_MAX_DIST);
+				m_sQueueSample.m_nLoopCount = 1;
+				RESET_LOOP_OFFSETS
+				Vol = m_anRandomTable[4] % 15 + PED_ONE_SHOT_WEAPON_AK47_VOLUME;
+				SET_EMITTING_VOLUME(Vol);
+				m_sQueueSample.m_bIs2D = FALSE;
+				m_sQueueSample.m_bStatic = TRUE;
+				stereo = TRUE;
+				break;
+#endif
 			case WEAPONTYPE_SPAS12_SHOTGUN:
 				m_sQueueSample.m_nSampleIndex = SFX_SPAS12_LEFT;
 				m_sQueueSample.m_nBankIndex = SFX_BANK_0;
@@ -5053,6 +5087,12 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 				m_sQueueSample.m_nSampleIndex = SFX_AK47_RELOAD;
 				m_sQueueSample.m_nFrequency = 39243;
 				break;
+#ifdef EX_WEAPON_M16 // Audio
+			case WEAPONTYPE_M16:
+				m_sQueueSample.m_nSampleIndex = SFX_M16_RELOAD;
+				m_sQueueSample.m_nFrequency = SampleManager.GetSampleBaseFrequency(SFX_M16_RELOAD);
+				break;
+#endif
 			case WEAPONTYPE_SHOTGUN:
 			case WEAPONTYPE_SPAS12_SHOTGUN:
 			case WEAPONTYPE_STUBBY_SHOTGUN:

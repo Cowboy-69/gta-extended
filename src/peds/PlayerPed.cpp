@@ -1055,6 +1055,9 @@ CPlayerPed::DoWeaponSmoothSpray(void)
 #ifdef EX_WEAPON_AK47 // DoWeaponSmoothSpray
 			case WEAPONTYPE_AK47:
 #endif
+#ifdef EX_WEAPON_M16 // DoWeaponSmoothSpray
+			case WEAPONTYPE_M16:
+#endif
 				return PI / 112.f;
 			case WEAPONTYPE_FLAMETHROWER:
 				return PI / 80.f;

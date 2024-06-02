@@ -54,6 +54,9 @@ uint16 CWeaponInfo::ms_aReloadSampleTime[WEAPONTYPE_TOTALWEAPONS] =
 #ifdef EX_WEAPON_AK47 // WeaponInfo
 	89,			// AK47
 #endif
+#ifdef EX_WEAPON_M16 // WeaponInfo
+	89,			// M16
+#endif
 };
 
 // Yeah...
@@ -62,6 +65,9 @@ int32 CWeaponInfo::ms_aMaxAmmoForWeapon[WEAPONTYPE_TOTALWEAPONS] =
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1, -1,
 #ifdef EX_WEAPON_AK47 // WeaponInfo
+	-1,
+#endif
+#ifdef EX_WEAPON_M16 // WeaponInfo
 	-1,
 #endif
 };
@@ -108,6 +114,9 @@ char CWeaponInfo::ms_aWeaponNames[WEAPONTYPE_TOTALWEAPONS][32] =
 	"Camera",
 #ifdef EX_WEAPON_AK47 // WeaponInfo
 	"Ak47",
+#endif
+#ifdef EX_WEAPON_M16 // WeaponInfo
+	"M16",
 #endif
 };
 

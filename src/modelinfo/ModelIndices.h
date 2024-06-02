@@ -686,6 +686,9 @@ enum
 #ifdef EX_WEAPON_AK47
 	MI_AK47 = MI_FIRST_NEW_WEAPON + 1,
 #endif
+#ifdef EX_WEAPON_M16
+	MI_M16 = MI_FIRST_NEW_WEAPON + 2,
+#endif
 	NUM_NEW_WEAPONS,
 #endif
 };

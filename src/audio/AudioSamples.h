@@ -10117,6 +10117,8 @@ enum eSfxSample
 
 #ifdef EX_SECOND_SAMPLE_BANK // Added samples
 
+#ifdef EX_WEAPON_M16 // Added samples
+#endif
 	SFX_M16_LEFT,
 	SFX_M16_RIGHT,
 	SFX_M16_RELOAD,

@@ -513,6 +513,9 @@ void CBulletTraces::AddTrace(CVector* start, CVector* end, int32 weaponType, cla
 #ifdef EX_WEAPON_AK47 // AddTrace
 	case WEAPONTYPE_AK47:
 #endif
+#ifdef EX_WEAPON_M16 // AddTrace
+	case WEAPONTYPE_M16:
+#endif
 		CBulletTraces::AddTrace(start, end, 1.0f, 2000, 220);
 		break;
 	default:

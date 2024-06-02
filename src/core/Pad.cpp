@@ -214,7 +214,11 @@ void WeaponCheat2()
 	CStreaming::RequestModel(MI_PYTHON, STREAMFLAGS_DONT_REMOVE);
 	CStreaming::RequestModel(MI_STUBBY_SHOTGUN, STREAMFLAGS_DONT_REMOVE);
 	CStreaming::RequestModel(MI_SILENCEDINGRAM, STREAMFLAGS_DONT_REMOVE);
+#ifdef EX_WEAPON_AK47 // WeaponCheat2
+	CStreaming::RequestModel(MI_AK47, STREAMFLAGS_DONT_REMOVE);
+#else
 	CStreaming::RequestModel(MI_M4, STREAMFLAGS_DONT_REMOVE);
+#endif
 	CStreaming::RequestModel(MI_LASERSCOPE, STREAMFLAGS_DONT_REMOVE);
 	CStreaming::RequestModel(MI_ROCKETLAUNCHER, STREAMFLAGS_DONT_REMOVE);
 	CStreaming::LoadAllRequestedModels(false);
@@ -228,7 +232,11 @@ void WeaponCheat2()
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_PYTHON, 40);
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_STUBBY_SHOTGUN, 25);
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_SILENCED_INGRAM, 100);
+#ifdef EX_WEAPON_AK47 // WeaponCheat2
+	FindPlayerPed()->GiveWeapon(WEAPONTYPE_AK47, 150);
+#else
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_M4, 150);
+#endif
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_LASERSCOPE, 21);
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_ROCKETLAUNCHER, 5);
 
@@ -242,7 +250,11 @@ void WeaponCheat2()
 	CStreaming::SetModelIsDeletable(MI_PYTHON);
 	CStreaming::SetModelIsDeletable(MI_STUBBY_SHOTGUN);
 	CStreaming::SetModelIsDeletable(MI_SILENCEDINGRAM);
+#ifdef EX_WEAPON_AK47 // WeaponCheat2
+	CStreaming::SetModelIsDeletable(MI_AK47);
+#else
 	CStreaming::SetModelIsDeletable(MI_M4);
+#endif
 	CStreaming::SetModelIsDeletable(MI_LASERSCOPE);
 	CStreaming::SetModelIsDeletable(MI_ROCKETLAUNCHER);
 #ifdef MOBILE_IMPROVEMENTS
@@ -304,8 +316,8 @@ void WeaponCheat4()
 
 	CStreaming::RequestModel(MI_MACHETE, STREAMFLAGS_DONT_REMOVE);
 	CStreaming::RequestModel(MI_TEARGAS, STREAMFLAGS_DONT_REMOVE);
-#ifdef EX_WEAPON_AK47 // WeaponCheat4
-	CStreaming::RequestModel(MI_AK47, STREAMFLAGS_DONT_REMOVE);
+#ifdef EX_WEAPON_M16 // WeaponCheat4
+	CStreaming::RequestModel(MI_M16, STREAMFLAGS_DONT_REMOVE);
 #endif
 	CStreaming::RequestModel(MI_M60, STREAMFLAGS_DONT_REMOVE);
 	CStreaming::RequestModel(MI_CAMERA, STREAMFLAGS_DONT_REMOVE);
@@ -313,16 +325,16 @@ void WeaponCheat4()
 
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_MACHETE, 1);
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_TEARGAS, 5);
-#ifdef EX_WEAPON_AK47 // WeaponCheat4
-	FindPlayerPed()->GiveWeapon(WEAPONTYPE_AK47, 150);
+#ifdef EX_WEAPON_M16 // WeaponCheat4
+	FindPlayerPed()->GiveWeapon(WEAPONTYPE_M16, 150);
 #endif
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_M60, 100);
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_CAMERA, 50);
 
 	CStreaming::SetModelIsDeletable(MI_MACHETE);
 	CStreaming::SetModelIsDeletable(MI_TEARGAS);
-#ifdef EX_WEAPON_AK47 // WeaponCheat4
-	CStreaming::SetModelIsDeletable(MI_AK47);
+#ifdef EX_WEAPON_M16 // WeaponCheat4
+	CStreaming::SetModelIsDeletable(MI_M16);
 #endif
 	CStreaming::SetModelIsDeletable(MI_M60);
 	CStreaming::SetModelIsDeletable(MI_CAMERA);
