@@ -1088,8 +1088,18 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 
 #ifdef FEATURES_INI // RecoilWhenFiring
 			if (bRecoilWhenFiring) {
-				TheCamera.Cams[TheCamera.ActiveCam].Alpha += CGeneral::GetRandomNumberInRange(0.001f, 0.005f);
-				TheCamera.Cams[TheCamera.ActiveCam].Beta += CGeneral::GetRandomNumberInRange(-0.005f, 0.005f);
+				float recoilMult = 1.0f;
+
+				if (TheCamera.Cams[TheCamera.ActiveCam].Mode == CCam::MODE_REAL_1ST_PERSON)
+					recoilMult += 0.6f;
+
+#ifdef EX_WEAPON_AK47
+				if (m_eWeaponType == WEAPONTYPE_AK47)
+					recoilMult += 0.5f;
+#endif
+
+				TheCamera.Cams[TheCamera.ActiveCam].Alpha += CGeneral::GetRandomNumberInRange(0.001f * recoilMult, 0.005f * recoilMult);
+				TheCamera.Cams[TheCamera.ActiveCam].Beta += CGeneral::GetRandomNumberInRange(-0.005f * recoilMult, 0.005f * recoilMult);
 			}
 #endif
 

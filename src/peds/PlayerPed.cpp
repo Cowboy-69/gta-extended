@@ -2542,6 +2542,41 @@ CPlayerPed::FindNewAttackPoints(void)
 void
 CPlayerPed::ProcessControl(void)
 {
+#ifdef DEBUG
+	{
+		// Noclip
+		CPad* pad = CPad::GetPad(0);
+		if (pad->GetTab()) {
+			CPhysical* playerOrVeh = this;
+			
+			if (GetPlayerInfoForThisPlayerPed()->m_pRemoteVehicle)
+				playerOrVeh = GetPlayerInfoForThisPlayerPed()->m_pRemoteVehicle;
+			else if (InVehicle())
+				playerOrVeh = FindPlayerVehicle();
+
+			CVector forward = CVector(0.0f, 0.0f, 0.0f);
+			CVector right = CVector(0.0f, 0.0f, 0.0f);
+
+			if (InVehicle()) {
+				if (pad->GetAccelerate())
+					forward = TheCamera.GetForward() * (-1.5f * CTimer::GetTimeStepFix());
+				else if (pad->GetBrake())
+					forward = TheCamera.GetForward() * (1.5f * CTimer::GetTimeStepFix());
+
+				right = TheCamera.GetRight() * (pad->GetSteeringLeftRight() / 128.0 * CTimer::GetTimeStepFix());
+			} else {
+				forward = TheCamera.GetForward() * (pad->GetLeftStickY() / 128* CTimer::GetTimeStepFix());
+				right = TheCamera.GetRight() * (pad->GetLeftStickX() / 128* CTimer::GetTimeStepFix());
+			}
+
+			if (!forward.IsZero() || !right.IsZero())
+				playerOrVeh->m_vecMoveSpeed = CVector(0.0f, 0.0f, 0.0f);
+
+			playerOrVeh->SetPosition(playerOrVeh->GetPosition() - forward - right);
+		}
+	}
+#endif
+
 #if defined DEBUG && defined WANTED_PATHS
 	CPad* pad = CPad::GetPad(0);
 	if (pad->GetCharJustDown(0x31)) { // 1

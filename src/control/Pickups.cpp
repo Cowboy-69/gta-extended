@@ -171,7 +171,7 @@ struct
 	{ 45, 155, 90, 1.0f },
 #endif
 #ifdef EX_WEAPON_UZIOLD // Pickup color
-	{ 27, 89, 130, 1.0f },
+	{ 255, 227, 79, 1.0f },
 #endif
 #ifdef EX_WEAPON_DEAGLE // Pickup color
 	{ 27, 89, 130, 1.0f },

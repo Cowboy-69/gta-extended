@@ -1436,6 +1436,32 @@ extern bool gbRenderWorld2;
 		DebugMenuAddCmd("Game", "Switch car collision", SwitchCarCollision);
 		DebugMenuAddCmd("Game", "Toggle Comedy Controls", ToggleComedy);
 
+#ifdef UTILS // Selectable areas in the debug menu
+		static const char *areanames[] = {
+			"0 - Main map",
+			"1 - Hotel",
+			"2 - Mansion",
+			"3 - Bank",
+			"4 - Mall",
+			"5 - Strip club",
+			"6 - Lawyers",
+			"7 - Coffee shop",
+			"8 - Concert hall",
+			"9 - Studio",
+			"10 - Rifle range",
+			"11 - Biker bar",
+			"12 - Police station",
+			"13 - Everywhere",
+			"14 - Dirt",
+			"15 - Blood",
+			"16 - Ovalring",
+			"17 - Malibu club",
+			"18 - Print works",
+		};
+		e = DebugMenuAddVar("Game", "Current area", &CGame::currArea,
+			[](){ CStreaming::RemoveBuildingsNotInArea(CGame::currArea); }, 1, 0, ARRAY_SIZE(areanames) - 1, areanames);
+			DebugMenuEntrySetWrap(e, true);
+#endif
 
 #ifdef MISSION_SWITCHER
 		DebugMenuEntry *missionEntry;

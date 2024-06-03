@@ -45,8 +45,18 @@ CCopPed::CCopPed(eCopType copType, int32 modifier) : CPed(PEDTYPE_COP)
 		break;
 	case COP_FBI:
 		SetModelIndex(MI_FBI);
+#ifdef EX_WEAPON_AK47 // COP_FBI - random weapon
+		if (CGeneral::GetRandomTrueFalse()) {
+			GiveDelayedWeapon(WEAPONTYPE_AK47, 1000);
+			SetCurrentWeapon(WEAPONTYPE_AK47);
+		} else {
+			GiveDelayedWeapon(WEAPONTYPE_MP5, 1000);
+			SetCurrentWeapon(WEAPONTYPE_MP5);
+		}
+#else
 		GiveDelayedWeapon(WEAPONTYPE_MP5, 1000);
 		SetCurrentWeapon(WEAPONTYPE_MP5);
+#endif
 		m_fArmour = 100.0f;
 		m_wepSkills = 176; /* TODO: what is this? seems unused */
 #ifdef IMPROVED_TECH_PART // AI
@@ -74,8 +84,18 @@ CCopPed::CCopPed(eCopType copType, int32 modifier) : CPed(PEDTYPE_COP)
 	case COP_ARMY:
 		SetModelIndex(MI_ARMY);
 #ifdef IMPROVED_TECH_PART // AI
+#ifdef EX_WEAPON_M16 // COP_ARMY - random weapon
+		if (CGeneral::GetRandomTrueFalse()) {
+			GiveDelayedWeapon(WEAPONTYPE_M16, 1000);
+			SetCurrentWeapon(WEAPONTYPE_M16);
+		} else {
+			GiveDelayedWeapon(WEAPONTYPE_M4, 1000);
+			SetCurrentWeapon(WEAPONTYPE_M4);
+		}
+#else
 		GiveDelayedWeapon(WEAPONTYPE_M4, 1000);
 		SetCurrentWeapon(WEAPONTYPE_M4);
+#endif
 #else
 		GiveDelayedWeapon(WEAPONTYPE_MP5, 1000);
 		SetCurrentWeapon(WEAPONTYPE_MP5);
@@ -100,8 +120,18 @@ CCopPed::CCopPed(eCopType copType, int32 modifier) : CPed(PEDTYPE_COP)
 		case 7: SetModelIndex(MI_VICE8); break;
 		default: assert(0); break;
 		}
+#ifdef EX_WEAPON_UZIOLD // COP_MIAMIVICE - random weapon
+		if (CGeneral::GetRandomTrueFalse()) {
+			GiveDelayedWeapon(WEAPONTYPE_UZIOLD, 1000);
+			SetCurrentWeapon(WEAPONTYPE_UZIOLD);
+		} else {
+			GiveDelayedWeapon(WEAPONTYPE_UZI, 1000);
+			SetCurrentWeapon(WEAPONTYPE_UZI);
+		}
+#else
 		GiveDelayedWeapon(WEAPONTYPE_UZI, 1000);
 		SetCurrentWeapon(WEAPONTYPE_UZI);
+#endif
 		m_fArmour = 100.0f;
 		m_wepSkills = 176;
 #ifdef IMPROVED_TECH_PART // AI
