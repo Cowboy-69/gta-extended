@@ -307,6 +307,8 @@ cell_phone_inner:
 							GOSUB loading_and_playing_audio
 							PRINT_NOW ( MOB52_a ) 10000 1//rhubarb rhubarb
 							GOSUB has_audio_finished
+
+							PRINT_HELP MOB_SKP
 							
 							LOAD_MISSION_AUDIO audio_slot_mobile MOB_52b
 							GOSUB loading_and_playing_audio

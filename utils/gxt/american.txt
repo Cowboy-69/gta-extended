@@ -14724,6 +14724,9 @@ Unique stunt
 [LG_45]
 Rampage
 
+[MOB_SKP]
+Press ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~to skip a phone call.
+
 { end of file }
 [DUMMY]
 THIS LABEL NEEDS TO BE HERE !!!
