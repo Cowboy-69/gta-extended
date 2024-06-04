@@ -503,35 +503,7 @@ DoGameSpecificStuffAfterSucessLoad()
 {
 #ifdef AUTOSAVE_AND_SAVE_ANYWHERE // Move the player to the desired location after loading autosave
 	if (FrontEndMenuManager.m_nCurrSaveSlot == 8) {
-		int32* bTommysMansion = CTheScripts::GetPointerToScriptVariable(1001 * 4); // var $1001 in main.scm
-		if (*bTommysMansion) {
-			int32* bInMansion = CTheScripts::GetPointerToScriptVariable(991 * 4); // var $991 in main.scm
-			*bInMansion = true;
-			CGame::currArea = AREA_MANSION;
-
-			FindPlayerPed()->m_fRotationDest = DEGTORAD(0.0f);
-			FindPlayerPed()->m_fRotationCur = DEGTORAD(0.0f);
-			FindPlayerPed()->SetHeading(DEGTORAD(0.0f));
-
-			CVector spawnPos = CVector(-378.5, -589.1, 24.6);
-			spawnPos.z += FindPlayerPed()->GetDistanceFromCentreOfMassToBaseOfModel();;
-			FindPlayerPed()->SetPosition(spawnPos);
-		} else {
-			int32* bInHotel = CTheScripts::GetPointerToScriptVariable(1088 * 4); // var $1088 in main.scm
-			*bInHotel = true;
-			CGame::currArea = AREA_HOTEL;
-
-			CVector spawnPos = CVector(223.1, -1276.7, 12.0);
-			spawnPos.z += FindPlayerPed()->GetDistanceFromCentreOfMassToBaseOfModel();;
-			FindPlayerPed()->SetPosition(spawnPos);
-
-			FindPlayerPed()->m_fRotationDest = DEGTORAD(258.0f);
-			FindPlayerPed()->m_fRotationCur = DEGTORAD(258.0f);
-			FindPlayerPed()->SetHeading(DEGTORAD(258.0f));
-		}
-
-		CWorld::ClearExcitingStuffFromArea(FindPlayerPed()->GetPosition(), 1.0f, true);
-		TheCamera.SetCameraDirectlyBehindForFollowPed_CamOnAString();
+		FindPlayerPed()->SetPosition(CVector(0.0f, 0.0f, 0.0f));
 	}
 #endif
 

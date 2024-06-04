@@ -1102,6 +1102,7 @@ CREATE_OBJECT_NO_OFFSET yt_gangplnk_tmp the_yacht_x the_yacht_y the_yacht_z the_
 DONT_REMOVE_OBJECT the_yacht7
 
 LOAD_AND_LAUNCH_MISSION intro.sc
+//LOAD_AND_LAUNCH_MISSION debug.sc
 
 // ****************************************START_NEW_SCRIPTS******************************************
 
@@ -6184,7 +6185,35 @@ autosave_loop_inner:
 	IF IS_PLAYER_PLAYING player1
 		IF flag_player_on_mission = 0
 			IF IS_AUTO_SAVE_REQUESTED
-				DO_AUTO_SAVE
+
+				DO_AUTO_SAVE //THE GAME SAVES/RE-LOADS HERE!!!!!
+
+				WAIT 0
+
+				// If the player loads an autosave, the character will appear in one of the safehouses
+				IF LOCATE_PLAYER_ANY_MEANS_2D player1 0.0 0.0 1.0 1.0 FALSE
+					IF flag_open_mansion = 2
+						SET_AREA_VISIBLE VIS_MANSION
+						flag_player_in_mansion = 1
+						SWITCH_PED_ROADS_ON -414.0 -597.0 12.0 -332.0 -555.0 30.0 // LOWER FLOOR
+						SWITCH_RUBBISH OFF
+						LOAD_SCENE -378.5 -560.03 19.0
+						SET_PLAYER_COORDINATES player1 -378.5 -589.1 24.6
+						SET_PLAYER_HEADING player1 0.0
+						SET_EXTRA_COLOURS 8 FALSE
+					ELSE
+						flag_player_in_hotel = 1
+						SET_AREA_VISIBLE VIS_HOTEL
+						SWITCH_RUBBISH OFF
+						LOAD_SCENE 225.0 -1277.3 12.0
+						SET_PLAYER_COORDINATES player1 223.1 -1276.7 11.0
+						SET_PLAYER_HEADING player1 258.0
+						SET_EXTRA_COLOURS 3 FALSE
+					ENDIF
+
+					SET_CAMERA_BEHIND_PLAYER
+				ENDIF
+
 			ENDIF
 		ENDIF
 	ENDIF
