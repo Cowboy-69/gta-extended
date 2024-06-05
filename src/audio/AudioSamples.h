@@ -10128,6 +10128,11 @@ enum eSfxSample
 	SFX_DEAGLE_LEFT,
 	SFX_DEAGLE_RIGHT,
 
+#ifdef EX_WEAPON_BERETTA // Added samples
+#endif
+	SFX_BERETTA_LEFT,
+	SFX_BERETTA_RIGHT,
+
 	// NOTE: If you change the number of samples, don't forget to change the limits below!
 #endif
 
@@ -10144,6 +10149,6 @@ enum eSfxSample
 
 #ifdef EX_SECOND_SAMPLE_BANK // Limits
 	NEW_SAMPLEBANK_START = SFX_M16_LEFT,
-	TOTAL_NEW_AUDIO_SAMPLES = SFX_DEAGLE_RIGHT - SAMPLEBANK_PED_END,
+	TOTAL_NEW_AUDIO_SAMPLES = SFX_BERETTA_RIGHT - SAMPLEBANK_PED_END,
 #endif
 };

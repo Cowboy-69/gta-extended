@@ -4805,6 +4805,28 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 				SET_SOUND_REFLECTION(TRUE);
 				stereo = TRUE;
 				break;
+#ifdef EX_WEAPON_BERETTA // Audio
+			case WEAPONTYPE_BERETTA:
+				m_sQueueSample.m_nSampleIndex = SFX_BERETTA_LEFT;
+				m_sQueueSample.m_nBankIndex = SFX_BANK_0;
+				m_sQueueSample.m_nCounter = iSound++;
+				narrowSoundRange = TRUE;
+				m_sQueueSample.m_nFrequency = SampleManager.GetSampleBaseFrequency(SFX_BERETTA_LEFT);
+				m_sQueueSample.m_nFrequency += RandomDisplacement(m_sQueueSample.m_nFrequency >> 5);
+				m_sQueueSample.m_nPriority = 3;
+				m_sQueueSample.m_fSpeedMultiplier = 0.0f;
+				m_sQueueSample.m_MaxDistance = PED_ONE_SHOT_WEAPON_BULLET_ECHO_MAX_DIST;
+				maxDist = SQR(PED_ONE_SHOT_WEAPON_BULLET_ECHO_MAX_DIST);
+				m_sQueueSample.m_nLoopCount = 1;
+				RESET_LOOP_OFFSETS
+				Vol = m_anRandomTable[1] % 10 + PED_ONE_SHOT_WEAPON_COLT45_VOLUME;
+				SET_EMITTING_VOLUME(Vol);
+				m_sQueueSample.m_bIs2D = FALSE;
+				m_sQueueSample.m_bStatic = TRUE;
+				SET_SOUND_REFLECTION(TRUE);
+				stereo = TRUE;
+				break;
+#endif
 			case WEAPONTYPE_ROCKET:
 			case WEAPONTYPE_ROCKETLAUNCHER:
 				m_sQueueSample.m_nSampleIndex = SFX_ROCKET_LEFT;
@@ -5104,6 +5126,9 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 			case WEAPONTYPE_PYTHON:
 #ifdef EX_WEAPON_DEAGLE // Audio
 			case WEAPONTYPE_DEAGLE:
+#endif
+#ifdef EX_WEAPON_BERETTA // Audio
+			case WEAPONTYPE_BERETTA:
 #endif
 				m_sQueueSample.m_nSampleIndex = SFX_PISTOL_RELOAD;
 				m_sQueueSample.m_nFrequency = SampleManager.GetSampleBaseFrequency(SFX_PISTOL_RELOAD) + RandomDisplacement(300);

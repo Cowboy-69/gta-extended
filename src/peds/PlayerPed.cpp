@@ -1715,6 +1715,9 @@ CPlayerPed::ProcessAnimGroups(void)
 #ifdef EX_WEAPON_DEAGLE // WeaponInfo
 				&& GetWeapon()->m_eWeaponType != WEAPONTYPE_DEAGLE
 #endif
+#ifdef EX_WEAPON_BERETTA // WeaponInfo
+				&& GetWeapon()->m_eWeaponType != WEAPONTYPE_BERETTA
+#endif
 				&& GetWeapon()->m_eWeaponType != WEAPONTYPE_CAMERA) {
 				if (!GetWeapon()->IsType2Handed()) {
 					groupToSet = ASSOCGRP_PLAYER;
@@ -1937,6 +1940,9 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 				} else if (weapon != WEAPONTYPE_COLT45 && weapon != WEAPONTYPE_TEC9 && weapon != WEAPONTYPE_SILENCED_INGRAM
 #ifdef EX_WEAPON_UZIOLD // Aiming
 						  && weapon != WEAPONTYPE_UZIOLD
+#endif
+#ifdef EX_WEAPON_BERETTA // Aiming
+						  && weapon != WEAPONTYPE_BERETTA
 #endif
 						   ) {
 					if (m_fMoveSpeed > 0.0f)

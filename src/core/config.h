@@ -154,6 +154,7 @@
 			#define EX_WEAPON_SHOTGUN2
 			#define EX_WEAPON_UZIOLD
 			#define EX_WEAPON_DEAGLE
+			#define EX_WEAPON_BERETTA
 		#endif
 	#endif
 

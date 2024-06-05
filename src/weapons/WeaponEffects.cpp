@@ -96,6 +96,9 @@ CWeaponEffects::Render(void)
 #ifdef EX_WEAPON_DEAGLE // Crosshair during autoaim
 		0.3f,
 #endif
+#ifdef EX_WEAPON_BERETTA // Crosshair during autoaim
+		0.5f,
+#endif
 	};
 
 

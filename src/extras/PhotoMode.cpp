@@ -1309,10 +1309,7 @@ void CPhotoMode::ProcessInput()
 
 				AddPlayerWeapon();
 			} else if (currentItem == ITEM_CHAR_MUZZLE_FLASH) {
-				if (fakePlayer &&
-					(weaponID >= WEAPONTYPE_COLT45 && weaponID <= WEAPONTYPE_LASERSCOPE ||
-					weaponID == WEAPONTYPE_M60 || weaponID == WEAPONTYPE_MINIGUN)) {
-
+				if (fakePlayer) {
 					bMuzzleFlash = !bMuzzleFlash;
 				} else {
 					bMuzzleFlash = false;
@@ -1455,7 +1452,7 @@ void CPhotoMode::ProcessInput()
 					weaponID = WEAPONTYPE_TEARGAS; // skip WEAPONTYPE_DETONATOR_GRENADE
 				else if (weaponID == WEAPONTYPE_MOLOTOV)
 					weaponID = WEAPONTYPE_COLT45; // skip WEAPONTYPE_ROCKET
-				else if (weaponID == WEAPONTYPE_DETONATOR)
+				else if (weaponID == WEAPONTYPE_TOTALWEAPONS - 2)
 					weaponID = WEAPONTYPE_TOTALWEAPONS - 1; // skip WEAPONTYPE_HELICANNON
 				else if (weaponID >= (WEAPONTYPE_TOTALWEAPONS - 1))
 					weaponID = WEAPONTYPE_UNARMED;
@@ -1472,10 +1469,7 @@ void CPhotoMode::ProcessInput()
 
 				AddPlayerWeapon();
 			} else if (currentItem == ITEM_CHAR_MUZZLE_FLASH) {
-				if (fakePlayer &&
-					(weaponID >= WEAPONTYPE_COLT45 && weaponID <= WEAPONTYPE_LASERSCOPE ||
-					weaponID == WEAPONTYPE_M60 || weaponID == WEAPONTYPE_MINIGUN)) {
-
+				if (fakePlayer) {
 					bMuzzleFlash = !bMuzzleFlash;
 				} else {
 					bMuzzleFlash = false;

@@ -211,7 +211,11 @@ void WeaponCheat2()
 	CStreaming::RequestModel(MI_GRENADE, STREAMFLAGS_DONT_REMOVE);
 #endif
 	CStreaming::RequestModel(MI_BOMB, STREAMFLAGS_DONT_REMOVE);
+#ifdef EX_WEAPON_BERETTA // WeaponCheat2
+	CStreaming::RequestModel(MI_BERETTA, STREAMFLAGS_DONT_REMOVE);
+#else
 	CStreaming::RequestModel(MI_PYTHON, STREAMFLAGS_DONT_REMOVE);
+#endif
 	CStreaming::RequestModel(MI_STUBBY_SHOTGUN, STREAMFLAGS_DONT_REMOVE);
 	CStreaming::RequestModel(MI_SILENCEDINGRAM, STREAMFLAGS_DONT_REMOVE);
 #ifdef EX_WEAPON_AK47 // WeaponCheat2
@@ -229,7 +233,11 @@ void WeaponCheat2()
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_KATANA, 0);
 #endif
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_DETONATOR_GRENADE, 10);
+#ifdef EX_WEAPON_BERETTA // WeaponCheat2
+	FindPlayerPed()->GiveWeapon(WEAPONTYPE_BERETTA, 100);
+#else
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_PYTHON, 40);
+#endif
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_STUBBY_SHOTGUN, 25);
 	FindPlayerPed()->GiveWeapon(WEAPONTYPE_SILENCED_INGRAM, 100);
 #ifdef EX_WEAPON_AK47 // WeaponCheat2
@@ -247,7 +255,11 @@ void WeaponCheat2()
 	CStreaming::SetModelIsDeletable(MI_GRENADE);
 #endif
 	CStreaming::SetModelIsDeletable(MI_BOMB);
+#ifdef EX_WEAPON_BERETTA // WeaponCheat2
+	CStreaming::SetModelIsDeletable(MI_BERETTA);
+#else
 	CStreaming::SetModelIsDeletable(MI_PYTHON);
+#endif
 	CStreaming::SetModelIsDeletable(MI_STUBBY_SHOTGUN);
 	CStreaming::SetModelIsDeletable(MI_SILENCEDINGRAM);
 #ifdef EX_WEAPON_AK47 // WeaponCheat2

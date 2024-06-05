@@ -1199,6 +1199,9 @@ CVehicle::InflictDamage(CEntity *damagedBy, eWeaponType weaponType, float damage
 #ifdef EX_WEAPON_DEAGLE // CVehicle::InflictDamage
 	case WEAPONTYPE_DEAGLE:
 #endif
+#ifdef EX_WEAPON_BERETTA // CVehicle::InflictDamage
+	case WEAPONTYPE_BERETTA:
+#endif
 		if (bBulletProof)
 			return;
 		bFrightensDriver = true;
@@ -1231,6 +1234,9 @@ CVehicle::InflictDamage(CEntity *damagedBy, eWeaponType weaponType, float damage
 		int accuracy = 0;
 		switch(weaponType){
 		case WEAPONTYPE_COLT45:
+#ifdef EX_WEAPON_BERETTA // CVehicle::InflictDamage
+		case WEAPONTYPE_BERETTA:
+#endif
 			accuracy = 10;
 			break;
 		case WEAPONTYPE_PYTHON:

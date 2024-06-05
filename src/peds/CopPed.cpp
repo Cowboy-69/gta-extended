@@ -33,7 +33,14 @@ CCopPed::CCopPed(eCopType copType, int32 modifier) : CPed(PEDTYPE_COP)
 	case COP_STREET:
 		SetModelIndex(MI_COP);
 		GiveWeapon(WEAPONTYPE_NIGHTSTICK, 1000, true);
+#ifdef EX_WEAPON_BERETTA // COP_STREET - random weapon
+		if (CGeneral::GetRandomTrueFalse())
+			GiveDelayedWeapon(WEAPONTYPE_BERETTA, 1000);
+		else
+			GiveDelayedWeapon(WEAPONTYPE_COLT45, 1000);
+#else
 		GiveDelayedWeapon(WEAPONTYPE_COLT45, 1000);
+#endif
 		m_currentWeapon = WEAPONTYPE_UNARMED;
 		m_fArmour = 0.0f;
 		m_wepSkills = 208; /* TODO: what is this? seems unused */

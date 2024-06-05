@@ -312,6 +312,9 @@ CWeapon::Fire(CEntity *shooter, CVector *fireSource)
 #ifdef EX_WEAPON_DEAGLE // Fire
 			case WEAPONTYPE_DEAGLE:
 #endif
+#ifdef EX_WEAPON_BERETTA // Fire
+			case WEAPONTYPE_BERETTA:
+#endif
 			{
 				if ((TheCamera.PlayerWeaponMode.Mode == CCam::MODE_HELICANNON_1STPERSON || TheCamera.PlayerWeaponMode.Mode == CCam::MODE_M16_1STPERSON)
 					&& shooter == FindPlayerPed()) {
@@ -468,6 +471,9 @@ CWeapon::Fire(CEntity *shooter, CVector *fireSource)
 #endif
 #ifdef EX_WEAPON_DEAGLE // RoundsFiredByPlayer
 				case WEAPONTYPE_DEAGLE:
+#endif
+#ifdef EX_WEAPON_BERETTA // RoundsFiredByPlayer
+				case WEAPONTYPE_BERETTA:
 #endif
 					CStats::RoundsFiredByPlayer++;
 					break;
@@ -1388,6 +1394,9 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 		case WEAPONTYPE_LASERSCOPE:
 #ifdef EX_WEAPON_DEAGLE // FireInstantHit
 		case WEAPONTYPE_DEAGLE:
+#endif
+#ifdef EX_WEAPON_BERETTA // FireInstantHit
+		case WEAPONTYPE_BERETTA:
 #endif
 		{
 			CPointLights::AddLight(CPointLights::LIGHT_POINT,
