@@ -701,6 +701,9 @@ enum
 #ifdef EX_WEAPON_BERETTA
 	MI_BERETTA = MI_FIRST_NEW_WEAPON + 6,
 #endif
+#ifdef EX_WEAPON_STEYR
+	MI_STEYR = MI_FIRST_NEW_WEAPON + 7,
+#endif
 	NUM_NEW_WEAPONS,
 #endif
 };

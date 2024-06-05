@@ -604,6 +604,9 @@ enum
 	//PED_ONE_SHOT_WEAPON_AK47_MAX_DIST = 80,
 	PED_ONE_SHOT_WEAPON_AK47_VOLUME = 70,
 #endif
+#ifdef EX_WEAPON_STEYR // Audio
+	PED_ONE_SHOT_WEAPON_STEYR_VOLUME = 95,
+#endif
 	PED_ONE_SHOT_WEAPON_SNIPERRIFLE_VOLUME = 110,
 	PED_ONE_SHOT_WEAPON_ROCKETLAUNCHER_VOLUME = 80,
 
@@ -4678,6 +4681,9 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 #ifdef EX_WEAPON_M16 // Audio
 			case WEAPONTYPE_M16:
 #endif
+#ifdef EX_WEAPON_STEYR // Audio
+			case WEAPONTYPE_STEYR:
+#endif
 				m_sQueueSample.m_nSampleIndex = SFX_RUGER_TAIL;
 				break;
 				break;
@@ -5072,6 +5078,27 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 				stereo = TRUE;
 				break;
 #endif
+#ifdef EX_WEAPON_STEYR // Audio
+			case WEAPONTYPE_STEYR:
+				m_sQueueSample.m_nSampleIndex = SFX_STEYR_LEFT;
+				m_sQueueSample.m_nBankIndex = SFX_BANK_0;
+				m_sQueueSample.m_nCounter = iSound++;
+				narrowSoundRange = TRUE;
+				m_sQueueSample.m_nFrequency = SampleManager.GetSampleBaseFrequency(SFX_STEYR_LEFT);
+				m_sQueueSample.m_nFrequency += RandomDisplacement(m_sQueueSample.m_nFrequency >> 5);
+				m_sQueueSample.m_nPriority = 3;
+				m_sQueueSample.m_fSpeedMultiplier = 0.0f;
+				m_sQueueSample.m_MaxDistance = PED_ONE_SHOT_WEAPON_BULLET_ECHO_MAX_DIST;
+				maxDist = SQR(PED_ONE_SHOT_WEAPON_BULLET_ECHO_MAX_DIST);
+				m_sQueueSample.m_nLoopCount = 1;
+				RESET_LOOP_OFFSETS
+				Vol = PED_ONE_SHOT_WEAPON_STEYR_VOLUME;
+				SET_EMITTING_VOLUME(Vol);
+				m_sQueueSample.m_bIs2D = FALSE;
+				m_sQueueSample.m_bStatic = TRUE;
+				stereo = TRUE;
+				break;
+#endif
 			case WEAPONTYPE_SPAS12_SHOTGUN:
 				m_sQueueSample.m_nSampleIndex = SFX_SPAS12_LEFT;
 				m_sQueueSample.m_nBankIndex = SFX_BANK_0;
@@ -5145,6 +5172,9 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 #endif
 #ifdef EX_WEAPON_UZIOLD // Audio
 			case WEAPONTYPE_UZIOLD:
+#endif
+#ifdef EX_WEAPON_STEYR // Audio
+			case WEAPONTYPE_STEYR:
 #endif
 				m_sQueueSample.m_nSampleIndex = SFX_AK47_RELOAD;
 				m_sQueueSample.m_nFrequency = 39243;

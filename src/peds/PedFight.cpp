@@ -3023,6 +3023,9 @@ CPed::InflictDamage(CEntity *damagedBy, eWeaponType method, float damage, ePedPi
 #ifdef EX_WEAPON_BERETTA // CPed::InflictDamage
 			case WEAPONTYPE_BERETTA:
 #endif
+#ifdef EX_WEAPON_STEYR // CPed::InflictDamage
+			case WEAPONTYPE_STEYR:
+#endif
 
 				if (bBulletProof)
 					return false;
@@ -3036,6 +3039,9 @@ CPed::InflictDamage(CEntity *damagedBy, eWeaponType method, float damage, ePedPi
 #endif
 #ifdef EX_WEAPON_M16 // CPed::InflictDamage
 						method != WEAPONTYPE_M16 &&
+#endif
+#ifdef EX_WEAPON_STEYR // CPed::InflictDamage
+					method != WEAPONTYPE_STEYR &&
 #endif
 						method != WEAPONTYPE_LASERSCOPE) {
 					if (method == WEAPONTYPE_SHOTGUN)

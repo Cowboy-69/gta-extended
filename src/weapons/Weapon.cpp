@@ -315,6 +315,9 @@ CWeapon::Fire(CEntity *shooter, CVector *fireSource)
 #ifdef EX_WEAPON_BERETTA // Fire
 			case WEAPONTYPE_BERETTA:
 #endif
+#ifdef EX_WEAPON_STEYR // Fire
+			case WEAPONTYPE_STEYR:
+#endif
 			{
 				if ((TheCamera.PlayerWeaponMode.Mode == CCam::MODE_HELICANNON_1STPERSON || TheCamera.PlayerWeaponMode.Mode == CCam::MODE_M16_1STPERSON)
 					&& shooter == FindPlayerPed()) {
@@ -474,6 +477,9 @@ CWeapon::Fire(CEntity *shooter, CVector *fireSource)
 #endif
 #ifdef EX_WEAPON_BERETTA // RoundsFiredByPlayer
 				case WEAPONTYPE_BERETTA:
+#endif
+#ifdef EX_WEAPON_STEYR // RoundsFiredByPlayer
+				case WEAPONTYPE_STEYR:
 #endif
 					CStats::RoundsFiredByPlayer++;
 					break;
@@ -1171,6 +1177,9 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 #ifdef EX_WEAPON_M16 // FireInstantHit
 			|| m_eWeaponType == WEAPONTYPE_M16
 #endif
+#ifdef EX_WEAPON_STEYR // FireInstantHit
+			|| m_eWeaponType == WEAPONTYPE_STEYR
+#endif
 			)
 			rotSpeed = 4;
 
@@ -1223,6 +1232,9 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 #ifdef EX_WEAPON_M16 // FireInstantHit
 				|| m_eWeaponType == WEAPONTYPE_M16
 #endif
+#ifdef EX_WEAPON_STEYR // FireInstantHit
+				|| m_eWeaponType == WEAPONTYPE_STEYR
+#endif
 				)
 				rotSpeed = 4;
 
@@ -1266,6 +1278,9 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 #endif
 #ifdef EX_WEAPON_M16 // FireInstantHit
 				|| m_eWeaponType == WEAPONTYPE_M16
+#endif
+#ifdef EX_WEAPON_STEYR // FireInstantHit
+				|| m_eWeaponType == WEAPONTYPE_STEYR
 #endif
 				)
 				rotSpeed = 4;
@@ -1322,6 +1337,9 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 #endif
 #ifdef EX_WEAPON_M16 // FireInstantHit
 		case WEAPONTYPE_M16:
+#endif
+#ifdef EX_WEAPON_STEYR // FireInstantHit
+		case WEAPONTYPE_STEYR:
 #endif
 		{
 			static uint8 counter = 0;
@@ -1660,6 +1678,9 @@ CWeapon::DoBulletImpact(CEntity *shooter, CEntity *victim,
 #endif
 #ifdef EX_WEAPON_M16 // ANIM_STD_HITBYGUN_FRONT
 									|| m_eWeaponType == WEAPONTYPE_M16
+#endif
+#ifdef EX_WEAPON_STEYR // ANIM_STD_HITBYGUN_FRONT
+									|| m_eWeaponType == WEAPONTYPE_STEYR
 #endif
 									)
 									victimPlayer->m_nHitAnimDelayTimer = CTimer::GetTimeInMilliseconds() + 2500;
@@ -3367,6 +3388,9 @@ CWeapon::Update(int32 audioEntity, CPed *pedToAdjustSound)
 							soundStart = fReloadAnimSampleFraction[2];
 							break;
 						case ASSOCGRP_RIFLE:
+#ifdef EX_WEAPON_STEYR // Anims
+						case ASSOCGRP_STEYR:
+#endif
 							soundStart = fReloadAnimSampleFraction[3];
 							break;
 						case ASSOCGRP_M60:
@@ -3545,6 +3569,9 @@ CWeapon::IsType2Handed(void)
 #endif
 #ifdef EX_WEAPON_M16 // IsType2Handed
 		m_eWeaponType == WEAPONTYPE_M16 ||
+#endif
+#ifdef EX_WEAPON_STEYR // IsType2Handed
+		m_eWeaponType == WEAPONTYPE_STEYR ||
 #endif
 		m_eWeaponType == WEAPONTYPE_RUGER || m_eWeaponType == WEAPONTYPE_SNIPERRIFLE || m_eWeaponType == WEAPONTYPE_LASERSCOPE;
 }

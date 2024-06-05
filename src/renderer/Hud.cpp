@@ -248,6 +248,9 @@ struct
 #ifdef EX_WEAPON_BERETTA // Icon
   { "beretta", "berettaA" },
 #endif
+#ifdef EX_WEAPON_STEYR // Icon
+  { "steyr", "steyrA" },
+#endif
 };
 
 RwTexture *gpSniperSightTex;
@@ -323,6 +326,9 @@ void CHud::Draw()
 #ifdef EX_WEAPON_BERETTA // Crosshair
 						|| WeaponType == WEAPONTYPE_BERETTA
 #endif
+#ifdef EX_WEAPON_STEYR // Crosshair
+						|| WeaponType == WEAPONTYPE_STEYR
+#endif
 #ifdef EX_ROCKET_LAUNCHER_THIRD_PERSON_AIM
 						|| WeaponType == WEAPONTYPE_FLAMETHROWER || WeaponType == WEAPONTYPE_ROCKETLAUNCHER && bRocketLauncherThirdPersonAiming) {
 #else
@@ -390,8 +396,11 @@ void CHud::Draw()
 #ifdef EX_WEAPON_AK47 // Crosshair
 					WeaponType == WEAPONTYPE_AK47 ||
 #endif
-#ifdef EX_WEAPON_M16
+#ifdef EX_WEAPON_M16 // Crosshair
 					WeaponType == WEAPONTYPE_M16 ||
+#endif
+#ifdef EX_WEAPON_STEYR // Crosshair
+					WeaponType == WEAPONTYPE_STEYR ||
 #endif
 					WeaponType == WEAPONTYPE_M60)) {
 

@@ -794,6 +794,14 @@ char const* aRifleAnimations[] = {
 	"RIFLE_load",
 	"RIFLE_crouchload",
 };
+#ifdef EX_WEAPON_STEYR // Anims
+char const* aSteyrAnimations[] = {
+	"STEYR_fire",
+	"STEYR_crouchfire",
+	"STEYR_reload",
+	"STEYR_crouchreload",
+};
+#endif
 char const* aM60Animations[] = {
 	"M60_fire",
 	"M60_fire",
@@ -1104,6 +1112,9 @@ const AnimAssocDefinition CAnimManager::ms_aAnimAssocDefinitions[NUM_ANIM_ASSOC_
 	{ "tec", "tec", MI_COP, awc(aTecAnimations), aWeaponAnimDescs },
 	{ "uzi", "uzi", MI_COP, awc(aUziAnimations), aWeaponAnimDescs },
 	{ "rifle", "rifle", MI_COP, awc(aRifleAnimations), aWeaponAnimDescs },
+#ifdef EX_WEAPON_STEYR // Anims
+	{ "steyr", "steyr", MI_COP, awc(aSteyrAnimations), aWeaponAnimDescs },
+#endif
 	{ "m60", "m60", MI_COP, awc(aM60Animations), aWeaponAnimDescs },
 	{ "sniper", "sniper", MI_COP, awc(aSniperAnimations), aWeaponAnimDescs },
 	{ "grenade", "grenade", MI_COP, awc(aThrowAnimations), aWeaponAnimDescs },

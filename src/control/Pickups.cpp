@@ -81,6 +81,9 @@ uint16 AmmoForWeapon[WEAPONTYPE_TOTALWEAPONS + 1] = { 0,  1,  1,  1,   1,   1,  
 #ifdef EX_WEAPON_BERETTA // Pickup - AmmoForWeapon
 													 68,
 #endif
+#ifdef EX_WEAPON_STEYR // Pickup - AmmoForWeapon
+													 120,
+#endif
 													 0 };
 
 uint16 AmmoForWeapon_OnStreet[WEAPONTYPE_TOTALWEAPONS + 1] = { 0,  1,  1,  1,   1,  1,  1,  1,  1,  1,  1,  1, 4,   4,   4,   4, 4,   34, 12,
@@ -103,13 +106,16 @@ uint16 AmmoForWeapon_OnStreet[WEAPONTYPE_TOTALWEAPONS + 1] = { 0,  1,  1,  1,   
 #ifdef EX_WEAPON_BERETTA // Pickup - AmmoForWeapon_OnStreet
 															  34,
 #endif
+#ifdef EX_WEAPON_STEYR // Pickup - AmmoForWeapon_OnStreet
+															  60,
+#endif
 															  0 };
 
 uint16 CostOfWeapon[WEAPONTYPE_TOTALWEAPONS + 3] = { 0,     10,    10,   10,   10,   10,    10,   10,    10,  10,  10,  10,   1000, 1000,
 													1000,  500,   8000, 250,  400,  1200,  1250, 1250,  800, 800, 650, 1200, 5000, 400,
 													10000, 10000, 8000, 8000, 8000, 10000, 1000, 11000, 500, 
 #ifdef EX_WEAPON_AK47 // Pickup - CostOfWeapon
-													4000,
+													4500,
 #endif
 #ifdef EX_WEAPON_M16 // Pickup - CostOfWeapon
 													5000,
@@ -125,6 +131,9 @@ uint16 CostOfWeapon[WEAPONTYPE_TOTALWEAPONS + 3] = { 0,     10,    10,   10,   1
 #endif
 #ifdef EX_WEAPON_BERETTA // Pickup - CostOfWeapon
 													250,
+#endif
+#ifdef EX_WEAPON_STEYR // Pickup - CostOfWeapon
+													6000,
 #endif
 													20,  10,  0 };
 
@@ -187,6 +196,9 @@ struct
 #endif
 #ifdef EX_WEAPON_BERETTA // Pickup color
 	{ 27, 89, 130, 1.0f },
+#endif
+#ifdef EX_WEAPON_STEYR // Pickup color
+	{ 254, 137, 0, 1.0f },
 #endif
 	{ 255, 100, 100, 1.0f },
 	{ 128, 255, 128, 1.0f },

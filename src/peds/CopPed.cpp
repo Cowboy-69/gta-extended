@@ -91,10 +91,29 @@ CCopPed::CCopPed(eCopType copType, int32 modifier) : CPed(PEDTYPE_COP)
 	case COP_ARMY:
 		SetModelIndex(MI_ARMY);
 #ifdef IMPROVED_TECH_PART // AI
-#ifdef EX_WEAPON_M16 // COP_ARMY - random weapon
+#if defined EX_WEAPON_M16 && defined EX_WEAPON_STEYR // COP_ARMY - random weapon
 		if (CGeneral::GetRandomTrueFalse()) {
 			GiveDelayedWeapon(WEAPONTYPE_M16, 1000);
 			SetCurrentWeapon(WEAPONTYPE_M16);
+		} else if (CGeneral::GetRandomTrueFalse()) {
+			GiveDelayedWeapon(WEAPONTYPE_M4, 1000);
+			SetCurrentWeapon(WEAPONTYPE_M4);
+		} else {
+			GiveDelayedWeapon(WEAPONTYPE_STEYR, 1000);
+			SetCurrentWeapon(WEAPONTYPE_STEYR);
+		}
+#elif defined EX_WEAPON_M16 // COP_ARMY - random weapon
+		if (CGeneral::GetRandomTrueFalse()) {
+			GiveDelayedWeapon(WEAPONTYPE_M16, 1000);
+			SetCurrentWeapon(WEAPONTYPE_M16);
+		} else {
+			GiveDelayedWeapon(WEAPONTYPE_M4, 1000);
+			SetCurrentWeapon(WEAPONTYPE_M4);
+		}
+#elif defined EX_WEAPON_STEYR
+		if (CGeneral::GetRandomTrueFalse()) {
+			GiveDelayedWeapon(WEAPONTYPE_STEYR, 1000);
+			SetCurrentWeapon(WEAPONTYPE_STEYR);
 		} else {
 			GiveDelayedWeapon(WEAPONTYPE_M4, 1000);
 			SetCurrentWeapon(WEAPONTYPE_M4);

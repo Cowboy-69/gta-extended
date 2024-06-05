@@ -155,6 +155,7 @@
 			#define EX_WEAPON_UZIOLD
 			#define EX_WEAPON_DEAGLE
 			#define EX_WEAPON_BERETTA
+			#define EX_WEAPON_STEYR
 		#endif
 	#endif
 

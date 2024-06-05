@@ -1202,6 +1202,9 @@ CVehicle::InflictDamage(CEntity *damagedBy, eWeaponType weaponType, float damage
 #ifdef EX_WEAPON_BERETTA // CVehicle::InflictDamage
 	case WEAPONTYPE_BERETTA:
 #endif
+#ifdef EX_WEAPON_STEYR // CVehicle::InflictDamage
+	case WEAPONTYPE_STEYR:
+#endif
 		if (bBulletProof)
 			return;
 		bFrightensDriver = true;
@@ -1272,6 +1275,9 @@ CVehicle::InflictDamage(CEntity *damagedBy, eWeaponType weaponType, float damage
 #endif
 #ifdef EX_WEAPON_M16 // CVehicle::InflictDamage
 		case WEAPONTYPE_M16:
+#endif
+#ifdef EX_WEAPON_STEYR // CVehicle::InflictDamage
+		case WEAPONTYPE_STEYR:
 #endif
 			if(!((CPed*)damagedBy)->IsPlayer())
 				accuracy = 15;
