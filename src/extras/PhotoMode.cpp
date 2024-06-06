@@ -75,6 +75,9 @@ const int CPhotoMode::animList[][2] = {
 										{ ASSOCGRP_PYTHON, ANIM_MELEE_ATTACK_2ND },
 										{ ASSOCGRP_SHOTGUN, ANIM_WEAPON_FIRE },
 										{ ASSOCGRP_SHOTGUN, ANIM_MELEE_ATTACK_2ND },
+#ifdef EX_WEAPON_STEYR // Animations in photo mode
+										{ ASSOCGRP_STEYR, ANIM_WEAPON_FIRE },
+#endif
 										{ ASSOCGRP_BUDDY, ANIM_WEAPON_FIRE },
 										{ ASSOCGRP_BUDDY, ANIM_MELEE_ATTACK_2ND },
 										{ ASSOCGRP_UZI, ANIM_WEAPON_FIRE },
@@ -83,7 +86,9 @@ const int CPhotoMode::animList[][2] = {
 										{ ASSOCGRP_RIFLE, ANIM_MELEE_ATTACK_2ND },
 										{ ASSOCGRP_THROW, ANIM_WEAPON_FIRE },
 										{ ASSOCGRP_FLAMETHROWER, ANIM_WEAPON_FIRE },
+#ifdef FIRING_AND_AIMING // Animations in photo mode
 										{ ASSOCGRP_ROCKET, ANIM_WEAPON_FIRE },
+#endif
 									  };
 
 bool CPhotoMode::bPhotoModeEnabled = false;
@@ -2035,7 +2040,14 @@ void CPhotoMode::InitFakePlayer()
 
 	if (animList[animID][1] != ANIM_MELEE_ATTACK_2ND &&
 		(animList[animID][0] >= ASSOCGRP_SCREWDRIVER && animList[animID][0] <= ASSOCGRP_RIFLE ||
-		animList[animID][0] == ASSOCGRP_FLAMETHROWER || animList[animID][0] == ASSOCGRP_ROCKET)) {
+		animList[animID][0] == ASSOCGRP_FLAMETHROWER
+#ifdef FIRING_AND_AIMING // Animations in photo mode
+		|| animList[animID][0] == ASSOCGRP_ROCKET
+#endif
+#ifdef EX_WEAPON_STEYR // Animations in photo mode
+		|| animList[animID][0] == ASSOCGRP_STEYR
+#endif
+		)) {
 
 		if (animList[animID][0] == ASSOCGRP_COLT)
 			CAnimManager::AddAnimation(fakePlayer->GetClump(), ASSOCGRP_STD, ANIM_STD_IDLE);

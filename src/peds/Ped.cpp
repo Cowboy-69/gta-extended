@@ -1660,7 +1660,13 @@ CPed::CalculateNewVelocity(void)
 #if defined IMPROVED_MENU_AND_INPUT && defined FIRST_PERSON && defined FIRING_AND_AIMING
 	if (((!TheCamera.Cams[0].Using3rdPersonMouseCam() && !FindPlayerPed()->bIsPlayerAiming) && !CPad::GetPad(0)->IsAffectedByController || 
 		(bIsDucking && TheCamera.Cams[TheCamera.ActiveCam].Mode != CCam::MODE_REAL_1ST_PERSON)) || 
-		FindPlayerPed()->bIsPlayerAiming && GetWeapon()->m_eWeaponType == WEAPONTYPE_PYTHON
+		FindPlayerPed()->bIsPlayerAiming &&
+		(
+			GetWeapon()->m_eWeaponType == WEAPONTYPE_PYTHON
+#ifdef EX_WEAPON_DEAGLE // Legs don't move while aiming
+			|| GetWeapon()->m_eWeaponType == WEAPONTYPE_DEAGLE
+#endif
+		)
 #else
 	if ((!TheCamera.Cams[TheCamera.ActiveCam].GetWeaponFirstPersonOn() && !TheCamera.Cams[0].Using3rdPersonMouseCam())
 #endif
