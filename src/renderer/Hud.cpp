@@ -243,7 +243,7 @@ struct
   { "uziold", "uzioldA" },
 #endif
 #ifdef EX_WEAPON_DEAGLE // Icon
-  { "desert_deagle2", "desert_deagle2A" },
+  { "desert_deagle", "desert_deagleA" },
 #endif
 #ifdef EX_WEAPON_BERETTA // Icon
   { "beretta", "berettaA" },
