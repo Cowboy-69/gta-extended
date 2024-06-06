@@ -34,6 +34,9 @@
 #include "Bike.h"
 #include "Automobile.h"
 #include "GameLogic.h"
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+#include "Garages.h"
+#endif
 
 CVector lastPlayerPos;
 
@@ -802,6 +805,16 @@ bool PlayerCanMakeQuickSave()
 
 	if (TheCamera.m_bFading)
 		return false;
+
+	for (uint32 i = 0; i < CGarages::NumGarages; i++) {
+		if (CGarages::aGarages[i].m_eGarageType == GARAGE_NONE)
+			continue;
+
+		if (CGarages::aGarages[i].IsPlayerOutsideGarage())
+			continue;
+
+		return false;
+	}
 
 	return true;
 }

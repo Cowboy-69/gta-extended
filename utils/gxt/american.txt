@@ -14521,7 +14521,7 @@ Attack
 Store gallery photos
 
 [FES_SAV]
-You cannot save the game at this time. To save the game, you must not be on a mission, not move or have a wanted level.
+You cannot save the game at this time.
 
 [FET_AUT]
 Autosave
