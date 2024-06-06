@@ -460,7 +460,7 @@ shopware_inner5:
 						GOSUB load_shop_keeper
 						time_difference4 = current_time - time_since_murdering_shopkeeper4
 						IF time_difference4 > 60000
-							CREATE_CHAR PEDTYPE_CIVMALE SPECIAL16 423.5 1039.4 18.1 shop_bloke1 
+							CREATE_CHAR PEDTYPE_CIVMALE SPECIAL16 424.0 1039.4 18.1 shop_bloke1 
 							SET_CHAR_HEADING shop_bloke1 136.0
 							GOSUB set_up_shopkeeper
 						ENDIF

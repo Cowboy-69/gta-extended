@@ -759,6 +759,8 @@ INITSAVEBUF
 			pPed->texClothingVariation = RwTexDictionaryFindNamedTexture(playerTxd, sTemp);
 			pPed->curClothingVariation = pPed->curClothingVariation;
 			modelInfo->currentClothingVariation = pPed->curClothingVariation;
+
+			CWorld::Players[0].m_pSkinTexture = pPed->texClothingVariation;
 		}
 #endif
 		for (int i = 0; i < TOTAL_WEAPON_SLOTS; i++) {

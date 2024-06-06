@@ -63,6 +63,11 @@ shop_clothes_loop:
         GOTO player_in_store_loop
     endif
 
+    if (IS_WANTED_LEVEL_GREATER player1 0)
+    or (IS_CHAR_DEAD scplayer)
+        GOTO shop_clothes_loop
+    endif
+
     if (bPlayerInMarker = FALSE)
         //if (not LOCATE_CHAR_ON_FOOT_3D scplayer, 142.0, -821.0, 10.0, 1.3, 1.3, 1.3, TRUE) // debug
         if (not LOCATE_CHAR_ON_FOOT_3D scplayer, 414.0, 1038.0, 19.0, 1.3, 1.3, 1.3, TRUE)
