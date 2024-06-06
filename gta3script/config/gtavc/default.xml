@@ -290,6 +290,14 @@
       <Constant Name="CUTOBJ03" Value="297"/>
       <Constant Name="CUTOBJ04" Value="298"/>
       <Constant Name="CUTOBJ05" Value="299"/>
+      <Constant Name="RCGRENADE" Value="6660"/>
+      <Constant Name="AK47" Value="6661"/>
+      <Constant Name="M16" Value="6662"/>
+      <Constant Name="SHOTGUN2" Value="6663"/>
+      <Constant Name="UZIOLD" Value="6664"/>
+      <Constant Name="DEAGLE" Value="6665"/>
+      <Constant Name="BERETTA" Value="6666"/>
+      <Constant Name="STEYR" Value="6667"/>
     </Enum>
   </Constants>
 </GTA3Script>

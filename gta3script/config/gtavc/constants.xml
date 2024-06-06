@@ -1141,6 +1141,13 @@
       <Constant Name="WEAPONTYPE_DETONATOR"/>
       <Constant Name="WEAPONTYPE_HELICANNON"/>
       <Constant Name="WEAPONTYPE_CAMERA"/>
+      <Constant Name="WEAPONTYPE_AK47"/>
+      <Constant Name="WEAPONTYPE_M16"/>
+      <Constant Name="WEAPONTYPE_SHOTGUN2"/>
+      <Constant Name="WEAPONTYPE_UZIOLD"/>
+      <Constant Name="WEAPONTYPE_DEAGLE"/>
+      <Constant Name="WEAPONTYPE_BERETTA"/>
+      <Constant Name="WEAPONTYPE_STEYR"/>
       <Constant Name="WEAPONTYPE_PAD37"/>
       <Constant Name="WEAPONTYPE_ARMOUR"/>
       <Constant Name="WEAPONTYPE_RAMMEDBYCAR"/>
