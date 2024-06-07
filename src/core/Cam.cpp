@@ -4375,6 +4375,11 @@ CCam::Process_Real_1st_Person(const CVector& CameraTarget, float TargetOrientati
 	BetaOffset = LookLeftRight * TheCamera.m_fMouseAccelHorzntl * FOV / 80.0f;
 	AlphaOffset = LookUpDown * TheCamera.m_fMouseAccelVertical * FOV / 80.0f;
 
+	if (CPad::GetPad(0)->IsAffectedByController) {
+		BetaOffset *= CTimer::GetTimeStep();
+		AlphaOffset *= CTimer::GetTimeStep();
+	}
+
 	if (vehicle && !FrontEndMenuManager.m_PrefsRelativeCamInVeh_DB_FP && ped->bIsPlayerAiming) {
 		BetaOffset += AlphaOffset * vehicle->GetRight().z;
 		AlphaOffset -= BetaOffset * vehicle->GetRight().z;
