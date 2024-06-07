@@ -22,6 +22,10 @@ VAR_INT phils_m60
 VAR_INT phils_rocketla
 VAR_INT phils_flame
 VAR_INT phils_bomb
+VAR_INT phils_ak47
+VAR_INT phils_m16
+VAR_INT phils_steyr
+VAR_INT phils_deagle
 
 //blips
 VAR_INT radar_blip_phil2_car
@@ -902,10 +906,14 @@ IF NOT IS_CAR_DEAD phil2_car
 					ENDWHILE
 
 					DELETE_CHAR phil_noarm 
-					CREATE_PICKUP M60 PICKUP_IN_SHOP -1105.9 335.3 11.1 phils_m60
-					CREATE_PICKUP rocketla PICKUP_IN_SHOP -1105.9 330.3 11.1 phils_rocketla
-					CREATE_PICKUP minigun PICKUP_IN_SHOP -1105.9 325.3 11.1 phils_flame
-					CREATE_PICKUP bomb PICKUP_IN_SHOP -1105.9 320.3 11.1 phils_bomb
+					CREATE_PICKUP M60 PICKUP_IN_SHOP -1102.9 333.3 11.1 phils_m60
+					CREATE_PICKUP rocketla PICKUP_IN_SHOP -1102.9 328.3 11.1 phils_rocketla
+					CREATE_PICKUP minigun PICKUP_IN_SHOP -1102.9 323.3 11.1 phils_flame
+					CREATE_PICKUP bomb PICKUP_IN_SHOP -1102.9 318.3 11.1 phils_bomb
+					CREATE_PICKUP AK47 PICKUP_IN_SHOP -1105.9 333.3 11.1 phils_ak47
+					CREATE_PICKUP M16 PICKUP_IN_SHOP -1105.9 328.3 11.1 phils_m16
+					CREATE_PICKUP STEYR PICKUP_IN_SHOP -1105.9 323.3 11.1 phils_steyr
+					CREATE_PICKUP DEAGLE PICKUP_IN_SHOP -1105.9 318.3 11.1 phils_deagle
 
 					LOAD_SCENE -1038.4 309.7 20.9
 					SET_FIXED_CAMERA_POSITION -1038.4 309.7 20.9 0.0 0.0 0.0 

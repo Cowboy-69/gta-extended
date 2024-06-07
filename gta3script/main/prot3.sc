@@ -79,6 +79,7 @@ CLEAR_THIS_PRINT M_FAIL
 CLEAR_WANTED_LEVEL player1 
 flag_player_on_mission = 1
 flag_player_on_army_ped_mission = 1
+flag_player_in_mall = 0 // ViceEx - This should fix the bug with the wanted stars at the beginning of the mission
 REGISTER_MISSION_GIVEN
 WAIT 0
 LOAD_MISSION_TEXT PROT3 
