@@ -475,6 +475,10 @@ CFont::LoadButtons(const char *txdPath)
 		ButtonSprite[BUTTON_SELECT].SetTexture("select");
 		ButtonSprite[BUTTON_LSTICK].SetTexture("thumbl");
 		ButtonSprite[BUTTON_RSTICK].SetTexture("thumbr");
+		ButtonSprite[BUTTON_DPAD_UP].SetTexture("up");
+		ButtonSprite[BUTTON_DPAD_DOWN].SetTexture("down");
+		ButtonSprite[BUTTON_DPAD_LEFT].SetTexture("left");
+		ButtonSprite[BUTTON_DPAD_RIGHT].SetTexture("right");
 #endif
 		CTxdStore::PopCurrentTxd();
 	}
@@ -1751,6 +1755,10 @@ CFont::ParseToken(wchar* str, CRGBA &color, bool &flash, bool &bold)
 		case ')': PS2Symbol = BUTTON_RSTICK_RIGHT; break;
 #ifdef EX_MORE_BUTTON_ICONS
 		case 'S': PS2Symbol = BUTTON_SELECT; break;
+		case '^': PS2Symbol = BUTTON_DPAD_UP; break;
+		case '_': PS2Symbol = BUTTON_DPAD_DOWN; break;
+		case 'W': PS2Symbol = BUTTON_DPAD_LEFT; break;
+		case 'R': PS2Symbol = BUTTON_DPAD_RIGHT; break;
 #endif
 #endif
 		default:
@@ -1936,6 +1944,13 @@ CFont::ParseToken(wchar *s)
 		case 'L': PS2Symbol = BUTTON_RSTICK_DOWN; break;
 		case '(': PS2Symbol = BUTTON_RSTICK_LEFT; break;
 		case ')': PS2Symbol = BUTTON_RSTICK_RIGHT; break;
+#ifdef EX_MORE_BUTTON_ICONS
+		case 'S': PS2Symbol = BUTTON_SELECT; break;
+		case '^': PS2Symbol = BUTTON_DPAD_UP; break;
+		case '_': PS2Symbol = BUTTON_DPAD_DOWN; break;
+		case 'W': PS2Symbol = BUTTON_DPAD_LEFT; break;
+		case 'R': PS2Symbol = BUTTON_DPAD_RIGHT; break;
+#endif
 #endif
 		}
 	while(*s != '~') s++;
