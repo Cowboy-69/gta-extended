@@ -7296,7 +7296,7 @@ PLAYER SKIN SETUP
 OPTION NOT AVAILABLE
 
 [FEH_MPH]
-MOUSE, CURSORS TO MOVE - PGUP, PGDN, MSWHEEL TO ZOOM, L - LEGEND, TAB - COLLECTABLES
+MOUSE, CURSORS to move, MOUSE WHEEL to zoom, L - legend, RIGHT MOUSE BUTTON - marker, TAB - collectables
 
 [FEA_MP3]
 MP3 PLAYER
@@ -14726,6 +14726,9 @@ Rampage
 
 [MOB_SKP]
 Press ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~to skip a phone call.
+
+[FEH_MPJ]
+LEFT STICK to move, TRIGGERS to zoom, RIGHT BUMPER - legend, LEFT BUTTON - marker, LEFT BUMPER - collectables
 
 { end of file }
 [DUMMY]

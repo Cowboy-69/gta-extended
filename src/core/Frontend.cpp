@@ -4371,7 +4371,11 @@ CMenuManager::AdditionalOptionInput(bool &goBack)
 #else
 			// Adding marker
 			if (m_nMenuFadeAlpha == 255) {
+#ifdef IMPROVED_MENU_AND_INPUT // Map input
+				if (CPad::GetPad(0)->GetRightMouseJustDown() || CPad::GetPad(0)->GetSquareJustDown()) {
+#else
 				if (CPad::GetPad(0)->GetRightMouseJustDown() || CPad::GetPad(0)->GetCrossJustDown()) {
+#endif
 					if (mapCrosshair.y > m_fMapCenterY - m_fMapSize && mapCrosshair.y < m_fMapCenterY + m_fMapSize &&
 						mapCrosshair.x > m_fMapCenterX - m_fMapSize && mapCrosshair.x < m_fMapCenterX + m_fMapSize) {
 
@@ -4391,7 +4395,11 @@ CMenuManager::AdditionalOptionInput(bool &goBack)
 				else
 					ZOOM(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, false);
 
+#ifdef IMPROVED_MENU_AND_INPUT // Map input
+			} else if (CPad::GetPad(0)->GetMouseWheelUp() || CPad::GetPad(0)->GetPageUp() || CPad::GetPad(0)->GetLeftShoulder2()) {
+#else
 			} else if (CPad::GetPad(0)->GetMouseWheelUp() || CPad::GetPad(0)->GetPageUp() || CPad::GetPad(0)->GetRightShoulder1()) {
+#endif
 				if (CPad::GetPad(0)->GetMouseWheelUp())
 					ZOOM(mapCrosshair.x, mapCrosshair.y, true);
 				else
@@ -4485,6 +4493,18 @@ CMenuManager::AdditionalOptionInput(bool &goBack)
 
 			static bool pressedL = false;
 
+#ifdef IMPROVED_MENU_AND_INPUT // Map input
+			if (!CPad::GetPad(0)->GetChar('L') && !CPad::GetPad(0)->GetChar('l') && !CPad::GetPad(0)->GetRightShoulder1()) {
+				pressedL = false;
+			}
+
+			if (!pressedL) {
+				if (CPad::GetPad(0)->GetChar('L') || CPad::GetPad(0)->GetChar('l') || CPad::GetPad(0)->GetRightShoulder1()) {
+					m_PrefsShowLegends = !m_PrefsShowLegends;
+					pressedL = true;
+				}
+			}
+#else
 			if (!CPad::GetPad(0)->GetChar('L') && !CPad::GetPad(0)->GetChar('l')) {
 				pressedL = false;
 			}
@@ -4495,9 +4515,10 @@ CMenuManager::AdditionalOptionInput(bool &goBack)
 					pressedL = true;
 				}
 			}
+#endif
 
 #ifdef EX_DISPLAYED_COLLECTIBLES // Display switching
-			if (CPad::GetPad(0)->GetTabJustDown() || CPad::GetPad(0)->GetSelectJustDown()) {
+			if (CPad::GetPad(0)->GetTabJustDown() || CPad::GetPad(0)->GetLeftShoulder1JustDown()) {
 				bDisplayCollectibles = !bDisplayCollectibles;
 			}
 #endif
@@ -7040,7 +7061,15 @@ CMenuManager::PrintMap(void)
 
 	CFont::SetWrapx(MENU_X_RIGHT_ALIGNED(MENU_X_MARGIN));
 	CFont::SetRightJustifyWrap(MENU_X_LEFT_ALIGNED(MENU_X_MARGIN));
+#ifdef IMPROVED_MENU_AND_INPUT // Map hints
+	if (CPad::GetPad(0)->IsAffectedByController) {
+		DisplayHelperText("FEH_MPJ");
+	} else {
+		DisplayHelperText("FEH_MPH");
+	}
+#else
 	DisplayHelperText("FEH_MPH");
+#endif
 }
 
 void
