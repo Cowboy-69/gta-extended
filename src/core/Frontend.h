@@ -852,7 +852,7 @@ public:
 #endif
 
 #ifdef EX_DISPLAYED_COLLECTIBLES
-	bool bDisplayCollectibles;
+	uint8 m_displayCollectiblesState;
 #endif
 
 #ifdef GAMEPAD_MENU

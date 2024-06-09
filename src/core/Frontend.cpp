@@ -621,7 +621,7 @@ CMenuManager::CMenuManager()
 	m_PrefsWeaponSight = 2;
 #endif
 #ifdef EX_DISPLAYED_COLLECTIBLES
-	bDisplayCollectibles = false;
+	m_displayCollectiblesState = 0;
 #endif
 }
 
@@ -4519,7 +4519,10 @@ CMenuManager::AdditionalOptionInput(bool &goBack)
 
 #ifdef EX_DISPLAYED_COLLECTIBLES // Display switching
 			if (CPad::GetPad(0)->GetTabJustDown() || CPad::GetPad(0)->GetLeftShoulder1JustDown()) {
-				bDisplayCollectibles = !bDisplayCollectibles;
+				if (m_displayCollectiblesState == 4)
+					m_displayCollectiblesState = 0;
+				else
+					m_displayCollectiblesState++;
 			}
 #endif
 

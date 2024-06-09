@@ -666,11 +666,26 @@ void CRadar::DrawBlips()
 				continue;
 
 #ifdef EX_DISPLAYED_COLLECTIBLES // Display blips only on the map
-			if ((!FrontEndMenuManager.bDisplayCollectibles || !FrontEndMenuManager.m_bMenuMapActive) &&
-				(ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_PACKAGE ||
-				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_STUNT ||
-				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_RAMPAGE ||
-				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_STORE)) {
+			if (ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_PACKAGE &&
+				(FrontEndMenuManager.m_displayCollectiblesState != 1 || !FrontEndMenuManager.m_bMenuMapActive)) {
+
+				continue;
+			}
+
+			if (ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_STUNT &&
+				(FrontEndMenuManager.m_displayCollectiblesState != 2 || !FrontEndMenuManager.m_bMenuMapActive)) {
+
+				continue;
+			}
+
+			if (ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_RAMPAGE &&
+				(FrontEndMenuManager.m_displayCollectiblesState != 3 || !FrontEndMenuManager.m_bMenuMapActive)) {
+
+				continue;
+			}
+
+			if (ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_STORE &&
+				(FrontEndMenuManager.m_displayCollectiblesState != 4 || !FrontEndMenuManager.m_bMenuMapActive)) {
 
 				continue;
 			}
@@ -700,11 +715,26 @@ void CRadar::DrawBlips()
 				continue;
 
 #ifdef EX_DISPLAYED_COLLECTIBLES // Display blips only on the map
-			if ((!FrontEndMenuManager.bDisplayCollectibles || !FrontEndMenuManager.m_bMenuMapActive) &&
-				(ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_PACKAGE ||
-				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_STUNT ||
-				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_RAMPAGE ||
-				ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_STORE)) {
+			if (ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_PACKAGE &&
+				(FrontEndMenuManager.m_displayCollectiblesState != 1 || !FrontEndMenuManager.m_bMenuMapActive)) {
+
+				continue;
+			}
+
+			if (ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_STUNT &&
+				(FrontEndMenuManager.m_displayCollectiblesState != 2 || !FrontEndMenuManager.m_bMenuMapActive)) {
+
+				continue;
+			}
+
+			if (ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_RAMPAGE &&
+				(FrontEndMenuManager.m_displayCollectiblesState != 3 || !FrontEndMenuManager.m_bMenuMapActive)) {
+
+				continue;
+			}
+
+			if (ms_RadarTrace[blipId].m_eRadarSprite == RADAR_SPRITE_STORE &&
+				(FrontEndMenuManager.m_displayCollectiblesState != 4 || !FrontEndMenuManager.m_bMenuMapActive)) {
 
 				continue;
 			}
