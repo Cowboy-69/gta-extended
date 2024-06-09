@@ -2193,7 +2193,12 @@ void CPhotoMode::RequestAnims()
 	int uziBlock = CAnimManager::GetAnimationBlockIndex("uzi");
 	int rifleBlock = CAnimManager::GetAnimationBlockIndex("rifle");
 	int flameBlock = CAnimManager::GetAnimationBlockIndex("flame");
+#ifdef FIRING_AND_AIMING // Animations in photo mode
 	int rocketBlock = CAnimManager::GetAnimationBlockIndex("rocket");
+#endif
+#ifdef EX_WEAPON_STEYR // Animations in photo mode
+	int steyrBlock = CAnimManager::GetAnimationBlockIndex("steyr");
+#endif
 	int manBlock = CAnimManager::GetAnimationBlockIndex("man");
 	CStreaming::RequestAnim(screwdrvBlock, STREAMFLAGS_DEPENDENCY);
 	CStreaming::RequestAnim(golfclubBlock, STREAMFLAGS_DEPENDENCY);
@@ -2208,7 +2213,12 @@ void CPhotoMode::RequestAnims()
 	CStreaming::RequestAnim(uziBlock, STREAMFLAGS_DEPENDENCY);
 	CStreaming::RequestAnim(rifleBlock, STREAMFLAGS_DEPENDENCY);
 	CStreaming::RequestAnim(flameBlock, STREAMFLAGS_DEPENDENCY);
+#ifdef FIRING_AND_AIMING // Animations in photo mode
 	CStreaming::RequestAnim(rocketBlock, STREAMFLAGS_DEPENDENCY);
+#endif
+#ifdef EX_WEAPON_STEYR // Animations in photo mode
+	CStreaming::RequestAnim(steyrBlock, STREAMFLAGS_DEPENDENCY);
+#endif
 	CStreaming::RequestAnim(manBlock, STREAMFLAGS_DEPENDENCY);
 	CStreaming::LoadAllRequestedModels(false);
 	CAnimManager::AddAnimBlockRef(screwdrvBlock);
@@ -2224,7 +2234,12 @@ void CPhotoMode::RequestAnims()
 	CAnimManager::AddAnimBlockRef(uziBlock);
 	CAnimManager::AddAnimBlockRef(rifleBlock);
 	CAnimManager::AddAnimBlockRef(flameBlock);
+#ifdef FIRING_AND_AIMING // Animations in photo mode
 	CAnimManager::AddAnimBlockRef(rocketBlock);
+#endif
+#ifdef EX_WEAPON_STEYR // Animations in photo mode
+	CAnimManager::AddAnimBlockRef(steyrBlock);
+#endif
 	CAnimManager::AddAnimBlockRef(manBlock);
 }
 
@@ -2243,7 +2258,12 @@ void CPhotoMode::RemoveAnims()
 	CAnimManager::RemoveAnimBlockRef(CAnimManager::GetAnimationBlockIndex("uzi"));
 	CAnimManager::RemoveAnimBlockRef(CAnimManager::GetAnimationBlockIndex("rifle"));
 	CAnimManager::RemoveAnimBlockRef(CAnimManager::GetAnimationBlockIndex("flame"));
+#ifdef FIRING_AND_AIMING // Animations in photo mode
 	CAnimManager::RemoveAnimBlockRef(CAnimManager::GetAnimationBlockIndex("rocket"));
+#endif
+#ifdef EX_WEAPON_STEYR // Animations in photo mode
+	CAnimManager::RemoveAnimBlockRef(CAnimManager::GetAnimationBlockIndex("steyr"));
+#endif
 	CAnimManager::RemoveAnimBlockRef(CAnimManager::GetAnimationBlockIndex("man"));
 }
 
