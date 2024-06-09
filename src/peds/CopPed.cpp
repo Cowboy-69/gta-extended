@@ -78,8 +78,13 @@ CCopPed::CCopPed(eCopType copType, int32 modifier) : CPed(PEDTYPE_COP)
 #ifdef IMPROVED_TECH_PART // wanted system
 		GiveDelayedWeapon(WEAPONTYPE_TEARGAS, 1);
 #endif
+#ifdef IMPROVED_TECH_PART // COP_SWAT - M4 weapon
+		GiveDelayedWeapon(WEAPONTYPE_M4, 1000);
+		SetCurrentWeapon(WEAPONTYPE_M4);
+#else
 		GiveDelayedWeapon(WEAPONTYPE_UZI, 1000);
 		SetCurrentWeapon(WEAPONTYPE_UZI);
+#endif
 		m_fArmour = 50.0f;
 		m_wepSkills = 32; /* TODO: what is this? seems unused */
 #ifdef IMPROVED_TECH_PART // AI
@@ -95,29 +100,16 @@ CCopPed::CCopPed(eCopType copType, int32 modifier) : CPed(PEDTYPE_COP)
 		if (CGeneral::GetRandomTrueFalse()) {
 			GiveDelayedWeapon(WEAPONTYPE_M16, 1000);
 			SetCurrentWeapon(WEAPONTYPE_M16);
-		} else if (CGeneral::GetRandomTrueFalse()) {
-			GiveDelayedWeapon(WEAPONTYPE_M4, 1000);
-			SetCurrentWeapon(WEAPONTYPE_M4);
 		} else {
 			GiveDelayedWeapon(WEAPONTYPE_STEYR, 1000);
 			SetCurrentWeapon(WEAPONTYPE_STEYR);
 		}
 #elif defined EX_WEAPON_M16 // COP_ARMY - random weapon
-		if (CGeneral::GetRandomTrueFalse()) {
-			GiveDelayedWeapon(WEAPONTYPE_M16, 1000);
-			SetCurrentWeapon(WEAPONTYPE_M16);
-		} else {
-			GiveDelayedWeapon(WEAPONTYPE_M4, 1000);
-			SetCurrentWeapon(WEAPONTYPE_M4);
-		}
+		GiveDelayedWeapon(WEAPONTYPE_M16, 1000);
+		SetCurrentWeapon(WEAPONTYPE_M16);
 #elif defined EX_WEAPON_STEYR
-		if (CGeneral::GetRandomTrueFalse()) {
-			GiveDelayedWeapon(WEAPONTYPE_STEYR, 1000);
-			SetCurrentWeapon(WEAPONTYPE_STEYR);
-		} else {
-			GiveDelayedWeapon(WEAPONTYPE_M4, 1000);
-			SetCurrentWeapon(WEAPONTYPE_M4);
-		}
+		GiveDelayedWeapon(WEAPONTYPE_STEYR, 1000);
+		SetCurrentWeapon(WEAPONTYPE_STEYR);
 #else
 		GiveDelayedWeapon(WEAPONTYPE_M4, 1000);
 		SetCurrentWeapon(WEAPONTYPE_M4);
