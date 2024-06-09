@@ -503,7 +503,7 @@ Comprobar el registro
 Cabos sueltos
 
 [ANSWER]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para responder a una llamada a tu teléfono móvil.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para responder a una llamada a tu teléfono móvil.
 
 [MOB_01A]
 ¡Estás bien figura! Soy Paul. Puede que tenga algún resultado para ti, pero necesito hablar contigo cara a cara.
@@ -1850,7 +1850,7 @@ No hay más regalitos. ¡100 $ para volver a pintar!
 Vuelve cuando no estés tan ocupado...
 
 [HELP9_C]
-Pulsa ~h~~k~~k~~PED_FIREWEAPON~~w~para ~h~disparar~w~ el fusil de francotirador.
+Pulsa ~h~~k~~k~~PED_FIREWEAPON~ ~w~para ~h~disparar~w~ el fusil de francotirador.
 
 [TAXI2]
 ~r~¡Te has quedado sin tiempo!
@@ -2420,7 +2420,7 @@ BIENVENIDO A
 GANANCIAS: ~1~ $
 
 [PBOAT_2] { reVC update }
-Pulsa ~h~~k~~VEHICLE_FIREWEAPON~~w~ para disparar los cañones del barco.
+Pulsa ~h~~k~~VEHICLE_FIREWEAPON~ ~w~para disparar los cañones del barco.
 
 [HJSTAT]
 Distancia: ~1~.~1~m Altura: ~1~.~1~m Vueltas: ~1~ Rotación: ~1~_
@@ -2429,7 +2429,7 @@ Distancia: ~1~.~1~m Altura: ~1~.~1~m Vueltas: ~1~ Rotación: ~1~_
 Distancia: ~1~.~1~m Altura: ~1~.~1~m Vueltas: ~1~ Rotación: ~1~_ ¡qué gran aterrizaje!
 
 [ATUTOR]
-Pulsa ~h~~k~~TOGGLE_SUBMISSIONS~~w~ para activar o desactivar las misiones de ATS.
+Pulsa ~h~~k~~TOGGLE_SUBMISSIONS~ ~w~para activar o desactivar las misiones de ATS.
 
 [FEST_HA]
 Nivel más alto de misión de ATS
@@ -3797,7 +3797,7 @@ MASACRES RUMPO
 Nuevo motor y trabajo de pintura. ¡Los policías no te reconocerán!
 
 [HELP15]
-Cuando vayas a pie, pulsa ~h~~k~~PED_LOOKBEHIND~~w~ para ~h~mirar detrás~w~. Utiliza el ~h~joystick analógico derecho~w~ para ~h~mirar a tu alrededor~w~.
+Cuando vayas a pie, pulsa ~h~~k~~PED_LOOKBEHIND~ ~w~para ~h~mirar detrás~w~. Utiliza el ~h~joystick analógico derecho~w~ para ~h~mirar a tu alrededor~w~.
 
 [FEC_LB4]
 Mirar detrás (botón R3)
@@ -3878,13 +3878,13 @@ Dic
 ~g~BONIFICACIÓN ~1~ $
 
 [HORN1]
-Pulsa ~h~~k~~VEHICLE_HORN~~w~para tocar el ~h~claxon.
+Pulsa ~h~~k~~VEHICLE_HORN~ ~w~para tocar el ~h~claxon.
 
 [HORN2]
-Pulsa ~h~~k~~VEHICLE_HORN~~w~para tocar el ~h~claxon.
+Pulsa ~h~~k~~VEHICLE_HORN~ ~w~para tocar el ~h~claxon.
 
 [HORN3]
-Pulsa ~h~~k~~VEHICLE_HORN~~w~para tocar el ~h~claxon.
+Pulsa ~h~~k~~VEHICLE_HORN~ ~w~para tocar el ~h~claxon.
 
 [FEC_EXV]
 Entrar y salir de vehículo
@@ -5640,16 +5640,16 @@ Las bombas de coche son 500 $ cada una.
 Tu coche ya está equipado con una bomba.
 
 [GA_6] { reVC update }
-¡Apárcalo, actívala pulsando ~h~~k~~VEHICLE_FIREWEAPON~~w~ y SAL PITANDO!
+¡Apárcalo, actívala pulsando ~h~~k~~VEHICLE_FIREWEAPON~ ~w~y SAL PITANDO!
 
 [GA_7] { reVC update }
-¡Ármalo pulsando ~h~~k~~VEHICLE_FIREWEAPON~~w~. La bomba explotará cuando se arranque el motor.
+¡Ármalo pulsando ~h~~k~~VEHICLE_FIREWEAPON~ ~w~. La bomba explotará cuando se arranque el motor.
 
 [GA_6B] { reVC update }
-¡Apárcalo, actívala pulsando ~h~~k~~VEHICLE_FIREWEAPON~~w~ y SAL PITANDO!
+¡Apárcalo, actívala pulsando ~h~~k~~VEHICLE_FIREWEAPON~ ~w~y SAL PITANDO!
 
 [GA_7B] { reVC update }
-¡Ármalo pulsando ~h~~k~~VEHICLE_FIREWEAPON~~w~. La bomba explotará cuando se arranque el motor.
+¡Ármalo pulsando ~h~~k~~VEHICLE_FIREWEAPON~ ~w~. La bomba explotará cuando se arranque el motor.
 
 [MOB_70A]
 Tommy, soy yo, el coronel Cortez. Mira, me parece que eres la clase de hombre que lleva a cabo los trabajos. Así que ayúdame, por favor.
@@ -5790,22 +5790,22 @@ Apartamento de Ocean Heights adquirido: ~1~ $
 Chabola Skumole adquirida: ~1~ $
 
 [HELP6_C]
-Pulsa ~h~~k~~VEHICLE_HANDBRAKE~~w~ para usar el freno de mano del vehículo.
+Pulsa ~h~~k~~VEHICLE_HANDBRAKE~ ~w~para usar el freno de mano del vehículo.
 
 [HELP2_A]
-Pulsa ~h~~k~~PED_SPRINT~~w~~w~ cuando estés corriendo para ~h~esprintar.
+Pulsa ~h~~k~~PED_SPRINT~ ~w~~w~ cuando estés corriendo para ~h~esprintar.
 
 [HELP4_A]
-Pulsa ~h~~k~~VEHICLE_ACCELERATE~~w~ para acelerar.
+Pulsa ~h~~k~~VEHICLE_ACCELERATE~ ~w~para acelerar.
 
 [HELP5_A]
-Pulsa ~h~~k~~VEHICLE_BRAKE~~w~ para frenar o para dar marcha atrás si el vehículo se ha detenido.
+Pulsa ~h~~k~~VEHICLE_BRAKE~ ~w~para frenar o para dar marcha atrás si el vehículo se ha detenido.
 
 [HELP8_A]
-Pulsa ~h~~k~~PED_SNIPER_ZOOM_IN~~w~ para hacer zoom con el rifle y ~h~~k~~PED_SNIPER_ZOOM_OUT~~w~ para alejar la vista.
+Pulsa ~h~~k~~PED_SNIPER_ZOOM_IN~ ~w~para hacer zoom con el rifle y ~h~~k~~PED_SNIPER_ZOOM_OUT~ ~w~para alejar la vista.
 
 [PBOAT_1] { reVC update }
-Pulsa ~h~ ~k~~VEHICLE_FIREWEAPON~~w~ para disparar los cañones del barco.
+Pulsa ~h~ ~k~~VEHICLE_FIREWEAPON~ ~w~para disparar los cañones del barco.
 
 [SEG3_4] { reVC update }
 ~g~Puedes recoger bombas simplemente pilotando tu Helicóptero RC cerca de cada una de ellas, para soltar una bomba pulsa ~h~~k~~VEHICLE_FIREWEAPON~~g~.
@@ -5820,37 +5820,37 @@ A continuación dispara pulsando ~h~~k~~VEHICLE_FIREWEAPON~.
 A continuación dispara pulsando ~h~~k~~VEHICLE_FIREWEAPON~.
 
 [TTUTOR]
-Pulsa ~h~~k~~TOGGLE_SUBMISSIONS~~w~ para comenzar o cancelar las misiones de taxista.
+Pulsa ~h~~k~~TOGGLE_SUBMISSIONS~ ~w~para comenzar o cancelar las misiones de taxista.
 
 [TTUTOR2]
-Pulsa ~h~~k~~TOGGLE_SUBMISSIONS~~w~ para comenzar o cancelar las misiones de taxista.
+Pulsa ~h~~k~~TOGGLE_SUBMISSIONS~ ~w~para comenzar o cancelar las misiones de taxista.
 
 [FTUTOR]
-Pulsa ~h~~k~~TOGGLE_SUBMISSIONS~~w~ para comenzar o cancelar las misiones del camión de bomberos.
+Pulsa ~h~~k~~TOGGLE_SUBMISSIONS~ ~w~para comenzar o cancelar las misiones del camión de bomberos.
 
 [FTUTOR2]
-Pulsa ~h~~k~~TOGGLE_SUBMISSIONS~~w~ para comenzar o cancelar las misiones del camión de bomberos.
+Pulsa ~h~~k~~TOGGLE_SUBMISSIONS~ ~w~para comenzar o cancelar las misiones del camión de bomberos.
 
 [CTUTOR]
-Pulsa ~h~~k~~TOGGLE_SUBMISSIONS~~w~ para comenzar o cancelar las misiones de justiciero.
+Pulsa ~h~~k~~TOGGLE_SUBMISSIONS~ ~w~para comenzar o cancelar las misiones de justiciero.
 
 [CTUTOR2]
-Pulsa ~h~~k~~TOGGLE_SUBMISSIONS~~w~ para comenzar o cancelar las misiones de justiciero.
+Pulsa ~h~~k~~TOGGLE_SUBMISSIONS~ ~w~para comenzar o cancelar las misiones de justiciero.
 
 [HELP8_B]
 Pulsa ~h~~k~~PED_SNIPER_ZOOM_IN~ ~w~para ~h~acercar la vista ~w~con el rifle y ~h~~k~~PED_SNIPER_ZOOM_OUT~ ~w~para ~h~alejar la vista ~w~otra vez.
 
 [ATUTOR3]
-Pulsa ~h~~k~~TOGGLE_SUBMISSIONS~~w~ para comenzar o cancelar las misiones de ATS.
+Pulsa ~h~~k~~TOGGLE_SUBMISSIONS~ ~w~para comenzar o cancelar las misiones de ATS.
 
 [GUN_H1]
-~w~Pulsa ~h~~k~~PED_SPRINT~~w~ para comprar. ~w~Pulsa ~h~~k~~VEHICLE_ENTER_EXIT~~w~ para salir.
+~w~Pulsa ~h~~k~~PED_SPRINT~ ~w~para comprar. ~w~Pulsa ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~para salir.
 
 [PU_CF3] { reVC update }
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para reemplazar tu arma actual en esta ranura.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para reemplazar tu arma actual en esta ranura.
 
 [PU_CF4] { reVC update }
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para reemplazar tu arma actual en esta ranura.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para reemplazar tu arma actual en esta ranura.
 
 [HELP9_B]
 Pulsa ~h~~k~~PED_FIREWEAPON~ ~w~para ~h~disparar~w~ el rifle de francotirador.
@@ -5859,25 +5859,25 @@ Pulsa ~h~~k~~PED_FIREWEAPON~ ~w~para ~h~disparar~w~ el rifle de francotirador.
 Si no quieres subir al coche mientras se lo estás robando a alguien, pulsa ~h~~k~~PED_SPRINT~.
 
 [HELP6_A]
-Pulsa ~h~~k~~VEHICLE_HANDBRAKE~~w~ para usar el freno de mano del vehículo.
+Pulsa ~h~~k~~VEHICLE_HANDBRAKE~ ~w~para usar el freno de mano del vehículo.
 
 [HELP6_D]
-Pulsa ~h~~k~~VEHICLE_HANDBRAKE~~w~ para usar el freno de mano del vehículo.
+Pulsa ~h~~k~~VEHICLE_HANDBRAKE~ ~w~para usar el freno de mano del vehículo.
 
 [HELP26]
-Pulsa ~h~~k~~VEHICLE_ENTER_EXIT~~w~ para subir o bajar de un vehículo.
+Pulsa ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~para subir o bajar de un vehículo.
 
 [HELP27]
-Pulsa ~h~~k~~VEHICLE_TURRETUP~~w~ o ~h~~k~~VEHICLE_TURRETDOWN~~w~ para equilibrar tu peso en la moto.
+Pulsa ~h~~k~~VEHICLE_TURRETUP~ ~w~o ~h~~k~~VEHICLE_TURRETDOWN~ ~w~para equilibrar tu peso en la moto.
 
 [HELP28]
-Pulsa ~h~~k~~VEHICLE_TURRETUP~~w~ o ~h~~k~~VEHICLE_TURRETDOWN~~w~ para equilibrar tu peso en la moto.
+Pulsa ~h~~k~~VEHICLE_TURRETUP~ ~w~o ~h~~k~~VEHICLE_TURRETDOWN~ ~w~para equilibrar tu peso en la moto.
 
 [HELP35]
-Pulsa ~h~~k~~GO_LEFT~~w~ o ~h~~k~~GO_RIGHT~~w~ para conducir el vehículo.
+Pulsa ~h~~k~~GO_LEFT~ ~w~o ~h~~k~~GO_RIGHT~ ~w~para conducir el vehículo.
 
 [HELP36]
-Pulsa ~h~~k~~GO_LEFT~~w~ o ~h~~k~~GO_RIGHT~~w~ para conducir el vehículo.
+Pulsa ~h~~k~~GO_LEFT~ ~w~o ~h~~k~~GO_RIGHT~ ~w~para conducir el vehículo.
 
 [HELP42]
 Ve al ~q~icono rosa~w~ para encontrar el hotel.
@@ -5949,139 +5949,139 @@ No puedes comprar el club de striptease en este momento, vuelve luego.
 PERSECUCIÓN
 
 [NBMN_L]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar la casa Swanko por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar la casa Swanko por ~1~ $.
 
 [NBMN_T]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar la casa Swanko por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar la casa Swanko por ~1~ $.
 
 [NBMN_C]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar la casa Swanko por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar la casa Swanko por ~1~ $.
 
 [LNKV_L]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el apartamento de Links View por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el apartamento de Links View por ~1~ $.
 
 [LNKV_T]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el apartamento de Linsk View por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el apartamento de Linsk View por ~1~ $.
 
 [LNKV_C]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el apartamento de Links View por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el apartamento de Links View por ~1~ $.
 
 [HYCO_L]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el piso de Hyman por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el piso de Hyman por ~1~ $.
 
 [HYCO_T]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el piso de Hyman por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el piso de Hyman por ~1~ $.
 
 [HYCO_C]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el piso de Hyman por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el piso de Hyman por ~1~ $.
 
 [OCHE_L]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el apartamento de Ocean Heights por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el apartamento de Ocean Heights por ~1~ $.
 
 [OCHE_T]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el apartamento de Ocean Heights por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el apartamento de Ocean Heights por ~1~ $.
 
 [OCHE_C]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el apartamento de Ocean Heights por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el apartamento de Ocean Heights por ~1~ $.
 
 [WASH_L]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el 1102 de la calle Washington por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el 1102 de la calle Washington por ~1~ $.
 
 [WASH_T]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el 1102 de la calle Washington por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el 1102 de la calle Washington por ~1~ $.
 
 [WASH_C]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el 1102 de la calle Washington por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el 1102 de la calle Washington por ~1~ $.
 
 [VCPT_L]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el 3321 de Vice Point por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el 3321 de Vice Point por ~1~ $.
 
 [VCPT_T]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el 3321 de Vice Point por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el 3321 de Vice Point por ~1~ $.
 
 [VCPT_C]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el 3321 de Vice Point por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el 3321 de Vice Point por ~1~ $.
 
 [SKUM_L]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar la chabola Skumole por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar la chabola Skumole por ~1~ $.
 
 [SKUM_T]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~para comprar la chabola Skumole por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar la chabola Skumole por ~1~ $.
 
 [SKUM_C]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~ para comprar la chabola Skumole por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar la chabola Skumole por ~1~ $.
 
 [PRNT_L]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar la imprenta por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar la imprenta por ~1~ $.
 
 [PRNT_T]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar la imprenta por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar la imprenta por ~1~ $.
 
 [PRNT_C]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar la imprenta por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar la imprenta por ~1~ $.
 
 [CAR_L]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el concesionario de coches por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el concesionario de coches por ~1~ $.
 
 [CAR_T]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el concesionario de coches por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el concesionario de coches por ~1~ $.
 
 [CAR_C]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el concesionario de coches por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el concesionario de coches por ~1~ $.
 
 [PORN_L]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar los estudios de cine por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar los estudios de cine por ~1~ $.
 
 [PORN_T]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar los estudios de cine por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar los estudios de cine por ~1~ $.
 
 [PORN_C]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar los estudios de cine por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar los estudios de cine por ~1~ $.
 
 [ICE_L]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar la fábrica de helados por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar la fábrica de helados por ~1~ $.
 
 [ICE_T]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar la fábrica de helados por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar la fábrica de helados por ~1~ $.
 
 [ICE_C]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar la fábrica de helados por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar la fábrica de helados por ~1~ $.
 
 [TAXI_L]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar la compañía de taxis por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar la compañía de taxis por ~1~ $.
 
 [TAXI_T]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar la compañía de taxis por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar la compañía de taxis por ~1~ $.
 
 [TAXI_C]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar la compañía de taxis por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar la compañía de taxis por ~1~ $.
 
 [BANK_L]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el Malibú por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el Malibú por ~1~ $.
 
 [BANK_T]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el Malibú por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el Malibú por ~1~ $.
 
 [BANK_C]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el Malibú por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el Malibú por ~1~ $.
 
 [BOAT_L]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el astillero por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el astillero por ~1~ $.
 
 [BOAT_T]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el astillero por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el astillero por ~1~ $.
 
 [BOAT_C]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el astillero por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el astillero por ~1~ $.
 
 [STRP_L]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el club Pole Position por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el club Pole Position por ~1~ $.
 
 [STRP_T]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el club Pole Position por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el club Pole Position por ~1~ $.
 
 [STRP_C]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar el club Pole Position por ~1~ $.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar el club Pole Position por ~1~ $.
 
 [STOCK]
 ~r~Agotado
@@ -6354,7 +6354,7 @@ Tiempo más rápido en el ''Conocircuito''
 Detente en el ~q~marcador rosa.
 
 [HELP45]
-Pulsa ~h~~k~~PED_DUCK~~w~ para agacharte. Esto aumentará tu puntería con las armas que llevas.
+Pulsa ~h~~k~~PED_DUCK~ ~w~para agacharte. Esto aumentará tu puntería con las armas que llevas.
 
 [RCR1_5]
 Carrera Bandit RC
@@ -6450,16 +6450,16 @@ Tommy, ¡hazte con ese helicóptero!
 Tiempo más rápido en Punto de control Charlie
 
 [HELP50]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para colocar la cámara detrás de ti.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para colocar la cámara detrás de ti.
 
 [HELP51]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para colocar la cámara detrás de ti.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para colocar la cámara detrás de ti.
 
 [HELP52]
-Pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para colocar la cámara detrás de ti.
+Pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para colocar la cámara detrás de ti.
 
 [HELP53]
-Pulsa ~h~~k~~PED_CYCLE_WEAPON_LEFT~~w~ o ~h~~k~~PED_CYCLE_WEAPON_RIGHT~~w~ para elegir entre todas tus armas disponibles.
+Pulsa ~h~~k~~PED_CYCLE_WEAPON_LEFT~ ~w~o ~h~~k~~PED_CYCLE_WEAPON_RIGHT~ ~w~para elegir entre todas tus armas disponibles.
 
 [HELP46]
 Hay ocho categorías de armas diferentes.
@@ -6471,7 +6471,7 @@ Puedes llevar una arma de cada categoría al mismo tiempo: un tipo de pistola, u
 ~w~Cuesta: ~1~ $. ~r~Si compras esta arma reemplazarás la actual.
 
 [HELP2A2]
-Pulsa ~h~~k~~PED_SPRINT~~w~ cuando corras para ~h~esprintar.
+Pulsa ~h~~k~~PED_SPRINT~ ~w~cuando corras para ~h~esprintar.
 
 [HLPSN_A]
 El rifle de francotirador te permite hacer zoom de acercamiento y disparar con más precisión a objetivos a una cierta distancia.
@@ -6483,26 +6483,26 @@ Mantén pulsado ~h~~k~~PED_LOCK_TARGET~ ~w~para ~h~apuntar~w~ con el rifle de fr
 Mantén pulsado ~h~~k~~PED_LOCK_TARGET~ ~w~para ~h~apuntar~w~ con el rifle de francotirador.
 
 [HLPSN_D]
-Pulsa ~h~~k~~PED_SNIPER_ZOOM_IN~~w~ para ~h~acercar la vista ~w~con el rifle y ~h~~k~~PED_SNIPER_ZOOM_OUT~ ~w~para ~h~alejarla~w~.
+Pulsa ~h~~k~~PED_SNIPER_ZOOM_IN~ ~w~para ~h~acercar la vista ~w~con el rifle y ~h~~k~~PED_SNIPER_ZOOM_OUT~ ~w~para ~h~alejarla~w~.
 
 [HLPSN_E]
-Pulsa ~h~~k~~PED_FIREWEAPON~~w~ para ~h~disparar~w~ el rifle de francotirador.
+Pulsa ~h~~k~~PED_FIREWEAPON~ ~w~para ~h~disparar~w~ el rifle de francotirador.
 
 [HLPSN_F]
-Pulsa ~h~~k~~PED_FIREWEAPON~~w~ para ~h~disparar~w~ el rifle de francotirador.
+Pulsa ~h~~k~~PED_FIREWEAPON~ ~w~para ~h~disparar~w~ el rifle de francotirador.
 
 [HLPSN_G]
-Pulsa ~h~~k~~PED_FIREWEAPON~~w~ para ~h~disparar~w~ el rifle de francotirador.
+Pulsa ~h~~k~~PED_FIREWEAPON~ ~w~para ~h~disparar~w~ el rifle de francotirador.
 
 [PLANE_H]
-Mueve ~h~~k~~VEHICLE_ACCELERATE~~w~ hacia delante para acelerar y a izquierda o derecha para girar.
+Mueve ~h~~k~~VEHICLE_ACCELERATE~ ~w~hacia delante para acelerar y a izquierda o derecha para girar.
 
 [PLANE_4] { reVC update }
-{Mueve ~h~~k~~VEHICLE_ACCELERATE~~w~ hacia delante para acelerar y a izquierda o derecha para girar.}
+{Mueve ~h~~k~~VEHICLE_ACCELERATE~ ~w~hacia delante para acelerar y a izquierda o derecha para girar.}
 Utiliza el joystick analógico derecho para acelerar, tira hacia atrás el joystick analógico izquierdo para ascender, empújalo hacia adelante para descender. Para girar muévelo a izquierda o derecha.
 
 [HELP55]
-Pulsa ~h~~k~~PED_FIREWEAPON~~w~ para atacar al chef.
+Pulsa ~h~~k~~PED_FIREWEAPON~ ~w~para atacar al chef.
 
 [STPR_8]
 Club Pole Position
@@ -6833,19 +6833,19 @@ Misión de camión de bomberos nivel ~1~
 
 
 [HELP56]
-Pulsa ~h~~k~~CAMERA_CHANGE_VIEW_ALL_SITUATIONS~~w~ para ajustar la cámara.
+Pulsa ~h~~k~~CAMERA_CHANGE_VIEW_ALL_SITUATIONS~ ~w~para ajustar la cámara.
 
 [HELP57]
-Pulsa ~h~~k~~CAMERA_CHANGE_VIEW_ALL_SITUATIONS~~w~ para ajustar la cámara.
+Pulsa ~h~~k~~CAMERA_CHANGE_VIEW_ALL_SITUATIONS~ ~w~para ajustar la cámara.
 
 [HELP58]
-Mientras estás apuntando, puedes pulsar ~h~~k~~PED_CYCLE_TARGET_LEFT~~w~ o ~h~~k~~PED_CYCLE_TARGET_RIGHT~~w~para cambiar de objetivo.
+Mientras estás apuntando, puedes pulsar ~h~~k~~PED_CYCLE_TARGET_LEFT~ ~w~o ~h~~k~~PED_CYCLE_TARGET_RIGHT~ ~w~para cambiar de objetivo.
 
 [HELP59]
-Mientras estás apuntando, puedes pulsar ~h~~k~~PED_CYCLE_TARGET_LEFT~~w~ o ~h~~k~~PED_CYCLE_TARGET_RIGHT~~w~para cambiar de objetivo.
+Mientras estás apuntando, puedes pulsar ~h~~k~~PED_CYCLE_TARGET_LEFT~ ~w~o ~h~~k~~PED_CYCLE_TARGET_RIGHT~ ~w~para cambiar de objetivo.
 
 [HELP60]
-Si pulsas ~h~~k~~PED_SPRINT~ ~w~ mientras estás robando un coche, no te subirás en él.
+Si pulsas ~h~~k~~PED_SPRINT~ ~w~mientras estás robando un coche, no te subirás en él.
 
 [HELP61]
 Ahora dispones de munición ilimitada y el doble de robustez en todos los vehículos.
@@ -7295,7 +7295,7 @@ Controles clásicos
 OPCIÓN NO DISPONIBLE
 
 [FEH_MPH]
-RATÓN, CURSORES PARA MOVERSE - RE. PAG, AV. PAG, RUEDA RATÓN PARA ZOOM, L - LEYENDA
+MOUSE, CURSORS to move, MOUSE WHEEL to zoom, L - legend, RIGHT MOUSE BUTTON - marker, TAB - collectables
 
 [FEA_MP3]
 REPRODUCTOR MP3
@@ -9936,10 +9936,10 @@ FUEGOS:
 ~g~Se ha informado de un vehículo ardiendo en la zona de ~a~. Ve y extingue el fuego.
 
 [SIREN_1:FIRETRK]
-Para activar la sirena de este vehículo, pulsa ~h~~k~~VEHICLE_HORN~~w~.
+Para activar la sirena de este vehículo, pulsa ~h~~k~~VEHICLE_HORN~ ~w~.
 
 [SIREN_2:FIRETRK]
-Para activar la sirena de este vehículo, pulsa ~h~~k~~VEHICLE_HORN~~w~.
+Para activar la sirena de este vehículo, pulsa ~h~~k~~VEHICLE_HORN~ ~w~.
 
 [FIREPRO:FIRETRK]
 Nivel 12 de la misión del camión de bomberos completado. ¡Ahora eres completamente ignífugo!
@@ -9951,10 +9951,10 @@ Misión de bombero terminada.
 ~g~Se ha informado de que hay vehículos ardiendo en la ~a~ zona. Ve y apaga el fuego.
 
 [SPRAY_4:FIRETRK] { reVC update }
-Pulsa ~h~~k~~VEHICLE_FIREWEAPON~ ~w~para disparar el cañón de agua y ~h~~k~~VEHICLE_TURRETLEFT~~w~ o ~h~~k~~VEHICLE_TURRETRIGHT~~w~ para apuntar con él.
+Pulsa ~h~~k~~VEHICLE_FIREWEAPON~ ~w~para disparar el cañón de agua y ~h~~k~~VEHICLE_TURRETLEFT~ ~w~o ~h~~k~~VEHICLE_TURRETRIGHT~ ~w~para apuntar con él.
 
 [SPRAY_1:FIRETRK] { reVC update }
-Pulsa ~h~~k~~VEHICLE_FIREWEAPON~ ~w~para disparar el cañón de agua y ~h~~k~~VEHICLE_TURRETLEFT~~w~ o ~h~~k~~VEHICLE_TURRETRIGHT~~w~ para apuntar con él.
+Pulsa ~h~~k~~VEHICLE_FIREWEAPON~ ~w~para disparar el cañón de agua y ~h~~k~~VEHICLE_TURRETLEFT~ ~w~o ~h~~k~~VEHICLE_TURRETRIGHT~ ~w~para apuntar con él.
 
 {=================================== MISSION TABLE GENERA1 ===================================}
 
@@ -10034,22 +10034,22 @@ Te pagaré el doble, Tommy, ¡EL DOBLE!
 ~g~Conduce tu vehículo hasta el interior del ~h~taller de pintura~w~ para perder tu ~h~nivel de se busca~w~, reparar y volver a pintar tu vehículo. El precio es ~h~100 $~g~. Esta vez es gratis.
 
 [GEN1_01:GENERA1]
-Cuando estés corriendo, mantén pulsado ~h~~k~~PED_FIREWEAPON~~w~ para preparar un ataque cuerpo a cuerpo.
+Cuando estés corriendo, mantén pulsado ~h~~k~~PED_FIREWEAPON~ ~w~para preparar un ataque cuerpo a cuerpo.
 
 [GEN1_02:GENERA1]
-Cuando estés corriendo, mantén pulsado ~h~~k~~PED_FIREWEAPON~~w~ para preparar un ataque cuerpo a cuerpo.
+Cuando estés corriendo, mantén pulsado ~h~~k~~PED_FIREWEAPON~ ~w~para preparar un ataque cuerpo a cuerpo.
 
 [GEN1_03:GENERA1]
-Cuando estés corriendo, mantén pulsado ~h~~k~~PED_FIREWEAPON~~w~ para preparar un ataque cuerpo a cuerpo.
+Cuando estés corriendo, mantén pulsado ~h~~k~~PED_FIREWEAPON~ ~w~para preparar un ataque cuerpo a cuerpo.
 
 [GEN1_14:GENERA1]
-Suelta ~h~~k~~PED_FIREWEAPON~~w~ para atacar.
+Suelta ~h~~k~~PED_FIREWEAPON~ ~w~para atacar.
 
 [GEN1_15:GENERA1]
-Suelta ~h~~k~~PED_FIREWEAPON~~w~ para atacar.
+Suelta ~h~~k~~PED_FIREWEAPON~ ~w~para atacar.
 
 [GEN1_16:GENERA1]
-Suelta ~h~~k~~PED_FIREWEAPON~~w~ para atacar.
+Suelta ~h~~k~~PED_FIREWEAPON~ ~w~para atacar.
 
 [GEN1_23:GENERA1]
 ~g~Vuelve pasando por las puertas para regresar a la planta baja.
@@ -10251,10 +10251,10 @@ Salud de Díaz:
 Estarán aquí en cualquier minuto, mejor será que vayamos tomando posiciones estratégicas.
 
 [GEN3_40:GENERA3] { reVC update }
-Para ~h~disparar hacia el frente ~w~sobre una ~h~moto ~w~pulsa ~h~~k~~VEHICLE_FIREWEAPON~~w~.
+Para ~h~disparar hacia el frente ~w~sobre una ~h~moto ~w~pulsa ~h~~k~~VEHICLE_FIREWEAPON~ ~w~.
 
 [GEN3_41:GENERA3] { reVC update }
-Para ~h~disparar hacia el frente ~w~sobre una ~h~moto ~w~pulsa ~h~~k~~VEHICLE_FIREWEAPON~~w~.
+Para ~h~disparar hacia el frente ~w~sobre una ~h~moto ~w~pulsa ~h~~k~~VEHICLE_FIREWEAPON~ ~w~.
 
 [GEN3_46:GENERA3]
 ¡Mierda!
@@ -10290,31 +10290,31 @@ Salud de Lance:
 El Kruger es un rifle de asalto que te permite apuntar en primera persona manualmente.
 
 [GEN3_58:GENERA3]
-Mantén pulsado ~h~~k~~PED_LOCK_TARGET~~w~ para ~h~apuntar~w~ con un rifle de asalto.
+Mantén pulsado ~h~~k~~PED_LOCK_TARGET~ ~w~para ~h~apuntar~w~ con un rifle de asalto.
 
 [GEN3_59:GENERA3]
-Mantén pulsado ~h~~k~~PED_LOCK_TARGET~~w~ para ~h~apuntar~w~ con un rifle de asalto.
+Mantén pulsado ~h~~k~~PED_LOCK_TARGET~ ~w~para ~h~apuntar~w~ con un rifle de asalto.
 
 [GEN3_60:GENERA3]
-Pulsa ~h~~k~~PED_FIREWEAPON~~w~ para ~h~disparar~w~ un rifle de asalto.
+Pulsa ~h~~k~~PED_FIREWEAPON~ ~w~para ~h~disparar~w~ un rifle de asalto.
 
 [GEN3_61:GENERA3]
-Pulsa ~h~~k~~PED_FIREWEAPON~~w~ para ~h~disparar~w~ un rifle de asalto.
+Pulsa ~h~~k~~PED_FIREWEAPON~ ~w~para ~h~disparar~w~ un rifle de asalto.
 
 [GEN3_62:GENERA3]
-Pulsa ~h~~k~~PED_FIREWEAPON~~w~ para ~h~disparar~w~ un rifle de asalto.
+Pulsa ~h~~k~~PED_FIREWEAPON~ ~w~para ~h~disparar~w~ un rifle de asalto.
 
 [GEN3_63:GENERA3]
 Además de realizar maniobras de acercamiento,~h~ las motos ~w~te permiten ~h~disparar hacia adelante~w~.
 
 [GEN3_64:GENERA3] { reVC update }
-Para ~h~disparar hacia el frente ~w~sobre una ~h~moto ~w~pulsa ~h~~k~~VEHICLE_FIREWEAPON~~w~.
+Para ~h~disparar hacia el frente ~w~sobre una ~h~moto ~w~pulsa ~h~~k~~VEHICLE_FIREWEAPON~ ~w~.
 
 [GEN3_65:GENERA3] { reVC update }
-Para ~h~disparar hacia el frente ~w~sobre una ~h~moto ~w~pulsa ~h~~k~~VEHICLE_FIREWEAPON~~w~.
+Para ~h~disparar hacia el frente ~w~sobre una ~h~moto ~w~pulsa ~h~~k~~VEHICLE_FIREWEAPON~ ~w~.
 
 [GEN3_66:GENERA3] { reVC update }
-Para ~h~disparar hacia el frente ~w~sobre una ~h~moto ~w~pulsa ~h~~k~~VEHICLE_FIREWEAPON~~w~.
+Para ~h~disparar hacia el frente ~w~sobre una ~h~moto ~w~pulsa ~h~~k~~VEHICLE_FIREWEAPON~ ~w~.
 
 [GEN3_67:GENERA3]
 Para disparar hacia el frente en una moto deberás tener un subfusil.
@@ -10715,7 +10715,7 @@ Vuela los barcos y conviértelos en madera de ataúd.
 Muchas gracias por el té.
 
 [HAT2_B3:HAIT2] { reVC update }
-Pulsa ~h~~k~~VEHICLE_FIREWEAPON~~w~ para soltar una bomba. Pulsa ~h~~k~~VEHICLE_ENTER_EXIT~~w~ para cancelar.
+Pulsa ~h~~k~~VEHICLE_FIREWEAPON~ ~w~para soltar una bomba. Pulsa ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~para cancelar.
 
 {=================================== MISSION TABLE HAIT3 ===================================}
 
@@ -10886,7 +10886,7 @@ FÁBRICA DE HELADOS CONSOLIDADA
 ~g~La fábrica de helados generará ahora unos ingresos máximos de hasta ~1~ $. Asegúrate de recaudarlos regularmente.
 
 [ICC1_2:ICECRE1]
-~g~Aparca la furgoneta y pulsa ~h~~k~~VEHICLE_HORN~~w~ para que suene la música indicando a los clientes que estás listo para hacer empezar.
+~g~Aparca la furgoneta y pulsa ~h~~k~~VEHICLE_HORN~ ~w~para que suene la música indicando a los clientes que estás listo para hacer empezar.
 
 [ICC1_16:ICECRE1]
 ~g~Utiliza la furgoneta Mr. Whoopee para distribuir los productos Cherry Popper por Vice City.
@@ -11768,10 +11768,10 @@ Voy a ver qué puedo averiguar. Te estaré vigilando, Tommy.
 ¡Mantén ~h~~k~~PED_LOCK_TARGET~ ~w~para ~h~apuntar automáticamente~w~ y pulsa ~h~~k~~PED_FIREWEAPON~ ~w~para ~h~disparar!
 
 [HELP17:LAWYER2]
-Pulsa ~h~~k~~PED_FIREWEAPON~~w~ para atacar al chef.
+Pulsa ~h~~k~~PED_FIREWEAPON~ ~w~para atacar al chef.
 
 [HELP18:LAWYER2]
-Pulsa ~h~~k~~PED_FIREWEAPON~~w~ para atacar al chef.
+Pulsa ~h~~k~~PED_FIREWEAPON~ ~w~para atacar al chef.
 
 [LAW3_11:LAWYER2]
 Sitúate en el ~q~marcador rosa~w~ para ver las armas disponibles.
@@ -11780,10 +11780,10 @@ Sitúate en el ~q~marcador rosa~w~ para ver las armas disponibles.
 Puedes seleccionar armas pulsando ~h~izquierda~w~ o ~h~derecha~w~ en los ~h~botones de dirección~w~.
 
 [LAW3_13:LAWYER2]
-Si dispones de suficiente dinero, puedes comprar armas pulsando ~h~~k~~PED_SPRINT~~w~.
+Si dispones de suficiente dinero, puedes comprar armas pulsando ~h~~k~~PED_SPRINT~ ~w~.
 
 [LAW3_14:LAWYER2]
-Puedes salir de la tienda pulsando ~h~~k~~VEHICLE_ENTER_EXIT~~w~.
+Puedes salir de la tienda pulsando ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~.
 
 [LAW3_15:LAWYER2]
 Ve al ~h~icono de la pistola~w~ que hay en el radar para encontrar el ~h~Ammu-Nation~w~.
@@ -12315,7 +12315,7 @@ LOCAL DE PHIL CONSOLIDADO
 Pizzas restantes:
 
 [PIZ1_06:PIZZA]
-Pulsa ~h~~k~~TOGGLE_SUBMISSIONS~~w~ cuando estés en la moto para cancelar la misión.
+Pulsa ~h~~k~~TOGGLE_SUBMISSIONS~ ~w~cuando estés en la moto para cancelar la misión.
 
 [PIZ1_13:PIZZA]
 Reparte éstas bien calentitas.
@@ -12934,7 +12934,7 @@ Oh, tenemos que volver a pintar este sitio. Tenemos que hacer que parezca más v
 Rosenberg, eres mi abogado, no mi diseñador de interiores, ¿lo entiendes?
 
 [BUYP3:PROT1]
-Sitúate en el marcador, a continuación pulsa ~h~~k~~PED_ANSWER_PHONE~~w~ para comprar la propiedad.
+Sitúate en el marcador, a continuación pulsa ~h~~k~~PED_ANSWER_PHONE~ ~w~para comprar la propiedad.
 
 [PRO1_13:PROT1]
 ~g~Dispones de cinco minutos para machacarlos a todos.
@@ -13225,7 +13225,7 @@ Longitud de la pista: ~1~.~1~ millas
 ~g~Consigue un vehículo rápido y ve a la parrilla de salida.
 
 [RACEHLP:RACES]
-~w~Pulsa ~h~~k~~PED_SPRINT~~w~ para empezar la carrera seleccionada. Pulsa ~h~~k~~VEHICLE_ENTER_EXIT~~w~ para salir.
+~w~Pulsa ~h~~k~~PED_SPRINT~ ~w~para empezar la carrera seleccionada. Pulsa ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~para salir.
 
 {=================================== MISSION TABLE RCHELI1 ===================================}
 
@@ -13918,16 +13918,16 @@ Pulsa ~h~~k~~VEHICLE_LOOKLEFT~ ~w~para girar el helicóptero en sentido de las a
 ~r~¡Has destruido la furgoneta de TOPFUN que tenía las bombas y el helicóptero RC!
 
 [TEX3_32:SERG3]
-Puedes ~h~mirar atrás~w~ si ~h~pulsas simultáneamente ~k~~VEHICLE_LOOKLEFT~ y ~k~~VEHICLE_LOOKRIGHT~~w~.
+Puedes ~h~mirar atrás~w~ si ~h~pulsas simultáneamente ~k~~VEHICLE_LOOKLEFT~ y ~k~~VEHICLE_LOOKRIGHT~ ~w~.
 
 [TEX3_29:SERG3] { reVC update }
 ~g~Para soltar una bomba pulsa ~h~~k~~VEHICLE_FIREWEAPON~~g~.
 
 [TEX3_26:SERG3]
-Pulsa ~h~~k~~VEHICLE_BRAKE~~w~ para disminuir la velocidad del rotor y ~h~descender~w~.
+Pulsa ~h~~k~~VEHICLE_BRAKE~ ~w~para disminuir la velocidad del rotor y ~h~descender~w~.
 
 [TEX3_22:SERG3]
-Pulsa ~h~~k~~VEHICLE_ACCELERATE~~w~ para aumentar la velocidad del rotor y así ~h~ascender~w~.
+Pulsa ~h~~k~~VEHICLE_ACCELERATE~ ~w~para aumentar la velocidad del rotor y así ~h~ascender~w~.
 
 [TEX3_16:SERG3]
 ~g~Ve a la furgoneta ~w~TOPFUN ~g~cercana al solar de construcción que se va a demoler.
@@ -13966,17 +13966,17 @@ Para ~h~recoger una bomba~w~, simplemente dirige el helicóptero RC hasta ella. 
 Si empujas ~h~el joystick analógico derecho hacia atrás~w~, aumentarás la velocidad del rotor y así ~h~ascenderá~w~.
 
 [TEX3_38:SERG3] { reVC update }
-{Pulsa ~h~~k~~VEHICLE_ACCELERATE~~w~ para aumentar la velocidad del rotor y así ~h~ascender~w~.}
+{Pulsa ~h~~k~~VEHICLE_ACCELERATE~ ~w~para aumentar la velocidad del rotor y así ~h~ascender~w~.}
 Si empujas ~h~el joystick analógico derecho hacia adelante ~w~la velocidad del rotor aumenta, haciendo que el helicóptero ~h~descienda.
 
 [TEX3_39:SERG3]
-~g~Para soltar una bomba pulsa ~h~~k~~VEHICLE_HANDBRAKE~~w~.
+~g~Para soltar una bomba pulsa ~h~~k~~VEHICLE_HANDBRAKE~ ~w~.
 
 [TEX3_40:SERG3]
-~g~Para soltar una bomba pulsa ~h~~k~~VEHICLE_HANDBRAKE~~w~.
+~g~Para soltar una bomba pulsa ~h~~k~~VEHICLE_HANDBRAKE~ ~w~.
 
 [TEX3_23:SERG3]
-Pulsa ~h~~k~~VEHICLE_TURRETUP~~w~ y ~h~~k~~VEHICLE_TURRETDOWN~~w~ para inclinar el helicóptero en la dirección deseada.
+Pulsa ~h~~k~~VEHICLE_TURRETUP~ ~w~y ~h~~k~~VEHICLE_TURRETDOWN~ ~w~para inclinar el helicóptero en la dirección deseada.
 
 {=================================== MISSION TABLE TAXI1 ===================================}
 
@@ -14417,80 +14417,80 @@ PED DENSITY
 CAR DENSITY
 
 {______________________________Vice Extended______________________________}
-[FEC_AIM]   
-Apuntar auto
+[FEC_AIM]
+Auto aiming
 
-[FEC_LSX]   
-Mira la sensibilidad X
+[FEC_LSX]
+Look sensitivity X
 
 [FEC_LSY]   
-Mira la sensibilidad Y
+Look sensitivity Y
 
 [FEC_ASX]   
-Apuntar la sensibilidad X
+Aiming sensitivity X
 
 [FEC_ASY]   
-Apuntar la sensibilidad Y
+Aiming sensitivity Y
 
 [FEC_IVL]   
-Invertir verticalmente
+Invert vertically
 
 [FEC_LZN]   
-Zona muerta del stick izquierdo
+Left stick deadzone
 
 [FEC_RZN]   
-Zona muerta del stick derecho
+Right stick deadzone
 
 [FEC_VBF]   
-Fuerza de vibración
+Vibration force
 
 [FEC_PRS]   
-Estación de radio anterior
+Previous radio station
 
 [FEC_NRS]   
-Próxima emisora de radio
+Next radio station
 
 [FEC_RTC]   
-Girar cámara
+Rotate camera
 
 [FET_AGC]   
-Configuración del mando
+GAMEPAD CONFIGURATION
 
 [FET_AGS]   
-Configuración del mando
+GAMEPAD SETTINGS
 
 [FEC_FOV]   
-Campo de visión
+Field of view
 
 [FEC_ACV]   
-Autocentrado en vehículo
+Auto-centering in vehicle
 
 [FEC_RVD]   
-Vehículo relativo mientras conduce por
+Relative vehicle while driveby
 
 [FEC_DOM]   
-DOOM Modo
+DOOM Mode
 
 [GA_22]
-¡Sólo un coche!
+Just one car!
 
 [GA_23]
-No tienes suficiente dinero para comprar esta modificación
+You don't have enough money to buy this modification
 
 [GA_24]
-Ya tiene esta modificación
+You already have this modification
 
 [LG_39]
-Inmuebles en venta
+Property for sale
 
 [FEC_WAL]
-Caminar
+Walk
 
 [FEC_RZO]
-Zoom radar
+Radar zoom
 
 [FEC_REL]
-Recargar arma
+Reload weapon
 
 [FED_GPS]
 GPS
@@ -14499,49 +14499,220 @@ GPS
 DUALSENSE
 
 [FEC_ATK]
-Ataque
+Attack
 
 [FET_SGP]
-Guardar fotos en una galería
+Store gallery photos
 
 [FES_SAV]
-No puedes guardar la partida en este momento. Para guardar la partida, no debes estar en una misión, no moverte ni tener un nivel buscado.
+You cannot save the game at this time.
 
 [FET_AUT]
 Autosave
 
 [FEM_SL9]
-Archivo de autoguardado no disponible
+Autosave File Not Present
 
 [FEO_OTH]
-Otros ajustes
+Other settings
 
 [LG_40]
-Tienda de bombas
+Bomb shop
 
 [LG_41]
-Carrera
+Race
 
 [LG_42]
-Farmacia
+Store
 
 [FEC_LTS]
-Intermitentes a la izquierda
+Left turn signals
 
 [FEC_RTS]
-Intermitentes a la derecha
+Right turn signals
 
 [FEC_EML]
-Luces de emergencia
+Emergency lights
 
-[CLTHST1]
-Use ~h~~k~~PED_CYCLE_WEAPON_LEFT~ ~h~~k~~PED_CYCLE_WEAPON_RIGHT~ ~h~~k~~PED_JUMPING~ ~w~ to choose clothes. To buy clothes, press ~h~~k~~PED_ANSWER_PHONE~ ~w~. Press ~h~~k~~VEHICLE_ENTER_EXIT~ to leave the store
+[CLOTH_1]
+Use ~h~~k~~GO_LEFT~ ~w~~h~~k~~GO_RIGHT~ ~w~to select clothes. To buy the selected clothes, press ~h~~k~~PED_SPRINT~.~w~ Press ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~to leave the store.
 
-[CLTHST2]
+[CLOTH_2]
 You don't have enough money to buy this item
 
 [FED_BRL]
-Sin fronteras
+Borderless
+
+[CLOTH_3]
+Purchased
+
+[CLOTH_4]
+Use ~h~~k~~GO_LEFT~ ~h~~k~~GO_RIGHT~ ~w~to select clothes. To put on the selected clothes, press ~h~~k~~PED_SPRINT~.~w~ Press ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~to leave the wardrobe.
+
+[CLOTH_5]
+Used
+
+[FEM_PHT]
+PHOTO MODE
+
+[PM_CAM]
+CAMERA
+
+[PM_ZOOM]
+ZOOM
+
+[PM_TILT]
+TILT
+
+[PM_ZOTI]
+ZOOM AND TILT
+
+[PM_NCP]
+NEAR CLIP PLANE
+
+[PM_CHAR]
+CHARACTER
+
+[PM_VSBL]
+VISIBILITY
+
+[PM_CLTH]
+CLOTHES
+
+[PM_ANIM]
+ANIMATION
+
+[PM_ANFR]
+ANIMATION FRAME
+
+[PM_WEAP]
+WEAPON
+
+[PM_MUZL]
+MUZZLE FLASH
+
+[PM_ROT]
+ROTATE
+
+[PM_SKY]
+SKY
+
+[PM_SUN]
+SUN AND MOON ANGLE
+
+[PM_HOUR]
+TIME IN HOURS
+
+[PM_MIN]
+TIME IN MINUTES
+
+[PM_WTHR]
+WEATHER
+
+[PM_SNNY]
+SUNNY
+
+[PM_CLDY]
+CLOUDY
+
+[PM_RANY]
+RAINY
+
+[PM_FGGY]
+FOGGY
+
+[PM_SNN2]
+SUNNY 2
+
+[PM_HRCN]
+HURRICANE
+
+[PM_LGHT]
+LIGHT
+
+[PM_DEFL]
+DEFAULT LIGHT
+
+[PM_COLR]
+COLOR RED
+
+[PM_COLG]
+COLOR GREEN
+
+[PM_COLB]
+COLOR BLUE
+
+[PM_DARK]
+DARK LIGHT
+
+[PM_EFFE]
+EFFECTS
+
+[PM_CLFL]
+COLORFILTER
+
+[PM_INTS]
+INTENSITY
+
+[PM_BRTN]
+BRIGHTNESS
+
+[PM_FRMS]
+FRAMES
+
+[PM_TOGL]
+MENU
+
+[PM_EXIT]
+EXIT
+
+[PM_MOVE]
+MOVE
+
+[PM_PHTO]
+PHOTO
+
+[PM_UI]
+UI
+
+[PM_SPED]
+SPEED
+
+[PM_ADJS]
+ADJUST
+
+[PM_MVLI]
+MOVE LIGHT
+
+[PM_MVCH]
+MOVE CHARACTER
+
+[PM_SAVE]
+PHOTO SAVED TO VICEEXTENDED\USERFILES\GALLERY
+
+[FED_WST]
+Weapon sight
+
+[FEM_COM]
+Complex
+
+[FEM_DEF]
+Default
+
+[LG_43]
+Hidden package
+
+[LG_44]
+Unique stunt
+
+[LG_45]
+Rampage
+
+[MOB_SKP]
+Press ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~to skip a phone call.
+
+[FEH_MPJ]
+LEFT STICK to move, TRIGGERS to zoom, RIGHT BUMPER - legend, LEFT BUTTON - marker, LEFT BUMPER - collectables
 
 { end of file }
 [DUMMY]

@@ -723,7 +723,7 @@ Trouble am Check-In
 Gefeuert!
 
 [ANSWER]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um den Anruf auf deinem Handy entgegenzunehmen.
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um den Anruf auf deinem Handy entgegenzunehmen.
 
 [MOB_01A]
 Hey, mein Alter! Paul hier. Ich hätte da vielleicht was für dich, aber das müssen wir unter vier Augen besprechen.
@@ -2127,7 +2127,7 @@ Hey, so was heißes rühre ich nicht an!
 Komm wieder, wenn du nicht so viel zu tun hast...
 
 [HELP9_C]
-Drücke die~h~ ~k~~PED_FIREWEAPON~~w~, um das Präzisionsgewehr ~h~abzufeuern~w~.
+Drücke die~h~ ~k~~PED_FIREWEAPON~ ~w~, um das Präzisionsgewehr ~h~abzufeuern~w~.
 
 [TAXI2]
 ~r~Die Zeit ist um!
@@ -2694,7 +2694,7 @@ WILLKOMMEN IN
 EINKÜNFTE: $~1~
 
 [PBOAT_2] { reVC update }
-Drücke die ~h~~k~~VEHICLE_FIREWEAPON~~w~, um die Bordkanonen abzufeuern.
+Drücke die ~h~~k~~VEHICLE_FIREWEAPON~ ~w~, um die Bordkanonen abzufeuern.
 
 [HJSTAT]
 Distanz: ~1~.~1~m Höhe: ~1~.~1~m Saltos: ~1~ Drehungen: ~1~_
@@ -2703,7 +2703,7 @@ Distanz: ~1~.~1~m Höhe: ~1~.~1~m Saltos: ~1~ Drehungen: ~1~_
 Distanz: ~1~.~1~m Höhe: ~1~.~1~m Saltos: ~1~ Drehungen: ~1~_ Und was für eine Landung!
 
 [ATUTOR]
-Drücke die ~h~~k~~TOGGLE_SUBMISSIONS~~w~, um Krankenwagen-Missionen an- oder abzuschalten.
+Drücke die ~h~~k~~TOGGLE_SUBMISSIONS~ ~w~, um Krankenwagen-Missionen an- oder abzuschalten.
 
 [FEST_HA]
 Höchster Krankenwagen-Missions-Level
@@ -4071,7 +4071,7 @@ Cinematic-Kamera
 Neuer Motor und neue Lackierung. Die Cops werden dich nicht identifizieren!
 
 [HELP15]
-Wenn zu Fuß unterwegs, drücke die ~h~~k~~PED_LOOKBEHIND~~w~, um ~h~nach hinten zu sehen~w~. Benutze den ~h~rechten Analog-Stick~w~, um dich ~h~umzusehen~w~.
+Wenn zu Fuß unterwegs, drücke die ~h~~k~~PED_LOOKBEHIND~ ~w~, um ~h~nach hinten zu sehen~w~. Benutze den ~h~rechten Analog-Stick~w~, um dich ~h~umzusehen~w~.
 
 [FEC_LB4]
 Nach hinten sehen (R3-Taste)
@@ -4152,13 +4152,13 @@ Dez
 ~g~BONUS $~1~
 
 [HORN1]
-Drück die ~h~~k~~VEHICLE_HORN~~w~, um zu ~h~hupen.
+Drück die ~h~~k~~VEHICLE_HORN~ ~w~, um zu ~h~hupen.
 
 [HORN2]
-Drück die ~h~~k~~VEHICLE_HORN~~w~, um zu ~h~hupen.
+Drück die ~h~~k~~VEHICLE_HORN~ ~w~, um zu ~h~hupen.
 
 [HORN3]
-Drück die ~h~~k~~VEHICLE_HORN~~w~, um zu ~h~hupen.
+Drück die ~h~~k~~VEHICLE_HORN~ ~w~, um zu ~h~hupen.
 
 [FEC_EXV]
 In Fahrzeug ein- und aussteigen.
@@ -5982,16 +5982,16 @@ Autobomben kosten $1000 pro Stück.
 In deinem Wagen ist schon eine Autobombe.
 
 [GA_6] { reVC update }
-Park die Karre, mach sie durch Drücken der ~h~~k~~VEHICLE_FIREWEAPON~~w~ scharf und dann HAU AB!
+Park die Karre, mach sie durch Drücken der ~h~~k~~VEHICLE_FIREWEAPON~ ~w~scharf und dann HAU AB!
 
 [GA_7] { reVC update }
-Mach die Bombe mit der ~h~~k~~VEHICLE_FIREWEAPON~~w~ scharf. Dann geht sie hoch, wenn der Wagen angelassen wird.
+Mach die Bombe mit der ~h~~k~~VEHICLE_FIREWEAPON~ ~w~scharf. Dann geht sie hoch, wenn der Wagen angelassen wird.
 
 [GA_6B] { reVC update }
-Park die Karre, mach sie durch Drücken der ~h~~k~~VEHICLE_FIREWEAPON~~w~ scharf und dann HAU AB!
+Park die Karre, mach sie durch Drücken der ~h~~k~~VEHICLE_FIREWEAPON~ ~w~scharf und dann HAU AB!
 
 [GA_7B] { reVC update }
-Mach die Bombe mit der ~h~~k~~VEHICLE_FIREWEAPON~~w~ scharf. Dann geht sie hoch, wenn der Wagen angelassen wird.
+Mach die Bombe mit der ~h~~k~~VEHICLE_FIREWEAPON~ ~w~scharf. Dann geht sie hoch, wenn der Wagen angelassen wird.
 
 [MOB_70A]
 Tommy, ich bin's, Colonel Cortez. Hören Sie, Sie sind doch ein Mann, der Dinge zu erledigen weiß.
@@ -6126,22 +6126,22 @@ Ocean Heights Apartment gekauft: $ ~1~
 3321 Vice Point gekauft: $ ~1~
 
 [HELP6_C]
-Drücke die ~h~~k~~VEHICLE_HANDBRAKE~~w~, um die Handbremse anzuziehen.
+Drücke die ~h~~k~~VEHICLE_HANDBRAKE~ ~w~, um die Handbremse anzuziehen.
 
 [HELP2_A]
-Drücke die ~h~~k~~PED_SPRINT~~w~, um zu ~h~sprinten.
+Drücke die ~h~~k~~PED_SPRINT~ ~w~, um zu ~h~sprinten.
 
 [HELP4_A]
-Drücke die ~h~~k~~VEHICLE_ACCELERATE~~w~, um zu beschleunigen.
+Drücke die ~h~~k~~VEHICLE_ACCELERATE~ ~w~, um zu beschleunigen.
 
 [HELP5_A]
-Drücke die ~h~~k~~VEHICLE_BRAKE~~w~, um zu bremsen, oder um zurückzusetzen, wenn das Fahrzeug steht.
+Drücke die ~h~~k~~VEHICLE_BRAKE~ ~w~, um zu bremsen, oder um zurückzusetzen, wenn das Fahrzeug steht.
 
 [HELP8_A]
-Drücke die ~h~~k~~PED_SNIPER_ZOOM_IN~~w~, um an das Ziel heranzuzoomen und die ~x~/-Taste~w~,um herauszuzoomen.
+Drücke die ~h~~k~~PED_SNIPER_ZOOM_IN~ ~w~, um an das Ziel heranzuzoomen und die ~x~/-Taste~w~,um herauszuzoomen.
 
 [PBOAT_1] { reVC update }
-Drücke die~h~ ~k~~VEHICLE_FIREWEAPON~~w~, um die Bordkanonen abzufeuern.
+Drücke die~h~ ~k~~VEHICLE_FIREWEAPON~ ~w~, um die Bordkanonen abzufeuern.
 
 [SEG3_4] { reVC update }
 ~g~Um Bomben aufzunehmen, steuere den RC Raider einfach nahe an sie heran. Um eine abzuwerfen, drücke die ~h~~k~~VEHICLE_FIREWEAPON~~g~-Taste.
@@ -6156,64 +6156,64 @@ Dann feuere mit der ~h~~k~~VEHICLE_FIREWEAPON~.
 Dann feuere mit der ~h~~k~~VEHICLE_FIREWEAPON~.
 
 [TTUTOR]
-Drücke die ~h~~k~~TOGGLE_SUBMISSIONS~~w~, um Taxi-Missionen an- oder abzuschalten.
+Drücke die ~h~~k~~TOGGLE_SUBMISSIONS~ ~w~, um Taxi-Missionen an- oder abzuschalten.
 
 [TTUTOR2]
-Drücke die ~h~~k~~TOGGLE_SUBMISSIONS~~w~, um Taxi-Missionen an- oder abzuschalten.
+Drücke die ~h~~k~~TOGGLE_SUBMISSIONS~ ~w~, um Taxi-Missionen an- oder abzuschalten.
 
 [FTUTOR]
-Drücke die ~h~~k~~TOGGLE_SUBMISSIONS~~w~, um Feuerwehrwagen-Missionen an- oder abzuschalten.
+Drücke die ~h~~k~~TOGGLE_SUBMISSIONS~ ~w~, um Feuerwehrwagen-Missionen an- oder abzuschalten.
 
 [FTUTOR2]
-Drücke die ~h~~k~~TOGGLE_SUBMISSIONS~~w~, um Feuerwehrwagen-Missionen an- oder abzuschalten.
+Drücke die ~h~~k~~TOGGLE_SUBMISSIONS~ ~w~, um Feuerwehrwagen-Missionen an- oder abzuschalten.
 
 [CTUTOR]
-Drücke die ~h~~k~~TOGGLE_SUBMISSIONS~~w~, um Bürgerwehr-Missionen zu aktivieren oder zu deaktivieren.
+Drücke die ~h~~k~~TOGGLE_SUBMISSIONS~ ~w~, um Bürgerwehr-Missionen zu aktivieren oder zu deaktivieren.
 
 [CTUTOR2]
-Drücke die ~h~~k~~TOGGLE_SUBMISSIONS~~w~, um Bürgerwehr-Missionen zu aktivieren oder zu deaktivieren.
+Drücke die ~h~~k~~TOGGLE_SUBMISSIONS~ ~w~, um Bürgerwehr-Missionen zu aktivieren oder zu deaktivieren.
 
 [HELP8_B]
-Drücke die~h~ ~k~~PED_SNIPER_ZOOM_IN~~w~, um ~h~an das Ziel heranzuzoomen ~w~und die~h~ ~k~~PED_SNIPER_ZOOM_OUT~~w~, um ~h~herauszuzoomen~w~.
+Drücke die~h~ ~k~~PED_SNIPER_ZOOM_IN~ ~w~, um ~h~an das Ziel heranzuzoomen ~w~und die~h~ ~k~~PED_SNIPER_ZOOM_OUT~ ~w~, um ~h~herauszuzoomen~w~.
 
 [ATUTOR3]
-Drücke die ~h~~k~~TOGGLE_SUBMISSIONS~~w~, um Krankenwagen-Missionen an- oder abzuschalten.
+Drücke die ~h~~k~~TOGGLE_SUBMISSIONS~ ~w~, um Krankenwagen-Missionen an- oder abzuschalten.
 
 [GUN_H1]
-~w~Drück die~h~ ~k~~PED_SPRINT~~w~, um zu kaufen. ~w~Drück die~h~ ~k~~VEHICLE_ENTER_EXIT~~w~, um zu gehen.
+~w~Drück die~h~ ~k~~PED_SPRINT~ ~w~, um zu kaufen. ~w~Drück die~h~ ~k~~VEHICLE_ENTER_EXIT~ ~w~, um zu gehen.
 
 [PU_CF3] { reVC update }
-Drück die ~h~~k~~PED_ANSWER_PHONE~~w~, um die augenblickliche Waffe in diesem Slot auszutauschen.
+Drück die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um die augenblickliche Waffe in diesem Slot auszutauschen.
 
 [PU_CF4] { reVC update }
-Drück die ~h~~k~~PED_ANSWER_PHONE~~w~, um die augenblickliche Waffe in diesem Slot auszutauschen.
+Drück die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um die augenblickliche Waffe in diesem Slot auszutauschen.
 
 [HELP9_B]
-Drücke die~h~ ~k~~PED_FIREWEAPON~~w~, um das Präzisionsgewehr ~h~abzufeuern~w~.
+Drücke die~h~ ~k~~PED_FIREWEAPON~ ~w~, um das Präzisionsgewehr ~h~abzufeuern~w~.
 
 [HELP37]
 Wenn du doch nicht in ein Auto einsteigen willst, das du im Begriff bist, zu klauen, drück die ~h~~k~~PED_SPRINT~.
 
 [HELP6_A]
-Drücke die ~h~~k~~VEHICLE_HANDBRAKE~~w~, um die Handbremse anzuziehen.
+Drücke die ~h~~k~~VEHICLE_HANDBRAKE~ ~w~, um die Handbremse anzuziehen.
 
 [HELP6_D]
-Drücke die ~h~~k~~VEHICLE_HANDBRAKE~~w~, um die Handbremse anzuziehen.
+Drücke die ~h~~k~~VEHICLE_HANDBRAKE~ ~w~, um die Handbremse anzuziehen.
 
 [HELP26]
-Drücke die ~h~~k~~VEHICLE_ENTER_EXIT~~w~, um in ein Fahrzeug ein- oder auszusteigen.
+Drücke die ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~, um in ein Fahrzeug ein- oder auszusteigen.
 
 [HELP27]
-Drücke ~h~~k~~VEHICLE_TURRETUP~~w~ oder ~h~~k~~VEHICLE_TURRETDOWN~~w~ um dein Gewicht auf einem Motorrad zu verlagern.
+Drücke ~h~~k~~VEHICLE_TURRETUP~ ~w~oder ~h~~k~~VEHICLE_TURRETDOWN~ ~w~um dein Gewicht auf einem Motorrad zu verlagern.
 
 [HELP28]
-Drücke ~h~~k~~VEHICLE_TURRETUP~~w~ oder ~h~~k~~VEHICLE_TURRETDOWN~~w~ um dein Gewicht auf einem Motorrad zu verlagern.
+Drücke ~h~~k~~VEHICLE_TURRETUP~ ~w~oder ~h~~k~~VEHICLE_TURRETDOWN~ ~w~um dein Gewicht auf einem Motorrad zu verlagern.
 
 [HELP35]
-Benutze die ~h~~k~~GO_LEFT~~w~ oder ~h~~k~~GO_RIGHT~~w~ um das Fahrzeug zu steuern.
+Benutze die ~h~~k~~GO_LEFT~ ~w~oder ~h~~k~~GO_RIGHT~ ~w~um das Fahrzeug zu steuern.
 
 [HELP36]
-Benutze die ~h~~k~~GO_LEFT~~w~ oder ~h~~k~~GO_RIGHT~~w~ um das Fahrzeug zu steuern.
+Benutze die ~h~~k~~GO_LEFT~ ~w~oder ~h~~k~~GO_RIGHT~ ~w~um das Fahrzeug zu steuern.
 
 [HELP42]
 Folge dem ~q~rosa Symbol~w~, um zum Hotel zu kommen.
@@ -6285,130 +6285,130 @@ Zurzeit kannst du die Stripper-Bar nicht kaufen. Komm später wieder.
 VERFOLGUNGSJAGD
 
 [NBMN_L]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um El Swanko Casa zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um El Swanko Casa zu kaufen. Preis: $~1~
 
 [NBMN_T]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um El Swanko Casa zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um El Swanko Casa zu kaufen. Preis: $~1~
 
 [NBMN_C]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um El Swanko Casa zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um El Swanko Casa zu kaufen. Preis: $~1~
 
 [LNKV_L]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um das Links View Apartment zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um das Links View Apartment zu kaufen. Preis: $~1~
 
 [LNKV_T]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um das Links View Apartment zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um das Links View Apartment zu kaufen. Preis: $~1~
 
 [LNKV_C]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um das Links View Apartment zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um das Links View Apartment zu kaufen. Preis: $~1~
 
 [HYCO_L]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um das Hyman Condo zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um das Hyman Condo zu kaufen. Preis: $~1~
 
 [HYCO_T]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um das Hyman Condo zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um das Hyman Condo zu kaufen. Preis: $~1~
 
 [HYCO_C]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um das Hyman Condo zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um das Hyman Condo zu kaufen. Preis: $~1~
 
 [OCHE_L]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um das Ocean Heights Apartment zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um das Ocean Heights Apartment zu kaufen. Preis: $~1~
 
 [OCHE_T]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um das Ocean Heights Apartment zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um das Ocean Heights Apartment zu kaufen. Preis: $~1~
 
 [OCHE_C]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um das Ocean Heights Apartment zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um das Ocean Heights Apartment zu kaufen. Preis: $~1~
 
 [WASH_L]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um 1102 Washington Street zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um 1102 Washington Street zu kaufen. Preis: $~1~
 
 [WASH_T]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um 1102 Washington Street zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um 1102 Washington Street zu kaufen. Preis: $~1~
 
 [WASH_C]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um 1102 Washington Street zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um 1102 Washington Street zu kaufen. Preis: $~1~
 
 [VCPT_L]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um 3321 Vice Point zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um 3321 Vice Point zu kaufen. Preis: $~1~
 
 [VCPT_T]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um 3321 Vice Point zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um 3321 Vice Point zu kaufen. Preis: $~1~
 
 [VCPT_C]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um 3321 Vice Point zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um 3321 Vice Point zu kaufen. Preis: $~1~
 
 [PRNT_L]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um die Druckerei zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um die Druckerei zu kaufen. Preis: $~1~
 
 [PRNT_T]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um die Druckerei zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um die Druckerei zu kaufen. Preis: $~1~
 
 [PRNT_C]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um die Druckerei zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um die Druckerei zu kaufen. Preis: $~1~
 
 [CAR_L]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um das Autohaus zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um das Autohaus zu kaufen. Preis: $~1~
 
 [CAR_T]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um das Autohaus zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um das Autohaus zu kaufen. Preis: $~1~
 
 [CAR_C]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um das Autohaus zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um das Autohaus zu kaufen. Preis: $~1~
 
 [PORN_L]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um das Filmstudio zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um das Filmstudio zu kaufen. Preis: $~1~
 
 [PORN_T]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um das Filmstudio zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um das Filmstudio zu kaufen. Preis: $~1~
 
 [PORN_C]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um das Filmstudio zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um das Filmstudio zu kaufen. Preis: $~1~
 
 [ICE_L]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um die Eiscremefabrik zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um die Eiscremefabrik zu kaufen. Preis: $~1~
 
 [ICE_T]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um die Eiscremefabrik zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um die Eiscremefabrik zu kaufen. Preis: $~1~
 
 [ICE_C]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um die Eiscremefabrik zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um die Eiscremefabrik zu kaufen. Preis: $~1~
 
 [TAXI_L]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um das Taxiunternehmen zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um das Taxiunternehmen zu kaufen. Preis: $~1~
 
 [TAXI_T]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um das Taxiunternehmen zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um das Taxiunternehmen zu kaufen. Preis: $~1~
 
 [TAXI_C]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um das Taxiunternehmen zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um das Taxiunternehmen zu kaufen. Preis: $~1~
 
 [BANK_L]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um den Malibu Club zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um den Malibu Club zu kaufen. Preis: $~1~
 
 [BANK_T]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um den Malibu Club zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um den Malibu Club zu kaufen. Preis: $~1~
 
 [BANK_C]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um den Malibu Club zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um den Malibu Club zu kaufen. Preis: $~1~
 
 [BOAT_L]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um die Bootswerft zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um die Bootswerft zu kaufen. Preis: $~1~
 
 [BOAT_T]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um die Bootswerft zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um die Bootswerft zu kaufen. Preis: $~1~
 
 [BOAT_C]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um die Bootswerft zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um die Bootswerft zu kaufen. Preis: $~1~
 
 [STRP_L]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um den Pole Position Club zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um den Pole Position Club zu kaufen. Preis: $~1~
 
 [STRP_T]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um den Pole Position Club zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um den Pole Position Club zu kaufen. Preis: $~1~
 
 [STRP_C]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~, um den Pole Position Club zu kaufen. Preis: $~1~
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~, um den Pole Position Club zu kaufen. Preis: $~1~
 
 [STOCK]
 ~r~nicht vorrätig
@@ -6432,10 +6432,10 @@ Checkpoint Charlie
 R1- \ R2-Taste -
 
 [HELP9_A]
-Drücke die ~h~~k~~PED_FIREWEAPON~~w~-Taste, um das Präzisionsgewehr abzufeuern.
+Drücke die ~h~~k~~PED_FIREWEAPON~ ~w~-Taste, um das Präzisionsgewehr abzufeuern.
 
 [HELP21]
-Drücke die ~h~~k~~VEHICLE_ENTER_EXIT~~w~-Taste, um in ein Fahrzeug ein- oder auszusteigen.
+Drücke die ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~-Taste, um in ein Fahrzeug ein- oder auszusteigen.
 
 [CREAM]
 Stoff-Auslieferung
@@ -6444,7 +6444,7 @@ Stoff-Auslieferung
 Café Robina
 
 [PU_CF1]
-Drück die ~h~~k~~PED_ANSWER_PHONE~~w~-Taste, um diese Waffe aufzunehmen. Falls du schon eine Waffe von diesem Typ hast, wird sie durch die neue ersetzt.
+Drück die ~h~~k~~PED_ANSWER_PHONE~ ~w~-Taste, um diese Waffe aufzunehmen. Falls du schon eine Waffe von diesem Typ hast, wird sie durch die neue ersetzt.
 
 [FED_RDM]
 KARTE & SYMBOLE
@@ -6501,7 +6501,7 @@ Schnellste Zeit bei 'Pylonen-Rallye'
 Halte in der ~q~rosa Markierung.
 
 [HELP45]
-Drücke die ~h~~k~~PED_DUCK~~w~ um dich zu ducken. Dadurch erhöht sich die Treffsicherheit der Waffen, die du hältst.
+Drücke die ~h~~k~~PED_DUCK~ ~w~um dich zu ducken. Dadurch erhöht sich die Treffsicherheit der Waffen, die du hältst.
 
 [RCR1_5]
 RC Bandit-Rennen
@@ -6600,16 +6600,16 @@ Achtung! Dieses Spiel ist auf DTS-Tonausgabe eingestellt. Dazu muss DTS-kompatib
 Schnellste Zeit bei Checkpoint Carlie
 
 [HELP50]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~-Taste, um die Spielerfigur von hinten zu sehen.
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~-Taste, um die Spielerfigur von hinten zu sehen.
 
 [HELP51]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~-Taste, um die Spielerfigur von hinten zu sehen.
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~-Taste, um die Spielerfigur von hinten zu sehen.
 
 [HELP52]
-Drücke die ~h~~k~~PED_ANSWER_PHONE~~w~-Taste, um die Spielerfigur von hinten zu sehen.
+Drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~-Taste, um die Spielerfigur von hinten zu sehen.
 
 [HELP53]
-Benutze die ~h~~k~~PED_CYCLE_WEAPON_LEFT~~w~-Taste und die ~h~~k~~PED_CYCLE_WEAPON_RIGHT~~w~-Taste, um zwischen deinen Waffen zu wechseln.
+Benutze die ~h~~k~~PED_CYCLE_WEAPON_LEFT~ ~w~-Taste und die ~h~~k~~PED_CYCLE_WEAPON_RIGHT~ ~w~-Taste, um zwischen deinen Waffen zu wechseln.
 
 [HELP46]
 Es gibt acht verschiedene Waffentypen.
@@ -6621,38 +6621,38 @@ Du kannst von jedem Waffentyp immer nur eine bei dir tragen - also einen Typ Pis
 ~w~Preis: $~1~ ~r~Deine augenblickliche Waffe wird ersetzt, wenn du diese kaufst.
 
 [HELP2A2]
-Drücke die ~h~~k~~PED_SPRINT~~w~-Taste, um zu ~h~sprinten.
+Drücke die ~h~~k~~PED_SPRINT~ ~w~-Taste, um zu ~h~sprinten.
 
 [HLPSN_A]
 Das Präzisionsgewehr ermöglicht dir, an dein Ziel heranzuzoomen und auf größere Distanz mit hoher Genauigkeit zu schießen.
 
 [HLPSN_B]
-Halte die~h~ ~k~~PED_LOCK_TARGET~~w~-Taste gedrückt, um mit dem Präzisionsgewehr zu ~h~zielen~w~.
+Halte die~h~ ~k~~PED_LOCK_TARGET~ ~w~-Taste gedrückt, um mit dem Präzisionsgewehr zu ~h~zielen~w~.
 
 [HLPSN_C]
-Halte die~h~ ~k~~PED_LOCK_TARGET~~w~-Taste gedrückt, um mit dem Präzisionsgewehr zu ~h~zielen~w~.
+Halte die~h~ ~k~~PED_LOCK_TARGET~ ~w~-Taste gedrückt, um mit dem Präzisionsgewehr zu ~h~zielen~w~.
 
 [HLPSN_D]
-Drücke die ~h~~k~~PED_SNIPER_ZOOM_IN~~w~-Taste, um ~h~an das Ziel heranzuzoomen ~w~und die~h~ ~k~~PED_SNIPER_ZOOM_OUT~~w~,um ~h~herauszuzoomen~w~.
+Drücke die ~h~~k~~PED_SNIPER_ZOOM_IN~ ~w~-Taste, um ~h~an das Ziel heranzuzoomen ~w~und die~h~ ~k~~PED_SNIPER_ZOOM_OUT~ ~w~,um ~h~herauszuzoomen~w~.
 
 [HLPSN_E]
-Drücke die ~h~~k~~PED_FIREWEAPON~~w~-Taste, um das Präzisionsgewehr ~h~abzufeuern~w~.
+Drücke die ~h~~k~~PED_FIREWEAPON~ ~w~-Taste, um das Präzisionsgewehr ~h~abzufeuern~w~.
 
 [HLPSN_F]
-Drücke die ~h~~k~~PED_FIREWEAPON~~w~-Taste, um das Präzisionsgewehr ~h~abzufeuern~w~.
+Drücke die ~h~~k~~PED_FIREWEAPON~ ~w~-Taste, um das Präzisionsgewehr ~h~abzufeuern~w~.
 
 [HLPSN_G]
-Drücke die ~h~~k~~PED_FIREWEAPON~~w~-Taste, um das Präzisionsgewehr ~h~abzufeuern~w~.
+Drücke die ~h~~k~~PED_FIREWEAPON~ ~w~-Taste, um das Präzisionsgewehr ~h~abzufeuern~w~.
 
 [PLANE_H]
-Benutze die ~h~~k~~VEHICLE_ACCELERATE~~w~-Taste, um zu beschleunigen. Links bzw. Rechts für Richtungswechsel.
+Benutze die ~h~~k~~VEHICLE_ACCELERATE~ ~w~-Taste, um zu beschleunigen. Links bzw. Rechts für Richtungswechsel.
 
 [PLANE_4] { reVC update }
-{Benutze die ~h~~k~~VEHICLE_ACCELERATE~~w~-Taste, um zu beschleunigen. Links bzw. Rechts für Richtungswechsel.}
+{Benutze die ~h~~k~~VEHICLE_ACCELERATE~ ~w~-Taste, um zu beschleunigen. Links bzw. Rechts für Richtungswechsel.}
 Benutze den rechten Analog-Stick, um zu beschleunigen. Ziehe den linken Analog-Stick, um zu steigen oder drücke ihn nach vorn, um zu sinken. Links bzw. Rechts für Richtungswechsel.
 
 [HELP55]
-Drücke die ~h~~k~~PED_FIREWEAPON~~w~-Taste, um den Küchenchef anzugreifen.
+Drücke die ~h~~k~~PED_FIREWEAPON~ ~w~-Taste, um den Küchenchef anzugreifen.
 
 [STPR_8]
 Pole Position Club
@@ -6961,16 +6961,16 @@ Neuer Kontaktpunkt am Jachthafen am Ocean Beach!!
 Feuerwehr-Mission Level ~1~
 
 [HELP56]
-Drücke die ~h~~k~~CAMERA_CHANGE_VIEW_ALL_SITUATIONS~~w~-Taste, um den Blickwinkel zu ändern.
+Drücke die ~h~~k~~CAMERA_CHANGE_VIEW_ALL_SITUATIONS~ ~w~-Taste, um den Blickwinkel zu ändern.
 
 [HELP57]
-Drücke die ~h~~k~~CAMERA_CHANGE_VIEW_ALL_SITUATIONS~~w~-Taste, um den Blickwinkel zu ändern.
+Drücke die ~h~~k~~CAMERA_CHANGE_VIEW_ALL_SITUATIONS~ ~w~-Taste, um den Blickwinkel zu ändern.
 
 [HELP58]
-Beim Zielen kann durch Drücken der ~h~~k~~PED_CYCLE_TARGET_LEFT~~w~-Taste zwischen Zielen hin- und her gewechselt werden.
+Beim Zielen kann durch Drücken der ~h~~k~~PED_CYCLE_TARGET_LEFT~ ~w~-Taste zwischen Zielen hin- und her gewechselt werden.
 
 [HELP59]
-Beim Zielen kann durch Drücken der ~h~~k~~PED_CYCLE_TARGET_LEFT~~w~-Taste zwischen Zielen hin- und her gewechselt werden.
+Beim Zielen kann durch Drücken der ~h~~k~~PED_CYCLE_TARGET_LEFT~ ~w~-Taste zwischen Zielen hin- und her gewechselt werden.
 
 [HELP60]
 Wenn du während eines Autodiebstahls die ~h~~k~~PED_SPRINT~ ~w~-Taste drückst, steigst du nicht in das Fahrzeug ein.
@@ -7450,7 +7450,7 @@ SPIELER-SKIN SETUP
 OPTION NICHT VERFÜGBAR
 
 [FEH_MPH]
-MAUS, CURSOR ZUM BEWEGEN - BILD AUFW., BILD ABW., MAUSRAD ZUM ZOOMEN, L - LEGENDE
+MOUSE, CURSORS to move, MOUSE WHEEL to zoom, L - legend, RIGHT MOUSE BUTTON - marker, TAB - collectables
 
 [FEA_MP3]
 MP3 PLAYER
@@ -10079,10 +10079,10 @@ FEUER:
 ~g~Brennendes Fahrzeug in der Gegend von ~a~ gemeldet. Lösche den Brand.
 
 [SIREN_1:FIRETRK]
-Um die Sirenen dieses Fahrzeugs einzuschalten, drücke die ~h~~k~~VEHICLE_HORN~~w~.
+Um die Sirenen dieses Fahrzeugs einzuschalten, drücke die ~h~~k~~VEHICLE_HORN~ ~w~.
 
 [SIREN_2:FIRETRK]
-Um die Sirenen dieses Fahrzeugs einzuschalten, drücke die ~h~~k~~VEHICLE_HORN~~w~.
+Um die Sirenen dieses Fahrzeugs einzuschalten, drücke die ~h~~k~~VEHICLE_HORN~ ~w~.
 
 [FIREPRO:FIRETRK]
 Feuerwehr-Mission Level 12 abgeschlossen: Du bist jetzt absolut feuerfest!!
@@ -10094,10 +10094,10 @@ Feuerwehr-Mission beendet.
 ~g~Brennende Fahrzeuge in der Gegend von ~a~ gemeldet. Lösche den Brand.
 
 [SPRAY_4:FIRETRK] { reVC update }
-Benutze die ~h~~k~~VEHICLE_FIREWEAPON~~w~-Taste, um die Wasserkanone abzufeuern und den ~h~~k~~VEHICLE_TURRETLEFT~~w~ und ~h~~k~~VEHICLE_TURRETRIGHT~~w~, um mit der Wasserkanone zu zielen.
+Benutze die ~h~~k~~VEHICLE_FIREWEAPON~ ~w~-Taste, um die Wasserkanone abzufeuern und den ~h~~k~~VEHICLE_TURRETLEFT~ ~w~und ~h~~k~~VEHICLE_TURRETRIGHT~ ~w~, um mit der Wasserkanone zu zielen.
 
 [SPRAY_1:FIRETRK] { reVC update }
-Benutze die ~h~~k~~VEHICLE_FIREWEAPON~~w~-Taste, um die Wasserkanone abzufeuern und den ~h~~k~~VEHICLE_TURRETLEFT~~w~ und ~h~~k~~VEHICLE_TURRETRIGHT~~w~, um mit der Wasserkanone zu zielen.
+Benutze die ~h~~k~~VEHICLE_FIREWEAPON~ ~w~-Taste, um die Wasserkanone abzufeuern und den ~h~~k~~VEHICLE_TURRETLEFT~ ~w~und ~h~~k~~VEHICLE_TURRETRIGHT~ ~w~, um mit der Wasserkanone zu zielen.
 
 {=================================== MISSION TABLE GENERA1 ===================================}
 
@@ -10189,13 +10189,13 @@ Um im Laufen eine Nahkampfattacke vorzubereiten, die~x~ /-Taste~w~ gedrückt hal
 Um im Laufen eine Nahkampfattacke vorzubereiten, die~h~ R1-Taste~w~ gedrückt halten.
 
 [GEN1_14:GENERA1]
-Lass die~h~ ~k~~PED_FIREWEAPON~~w~ los, um die Attacke auszuführen.
+Lass die~h~ ~k~~PED_FIREWEAPON~ ~w~los, um die Attacke auszuführen.
 
 [GEN1_15:GENERA1]
-Lasse die~h~ ~k~~PED_FIREWEAPON~~w~ los, um die Attacke auszuführen.
+Lasse die~h~ ~k~~PED_FIREWEAPON~ ~w~los, um die Attacke auszuführen.
 
 [GEN1_16:GENERA1]
-Lasse die~h~ ~k~~PED_FIREWEAPON~~w~ los, um die Attacke auszuführen.
+Lasse die~h~ ~k~~PED_FIREWEAPON~ ~w~los, um die Attacke auszuführen.
 
 [GEN1_23:GENERA1]
 ~g~Geh durch die Türen zurück ins Erdgeschoss.
@@ -10442,25 +10442,25 @@ Halte die~h~ R1~w~-Taste gedrückt, um mit dem Sturmgewehr zu ~h~zielen~w~.
 Halte die~h~ L1~w~-Taste gedrückt, um mit dem Sturmgewehr zu ~h~zielen~w~.
 
 [GEN3_60:GENERA3]
-Drücke die ~h~~k~~PED_FIREWEAPON~~w~-Taste, um das Sturmgewehr ~h~abzufeuern~w~.
+Drücke die ~h~~k~~PED_FIREWEAPON~ ~w~-Taste, um das Sturmgewehr ~h~abzufeuern~w~.
 
 [GEN3_61:GENERA3]
-Drücke die ~h~~k~~PED_FIREWEAPON~~w~-Taste, um das Sturmgewehr ~h~abzufeuern~w~.
+Drücke die ~h~~k~~PED_FIREWEAPON~ ~w~-Taste, um das Sturmgewehr ~h~abzufeuern~w~.
 
 [GEN3_62:GENERA3]
-Drücke die ~h~~k~~PED_FIREWEAPON~~w~-Taste, um das Sturmgewehr ~h~abzufeuern~w~.
+Drücke die ~h~~k~~PED_FIREWEAPON~ ~w~-Taste, um das Sturmgewehr ~h~abzufeuern~w~.
 
 [GEN3_63:GENERA3]
 Auf~h~ Motorrädern ~w~kann man nicht nur im Vorbeifahren seitlich auf Ziele schießen, man kann auch ~h~geradeaus feuern~w~.
 
 [GEN3_64:GENERA3] { reVC update }
-Um auf einem Motorrad sitzend geradeaus zu feuern, drücke die ~h~~k~~VEHICLE_FIREWEAPON~~w~-Taste.
+Um auf einem Motorrad sitzend geradeaus zu feuern, drücke die ~h~~k~~VEHICLE_FIREWEAPON~ ~w~-Taste.
 
 [GEN3_65:GENERA3] { reVC update }
-Um auf einem Motorrad sitzend geradeaus zu feuern, drücke die ~h~~k~~VEHICLE_FIREWEAPON~~w~-Taste.
+Um auf einem Motorrad sitzend geradeaus zu feuern, drücke die ~h~~k~~VEHICLE_FIREWEAPON~ ~w~-Taste.
 
 [GEN3_66:GENERA3] { reVC update }
-Um auf einem Motorrad sitzend geradeaus zu feuern, drücke die ~h~~k~~VEHICLE_FIREWEAPON~~w~-Taste.
+Um auf einem Motorrad sitzend geradeaus zu feuern, drücke die ~h~~k~~VEHICLE_FIREWEAPON~ ~w~-Taste.
 
 [GEN3_67:GENERA3]
 Du brauchst eine Maschinenpistole, um auf einem Motorrad sitzend geradeaus zu feuern.
@@ -10861,7 +10861,7 @@ Lass ihre Boote in die Luft fliegen.
 Tja, danke für den Tee.
 
 [HAT2_B3:HAIT2] { reVC update }
-Um eine Bombe abzuwerfen, drück die ~h~~k~~VEHICLE_FIREWEAPON~~w~-Taste. ~h~~k~~VEHICLE_ENTER_EXIT~~w~-Taste zum Beenden.
+Um eine Bombe abzuwerfen, drück die ~h~~k~~VEHICLE_FIREWEAPON~ ~w~-Taste. ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~-Taste zum Beenden.
 
 {=================================== MISSION TABLE HAIT3 ===================================}
 
@@ -10993,7 +10993,7 @@ Du hörst von mir.
 ~g~Benutze deinen Eis-Wagen, um in Vice City Drogen zu verkaufen.
 
 [ICC1_2:ICECRE1]
-~g~Parke den Eis-Wagen und drücke ~h~~k~~VEHICLE_HORN~~w~, um den Eiscreme-Jingle abzuspielen, damit deine Kunden wissen, dass du Ware zu verkaufen hast.
+~g~Parke den Eis-Wagen und drücke ~h~~k~~VEHICLE_HORN~ ~w~, um den Eiscreme-Jingle abzuspielen, damit deine Kunden wissen, dass du Ware zu verkaufen hast.
 
 [ICC1_3:ICECRE1]
 ~g~Für jede Transaktion bekommst du Geld. Aber je mehr Transaktionen du tätigst, desto stärker wird die Polizei auf dich aufmerksam.
@@ -11920,19 +11920,19 @@ Du hast jetzt ein Handy und kannst Telefongespräche entgegennehmen!
 Verdammt, nichts wie weg hier!
 
 [GUN_2A:LAWYER2]
-Halte die ~h~~k~~PED_LOCK_TARGET~ ~w~gedrückt, um ~h~automatisch zu zielen~w~. Drücke die ~h~~k~~PED_FIREWEAPON~~w~, um zu ~h~feuern!
+Halte die ~h~~k~~PED_LOCK_TARGET~ ~w~gedrückt, um ~h~automatisch zu zielen~w~. Drücke die ~h~~k~~PED_FIREWEAPON~ ~w~, um zu ~h~feuern!
 
 [GUN_2C:LAWYER2]
-Halte die ~h~~k~~PED_LOCK_TARGET~ ~w~gedrückt, um ~h~automatisch zu zielen~w~. Drücke die ~h~~k~~PED_FIREWEAPON~~w~, um zu ~h~feuern!
+Halte die ~h~~k~~PED_LOCK_TARGET~ ~w~gedrückt, um ~h~automatisch zu zielen~w~. Drücke die ~h~~k~~PED_FIREWEAPON~ ~w~, um zu ~h~feuern!
 
 [GUN_2D:LAWYER2]
-Halte die ~h~~k~~PED_LOCK_TARGET~ ~w~gedrückt, um ~h~automatisch zu zielen~w~. Drücke die ~h~~k~~PED_FIREWEAPON~~w~, um zu ~h~feuern!
+Halte die ~h~~k~~PED_LOCK_TARGET~ ~w~gedrückt, um ~h~automatisch zu zielen~w~. Drücke die ~h~~k~~PED_FIREWEAPON~ ~w~, um zu ~h~feuern!
 
 [HELP17:LAWYER2]
-Drücke die ~h~~k~~PED_FIREWEAPON~~w~, um den Küchenchef anzugreifen.
+Drücke die ~h~~k~~PED_FIREWEAPON~ ~w~, um den Küchenchef anzugreifen.
 
 [HELP18:LAWYER2]
-Drücke die~h~ ~k~~PED_FIREWEAPON~~w~, um den Küchenchef anzugreifen.
+Drücke die~h~ ~k~~PED_FIREWEAPON~ ~w~, um den Küchenchef anzugreifen.
 
 [LAW3_11:LAWYER2]
 Stell dich in die ~q~rosa Markierung~w~, um zu sehen, was im Angebot ist.
@@ -11941,7 +11941,7 @@ Stell dich in die ~q~rosa Markierung~w~, um zu sehen, was im Angebot ist.
 Du kannst Waffen auswählen, indem du die ~h~linke~w~ oder ~h~rechte~w~ ~h~Richtungstaste drückst.
 
 [LAW3_13:LAWYER2]
-Wenn du genug Geld hast, kannst du Waffen durch Drücken der ~h~~k~~PED_SPRINT~~w~ kaufen.
+Wenn du genug Geld hast, kannst du Waffen durch Drücken der ~h~~k~~PED_SPRINT~ ~w~kaufen.
 
 [LAW3_14:LAWYER2]
 Um zu gehen, drücke die ~h~~k~~VEHICLE_ENTER_EXIT~
@@ -12902,19 +12902,19 @@ Halte die~h~ ~k~~PED_LOCK_TARGET~ ~w~gedrückt, um mit der Kamera zu ~h~zielen~w
 Halte die~h~ ~k~~PED_LOCK_TARGET~ ~w~gedrückt, um mit der Kamera zu ~h~zielen~w~.
 
 [POR3_10:PORN3]
-Drücke die~h~ ~k~~PED_SNIPER_ZOOM_IN~~w~, um ~h~heranzuzoomen ~w~und die~h~ ~k~~PED_SNIPER_ZOOM_OUT~~w~, um wieder ~h~wegzuzoomen~w~.
+Drücke die~h~ ~k~~PED_SNIPER_ZOOM_IN~ ~w~, um ~h~heranzuzoomen ~w~und die~h~ ~k~~PED_SNIPER_ZOOM_OUT~ ~w~, um wieder ~h~wegzuzoomen~w~.
 
 [POR3_11:PORN3]
-Drücke die~h~ ~k~~PED_SNIPER_ZOOM_IN~~w~, um ~h~heranzuzoomen ~w~und die~h~ ~k~~PED_SNIPER_ZOOM_OUT~~w~, um wieder ~h~wegzuzoomen~w~.
+Drücke die~h~ ~k~~PED_SNIPER_ZOOM_IN~ ~w~, um ~h~heranzuzoomen ~w~und die~h~ ~k~~PED_SNIPER_ZOOM_OUT~ ~w~, um wieder ~h~wegzuzoomen~w~.
 
 [POR3_12:PORN3]
-Drücke die~h~ ~k~~PED_FIREWEAPON~~w~, um ein Bild zu machen.
+Drücke die~h~ ~k~~PED_FIREWEAPON~ ~w~, um ein Bild zu machen.
 
 [POR3_13:PORN3]
-Drücke die~h~ ~k~~PED_FIREWEAPON~~w~, um ein Bild zu machen.
+Drücke die~h~ ~k~~PED_FIREWEAPON~ ~w~, um ein Bild zu machen.
 
 [POR3_14:PORN3]
-Drücke die~h~ ~k~~PED_FIREWEAPON~~w~, um ein Bild zu machen.
+Drücke die~h~ ~k~~PED_FIREWEAPON~ ~w~, um ein Bild zu machen.
 
 [POR3_20:PORN3]
 ~g~Wenn du ein Transportmittel brauchst, nimm den ~h~Sparrow~g~ hinter dem Haus.
@@ -13107,7 +13107,7 @@ Ich bin in fünf Minuten zurück...
 Du bist mein Anwalt, nicht mein Innenarchitekt. Klar?
 
 [BUYP3:PROT1]
-Stell dich in die Markierung und drücke die ~h~~k~~PED_ANSWER_PHONE~~w~-Taste, um das Objekt zu kaufen.
+Stell dich in die Markierung und drücke die ~h~~k~~PED_ANSWER_PHONE~ ~w~-Taste, um das Objekt zu kaufen.
 
 [PRO1_13:PROT1]
 ~g~Du hast fünf Minuten, um alle zu demolieren.
@@ -13398,7 +13398,7 @@ Streckenlänge: ~1~.~1~ Meilen
 ~g~Schnapp dir ein schnelles Fahrzeug und begib dich zur Startlinie.
 
 [RACEHLP:RACES]
-~w~Drücke die~h~ ~k~~PED_SPRINT~~w~, um das ausgewählte Rennen zu starten. Drücke die~h~ ~k~~VEHICLE_ENTER_EXIT~~w~, um abzubrechen.
+~w~Drücke die~h~ ~k~~PED_SPRINT~ ~w~, um das ausgewählte Rennen zu starten. Drücke die~h~ ~k~~VEHICLE_ENTER_EXIT~ ~w~, um abzubrechen.
 
 {=================================== MISSION TABLE RCHELI1 ===================================}
 
@@ -14205,10 +14205,10 @@ Verbleibende Ziele:
 ~r~Dein Helikopter befindet sich außer Reichweite!
 
 [TEX3_24:SERG3]
-Drücke ~h~~k~~VEHICLE_LOOKLEFT~~w~, um den Helikopter gegen den Uhrzeigersinn zu drehen.
+Drücke ~h~~k~~VEHICLE_LOOKLEFT~ ~w~, um den Helikopter gegen den Uhrzeigersinn zu drehen.
 
 [TEX3_25:SERG3]
-Drücke ~h~~k~~VEHICLE_LOOKLEFT~~w~, um den Helikopter im Uhrzeigersinn zu drehen.
+Drücke ~h~~k~~VEHICLE_LOOKLEFT~ ~w~, um den Helikopter im Uhrzeigersinn zu drehen.
 
 [TEX3_27:SERG3]
 ~g~Über eine Haupttreppe hat man Zugang zu allen Stockwerken des Gebäudes.
@@ -14220,16 +14220,16 @@ Drücke ~h~~k~~VEHICLE_LOOKLEFT~~w~, um den Helikopter im Uhrzeigersinn zu drehe
 Du kannst ~h~nach hinten sehen~w~, indem du ~h~gleichzeitig ~k~~VEHICLE_LOOKLEFT~ und ~k~~VEHICLE_LOOKRIGHT~ drückst~w~.
 
 [TEX3_4:SERG3] { reVC update }
-~g~Um eine Bombe abzuwerfen, drücke die~h~ ~k~~VEHICLE_FIREWEAPON~~w~.
+~g~Um eine Bombe abzuwerfen, drücke die~h~ ~k~~VEHICLE_FIREWEAPON~ ~w~.
 
 [TEX3_29:SERG3] { reVC update }
 Um eine Bombe abzuwerfen, drücke die~h~ ~k~~VEHICLE_FIREWEAPON~.
 
 [TEX3_26:SERG3]
-Drücke die ~h~~k~~VEHICLE_BRAKE~~w~, um die Rotorgeschwindigkeit zu verringern, der Helikopter ~h~verliert dann an Höhe.
+Drücke die ~h~~k~~VEHICLE_BRAKE~ ~w~, um die Rotorgeschwindigkeit zu verringern, der Helikopter ~h~verliert dann an Höhe.
 
 [TEX3_22:SERG3]
-Drücke die ~h~~k~~VEHICLE_ACCELERATE~~w~, um die Rotorgeschwindigkeit zu erhöhen, der Helikopter ~h~gewinnt dann an Höhe.
+Drücke die ~h~~k~~VEHICLE_ACCELERATE~ ~w~, um die Rotorgeschwindigkeit zu erhöhen, der Helikopter ~h~gewinnt dann an Höhe.
 
 [TEX3_16:SERG3]
 ~g~Begib dich zu dem ~w~TOPFUN~g~-Wagen nahe dem zum Abriss vorgesehenen Gebäude.
@@ -14271,17 +14271,17 @@ Um ~h~eine Bombe aufzunehmen~w~, steuere den Helikopter direkt über sie. Der He
 Zieh den ~h~ Rechten Analog-Stick zurück~w~, um die Rotorgeschwindigkeit zu erhöhen, der Helikopter ~h~ gewinnt dann an Höhe.
 
 [TEX3_38:SERG3] { reVC update }
-{Drück den ~h~ ~k~~VEHICLE_ACCELERATE~~w~, um die Rotorgeschwindigkeit zu verringern, der Helikopter ~h~ verliert dann an Höhe.}
+{Drück den ~h~ ~k~~VEHICLE_ACCELERATE~ ~w~, um die Rotorgeschwindigkeit zu verringern, der Helikopter ~h~ verliert dann an Höhe.}
 Drück den ~h~ Rechten Analog-Stick nach vorn~w~, um die Rotorgeschwindigkeit zu verringern, der Helikopter ~h~ verliert dann an Höhe.
 
 [TEX3_39:SERG3]
 Um eine Bombe abzuwerfen, drücke die ~h~~k~~VEHICLE_HANDBRAKE~~g~-Taste.
 
 [TEX3_40:SERG3]
-Um eine Bombe abzuwerfen, drücke die ~h~~k~~VEHICLE_HANDBRAKE~~w~-Taste.
+Um eine Bombe abzuwerfen, drücke die ~h~~k~~VEHICLE_HANDBRAKE~ ~w~-Taste.
 
 [TEX3_23:SERG3]
-Mit ~h~~k~~VEHICLE_TURRETUP~~w~ und ~h~~k~~VEHICLE_TURRETDOWN~~w~ neigst du den Helikopter in die Richtung, in die du ihn steuern willst.
+Mit ~h~~k~~VEHICLE_TURRETUP~ ~w~und ~h~~k~~VEHICLE_TURRETDOWN~ ~w~neigst du den Helikopter in die Richtung, in die du ihn steuern willst.
 
 {=================================== MISSION TABLE TAXI1 ===================================}
 
@@ -14722,80 +14722,80 @@ PED DENSITY
 CAR DENSITY
 
 {______________________________Vice Extended______________________________}
-[FEC_AIM]   
-Automatisches Zielen
+[FEC_AIM]
+Auto aiming
 
-[FEC_LSX]   
-Blickempfindlichkeit X
+[FEC_LSX]
+Look sensitivity X
 
 [FEC_LSY]   
-Blickempfindlichkeit Y
+Look sensitivity Y
 
 [FEC_ASX]   
-Zielempfindlichkeit X
+Aiming sensitivity X
 
 [FEC_ASY]   
-Zielempfindlichkeit Y
+Aiming sensitivity Y
 
 [FEC_IVL]   
-Vertikal umkehren
+Invert vertically
 
 [FEC_LZN]   
-Totzone des linken Knüppels
+Left stick deadzone
 
 [FEC_RZN]   
-Totzone des rechten Knüppels
+Right stick deadzone
 
 [FEC_VBF]   
-Vibrationskraft
+Vibration force
 
 [FEC_PRS]   
-Vorheriger Radiosender
+Previous radio station
 
 [FEC_NRS]   
-Nächster Radiosender
+Next radio station
 
 [FEC_RTC]   
-Kamera drehen
+Rotate camera
 
 [FET_AGC]   
-Gamepad-Konfiguration
+GAMEPAD CONFIGURATION
 
 [FET_AGS]   
-Gamepad-Einstellungen
+GAMEPAD SETTINGS
 
 [FEC_FOV]   
-Sichtfeld
+Field of view
 
 [FEC_ACV]   
-Automatische Zentrierung im Fahrzeug
+Auto-centering in vehicle
 
 [FEC_RVD]   
-Relatives Fahrzeug beim Vorbeifahren
+Relative vehicle while driveby
 
 [FEC_DOM]   
-DOOM Modus
+DOOM Mode
 
 [GA_22]
-Nur ein Auto!
+Just one car!
 
 [GA_23]
-Sie haben nicht genug Geld, um diese Änderung zu kaufen
+You don't have enough money to buy this modification
 
 [GA_24]
-Sie haben bereits diese Änderung
+You already have this modification
 
 [LG_39]
-Immobilie zu verkaufen
+Property for sale
 
 [FEC_WAL]
-Spaziergang
+Walk
 
 [FEC_RZO]
-Radar-Zoom
+Radar zoom
 
 [FEC_REL]
-Waffe nachladen
+Reload weapon
 
 [FED_GPS]
 GPS
@@ -14804,49 +14804,220 @@ GPS
 DUALSENSE
 
 [FEC_ATK]
-Angriff
+Attack
 
 [FET_SGP]
-Galerie Fotos speichern
+Store gallery photos
 
 [FES_SAV]
-Sie können das Spiel zu diesem Zeitpunkt nicht speichern. Um das Spiel zu speichern, dürfen Sie sich nicht in einer Mission befinden, sich nicht bewegen oder eine gesuchte Stufe haben.
+You cannot save the game at this time.
 
 [FET_AUT]
-Autospeichern
+Autosave
 
 [FEM_SL9]
-Autosave-Datei nicht vorhanden
+Autosave File Not Present
 
 [FEO_OTH]
-Andere Einstellungen
+Other settings
 
 [LG_40]
-Bombengeschäft
+Bomb shop
 
 [LG_41]
-Rennen
+Race
 
 [LG_42]
-Apotheke
+Store
 
 [FEC_LTS]
-Linke Blinker
+Left turn signals
 
 [FEC_RTS]
-Rechte Blinker
+Right turn signals
 
 [FEC_EML]
-Notbeleuchtung
+Emergency lights
 
-[CLTHST1]
-Use ~h~~k~~PED_CYCLE_WEAPON_LEFT~ ~h~~k~~PED_CYCLE_WEAPON_RIGHT~ ~h~~k~~PED_JUMPING~ ~w~ to choose clothes. To buy clothes, press ~h~~k~~PED_ANSWER_PHONE~ ~w~. Press ~h~~k~~VEHICLE_ENTER_EXIT~ to leave the store
+[CLOTH_1]
+Use ~h~~k~~GO_LEFT~ ~w~~h~~k~~GO_RIGHT~ ~w~to select clothes. To buy the selected clothes, press ~h~~k~~PED_SPRINT~.~w~ Press ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~to leave the store.
 
-[CLTHST2]
+[CLOTH_2]
 You don't have enough money to buy this item
 
 [FED_BRL]
-Grenzenlos
+Borderless
+
+[CLOTH_3]
+Purchased
+
+[CLOTH_4]
+Use ~h~~k~~GO_LEFT~ ~h~~k~~GO_RIGHT~ ~w~to select clothes. To put on the selected clothes, press ~h~~k~~PED_SPRINT~.~w~ Press ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~to leave the wardrobe.
+
+[CLOTH_5]
+Used
+
+[FEM_PHT]
+PHOTO MODE
+
+[PM_CAM]
+CAMERA
+
+[PM_ZOOM]
+ZOOM
+
+[PM_TILT]
+TILT
+
+[PM_ZOTI]
+ZOOM AND TILT
+
+[PM_NCP]
+NEAR CLIP PLANE
+
+[PM_CHAR]
+CHARACTER
+
+[PM_VSBL]
+VISIBILITY
+
+[PM_CLTH]
+CLOTHES
+
+[PM_ANIM]
+ANIMATION
+
+[PM_ANFR]
+ANIMATION FRAME
+
+[PM_WEAP]
+WEAPON
+
+[PM_MUZL]
+MUZZLE FLASH
+
+[PM_ROT]
+ROTATE
+
+[PM_SKY]
+SKY
+
+[PM_SUN]
+SUN AND MOON ANGLE
+
+[PM_HOUR]
+TIME IN HOURS
+
+[PM_MIN]
+TIME IN MINUTES
+
+[PM_WTHR]
+WEATHER
+
+[PM_SNNY]
+SUNNY
+
+[PM_CLDY]
+CLOUDY
+
+[PM_RANY]
+RAINY
+
+[PM_FGGY]
+FOGGY
+
+[PM_SNN2]
+SUNNY 2
+
+[PM_HRCN]
+HURRICANE
+
+[PM_LGHT]
+LIGHT
+
+[PM_DEFL]
+DEFAULT LIGHT
+
+[PM_COLR]
+COLOR RED
+
+[PM_COLG]
+COLOR GREEN
+
+[PM_COLB]
+COLOR BLUE
+
+[PM_DARK]
+DARK LIGHT
+
+[PM_EFFE]
+EFFECTS
+
+[PM_CLFL]
+COLORFILTER
+
+[PM_INTS]
+INTENSITY
+
+[PM_BRTN]
+BRIGHTNESS
+
+[PM_FRMS]
+FRAMES
+
+[PM_TOGL]
+MENU
+
+[PM_EXIT]
+EXIT
+
+[PM_MOVE]
+MOVE
+
+[PM_PHTO]
+PHOTO
+
+[PM_UI]
+UI
+
+[PM_SPED]
+SPEED
+
+[PM_ADJS]
+ADJUST
+
+[PM_MVLI]
+MOVE LIGHT
+
+[PM_MVCH]
+MOVE CHARACTER
+
+[PM_SAVE]
+PHOTO SAVED TO VICEEXTENDED\USERFILES\GALLERY
+
+[FED_WST]
+Weapon sight
+
+[FEM_COM]
+Complex
+
+[FEM_DEF]
+Default
+
+[LG_43]
+Hidden package
+
+[LG_44]
+Unique stunt
+
+[LG_45]
+Rampage
+
+[MOB_SKP]
+Press ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~to skip a phone call.
+
+[FEH_MPJ]
+LEFT STICK to move, TRIGGERS to zoom, RIGHT BUMPER - legend, LEFT BUTTON - marker, LEFT BUMPER - collectables
 
 [DUMMY]
 THIS LABEL NEEDS TO BE HERE !!!
