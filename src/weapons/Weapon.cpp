@@ -1110,6 +1110,12 @@ CWeapon::FireInstantHit(CEntity *shooter, CVector *fireSource)
 					recoilMult += 0.5f;
 #endif
 
+				if (m_eWeaponType == WEAPONTYPE_SILENCED_INGRAM)
+					recoilMult += 0.4f;
+
+				if (shooterPed->bIsDucking)
+					recoilMult -= 0.5f;
+
 				TheCamera.Cams[TheCamera.ActiveCam].Alpha += CGeneral::GetRandomNumberInRange(0.001f * recoilMult, 0.005f * recoilMult);
 				TheCamera.Cams[TheCamera.ActiveCam].Beta += CGeneral::GetRandomNumberInRange(-0.005f * recoilMult, 0.005f * recoilMult);
 			}
