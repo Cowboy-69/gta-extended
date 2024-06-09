@@ -731,6 +731,10 @@ REQUEST_MODEL TEC9
 
 REQUEST_MODEL M4
 
+REQUEST_MODEL AK47
+
+REQUEST_MODEL UZIOLD
+
 REQUEST_MODEL GANGBUR
 
 WHILE NOT HAS_MODEL_LOADED SGa
@@ -738,6 +742,8 @@ OR NOT HAS_MODEL_LOADED SGb
 OR NOT HAS_MODEL_LOADED ANGEL
 OR NOT HAS_MODEL_LOADED TEC9
 OR NOT HAS_MODEL_LOADED M4
+OR NOT HAS_MODEL_LOADED AK47
+OR NOT HAS_MODEL_LOADED UZIOLD
 OR NOT HAS_MODEL_LOADED BKa
 	
 	WAIT 0
@@ -1236,6 +1242,8 @@ MARK_MODEL_AS_NO_LONGER_NEEDED ANGEL
 MARK_MODEL_AS_NO_LONGER_NEEDED BKa
 MARK_MODEL_AS_NO_LONGER_NEEDED TEC9
 MARK_MODEL_AS_NO_LONGER_NEEDED M4
+MARK_MODEL_AS_NO_LONGER_NEEDED AK47
+MARK_MODEL_AS_NO_LONGER_NEEDED UZIOLD
 MARK_MODEL_AS_NO_LONGER_NEEDED GANGBUR
 REMOVE_BLIP stair_blip_bike3
 REMOVE_BLIP radar_blip_bike_bike3
@@ -1801,9 +1809,9 @@ IF flag_created_bloke_in_area_bike3 = 1
 							  
 				IF total_guards_created_bike3 > 29
 					SET_CHAR_HEALTH guard_number2_bike3 200
-					GIVE_WEAPON_TO_CHAR guard_number2_bike3 WEAPONTYPE_M4 30000 // Set to infinate ammo	
+					GIVE_WEAPON_TO_CHAR guard_number2_bike3 WEAPONTYPE_AK47 30000 // Set to infinate ammo	
 				ELSE
-					GIVE_WEAPON_TO_CHAR guard_number2_bike3 WEAPONTYPE_TEC9 30000 // Set to infinate ammo
+					GIVE_WEAPON_TO_CHAR guard_number2_bike3 WEAPONTYPE_UZIOLD 30000 // Set to infinate ammo
 				ENDIF
 
 				CHAR_FOLLOW_PATH guard_number2_bike3 player_x_bike3 player_y_bike3 player_z_bike3 0.5 RUN
@@ -2165,7 +2173,7 @@ IF chase_guys_created_bike3 = 0
 	CLEAR_CHAR_THREAT_SEARCH  chase_guard1_bike3
 	CLEAR_CHAR_THREAT_SEARCH chase_guard5_bike3
 	SET_CHAR_THREAT_SEARCH chase_guard1_bike3 THREAT_PLAYER1  
-	GIVE_WEAPON_TO_CHAR chase_guard1_bike3 WEAPONTYPE_TEC9 30000 // Set to infinate ammo
+	GIVE_WEAPON_TO_CHAR chase_guard1_bike3 WEAPONTYPE_UZIOLD 30000 // Set to infinate ammo
 	SET_CHAR_THREAT_SEARCH chase_guard5_bike3 THREAT_PLAYER1  
 	GIVE_WEAPON_TO_CHAR chase_guard5_bike3 WEAPONTYPE_TEC9 30000 // Set to infinate ammo
 	SET_CHAR_OBJ_KILL_PLAYER_ANY_MEANS chase_guard1_bike3 player1
@@ -2184,7 +2192,7 @@ IF chase_guys_created_bike3 = 0
 	CREATE_CHAR_AS_PASSENGER chase_car2_bike3 PEDTYPE_GANG_STREET SGb 0 chase_guard6_bike3
 	CLEAR_CHAR_THREAT_SEARCH chase_guard6_bike3
 	SET_CHAR_THREAT_SEARCH chase_guard6_bike3 THREAT_PLAYER1
-	GIVE_WEAPON_TO_CHAR chase_guard6_bike3 WEAPONTYPE_TEC9 30000 // Set to infinate ammo
+	GIVE_WEAPON_TO_CHAR chase_guard6_bike3 WEAPONTYPE_UZIOLD 30000 // Set to infinate ammo
 	SET_CHAR_OBJ_KILL_PLAYER_ANY_MEANS chase_guard2_bike3 player1
 	SET_CHAR_OBJ_KILL_PLAYER_ANY_MEANS chase_guard6_bike3 player1
 	SET_CAR_FORWARD_SPEED chase_car2_bike3 30.0
@@ -2197,7 +2205,7 @@ IF chase_guys_created_bike3 = 0
 	CREATE_CHAR_INSIDE_CAR chase_car3_bike3 PEDTYPE_GANG_STREET SGa chase_guard3_bike3
 	CLEAR_CHAR_THREAT_SEARCH chase_guard3_bike3
 	SET_CHAR_THREAT_SEARCH chase_guard3_bike3 THREAT_PLAYER1
-	GIVE_WEAPON_TO_CHAR chase_guard3_bike3 WEAPONTYPE_TEC9 30000 // Set to infinate ammo
+	GIVE_WEAPON_TO_CHAR chase_guard3_bike3 WEAPONTYPE_UZIOLD 30000 // Set to infinate ammo
 	CREATE_CHAR_AS_PASSENGER chase_car3_bike3 PEDTYPE_GANG_STREET SGb 0 chase_guard7_bike3
 	CLEAR_CHAR_THREAT_SEARCH chase_guard7_bike3
 	SET_CHAR_THREAT_SEARCH chase_guard7_bike3 THREAT_PLAYER1
@@ -2218,7 +2226,7 @@ IF chase_guys_created_bike3 = 0
 	CREATE_CHAR_AS_PASSENGER chase_car4_bike3 PEDTYPE_GANG_STREET SGb 0 chase_guard8_bike3
 	CLEAR_CHAR_THREAT_SEARCH chase_guard8_bike3
 	SET_CHAR_THREAT_SEARCH chase_guard8_bike3 THREAT_PLAYER1
-	GIVE_WEAPON_TO_CHAR chase_guard8_bike3 WEAPONTYPE_TEC9 30000 // Set to infinate ammo
+	GIVE_WEAPON_TO_CHAR chase_guard8_bike3 WEAPONTYPE_UZIOLD 30000 // Set to infinate ammo
 	SET_CHAR_OBJ_KILL_PLAYER_ANY_MEANS chase_guard4_bike3 player1
 	SET_CHAR_OBJ_KILL_PLAYER_ANY_MEANS chase_guard8_bike3 player1
 	SET_CAR_FORWARD_SPEED chase_car4_bike3 30.0
@@ -2294,7 +2302,7 @@ IF counter_all_guards_got_AI_bike3 < 6
 
 				SET_CHAR_THREAT_SEARCH guard2_bike3 THREAT_PLAYER1
 
-				GIVE_WEAPON_TO_CHAR guard2_bike3 WEAPONTYPE_TEC9 30000 // sets the gun to infinate ammo
+				GIVE_WEAPON_TO_CHAR guard2_bike3 WEAPONTYPE_UZIOLD 30000 // sets the gun to infinate ammo
 
 				ADD_ROUTE_POINT 1 -659.65 1239.53 23.17
 
@@ -2376,7 +2384,7 @@ IF counter_all_guards_got_AI_bike3 < 6
 
 				SET_CHAR_THREAT_SEARCH guard4_bike3 THREAT_PLAYER1
 
-				GIVE_WEAPON_TO_CHAR guard4_bike3 WEAPONTYPE_TEC9 30000 // sets the gun to infinate ammo
+				GIVE_WEAPON_TO_CHAR guard4_bike3 WEAPONTYPE_UZIOLD 30000 // sets the gun to infinate ammo
 
 				ADD_ROUTE_POINT 3 -756.20 1227.72 10.07
 

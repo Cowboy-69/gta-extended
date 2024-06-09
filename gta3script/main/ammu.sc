@@ -181,6 +181,8 @@ shop_ammu1_inner:
 														GOSUB set_current_weapon
 
 														IF HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_PYTHON
+														OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_DEAGLE
+														OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_BERETTA
 															PRINT_WITH_NUMBER_NOW ( HELP54 ) 100 1000 1
 														ENDIF
 
@@ -241,6 +243,7 @@ shop_ammu1_inner:
 														IF HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_MP5
 														OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_UZI
 														OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_TEC9
+														OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_UZIOLD
 															PRINT_WITH_NUMBER_NOW ( HELP54 ) 300 1000 1
 														ENDIF
 
@@ -306,6 +309,7 @@ shop_ammu1_inner:
 														IF shotgun_in_stock = 1
 															IF HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_SPAS12_SHOTGUN
 															OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_STUBBY_SHOTGUN
+															OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_SHOTGUN2
 																PRINT_WITH_NUMBER_NOW ( HELP54 ) 500 1000 1
 															ENDIF
 														ENDIF
@@ -375,6 +379,9 @@ shop_ammu1_inner:
 
 														IF ruger_in_stock = 1
 															IF HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_M4
+															OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_AK47
+															OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_M16
+															OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_STEYR
 																PRINT_WITH_NUMBER_NOW ( HELP54 ) 1000 1000 1
 															ENDIF
 														ENDIF
@@ -543,7 +550,7 @@ shop_ammu2_inner:
 
 					time_difference1 = current_time - time_since_murdering_shopkeeper1
 
-					CREATE_OBJECT colt45 367.0 1049.5 21.09 ammu_gun1
+					CREATE_OBJECT BERETTA 367.0 1049.5 21.09 ammu_gun1
 					SET_OBJECT_DYNAMIC ammu_gun1 FALSE
 					SET_OBJECT_ROTATION ammu_gun1 0.0 8.0 0.0
 
@@ -636,19 +643,21 @@ shop_ammu2_inner:
 														GET_CHAR_WEAPON_IN_SLOT scplayer 4 what_WeaponType ReturnedAmmo what_Model
 														GOSUB set_current_weapon
 
-														IF HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_PYTHON
+														IF HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_PISTOL
+														OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_PYTHON
+														OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_DEAGLE
 															PRINT_WITH_NUMBER_NOW ( HELP54 ) 100 1000 1
 														ENDIF
 
 														IF IS_BUTTON_PRESSED PAD1 CROSS
-															GET_AMMO_IN_PLAYER_WEAPON player1 WEAPONTYPE_PISTOL ReturnedAmmo
+															GET_AMMO_IN_PLAYER_WEAPON player1 WEAPONTYPE_BERETTA ReturnedAmmo
 															IF IS_SCORE_GREATER player1 99
 																IF ReturnedAmmo < 9999
-																	GIVE_WEAPON_TO_PLAYER player1 WEAPONTYPE_PISTOL 68
+																	GIVE_WEAPON_TO_PLAYER player1 WEAPONTYPE_BERETTA 68
 																	IF ReturnedAmmo > 9999
-																		GIVE_WEAPON_TO_PLAYER player1 WEAPONTYPE_PISTOL 9999
+																		GIVE_WEAPON_TO_PLAYER player1 WEAPONTYPE_BERETTA 9999
 																	ENDIF
-																	SET_CURRENT_PLAYER_WEAPON player1 WEAPONTYPE_PISTOL
+																	SET_CURRENT_PLAYER_WEAPON player1 WEAPONTYPE_BERETTA
 																	GOSUB buy_noise
 																	ADD_SCORE player1 -100
 																	ADD_MONEY_SPENT_ON_WEAPONS 100
@@ -697,6 +706,7 @@ shop_ammu2_inner:
 														IF HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_MP5
 														OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_SILENCED_INGRAM
 														OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_TEC9
+														OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_UZIOLD
 															PRINT_WITH_NUMBER_NOW ( HELP54 ) 400 1000 1
 														ENDIF
 
@@ -763,6 +773,7 @@ shop_ammu2_inner:
 														IF stubby_in_stock = 1
 															IF HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_SPAS12_SHOTGUN
 															OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_SHOTGUN
+															OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_SHOTGUN2
 																PRINT_WITH_NUMBER_NOW ( HELP54 ) 600 1000 1
 															ENDIF
 														ENDIF
@@ -1169,6 +1180,8 @@ shop_ammu3_inner:
 
 															IF python_in_stock = 1
 																IF HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_PISTOL
+																OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_DEAGLE
+																OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_BERETTA
 																	PRINT_WITH_NUMBER_NOW ( HELP54 ) 2000 1000 1
 																ENDIF
 															ENDIF
@@ -1240,6 +1253,7 @@ shop_ammu3_inner:
 																IF HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_UZI
 																OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_SILENCED_INGRAM
 																OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_TEC9
+																OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_UZIOLD
 																	PRINT_WITH_NUMBER_NOW ( HELP54 ) 3000 1000 1
 																ENDIF
 															ENDIF
@@ -1311,6 +1325,7 @@ shop_ammu3_inner:
 															IF spaz_in_stock = 1
 																IF HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_STUBBY_SHOTGUN
 																OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_SHOTGUN
+																OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_SHOTGUN2
 																	PRINT_WITH_NUMBER_NOW ( HELP54 ) 4000 1000 1
 																ENDIF
 															ENDIF
@@ -1381,6 +1396,9 @@ shop_ammu3_inner:
 
 															IF M4_in_stock = 1
 																IF HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_RUGER
+																OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_AK47
+																OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_M16
+																OR HAS_PLAYER_GOT_WEAPON Player1 WEAPONTYPE_STEYR
 																	PRINT_WITH_NUMBER_NOW ( HELP54 ) 5000 1000 1
 																ENDIF
 															ENDIF

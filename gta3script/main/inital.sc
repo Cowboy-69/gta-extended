@@ -1872,7 +1872,8 @@ Z from -100 to 100
 VAR_INT gun_beach1 gun_beach2 gun_beach3 gun_beach4 gun_beach5 gun_beach6 gun_beach7 gun_beach8 gun_beach9 gun_beach10  
 VAR_INT	gun_beach11 gun_beach12 gun_beach13 gun_beach14 gun_beach15 gun_beach16 prawn_gun1 prawn_gun2 golf_gun1 star_gun1 star_gun2 star_gun5 
 VAR_INT	gun_main1 gun_main2 gun_main3 gun_main4 gun_main5 gun_main6 gun_main7 gun_main8 gun_main9 gun_main10 gun_main11 gun_main12 gun_main13 gun_main14 Chainsaw1 
-VAR_INT gun_beach17
+VAR_INT gun_beach17 gun_beach18 gun_beach19 gun_beach20
+VAR_INT gun_main15 gun_main16 gun_main17
 
 //BEACH
 CREATE_PICKUP chnsaw PICKUP_ON_STREET 30.0 -1330.9 13.0 Chainsaw1	//Scarface chainsaw room
@@ -1893,6 +1894,9 @@ CREATE_PICKUP machete PICKUP_ON_STREET_SLOW 56.6 -459.3 11.4 gun_beach15 //On br
 CREATE_PICKUP_WITH_AMMO uzi PICKUP_ON_STREET_SLOW 60 5.4 -1277.0 10.4 gun_beach16 //Behind paint n spray in washington
 CREATE_PICKUP_WITH_AMMO uzi PICKUP_ON_STREET_SLOW 60 157.0 -895.3 12.3 gun_beach17 //in middle of washington next to swimming pool
 CREATE_PICKUP_WITH_AMMO bomb PICKUP_ON_STREET_SLOW 4 556.6 207.4 14.5 gun_beach12 //building tall hotel next to beach in South vice point
+CREATE_PICKUP_WITH_AMMO SHOTGUN2 PICKUP_ON_STREET_SLOW 10 415.6 1033.4 18.5 gun_beach18 // At back of big mall
+CREATE_PICKUP_WITH_AMMO UZIOLD PICKUP_ON_STREET_SLOW 50 -4.0 -1417.0 10.4 gun_beach19 // South near Ammunation by the elevators
+CREATE_PICKUP_WITH_AMMO BERETTA PICKUP_ON_STREET_SLOW 30 252.0 -787.0 12.0 gun_beach20 // Not far from the swimming pool middle of Washington
 
 //PORN ISLAND
 CREATE_PICKUP_WITH_AMMO m4 PICKUP_ON_STREET_SLOW 60 -32.8 1019.2 13.0 prawn_gun1 //Inside Studio B   
@@ -1909,7 +1913,7 @@ CREATE_PICKUP katana PICKUP_ON_STREET_SLOW -554.11 -547.7 10.7 star_gun5 //Insid
 //MAINLAND
 CREATE_PICKUP_WITH_AMMO molotov PICKUP_ON_STREET_SLOW 4 -755.7 1347.5 11.8 gun_main1 //Taco Shop   
 CREATE_PICKUP_WITH_AMMO uzi PICKUP_ON_STREET_SLOW 60 -545.8 694.6 11.0 gun_main2 //Across from biker bar   
-CREATE_PICKUP_WITH_AMMO m4 PICKUP_ON_STREET_SLOW 60 -980.4 118.7 9.3 gun_main3 //Between Haitain Houses
+CREATE_PICKUP_WITH_AMMO AK47 PICKUP_ON_STREET_SLOW 60 -980.4 118.7 9.3 gun_main3 //Between Haitain Houses
 CREATE_PICKUP_WITH_AMMO m4 PICKUP_ON_STREET_SLOW 60 -1221.0 -641.6 11.7 gun_main4 //Behind house across from Umberto's
 CREATE_PICKUP_WITH_AMMO sniper PICKUP_ON_STREET_SLOW 20 -742.1 -949.9 9.9 gun_main5 //Behind Toll Booth on last bridge on way to Beach
 CREATE_PICKUP_WITH_AMMO rocketla PICKUP_ON_STREET_SLOW 4 -995.1 -1178.1 13.6 gun_main6 //In Hooker Inn Swimming Pool.
@@ -1921,6 +1925,9 @@ CREATE_PICKUP_WITH_AMMO grenade PICKUP_ON_STREET_SLOW 4 -939.8 -464.9 10.9 gun_m
 CREATE_PICKUP_WITH_AMMO python PICKUP_ON_STREET_SLOW 12 -1182.7 -61.1 11.4 gun_main12 //South Across water from junkyard   
 CREATE_PICKUP_WITH_AMMO buddyshot PICKUP_ON_STREET_SLOW 10 -1305.2 177.1 11.4 gun_main13 //Behind large hanger from junkyard   
 CREATE_PICKUP_WITH_AMMO laser PICKUP_ON_STREET_SLOW 14 -1114.3 -602.0 26.0 gun_main14 //Next to Kaufmann cabs sign in Lttle Havana (close to cuban cafe)   
+CREATE_PICKUP_WITH_AMMO DEAGLE PICKUP_ON_STREET_SLOW 14 -642.4 817.0 11.5 gun_main15 // Behind the police station in Downtown
+CREATE_PICKUP_WITH_AMMO STEYR PICKUP_ON_STREET_SLOW 60 -1695.0 -180.0 30.0 gun_main16 // In the back tower at the Army Hanger
+CREATE_PICKUP_WITH_AMMO M16 PICKUP_ON_STREET_SLOW 60 -881.0 -746.0 11.0 gun_main17 // Behind the police station in Little Havana
 
 // ViceEx, Weapon pickups
 VAR_INT gun_camera1 gun_camera2 gun_camera3, gun_teargas
