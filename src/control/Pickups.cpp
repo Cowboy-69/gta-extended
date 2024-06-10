@@ -79,7 +79,7 @@ uint16 AmmoForWeapon[WEAPONTYPE_TOTALWEAPONS + 1] = { 0,  1,  1,  1,   1,   1,  
 													 21,
 #endif
 #ifdef EX_WEAPON_BERETTA // Pickup - AmmoForWeapon
-													 68,
+													 60,
 #endif
 #ifdef EX_WEAPON_STEYR // Pickup - AmmoForWeapon
 													 120,
@@ -104,7 +104,7 @@ uint16 AmmoForWeapon_OnStreet[WEAPONTYPE_TOTALWEAPONS + 1] = { 0,  1,  1,  1,   
 															  14,
 #endif
 #ifdef EX_WEAPON_BERETTA // Pickup - AmmoForWeapon_OnStreet
-															  34,
+															  30,
 #endif
 #ifdef EX_WEAPON_STEYR // Pickup - AmmoForWeapon_OnStreet
 															  60,
