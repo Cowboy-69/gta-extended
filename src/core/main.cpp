@@ -1824,7 +1824,14 @@ FrontendIdle(void)
 void
 InitialiseGame(void)
 {
+#ifdef IMPROVED_MENU_AND_INPUT // Random splash screen
+	int index = CGeneral::GetRandomNumberInRange(0, 14);
+	char splashName[16];
+	sprintf(splashName, "loadsc%d", index);
+	LoadingScreen(nil, nil, splashName);
+#else
 	LoadingScreen(nil, nil, "loadsc0");
+#endif
 	CGame::Initialise("DATA\\GTA_VC.DAT");
 }
 
