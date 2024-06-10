@@ -341,6 +341,14 @@ CCarCtrl::GenerateOneRandomCar()
 				return;
 		}
 	}
+#ifdef EX_VCPD_WINTERGREEN // GenerateOneRandomCar
+	if (carClass == COPS && carModel == MI_POLWINTERGREEN) {
+		if (!CStreaming::HasModelLoaded(MI_POLWINTERGREEN)) {
+			CStreaming::RequestModel(MI_POLWINTERGREEN, STREAMFLAGS_DEPENDENCY);
+			return;
+		}
+	}
+#endif
 	int16 colliding;
 	CWorld::FindObjectsKindaColliding(spawnPosition, bBoatGenerated ? 40.0f : 10.0f, true, &colliding, 2, nil, false, true, true, false, false);
 	if (colliding)
