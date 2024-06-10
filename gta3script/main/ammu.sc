@@ -633,7 +633,7 @@ shop_ammu2_inner:
 												WHILE dpad_stateX = 0
 													WAIT 0
 
-													PRINT_BIG ( PISTOL ) 1000 4
+													PRINT_BIG ( BERETTA ) 1000 4
 													PRINT_WITH_NUMBER_NOW ( G_COST ) 100 1000 1
 
 													IF IS_PLAYER_PLAYING player1

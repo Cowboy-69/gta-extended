@@ -15028,6 +15028,9 @@ Press ~h~~k~~VEHICLE_ENTER_EXIT~ ~w~to skip a phone call.
 [FEH_MPJ]
 LEFT STICK to move, TRIGGERS to zoom, RIGHT BUMPER - legend, LEFT BUTTON - marker, LEFT BUMPER - collectables
 
+[BERETTA]
+Beretta
+
 [DUMMY]
 THIS LABEL NEEDS TO BE HERE !!!
 AS THE LAST LABEL DOES NOT GET COMPILED
