@@ -578,7 +578,11 @@ bool CPlayerPed::CanUseDriveBy(void)
 
 	int8 currentWeaponSlot = CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType)->m_nWeaponSlot;
 	bool bHaveWeapon = CWeaponInfo::GetWeaponInfo(GetWeapon()->m_eWeaponType)->m_nWeaponSlot > 2 &&
+#ifdef EX_WEAPON_BERETTA // CanUseDriveBy
+		(GetWeapon()->m_eWeaponType == WEAPONTYPE_COLT45 || GetWeapon()->m_eWeaponType == WEAPONTYPE_BERETTA || currentWeaponSlot == WEAPONSLOT_SUBMACHINEGUN);
+#else
 		(GetWeapon()->m_eWeaponType == WEAPONTYPE_COLT45 || currentWeaponSlot == WEAPONSLOT_SUBMACHINEGUN);
+#endif
 
 	return bSuitableVehicle && bHaveWeapon && GetUp().z >= 0.2f && bSuitableCamera;
 }
@@ -1799,12 +1803,18 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 
 #ifdef FIRING_AND_AIMING // make it possible to switch between a pistol and a submachine gun while aiming in vehicle
 	if (InVehicle() && bIsPlayerAiming && (padUsed->CycleWeaponLeftJustDown() || padUsed->CycleWeaponRightJustDown())) {
-		if (HasWeaponSlot(5) && GetWeapon(5).m_nAmmoTotal > 0 && GetWeapon()->m_eWeaponType == WEAPONTYPE_COLT45) {
+		int currentWeaponSlot = GetWeaponSlot(GetWeapon()->m_eWeaponType);
+		if (currentWeaponSlot == WEAPONSLOT_HANDGUN && HasWeaponSlot(5) && GetWeapon(5).m_nAmmoTotal > 0) {
 			if (m_storedWeapon == WEAPONTYPE_UNIDENTIFIED)
 				m_storedWeapon = GetWeapon()->m_eWeaponType;
 			SetCurrentWeapon(GetWeapon(5).m_eWeaponType);
 		}
-		else if (HasWeaponSlot(3) && GetWeapon(3).m_nAmmoTotal > 0 && GetWeapon(3).m_eWeaponType == WEAPONTYPE_COLT45) {
+#ifdef EX_WEAPON_BERETTA // make it possible to switch between a pistol and a submachine gun while aiming in vehicle
+		else if (currentWeaponSlot == WEAPONSLOT_SUBMACHINEGUN && HasWeaponSlot(3) && GetWeapon(3).m_nAmmoTotal > 0 &&
+				(GetWeapon(3).m_eWeaponType == WEAPONTYPE_COLT45 || GetWeapon(3).m_eWeaponType == WEAPONTYPE_BERETTA)) {
+#else
+		else if (currentWeaponSlot == WEAPONSLOT_SUBMACHINEGUN && HasWeaponSlot(3) && GetWeapon(3).m_nAmmoTotal > 0 && GetWeapon(3).m_eWeaponType == WEAPONTYPE_COLT45) {
+#endif
 			if (m_storedWeapon == WEAPONTYPE_UNIDENTIFIED)
 				m_storedWeapon = GetWeapon()->m_eWeaponType;
 			SetCurrentWeapon(GetWeapon(3).m_eWeaponType);
