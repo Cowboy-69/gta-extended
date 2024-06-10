@@ -1402,6 +1402,7 @@ IF disguise_goals = 3
 					IF NOT IS_CHAR_DEAD scplayer
 						DRESS_CHAR scplayer
 					ENDIF
+					SET_CHAR_CLOTHING_VARIATION scplayer 0
 				ENDIF
 				IF NOT IS_CHAR_DEAD buddy 
 					DELETE_CHAR buddy
