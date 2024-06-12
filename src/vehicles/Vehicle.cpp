@@ -2415,8 +2415,14 @@ CVehicle::KillPedsInVehicle(void)
 			pDriver->SetDead();
 			if(!pDriver->IsPlayer())
 				pDriver->FlagToDestroyWhenNextProcessed();
-		}else
+		}else{
+#ifdef EX_PED_ANIMS_IN_CAR // When a vehicle explodes, the dead ped in it becomes scorched
+			if (pDriver->GetPedState() == PED_DEAD)
+				pDriver->bRenderScorched = true;
+#endif
+
 			pDriver->SetDie();
+		}
 	}
 	for(i = 0; i < m_nNumMaxPassengers; i++){
 		if(pPassengers[i]){
@@ -2425,8 +2431,14 @@ CVehicle::KillPedsInVehicle(void)
 				pPassengers[i]->SetDead();
 				if(!pPassengers[i]->IsPlayer())
 					pPassengers[i]->FlagToDestroyWhenNextProcessed();
-			}else
+			}else{
+#ifdef EX_PED_ANIMS_IN_CAR // When a vehicle explodes, the dead ped in it becomes scorched
+				if (pPassengers[i]->GetPedState() == PED_DEAD)
+					pPassengers[i]->bRenderScorched = true;
+#endif
+
 				pPassengers[i]->SetDie();
+			}
 		}
 	}
 }
