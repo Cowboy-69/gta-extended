@@ -14733,6 +14733,9 @@ LEFT STICK to move, TRIGGERS to zoom, RIGHT BUMPER - legend, LEFT BUTTON - marke
 [BERETTA]
 Beretta
 
+[FEL_UKR]
+UKRAINIAN
+
 { end of file }
 [DUMMY]
 THIS LABEL NEEDS TO BE HERE !!!

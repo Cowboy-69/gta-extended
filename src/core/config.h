@@ -799,14 +799,20 @@ static_assert(false, "SUPPORT_XBOX_SCRIPT and SUPPORT_MOBILE_SCRIPT are mutually
 #undef ONE_THREAD_PER_CHANNEL
 #undef FLUSHABLE_STREAMING
 
-#ifdef VICE_EXTENDED
-	#ifndef BUTTON_ICONS
-		#undef EX_MORE_BUTTON_ICONS
-		#undef EX_PC_KEY_ICONS
-	#endif
-#endif
-
 /*#if !defined(_WIN32) || defined(__LP64__) || defined(_WIN64)
 #error Mod Loader is currently only supported in win-x86 builds
 #endif*/
+#endif
+
+#ifdef VICE_EXTENDED
+
+#ifndef BUTTON_ICONS
+#undef EX_MORE_BUTTON_ICONS
+#undef EX_PC_KEY_ICONS
+#endif
+
+#ifdef MORE_LANGUAGES
+#define EX_UKRAINIAN
+#endif
+
 #endif

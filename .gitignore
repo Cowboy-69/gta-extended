@@ -361,6 +361,6 @@ codewarrior/Release/
 codewarrior/Debug/
 
 src/extras/GitSHA1.cpp
-utils/gxt/russian/gxt.exe
 utils/gxt/build_VE.bat
 utils/gxt/build_LE.bat
+utils/gxt/other/gxt.exe

@@ -3716,6 +3716,11 @@ CMenuManager::InitialiseChangedLanguageSettings()
 		case LANGUAGE_JAPANESE:
 			CFont::ReloadFonts(FONT_LANGSET_JAPANESE);
 			break;
+#ifdef EX_UKRAINIAN // ReloadFonts
+		case LANGUAGE_UKRAINIAN:
+			CFont::ReloadFonts(FONT_LANGSET_UKRAINIAN);
+			break;
+#endif
 		default:
 			CFont::ReloadFonts(FONT_LANGSET_EFIGS);
 			break;
@@ -3736,6 +3741,11 @@ CMenuManager::InitialiseChangedLanguageSettings()
 		case LANGUAGE_JAPANESE:
 			CGame::japaneseGame = true;
 			break;
+#ifdef EX_UKRAINIAN
+		case LANGUAGE_UKRAINIAN:
+			CGame::ukrainianGame = true;
+			break;
+#endif
 #endif
 		default:
 			break;

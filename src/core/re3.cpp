@@ -134,6 +134,17 @@ void LangJapSelect(int8 action)
 		FrontEndMenuManager.SaveSettings();
 	}
 }
+#ifdef EX_UKRAINIAN
+void LangUkrSelect(int8 action)
+{
+	if (action == FEOPTION_ACTION_SELECT) {
+		FrontEndMenuManager.m_PrefsLanguage = CMenuManager::LANGUAGE_UKRAINIAN;
+		FrontEndMenuManager.m_bFrontEnd_ReloadObrTxtGxt = true;
+		FrontEndMenuManager.InitialiseChangedLanguageSettings();
+		FrontEndMenuManager.SaveSettings();
+	}
+}
+#endif
 #endif
 
 void
@@ -209,6 +220,16 @@ CustomFrontendOptionsPopulate(void)
 		if (fd2 = CFileMgr::OpenFile("models/fonts_j.txd")) {
 #endif
 			FrontendOptionAddDynamic("FEL_JAP", 0, 0, MENUALIGN_CENTER, nil, nil, LangJapSelect, nil, nil);
+			CFileMgr::CloseFile(fd2);
+		}
+		CFileMgr::CloseFile(fd);
+	}
+#endif
+
+#ifdef EX_UKRAINIAN
+	if (fd = CFileMgr::OpenFile("ViceExtended/text/ukrainian.gxt")) {
+		if (fd2 = CFileMgr::OpenFile("ViceExtended/models/fonts_u.txd")) {
+			FrontendOptionAddDynamic("FEL_UKR", 0, 0, MENUALIGN_CENTER, nil, nil, LangUkrSelect, nil, nil);
 			CFileMgr::CloseFile(fd2);
 		}
 		CFileMgr::CloseFile(fd);

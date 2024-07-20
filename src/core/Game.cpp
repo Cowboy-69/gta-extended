@@ -114,6 +114,9 @@ char CGame::aDatFile[32];
 #ifdef MORE_LANGUAGES
 bool CGame::russianGame = false;
 bool CGame::japaneseGame = false;
+#ifdef EX_UKRAINIAN
+bool CGame::ukrainianGame = false;
+#endif
 #endif
 #ifndef MASTER
 CVector CGame::PlayerCoords;

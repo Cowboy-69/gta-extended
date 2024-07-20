@@ -882,6 +882,9 @@ public:
 		LANGUAGE_POLISH,
 		LANGUAGE_RUSSIAN,
 		LANGUAGE_JAPANESE,
+#ifdef EX_UKRAINIAN
+		LANGUAGE_UKRAINIAN,
+#endif
 #endif
 	};
 	bool GetIsMenuActive() {return !!m_bMenuActive;}

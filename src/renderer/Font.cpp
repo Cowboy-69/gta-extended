@@ -253,7 +253,78 @@ int16 CFont::Size[MAX_FONTS][210] = {
 			//space, unprop
 			10, 20
 		}
-	}
+	},
+#if defined VICE_EXTENDED && defined MORE_LANGUAGES
+	{
+		// Japanese
+	},
+#endif
+#ifdef EX_UKRAINIAN
+	{
+        {
+			//FONT2
+			10,  8, 10, 16, 18, 18, 22,  2, // 0 ! ! " # $ % & '
+			32, 32,  0, 32,  6,  8,  4,  0, // 8 ( ) * + C - . /
+			16,  8, 16, 16, 16, 16, 16, 12, // 16 0 1 2 3 4 5 6 7
+			10, 14,  4,  0,  0,  0,  0, 18, // 24 8 9 : ; < = > ?
+			 0, 16, 18, 12, 18, 16, 16, 14, // 32 - A B C D E F G
+			18, 10, 12, 18, 20, 28, 20, 12, // 40 H I J K L M N O
+			18, 14, 16, 16, 12, 16, 12, 24, // 48 P Q R S T U V W
+			16, 16, 16,  0,  8,  0, 10,  8, // 56 X Y Z [ \ ] ^ _
+			 0, 12, 10, 10, 12, 10, 10, 12, // 64 ` a b c d e f g
+			14,  8, 12, 14,  6, 18, 16,  8, // 72 h i j k l m n o
+			14, 14,  8,  8, 20, 16, 12, 14, // 80 p q r s t u v w
+			12,  8, 10,  0,  0,  0,  0,  0, // 88 x y z { | } ~ 
+			18, 18, 18, 20, 28, 12, 16, 18, // 96 À Á Â Ã Æ Ç È É
+			18, 28, 24, 22, 16, 20, 20, 16, // 104 Ê Ë Ì Í Î Ï Ò Ó
+			28, 32, 28, 18, 22, 28, 10, 12, // 112 Ô Ö Ù Ú Û Ü ß à
+			10, 10, 10, 20, 10, 16, 16, 10, // 120 á â ã æ ç è é ê
+			18, 14, 16, 14, 20, 16, 10, 20, // 128 ë ì í î ï ò ó ô
+			20, 14,  6, 10, 16, 18, 10, 10, // 136 ö ù ú û ü N n ?
+			 0,  0,  0,  0,  0,  0,  0,  0, // 144 0 1 2 3 4 5 6 7
+			 0,  0,  0,  0,  0,  0,  0,  0, // 152 8 9 : a b c d e
+			 0,  0,  0,  0,  0,  0,  0,  0, // 160 f g h i j k l m
+			 0,  0,  0,  0,  0,  0,  0,  0, // 168 n o p q r s t u
+			 0,  0,  0,  0,  0,  0,  0,  0, // 176 v w x y z À Á Â
+			 0,  0,  0,  0,  0,  0,  0,  0, // 184 Ã Æ Ç È É Ê Ë Ì
+			 0,  0,  0,  0,  0,  0,  0,  0, // 192 Í Î Ï Ò Ó Ô Ö Ù
+			 0,  0,  0,  0,  0,  0,  0, 19, // 200 Ú Û Ü ß Ñ ¿ ' .
+			 //space, unprop
+			19, 16
+		},
+		{
+			//FONT1
+			10,  6, 10, 14, 18, 20, 18,  6, // 0 ! ! " # $ % & '
+			 8,  8, 10, 14,  4, 12,  6, 12, // 8 ( ) * + C - . /
+			18,  6, 18, 20, 18, 18, 20, 20, // 16 0 1 2 3 4 5 6 7
+			20, 20,  4,  4, 24, 12, 28, 18, // 24 8 9 : ; < = > ?
+			22, 22, 18, 20, 20, 18, 18, 20, // 32 - A B C D E F G
+			20,  4, 12, 20, 18, 24, 20, 22, // 40 H I J K L M N O
+			22, 24, 20, 18, 20, 22, 20, 30, // 48 P Q R S T U V W
+			18, 18, 20, 10, 14,  8,  6,  8, // 56 X Y Z [ \ ] ^ _
+			 4, 16, 16, 16, 16, 14, 12, 16, // 64 ` a b c d e f g
+			16,  6,  6, 16,  6, 24, 14, 16, // 72 h i j k l m n o
+			14, 14, 10, 14, 18, 14, 18, 22, // 80 p q r s t u v w
+			18, 10, 14, 28, 16, 20, 10, 10, // 88 x y z { | } ~ 
+			20, 18, 18, 22, 30, 22, 20, 20, // 96 À Á Â Ã Æ Ç È É
+			22, 24, 20, 20, 20, 24, 22, 20, // 104 Ê Ë Ì Í Î Ï Ò Ó
+			28, 30, 24, 20, 22, 30, 12, 16, // 112 Ô Ö Ù Ú Û Ü ß à
+			16, 12, 16, 28, 16, 16, 16, 16, // 120 á â ã æ ç è é ê
+			22, 16, 16, 18, 28, 18, 16, 24, // 128 ë ì í î ï ò ó ô
+			28, 18, 14, 14, 22, 20, 14, 12, // 136 ö ù ú û ü N n ?
+			20, 20, 20, 18, 22, 20, 18, 20, // 144 0 1 2 3 4 5 6 7
+			20, 20, 20, 20, 20, 20, 20, 20, // 152 8 9 : a b c d e
+			18, 20, 20, 10, 20, 18, 16, 30, // 160 f g h i j k l m
+			20, 20, 20, 20, 20, 20, 30, 20, // 168 n o p q r s t u
+			22, 30, 20, 20, 20, 20, 20, 20, // 176 v w x y z À Á Â
+			20, 28, 20, 22, 22, 22, 30, 20, // 184 Ã Æ Ç È É Ê Ë Ì
+			20, 20, 30, 22, 20, 30, 30, 10, // 192 Í Î Ï Ò Ó Ô Ö Ù
+			18, 20, 28, 20, 22, 22, 28, 10, // 200 Ú Û Ü ß Ñ ¿ ' .
+			//space, unprop
+			10, 20
+		}
+	},
+#endif
 #endif
 };
 
@@ -340,6 +411,11 @@ CFont::Initialise(void)
 	case FONT_LANGSET_JAPANESE:
 		ModLoader_FontsTxd(slot, "ViceExtended/MODELS/FONTS_J.TXD");
 		break;
+#ifdef EX_UKRAINIAN // LoadTxd
+	case FONT_LANGSET_UKRAINIAN:
+		CTxdStore::LoadTxd(slot, "ViceExtended/MODELS/FONTS_U.TXD");
+		break;
+#endif
 	}
 #else
 	switch (LanguageSet)
@@ -358,6 +434,11 @@ CFont::Initialise(void)
 	case FONT_LANGSET_JAPANESE:
 		CTxdStore::LoadTxd(slot, "ViceExtended/MODELS/FONTS_J.TXD");
 		break;
+#ifdef EX_UKRAINIAN // LoadTxd
+	case FONT_LANGSET_UKRAINIAN:
+		CTxdStore::LoadTxd(slot, "ViceExtended/MODELS/FONTS_U.TXD");
+		break;
+#endif
 	}
 #endif
 #else
@@ -568,6 +649,11 @@ CFont::ReloadFonts(uint8 set)
 		case FONT_LANGSET_JAPANESE:
 			ModLoader_FontsTxd(Slot, "ViceExtended/MODELS/FONTS_J.TXD");
 			break;
+#ifdef EX_UKRAINIAN // LoadTxd
+		case FONT_LANGSET_UKRAINIAN:
+			CTxdStore::LoadTxd(Slot, "ViceExtended/MODELS/FONTS_U.TXD");
+			break;
+#endif
 		}
 #else
 		case FONT_LANGSET_EFIGS:
@@ -584,6 +670,11 @@ CFont::ReloadFonts(uint8 set)
 		case FONT_LANGSET_JAPANESE:
 			CTxdStore::LoadTxd(Slot, "ViceExtended/MODELS/FONTS_J.TXD");
 			break;
+#ifdef EX_UKRAINIAN // LoadTxd
+		case FONT_LANGSET_UKRAINIAN:
+			CTxdStore::LoadTxd(Slot, "ViceExtended/MODELS/FONTS_U.TXD");
+			break;
+#endif
 		}
 #endif
 #else
