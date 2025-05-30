@@ -11,6 +11,7 @@
 #include "Camera.h"
 #include "World.h"
 #include "ZoneCull.h"
+#include "main.h"
 
 cAudioManager AudioManager;
 
@@ -615,7 +616,16 @@ cAudioManager::ComputeVolume(uint8 emittingVolume, float maxDistance, float dist
 void
 cAudioManager::TranslateEntity(Const CVector *in, CVector *out)
 {
-	*out = MultiplyInverse(TheCamera.GetMatrix(), *in);
+	CMatrix cameraMatrix = TheCamera.GetMatrix();
+	if (RwCameraGetMirror(Scene.camera)) {
+		cameraMatrix.rx *= -1.0f;
+		cameraMatrix.ry *= -1.0f;
+		cameraMatrix.fx *= -1.0f;
+		cameraMatrix.fy *= -1.0f;
+		cameraMatrix.ux *= -1.0f;
+		cameraMatrix.uy *= -1.0f;
+	}
+	*out = MultiplyInverse(cameraMatrix, *in);
 }
 
 Const static uint8 PanTable[64] = { 0,  3,  8, 12, 16, 19, 22, 24, 26, 28, 30, 31, 33, 34, 36, 37, 39, 40, 41, 42, 44, 45, 46, 47, 48, 49, 49, 50, 51, 52, 53, 53,

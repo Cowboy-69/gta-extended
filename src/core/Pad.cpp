@@ -44,6 +44,7 @@
 #ifdef IMPROVED_VEHICLES
 #include "Bike.h"
 #endif
+#include "main.h"
 
 #ifdef GTA_PS2
 #include "eetypes.h"
@@ -2546,6 +2547,10 @@ int16 CPad::GetSteeringLeftRight(void)
 		}
 	}
 
+	if (RwCameraGetMirror(Scene.camera)) {
+		value *= -1;
+	}
+
 	return value;
 }
 
@@ -2670,12 +2675,21 @@ int16 CPad::GetPedWalkLeftRight(void)
 		{
 			int16 axis = NewState.LeftStickX;
 #ifdef IMPROVED_MENU_AND_INPUT
+			if (RwCameraGetMirror(Scene.camera)) {
+				axis *= -1;
+			}
+
 			if (Abs(axis) > FrontEndMenuManager.m_PrefsLeftStickDeadzone)
 				return axis;
 			else
 				return 0;
 #else
 			int16 dpad = (NewState.DPadRight - NewState.DPadLeft) / 2;
+
+			if (RwCameraGetMirror(Scene.camera)) {
+				axis *= -1;
+				dpad *= -1;
+			}
 
 			if ( Abs(axis) > Abs(dpad) )
 				return axis;
@@ -2691,11 +2705,20 @@ int16 CPad::GetPedWalkLeftRight(void)
 		{
 #ifdef IMPROVED_MENU_AND_INPUT
 			int16 axis = NewState.LeftStickX;
+			
+			if (RwCameraGetMirror(Scene.camera)) {
+				axis *= -1;
+			}
+
 			if (Abs(axis) > FrontEndMenuManager.m_PrefsLeftStickDeadzone)
 				return axis;
 			else
 				return 0;
 #else
+			if (RwCameraGetMirror(Scene.camera)) {
+				NewState.LeftStickX *= -1;
+			}
+
 			return NewState.LeftStickX;
 #endif
 
@@ -4288,6 +4311,10 @@ int16 CPad::SniperModeLookLeftRight(void)
 #ifdef IMPROVED_MENU_AND_INPUT
 	int16 axis = NewState.RightStickX;
 
+	if (RwCameraGetMirror(Scene.camera)) {
+		axis *= -1;
+	}
+
 	if (Abs(axis) > FrontEndMenuManager.m_PrefsRightStickDeadzone)
 		return (axis > 0.f ? axis - FrontEndMenuManager.m_PrefsRightStickDeadzone : axis + FrontEndMenuManager.m_PrefsRightStickDeadzone);
 	else
@@ -4295,6 +4322,11 @@ int16 CPad::SniperModeLookLeftRight(void)
 #else
 	int16 axis = NewState.LeftStickX;
 	int16 dpad = (NewState.DPadRight - NewState.DPadLeft) / 2;
+
+	if (RwCameraGetMirror(Scene.camera)) {
+		axis *= -1;
+		dpad *= -1;
+	}
 
 	if ( Abs(axis) > Abs(dpad) ) {
 		if ( Abs(axis) > 35.0f ) {
@@ -4346,6 +4378,10 @@ int16 CPad::SniperModeLookUpDown(void)
 int16 CPad::LookAroundLeftRight(void)
 {
 	float axis = GetPad(0)->NewState.RightStickX;
+
+	if (RwCameraGetMirror(Scene.camera)) {
+		axis *= -1.0f;
+	}
 
 #ifdef IMPROVED_MENU_AND_INPUT
 	if (Abs(axis) > FrontEndMenuManager.m_PrefsRightStickDeadzone && !GetLookBehindForPed())

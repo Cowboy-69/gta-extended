@@ -929,6 +929,11 @@ void CPhotoMode::ProcessCamera()
 	float MouseY = pad->GetMouseY();
 	float LookLeftRight = 0.0f;
 	float LookUpDown = 0.0f;
+
+	if (RwCameraGetMirror(Scene.camera)) {
+		MouseX *= -1.0f;
+	}
+
 	if (!bMenuOpen && (pad->GetLeftMouse() || pad->IsAffectedByController)) {
 		if (pad->IsAffectedByController) {
 			LookLeftRight = pad->LookAroundLeftRight();
@@ -972,7 +977,10 @@ void CPhotoMode::ProcessCamera()
 
 			Speed = -pad->GetLeftStickY() * SpeedMultiplier * CTimer::GetTimeStepFix();
 
-			PanSpeedX = -pad->GetLeftStickX() * SpeedMultiplier * CTimer::GetTimeStepFix();
+			if (RwCameraGetMirror(Scene.camera))
+				PanSpeedX = pad->GetLeftStickX() * SpeedMultiplier * CTimer::GetTimeStepFix();
+			else
+				PanSpeedX = -pad->GetLeftStickX() * SpeedMultiplier * CTimer::GetTimeStepFix();
 
 			PanSpeedY = -pad->NewState.LeftShoulder2 / 255.0f * 0.25f + pad->NewState.RightShoulder2 / 255.0f * 0.25f;
 		} else {
@@ -989,12 +997,21 @@ void CPhotoMode::ProcessCamera()
 			else
 				Speed = 0.0f;
 
-			if (KEYDOWN('A') && !pad->GetRightMouse())
-				PanSpeedX += 1.0f * SpeedMultiplier * CTimer::GetTimeStepFix();
-			else if (KEYDOWN('D') && !pad->GetRightMouse())
-				PanSpeedX += -1.0f * SpeedMultiplier * CTimer::GetTimeStepFix();
-			else
-				PanSpeedX = 0.0f;
+			if (RwCameraGetMirror(Scene.camera)) {
+				if (KEYDOWN('A') && !pad->GetRightMouse())
+					PanSpeedX += -1.0f * SpeedMultiplier * CTimer::GetTimeStepFix();
+				else if (KEYDOWN('D') && !pad->GetRightMouse())
+					PanSpeedX += 1.0f * SpeedMultiplier * CTimer::GetTimeStepFix();
+				else
+					PanSpeedX = 0.0f;
+			} else {
+				if (KEYDOWN('A') && !pad->GetRightMouse())
+					PanSpeedX += 1.0f * SpeedMultiplier * CTimer::GetTimeStepFix();
+				else if (KEYDOWN('D') && !pad->GetRightMouse())
+					PanSpeedX += -1.0f * SpeedMultiplier * CTimer::GetTimeStepFix();
+				else
+					PanSpeedX = 0.0f;
+			}
 
 			if (KEYDOWN('Q') && !pad->GetRightMouse())
 				PanSpeedY += -1.0f * SpeedMultiplier * CTimer::GetTimeStepFix();
@@ -1621,6 +1638,11 @@ void CPhotoMode::ProcessPlayerPosition()
 
 			float mouseX = -(float)pad->GetMouseX() / 50.0f;
 			float mouseY = (float)pad->GetMouseY() / 50.0f;
+
+			if (RwCameraGetMirror(Scene.camera)) {
+				mouseX *= -1.0f;
+			}
+
 			if (pad->GetRightMouse()) {
 				playerPos.z += mouseY;
 			} else {
@@ -1662,6 +1684,11 @@ void CPhotoMode::ProcessLights()
 		} else {
 			float mouseX = -(float)pad->GetMouseX() / 50.0f;
 			float mouseY = (float)pad->GetMouseY() / 50.0f;
+
+			if (RwCameraGetMirror(Scene.camera)) {
+				mouseX *= -1.0f;
+			}
+
 			if (pad->GetRightMouse()) {
 				lightPos.z += mouseY;
 			} else {

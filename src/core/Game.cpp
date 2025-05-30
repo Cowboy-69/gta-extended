@@ -232,6 +232,11 @@ CGame::InitialiseRenderWare(void)
 	RwCameraSetFarClipPlane(Scene.camera, 2000.0f);
 	RwCameraSetNearClipPlane(Scene.camera, 0.9f);
 	
+	if (bMirrorModeByDefault) {
+		gBackfaceCulling = false;
+		RwCameraSetMirror(Scene.camera, bMirrorModeByDefault);
+	}
+	
 	CameraSize(Scene.camera, nil, DEFAULT_VIEWWINDOW, DEFAULT_ASPECT_RATIO);
 	
 	/* Create a world */

@@ -381,6 +381,7 @@ extern bool bRocketLauncherThirdPersonAiming;
 #ifdef EX_RANDOM_VEHICLE_MODS_IN_TRAFFIC
 extern bool bRandomVehicleModsInTraffic;
 #endif
+extern bool bMirrorModeByDefault;
 #endif
 
 #define DEBUGBREAK() __debugbreak();

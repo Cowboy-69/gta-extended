@@ -391,15 +391,29 @@ CCam::Process(void)
 #else
 			}else if(CPad::GetPad(0)->GetLookLeft()){
 #endif
-				LookLeft();
-				if(DirectionWasLooking != LOOKING_LEFT)
-					TheCamera.m_bJust_Switched = true;
-				DirectionWasLooking = LOOKING_LEFT;
+				if (RwCameraGetMirror(Scene.camera)) {
+					LookRight();
+					if(DirectionWasLooking != LOOKING_RIGHT)
+						TheCamera.m_bJust_Switched = true;
+					DirectionWasLooking = LOOKING_RIGHT;
+				} else {
+					LookLeft();
+					if(DirectionWasLooking != LOOKING_LEFT)
+						TheCamera.m_bJust_Switched = true;
+					DirectionWasLooking = LOOKING_LEFT;
+				}
 			}else if(CPad::GetPad(0)->GetLookRight()){
-				LookRight();
-				if(DirectionWasLooking != LOOKING_RIGHT)
-					TheCamera.m_bJust_Switched = true;
-				DirectionWasLooking = LOOKING_RIGHT;
+				if (RwCameraGetMirror(Scene.camera)) {
+					LookLeft();
+					if(DirectionWasLooking != LOOKING_LEFT)
+						TheCamera.m_bJust_Switched = true;
+					DirectionWasLooking = LOOKING_LEFT;
+				} else {
+					LookRight();
+					if(DirectionWasLooking != LOOKING_RIGHT)
+						TheCamera.m_bJust_Switched = true;
+					DirectionWasLooking = LOOKING_RIGHT;
+				}
 			}else{
 				if(DirectionWasLooking != LOOKING_FORWARD)
 					TheCamera.m_bJust_Switched = true;
@@ -1513,6 +1527,11 @@ CCam::Process_FollowPedWithMouse(const CVector &CameraTarget, float TargetOrient
 		float MouseX = CPad::GetPad(0)->GetMouseX();
 		float MouseY = CPad::GetPad(0)->GetMouseY();
 		float LookLeftRight, LookUpDown;
+
+		if (RwCameraGetMirror(Scene.camera)) {
+			MouseX *= -1.0f;
+		}
+
 		if((MouseX != 0.0f || MouseY != 0.0f) && !CPad::GetPad(0)->ArePlayerControlsDisabled()){
 			UseMouse = true;
 			LookLeftRight = -2.5f*MouseX;
@@ -2420,6 +2439,11 @@ CCam::Process_Rocket(const CVector &CameraTarget, float, float, float)
 	float MouseX = CPad::GetPad(0)->GetMouseX();
 	float MouseY = CPad::GetPad(0)->GetMouseY();
 	float LookLeftRight, LookUpDown;
+
+	if (RwCameraGetMirror(Scene.camera)) {
+		MouseX *= -1.0f;
+	}
+
 	if(MouseX != 0.0f || MouseY != 0.0f){
 		UseMouse = true;
 		LookLeftRight = -3.0f*MouseX;
@@ -2527,6 +2551,11 @@ CCam::Process_M16_1stPerson(const CVector &CameraTarget, float, float, float)
 	float MouseX = CPad::GetPad(0)->GetMouseX();
 	float MouseY = CPad::GetPad(0)->GetMouseY();
 	float LookLeftRight, LookUpDown;
+
+	if (RwCameraGetMirror(Scene.camera)) {
+		MouseX *= -1.0f;
+	}
+
 	if(MouseX != 0.0f || MouseY != 0.0f){
 		UseMouse = true;
 		LookLeftRight = -3.0f*MouseX;
@@ -2943,6 +2972,11 @@ CCam::Process_1rstPersonPedOnPC(const CVector&, float TargetOrientation, float, 
 		float MouseX = CPad::GetPad(0)->GetMouseX();
 		float MouseY = CPad::GetPad(0)->GetMouseY();
 		float LookLeftRight, LookUpDown;
+
+		if (RwCameraGetMirror(Scene.camera)) {
+			MouseX *= -1.0f;
+		}
+
 		if(MouseX != 0.0f || MouseY != 0.0f){
 			UseMouse = true;
 			LookLeftRight = -3.0f*MouseX;
@@ -3087,6 +3121,11 @@ CCam::Process_Sniper(const CVector &CameraTarget, float TargetOrientation, float
 	float MouseX = CPad::GetPad(0)->GetMouseX();
 	float MouseY = CPad::GetPad(0)->GetMouseY();
 	float LookLeftRight, LookUpDown;
+
+	if (RwCameraGetMirror(Scene.camera)) {
+		MouseX *= -1.0f;
+	}
+
 	if(MouseX != 0.0f || MouseY != 0.0f){
 		UseMouse = true;
 		LookLeftRight = -3.0f*MouseX;
@@ -4079,11 +4118,20 @@ CCam::Process_Debug(const CVector&, float, float, float)
 
 	RwCameraSetNearClipPlane(Scene.camera, DEFAULT_NEAR);
 	FOV = DefaultFOV;
-	Alpha += DEGTORAD(CPad::GetPad(1)->GetLeftStickY()) / 50.0f;
-	Beta  += DEGTORAD(CPad::GetPad(1)->GetLeftStickX()*1.5f) / 19.0f;
-	if(CPad::GetPad(0)->GetLeftMouse()){
-		Alpha += DEGTORAD(CPad::GetPad(0)->GetMouseY()/2.0f);
-		Beta += DEGTORAD(CPad::GetPad(0)->GetMouseX()/2.0f);
+	if (RwCameraGetMirror(Scene.camera)) {
+		Alpha += DEGTORAD(CPad::GetPad(1)->GetLeftStickY()) / 50.0f;
+		Beta  += DEGTORAD(-CPad::GetPad(1)->GetLeftStickX()*1.5f) / 19.0f;
+		if(CPad::GetPad(0)->GetLeftMouse()){
+			Alpha += DEGTORAD(CPad::GetPad(0)->GetMouseY()/2.0f);
+			Beta += DEGTORAD(-CPad::GetPad(0)->GetMouseX()/2.0f);
+		}
+	} else {
+		Alpha += DEGTORAD(CPad::GetPad(1)->GetLeftStickY()) / 50.0f;
+		Beta  += DEGTORAD(CPad::GetPad(1)->GetLeftStickX()*1.5f) / 19.0f;
+		if(CPad::GetPad(0)->GetLeftMouse()){
+			Alpha += DEGTORAD(CPad::GetPad(0)->GetMouseY()/2.0f);
+			Beta += DEGTORAD(CPad::GetPad(0)->GetMouseX()/2.0f);
+		}
 	}
 
 	TargetCoors.x = Source.x + Cos(Alpha) * Sin(Beta) * 7.0f;
@@ -4103,11 +4151,17 @@ CCam::Process_Debug(const CVector&, float, float, float)
 	if(Speed < -70.0f) Speed = -70.0f;
 
 
-	if(KEYDOWN(rsRIGHT) || KEYDOWN('D'))
-		PanSpeedX += 0.1f;
-	else if(KEYDOWN(rsLEFT) || KEYDOWN('A'))
-		PanSpeedX -= 0.1f;
-	else
+	if(KEYDOWN(rsRIGHT) || KEYDOWN('D')){
+		if (RwCameraGetMirror(Scene.camera))
+			PanSpeedX -= 0.1f;
+		else
+			PanSpeedX += 0.1f;
+	}else if(KEYDOWN(rsLEFT) || KEYDOWN('A')){
+		if (RwCameraGetMirror(Scene.camera))
+			PanSpeedX += 0.1f;
+		else
+			PanSpeedX -= 0.1f;
+	}else
 		PanSpeedX = 0.0f;
 	if(PanSpeedX > 70.0f) PanSpeedX = 70.0f;
 	if(PanSpeedX < -70.0f) PanSpeedX = -70.0f;
@@ -4363,6 +4417,11 @@ CCam::Process_Real_1st_Person(const CVector& CameraTarget, float TargetOrientati
 	float MouseX = CPad::GetPad(0)->GetMouseX();
 	float MouseY = CPad::GetPad(0)->GetMouseY();
 	float LookLeftRight = 0.0f, LookUpDown = 0.0f;
+
+	if (RwCameraGetMirror(Scene.camera)) {
+		MouseX *= -1.0f;
+	}
+
 	if((MouseX != 0.0f || MouseY != 0.0f) && !CPad::GetPad(0)->ArePlayerControlsDisabled()){
 		UseMouse = true;
 		LookLeftRight = -2.5f*MouseX;
@@ -4769,6 +4828,11 @@ void CCam::Process_FollowProjectile(const CVector& CameraTarget, float TargetOri
 	float MouseX = CPad::GetPad(0)->GetMouseX();
 	float MouseY = CPad::GetPad(0)->GetMouseY();
 	float LookLeftRight = 0.0f, LookUpDown = 0.0f;
+
+	if (RwCameraGetMirror(Scene.camera)) {
+		MouseX *= -1.0f;
+	}
+
 	if((MouseX != 0.0f || MouseY != 0.0f) && !CPad::GetPad(0)->ArePlayerControlsDisabled()){
 		UseMouse = true;
 		LookLeftRight = -2.5f*MouseX;
@@ -6125,6 +6189,11 @@ CCam::Process_FollowCar_SA(const CVector& CameraTarget, float TargetOrientation,
 		} else
 			alphaCorrected = true;
 	}
+
+	if (RwCameraGetMirror(Scene.camera)) {
+		xMovement *= -1.0f;
+	}
+
 	float alphaSpeedFromStickY = yMovement * CARCAM_SET[camSetArrPos][12];
 	float betaSpeedFromStickX = xMovement * CARCAM_SET[camSetArrPos][12];
 

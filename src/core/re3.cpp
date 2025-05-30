@@ -331,6 +331,7 @@ extern bool bRocketLauncherThirdPersonAiming = ReadAndGetFeature("RocketLauncher
 #ifdef EX_RANDOM_VEHICLE_MODS_IN_TRAFFIC
 extern bool bRandomVehicleModsInTraffic = ReadAndGetFeature("RandomVehicleModsInTraffic");
 #endif
+extern bool bMirrorModeByDefault = ReadAndGetFeature("MirrorModeByDefault");
 #endif
 
 bool ReadIniIfExists(const char *cat, const char *key, uint32 *out)
@@ -1456,6 +1457,15 @@ extern bool gbRenderWorld2;
 		DebugMenuAddCmd("Game", "Place Car on Road", PlaceOnRoad);
 		DebugMenuAddCmd("Game", "Switch car collision", SwitchCarCollision);
 		DebugMenuAddCmd("Game", "Toggle Comedy Controls", ToggleComedy);
+		DebugMenuAddCmd("Game", "Toggle mirror mode", [](){
+			if (RwCameraGetMirror(Scene.camera)) {
+				RwCameraSetMirror(Scene.camera, false);
+				gBackfaceCulling = true;
+			} else {
+				RwCameraSetMirror(Scene.camera, true);
+				gBackfaceCulling = false;
+			}
+		});
 
 #ifdef UTILS // Selectable areas in the debug menu
 		static const char *areanames[] = {

@@ -3742,13 +3742,23 @@ CAutomobile::Render(void)
 		CPad* pad = CPad::GetPad(0);
 
 		if (pad->LeftTurnSignalsJustDown()) {
-			m_bIndicatorState[INDICATORS_LEFT] = !m_bIndicatorState[INDICATORS_LEFT];
-			if (m_bIndicatorState[INDICATORS_LEFT]) m_bIndicatorState[INDICATORS_RIGHT] = false;
+			if (RwCameraGetMirror(Scene.camera)) {
+				m_bIndicatorState[INDICATORS_RIGHT] = !m_bIndicatorState[INDICATORS_RIGHT];
+				if (m_bIndicatorState[INDICATORS_RIGHT]) m_bIndicatorState[INDICATORS_LEFT] = false;
+			} else {
+				m_bIndicatorState[INDICATORS_LEFT] = !m_bIndicatorState[INDICATORS_LEFT];
+				if (m_bIndicatorState[INDICATORS_LEFT]) m_bIndicatorState[INDICATORS_RIGHT] = false;
+			}
 		}
 		
 		if (pad->RightTurnSignalsJustDown()) {
-			m_bIndicatorState[INDICATORS_RIGHT] = !m_bIndicatorState[INDICATORS_RIGHT];
-			if (m_bIndicatorState[INDICATORS_RIGHT]) m_bIndicatorState[INDICATORS_LEFT] = false;
+			if (RwCameraGetMirror(Scene.camera)) {
+				m_bIndicatorState[INDICATORS_LEFT] = !m_bIndicatorState[INDICATORS_LEFT];
+				if (m_bIndicatorState[INDICATORS_LEFT]) m_bIndicatorState[INDICATORS_RIGHT] = false;
+			} else {
+				m_bIndicatorState[INDICATORS_RIGHT] = !m_bIndicatorState[INDICATORS_RIGHT];
+				if (m_bIndicatorState[INDICATORS_RIGHT]) m_bIndicatorState[INDICATORS_LEFT] = false;
+			}
 		}
 
 		if (pad->EmergencyLightsJustDown()) {

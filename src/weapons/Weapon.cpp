@@ -55,6 +55,7 @@
 #ifdef EX_IMPROVED_WEAPONS
 #include "Streaming.h"
 #endif
+#include "main.h"
 
 float fReloadAnimSampleFraction[5] = {  0.5f,  0.7f,  0.75f,  0.75f,  0.7f };
 float fSeaSparrowAimingAngle = 10.0f;
@@ -85,7 +86,10 @@ Find3rdPersonCamTargetVectorFromCachedVectors(float dist, CVector pos, CVector& 
 		source = camSource;
 		target = camFront;
 		target += camUp * Tan(angleY);
-		target += CrossProduct(camFront, camUp) * Tan(angleX);
+		if (RwCameraGetMirror(Scene.camera))
+			target += CrossProduct(camFront, camUp) * Tan(-angleX);
+		else
+			target += CrossProduct(camFront, camUp) * Tan(angleX);
 		target.Normalise();
 		source += DotProduct(pos - source, target) * target;
 		target = dist * target + source;

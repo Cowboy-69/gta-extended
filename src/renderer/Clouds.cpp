@@ -353,7 +353,10 @@ CClouds::RenderBackground(int16 topred, int16 topgreen, int16 topblue,
 	if(right.z < 0.0f)
 		ms_cameraRoll = -ms_cameraRoll;
 
-	ms_HorizonTilt = SCREEN_WIDTH/2.0f * Tan(ms_cameraRoll);
+	if (RwCameraGetMirror(Scene.camera))
+		ms_HorizonTilt = SCREEN_WIDTH/2.0f * -Tan(ms_cameraRoll);
+	else
+		ms_HorizonTilt = SCREEN_WIDTH/2.0f * Tan(ms_cameraRoll);
 
 #ifdef EX_OUTER_SPACE
 	if (TheCamera.GetPosition().z >= 12000.0f) {
