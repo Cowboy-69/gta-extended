@@ -60,6 +60,8 @@
 
 	#define MODLOADER // https://github.com/thelink2012/modloader
 
+	/* Extra vertex colors support for d3d9 from https://github.com/aap/librwgta */
+
 	// These macros are used to navigation; Disabling them individually is not recommended
 
 	#define EX_SECOND_SAMPLE_BANK // ViceEx.RAW and ViceEx.SDT

@@ -233,6 +233,11 @@ worldRenderCB(rw::Atomic *atomic, rw::d3d9::InstanceDataHeader *header)
 		notex:
 			setVertexShader(default_amb_VS);
 
+			float dayparam[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+			float nightparam[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+			d3ddevice->SetVertexShaderConstantF(VSLOC_dayParam, dayparam, 1);
+			d3ddevice->SetVertexShaderConstantF(VSLOC_nightParam, nightparam, 1);
+
 			d3d::setTexture(1, nil);
 			lightfactor[0] = lightfactor[1] = lightfactor[2] = 0.0f;
 		}
@@ -647,6 +652,11 @@ AtomicFirstPass(RpAtomic *atomic, int pass)
 			setIndices(building->instHeader->indexBuffer);
 			setVertexDeclaration(building->instHeader->vertexDeclaration);
 			setVertexShader(default_amb_VS);
+
+			float dayparam[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+			float nightparam[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+			d3ddevice->SetVertexShaderConstantF(VSLOC_dayParam, dayparam, 1);
+			d3ddevice->SetVertexShaderConstantF(VSLOC_nightParam, nightparam, 1);
 			d3ddevice->SetVertexShaderConstantF(VSLOC_combined, (float*)&building->combinedMat, 4);
 			if(building->lighting)
 				setAmbient(pAmbient->color);
@@ -696,6 +706,11 @@ RenderBlendPass(int pass)
 	using namespace rw::d3d9;
 
 	setVertexShader(default_amb_VS);
+
+	float dayparam[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+	float nightparam[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	d3ddevice->SetVertexShaderConstantF(VSLOC_dayParam, dayparam, 1);
+	d3ddevice->SetVertexShaderConstantF(VSLOC_nightParam, nightparam, 1);
 
 	int i;
 	for(i = 0; i < numBlendInsts[pass]; i++){

@@ -491,6 +491,8 @@ CustomPipeInit(void)
 	CreateWorldPipe();
 	CreateGlossPipe();
 	CreateRimLightPipes();
+
+	rw::registerExtraVertColorPlugin();
 }
 
 void
@@ -548,6 +550,28 @@ SetTxdFindCallback(void)
 	rw::Texture::findCB = customFindCB;
 }
 
+}
+
+void
+rw::UpdateDayNightBalance(void)
+{
+	float minute = CClock::GetHours() * 60.0f + CClock::GetMinutes();
+	const float morningStart = 6 * 60.0f;
+	const float morningEnd = 7 * 60.0f;
+	const float eveningStart = 20 * 60.0f;
+	const float eveningEnd = 21 * 60.0f;
+
+	// 1.0 is night, 0.0 is day
+	if(minute < morningStart)
+		rw::gDayNightBalance = 1.0f;
+	else if(minute < morningEnd)
+		rw::gDayNightBalance = (morningEnd - minute) / (morningEnd - morningStart);
+	else if(minute < eveningStart)
+		rw::gDayNightBalance = 0.0f;
+	else if(minute < eveningEnd)
+		rw::gDayNightBalance = 1.0f - (eveningEnd - minute) / (eveningEnd - eveningStart);
+	else
+		rw::gDayNightBalance = 1.0f;
 }
 
 #endif
