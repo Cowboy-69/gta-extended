@@ -188,7 +188,14 @@ CAutomobile::CAutomobile(int32 id, uint8 CreatedBy)
 	m_nBusDoorTimerEnd = 0;
 	m_nBusDoorTimerStart = 0;
 
+#ifdef IMPROVED_VEHICLES // Steer angle will be random when spawning a parked car
+	if (CreatedBy == PARKED_VEHICLE)
+		m_fSteerAngle = CGeneral::GetRandomNumberInRange(-DEGTORAD(pHandling->fSteeringLock), DEGTORAD(pHandling->fSteeringLock));
+	else
+		m_fSteerAngle = 0.0f;
+#else
 	m_fSteerAngle = 0.0f;
+#endif
 	m_fGasPedal = 0.0f;
 	m_fBrakePedal = 0.0f;
 	m_pSetOnFireEntity = nil;
