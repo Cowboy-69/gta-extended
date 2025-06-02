@@ -3262,6 +3262,24 @@ CMenuManager::DrawBackground(bool transitionCall)
 		m_aFrontEndSprites[MENUSPRITE_MOUSE].Draw(shad, CRGBA(100, 100, 100, 50));
 		m_aFrontEndSprites[MENUSPRITE_MOUSE].Draw(mouse, CRGBA(255, 255, 255, 255));
 	}
+
+#ifdef VICE_EXTENDED // Draw version
+	wchar ver[16];
+	char verA[16];
+	sprintf(verA, "Ver. 2506");
+	AsciiToUnicode(verA, ver);
+	CFont::SetScale(SCREEN_SCALE_X(0.4f), SCREEN_SCALE_Y(0.4f));
+	CFont::SetPropOn();
+	CFont::SetBackgroundOff();
+	CFont::SetFontStyle(FONT_STANDARD);
+	CFont::SetCentreOff();
+	CFont::SetRightJustifyOff();
+	CFont::SetWrapx(SCREEN_WIDTH);
+	CFont::SetJustifyOff();
+	CFont::SetBackGroundOnlyTextOff();
+	CFont::SetColor(CRGBA(255, 150, 225, 200));
+	CFont::PrintString(SCREEN_SCALE_X(10.0f), SCREEN_SCALE_FROM_BOTTOM(12.0f), ver);
+#endif
 }
 
 void

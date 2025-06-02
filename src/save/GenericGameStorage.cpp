@@ -40,9 +40,6 @@
 #include "Zones.h"
 #include "Timecycle.h"
 #include "Fluff.h"
-#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
-#include "Frontend.h"
-#endif
 
 #define BLOCK_COUNT 22
 #ifdef VICE_EXTENDED // Save/Load
@@ -227,10 +224,10 @@ GenericSave(int file)
 	PopulateRadioStationPositionList();
 	WriteDataToBufferPointer(buf, RadioStationPosition);
 #ifdef VICE_EXTENDED // Vice Extended version
-	CGame::viceExtendedVersion = VICEEX_VER_3_0;
+	CGame::viceExtendedVersion = VICEEX_VER_2506;
 	WriteDataToBufferPointer(buf, CGame::viceExtendedVersion);
 #endif
-#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE // Save/Load
 	WriteDataToBufferPointer(buf, bSaveAnywhere);
 #endif
 	assert(buf - work_buff == SIZE_OF_SIMPLEVARS);
@@ -382,10 +379,10 @@ GenericLoad()
 #ifdef VICE_EXTENDED // Vice Extended version
 	ReadDataFromBufferPointer(buf, CGame::viceExtendedVersion);
 
-	if (CGame::viceExtendedVersion < VICEEX_VER_3_0)
+	if (CGame::viceExtendedVersion < VICEEX_VER_2506)
 		USERERROR("This save is not supported for this version!");
 #endif
-#ifdef AUTOSAVE_AND_SAVE_ANYWHERE
+#ifdef AUTOSAVE_AND_SAVE_ANYWHERE // Save/Load
 	ReadDataFromBufferPointer(buf, bSaveAnywhere);
 #endif
 	assert(buf - work_buff == SIZE_OF_SIMPLEVARS);

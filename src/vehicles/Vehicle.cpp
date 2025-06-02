@@ -520,7 +520,7 @@ CVehicle::FlyingControl(eFlightModel flightModel)
 				fRoll = -1.0f;
 
 			if (RwCameraGetMirror(Scene.camera))
-				fYaw *= -1.0f;
+				fRoll *= -1.0f;
 
 			fYaw = CPad::GetPad(0)->GetSteeringLeftRight() / 128.0f;
 		} else {
