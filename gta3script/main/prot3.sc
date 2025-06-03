@@ -1557,6 +1557,7 @@ REMOVE_BLIP baron_contact_blip
 ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD -378.4 -536.9 17.2 RADAR_SPRITE_TOMMY baron_contact_blip
 ++ counter_60_percent
 flag_protect_mission3_passed = 1 
+UNLOCK_MISSION_NEWS_STORY NEWSPAPER_PROT3
 REQUEST_AUTO_SAVE
 RETURN
 		

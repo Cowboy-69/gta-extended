@@ -1183,6 +1183,7 @@ PLAYER_MADE_PROGRESS 1
 machete_in_stock = 1
 START_NEW_SCRIPT general_mission2_loop
 flag_general_mission1_passed = 1 
+UNLOCK_MISSION_NEWS_STORY NEWSPAPER_GENERAL1
 REQUEST_AUTO_SAVE
 RETURN
 		

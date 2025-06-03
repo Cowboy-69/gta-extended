@@ -34,6 +34,9 @@
 #ifdef EX_GPS // Script
 #include "Radar.h"
 #endif
+#ifdef EX_UNLOCK_MISSION_NEWS_STORY
+#include "Rubbish.h"
+#endif
 
 int8 CRunningScript::ProcessCommands1400To1499(int32 command)
 {
@@ -685,6 +688,12 @@ int8 CRunningScript::ProcessCommands4000To4099(int32 command)
 		return 0;
 	case COMMAND_IS_AUTO_SAVE_REQUESTED:
 		UpdateCompareFlag(bIsAutoSaveRequested);
+		return 0;
+#endif
+#ifdef EX_UNLOCK_MISSION_NEWS_STORY // Script
+	case COMMAND_UNLOCK_MISSION_NEWS_STORY:
+		CollectParameters(&m_nIp, 1);
+		CRubbish::UnlockMissionNewsStory(ScriptParams[0]);
 		return 0;
 #endif
 	default:

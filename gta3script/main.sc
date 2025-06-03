@@ -1253,6 +1253,7 @@ IF IS_PLAYER_PLAYING player1
 			SET_PLAYER_HEALTH Player1 200
 			WAIT 5000
 			PRINT_HELP ( HELP61 ) // You now have limitless ammo and double health on all vehicles.!
+			UNLOCK_MISSION_NEWS_STORY NEWSPAPER_PEACE
 			created_final_shirt = 1
 		ENDIF
 	ENDIF 	 

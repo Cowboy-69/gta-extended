@@ -40,10 +40,13 @@
 #include "Zones.h"
 #include "Timecycle.h"
 #include "Fluff.h"
+#ifdef EX_UNLOCK_MISSION_NEWS_STORY
+#include "Rubbish.h"
+#endif
 
 #define BLOCK_COUNT 22
 #ifdef VICE_EXTENDED // Save/Load
-#define SIZE_OF_SIMPLEVARS 0xEC
+#define SIZE_OF_SIMPLEVARS 0xF0
 #else
 #define SIZE_OF_SIMPLEVARS 0xE4
 #endif
@@ -230,6 +233,9 @@ GenericSave(int file)
 #ifdef AUTOSAVE_AND_SAVE_ANYWHERE // Save/Load
 	WriteDataToBufferPointer(buf, bSaveAnywhere);
 #endif
+#ifdef EX_UNLOCK_MISSION_NEWS_STORY // Save/Load
+	WriteDataToBufferPointer(buf, CRubbish::NextNewspaperTextureID);
+#endif
 	assert(buf - work_buff == SIZE_OF_SIMPLEVARS);
 
 	// Save scripts, block is nested within the same block as simple vars for some reason
@@ -384,6 +390,9 @@ GenericLoad()
 #endif
 #ifdef AUTOSAVE_AND_SAVE_ANYWHERE // Save/Load
 	ReadDataFromBufferPointer(buf, bSaveAnywhere);
+#endif
+#ifdef EX_UNLOCK_MISSION_NEWS_STORY // Save/Load
+	ReadDataFromBufferPointer(buf, CRubbish::NextNewspaperTextureID);
 #endif
 	assert(buf - work_buff == SIZE_OF_SIMPLEVARS);
 #ifdef MISSION_REPLAY
@@ -550,6 +559,9 @@ DoGameSpecificStuffBeforeSave()
 	CGameLogic::PassTime(360);
 	CPlayerPed *ped = FindPlayerPed();
 	ped->m_fCurrentStamina = ped->m_fMaxStamina;
+#ifdef EX_UNLOCK_MISSION_NEWS_STORY // Save
+	CRubbish::CurrentNewspaperTextureID = CRubbish::NextNewspaperTextureID;
+#endif
 	CGame::TidyUpMemory(true, false);
 }
 

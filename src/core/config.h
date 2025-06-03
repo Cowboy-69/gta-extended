@@ -61,6 +61,7 @@
 		#define EX_GPS // thank https://github.com/DK22Pac/plugin-sdk/tree/master/examples/GPS
 		#define AUTOSAVE_AND_SAVE_ANYWHERE
 		#define EX_PED_VARIATIONS
+		#define EX_UNLOCK_MISSION_NEWS_STORY
 	#endif
 
 	#define EX_PARTICLES

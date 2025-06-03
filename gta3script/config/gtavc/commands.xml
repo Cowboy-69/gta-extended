@@ -9347,5 +9347,10 @@
     </Command>
 	<Command ID="0xfa7" Name="IS_AUTO_SAVE_REQUESTED">
     </Command>
+	<Command ID="0xfa8" Name="UNLOCK_MISSION_NEWS_STORY">
+      <Args>
+        <Arg Type="INT" Enum="NEWSPAPER"/>
+      </Args>
+    </Command>
   </Commands>
 </GTA3Script>

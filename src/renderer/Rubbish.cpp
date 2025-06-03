@@ -20,6 +20,12 @@ RwTexture *gpRubbishTexture[4];
 RwImVertexIndex RubbishIndexList[6];
 bool CRubbish::bRubbishInvisible;
 int CRubbish::RubbishVisibility;
+#ifdef EX_UNLOCK_MISSION_NEWS_STORY
+int CRubbish::CurrentNewspaperTextureID = NEWSPAPER_INTRO;
+int CRubbish::NextNewspaperTextureID = NEWSPAPER_INTRO;
+int CRubbish::NewspaperChangeTime = 0;
+RwTexture* CRubbish::NewspaperTextures[TOTAL_NEWSPAPERS];
+#endif
 COneSheet CRubbish::aSheets[NUM_RUBBISH_SHEETS];
 COneSheet CRubbish::StartEmptyList;
 COneSheet CRubbish::EndEmptyList;
@@ -61,8 +67,17 @@ CRubbish::Render(void)
 	RwRenderStateSet(rwRENDERSTATEFOGENABLE, (void*)TRUE);
 
 	for(type = 0; type < 4; type++){
+#ifdef EX_UNLOCK_MISSION_NEWS_STORY // Render
+		if(type < 2)
+			RwRenderStateSet(rwRENDERSTATETEXTURERASTER, RwTextureGetRaster(gpRubbishTexture[type]));
+		else if (type == 3 && CStats::PamphletMissionPassed)
+			RwRenderStateSet(rwRENDERSTATETEXTURERASTER, RwTextureGetRaster(NewspaperTextures[NEWSPAPER_PORN2]));
+		else if (CurrentNewspaperTextureID >= 0 && CurrentNewspaperTextureID < TOTAL_NEWSPAPERS)
+			RwRenderStateSet(rwRENDERSTATETEXTURERASTER, RwTextureGetRaster(NewspaperTextures[CurrentNewspaperTextureID]));
+#else
 		if(type < 3 || CStats::PamphletMissionPassed)
 			RwRenderStateSet(rwRENDERSTATETEXTURERASTER, RwTextureGetRaster(gpRubbishTexture[type]));
+#endif
 
 		TempBufferIndicesStored = 0;
 		TempBufferVerticesStored = 0;
@@ -119,6 +134,16 @@ CRubbish::Render(void)
 				RwIm3DVertexSetRGBA(&TempBufferRenderVertices[v+1], 255, 255, 255, alpha);
 				RwIm3DVertexSetRGBA(&TempBufferRenderVertices[v+2], 255, 255, 255, alpha);
 				RwIm3DVertexSetRGBA(&TempBufferRenderVertices[v+3], 255, 255, 255, alpha);
+#ifdef EX_UNLOCK_MISSION_NEWS_STORY // Render
+				RwIm3DVertexSetU(&TempBufferRenderVertices[v+0], 1.0f);
+				RwIm3DVertexSetV(&TempBufferRenderVertices[v+0], 0.0f);
+				RwIm3DVertexSetU(&TempBufferRenderVertices[v+1], 0.0f);
+				RwIm3DVertexSetV(&TempBufferRenderVertices[v+1], 0.0f);
+				RwIm3DVertexSetU(&TempBufferRenderVertices[v+2], 1.0f);
+				RwIm3DVertexSetV(&TempBufferRenderVertices[v+2], 1.0f);
+				RwIm3DVertexSetU(&TempBufferRenderVertices[v+3], 0.0f);
+				RwIm3DVertexSetV(&TempBufferRenderVertices[v+3], 1.0f);
+#else
 				RwIm3DVertexSetU(&TempBufferRenderVertices[v+0], 0.0f);
 				RwIm3DVertexSetV(&TempBufferRenderVertices[v+0], 0.0f);
 				RwIm3DVertexSetU(&TempBufferRenderVertices[v+1], 1.0f);
@@ -127,6 +152,7 @@ CRubbish::Render(void)
 				RwIm3DVertexSetV(&TempBufferRenderVertices[v+2], 1.0f);
 				RwIm3DVertexSetU(&TempBufferRenderVertices[v+3], 1.0f);
 				RwIm3DVertexSetV(&TempBufferRenderVertices[v+3], 1.0f);
+#endif
 
 				int i = TempBufferIndicesStored;
 				TempBufferRenderIndexList[i+0] = RubbishIndexList[0] + TempBufferVerticesStored;
@@ -351,6 +377,11 @@ CRubbish::Update(void)
 			aSheets[i].AddToList(&StartEmptyList);
 		}
 	}
+
+#ifdef EX_UNLOCK_MISSION_NEWS_STORY // Update
+	if (CurrentNewspaperTextureID != NextNewspaperTextureID && NewspaperChangeTime < CTimer::GetTimeInMilliseconds())
+		CurrentNewspaperTextureID = NextNewspaperTextureID;
+#endif
 }
 
 void
@@ -407,6 +438,37 @@ CRubbish::Init(void)
 	CTxdStore::PopCurrentTxd();
 	RubbishVisibility = 255;
 	bRubbishInvisible = false;
+
+#ifdef EX_UNLOCK_MISSION_NEWS_STORY // Init
+	int newspapersTXD = CTxdStore::FindTxdSlot("newspapers");
+	newspapersTXD = CTxdStore::AddTxdSlot("newspapers");
+	CTxdStore::LoadTxd(newspapersTXD, "ViceExtended/txd/newspapers.txd");
+	CTxdStore::AddRef(newspapersTXD);
+	CTxdStore::SetCurrentTxd(newspapersTXD);
+	NewspaperTextures[NEWSPAPER_INTRO] = RwTextureRead("newspaper_intro", 0);
+	NewspaperTextures[NEWSPAPER_LAWYER4] = RwTextureRead("newspaper_lawyer4", 0);
+	NewspaperTextures[NEWSPAPER_GENERAL1] = RwTextureRead("newspaper_general1", 0);
+	NewspaperTextures[NEWSPAPER_GENERAL2] = RwTextureRead("newspaper_general2", 0);
+	NewspaperTextures[NEWSPAPER_GENERAL3] = RwTextureRead("newspaper_general3", 0);
+	NewspaperTextures[NEWSPAPER_SERG1] = RwTextureRead("newspaper_serg1", 0);
+	NewspaperTextures[NEWSPAPER_SERG3] = RwTextureRead("newspaper_serg3", 0);
+	NewspaperTextures[NEWSPAPER_BARON2] = RwTextureRead("newspaper_baron2", 0);
+	NewspaperTextures[NEWSPAPER_GENERAL4] = RwTextureRead("newspaper_general4", 0);
+	NewspaperTextures[NEWSPAPER_SERG2] = RwTextureRead("newspaper_serg2", 0);
+	NewspaperTextures[NEWSPAPER_BARON3] = RwTextureRead("newspaper_baron3", 0);
+	NewspaperTextures[NEWSPAPER_BARON4] = RwTextureRead("newspaper_baron4", 0);
+	NewspaperTextures[NEWSPAPER_BARON5] = RwTextureRead("newspaper_baron5", 0);
+	NewspaperTextures[NEWSPAPER_PROT1] = RwTextureRead("newspaper_prot1", 0);
+	NewspaperTextures[NEWSPAPER_PROT3] = RwTextureRead("newspaper_prot3", 0);
+	NewspaperTextures[NEWSPAPER_FINALE] = RwTextureRead("newspaper_finale", 0);
+	NewspaperTextures[NEWSPAPER_BANKJ4] = RwTextureRead("newspaper_bankj4", 0);
+	NewspaperTextures[NEWSPAPER_COUNT2] = RwTextureRead("newspaper_count2", 0);
+	NewspaperTextures[NEWSPAPER_PORN2] = RwTextureRead("newspaper_porn2", 0);
+	NewspaperTextures[NEWSPAPER_GENERAL5] = RwTextureRead("newspaper_general5", 0);
+	NewspaperTextures[NEWSPAPER_CUBAN4] = RwTextureRead("newspaper_cuban4", 0);
+	NewspaperTextures[NEWSPAPER_PEACE] = RwTextureRead("newspaper_peace", 0);
+	CTxdStore::PopCurrentTxd();
+#endif
 }
 
 void
@@ -420,4 +482,27 @@ CRubbish::Shutdown(void)
 	gpRubbishTexture[2] = nil;
 	RwTextureDestroy(gpRubbishTexture[3]);
 	gpRubbishTexture[3] = nil;
+
+#ifdef EX_UNLOCK_MISSION_NEWS_STORY // Shutdown
+	for (int i = 0; i < TOTAL_NEWSPAPERS; i++) {
+		if (NewspaperTextures[i]) {
+			RwTextureDestroy(NewspaperTextures[i]);
+			NewspaperTextures[i] = nil;
+		}
+	}
+
+	int newspapersTXD = CTxdStore::FindTxdSlot("newspapers");
+	if (newspapersTXD != -1)
+		CTxdStore::RemoveTxdSlot(newspapersTXD);
+#endif
 }
+
+#ifdef EX_UNLOCK_MISSION_NEWS_STORY
+void
+CRubbish::UnlockMissionNewsStory(int newsID) {
+	NextNewspaperTextureID = newsID;
+
+	int changeTime = CGeneral::GetRandomNumberInRange(50000, 60000);
+	NewspaperChangeTime = CTimer::GetTimeInMilliseconds() + changeTime;
+}
+#endif

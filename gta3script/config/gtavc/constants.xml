@@ -1160,5 +1160,29 @@
       <Constant Name="WEAPONTYPE_ANYMELEE"/>
       <Constant Name="WEAPONTYPE_ANYWEAPON"/>
     </Enum>
+	<Enum Name="NEWSPAPER">
+	  <Constant Name="NEWSPAPER_INTRO"/>
+	  <Constant Name="NEWSPAPER_LAWYER4"/>
+	  <Constant Name="NEWSPAPER_GENERAL1"/>
+	  <Constant Name="NEWSPAPER_GENERAL2"/>
+	  <Constant Name="NEWSPAPER_GENERAL3"/>
+	  <Constant Name="NEWSPAPER_SERG1"/>
+	  <Constant Name="NEWSPAPER_SERG3"/>
+	  <Constant Name="NEWSPAPER_BARON2"/>
+	  <Constant Name="NEWSPAPER_GENERAL4"/>
+	  <Constant Name="NEWSPAPER_SERG2"/>
+	  <Constant Name="NEWSPAPER_BARON3"/>
+	  <Constant Name="NEWSPAPER_BARON4"/>
+	  <Constant Name="NEWSPAPER_BARON5"/>
+	  <Constant Name="NEWSPAPER_PROT1"/>
+	  <Constant Name="NEWSPAPER_PROT3"/>
+	  <Constant Name="NEWSPAPER_FINALE"/>
+	  <Constant Name="NEWSPAPER_BANKJ4"/>
+	  <Constant Name="NEWSPAPER_COUNT2"/>
+	  <Constant Name="NEWSPAPER_PORN2"/>
+	  <Constant Name="NEWSPAPER_GENERAL5"/>
+	  <Constant Name="NEWSPAPER_CUBAN4"/>
+	  <Constant Name="NEWSPAPER_PEACE"/>
+	</Enum>
   </Constants>
 </GTA3Script>

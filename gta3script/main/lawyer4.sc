@@ -1337,6 +1337,7 @@ clothes3_created = 1
 START_NEW_SCRIPT cloth2
 ADD_SPRITE_BLIP_FOR_CONTACT_POINT sergioX sergioY sergioZ the_sergio_blip sergio_contact_blip
 START_NEW_SCRIPT serg_mission1_loop
+UNLOCK_MISSION_NEWS_STORY NEWSPAPER_LAWYER4
 REQUEST_AUTO_SAVE
 RETURN
 		
