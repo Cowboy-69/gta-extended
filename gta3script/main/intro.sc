@@ -2406,12 +2406,14 @@ ENDWHILE
 skip_office_scene:
 
 IF flag_skip_office_scene = 1
+	DO_FADE 150 FADE_OUT
 	WAIT 150
 
 	CLEAR_PRINTS
 
 	SET_CAR_COORDINATES intro_car 136.0 -819.0 9.446
 	SET_CAR_HEADING intro_car -140.0
+	SET_VEHICLE_STEERING_ANGLE intro_car 0.0
 
 	IF NOT IS_CHAR_IN_ANY_CAR scplayer
 		SET_CHAR_COORDINATES scplayer 136.457 -817.37 9.44
@@ -2423,6 +2425,8 @@ IF flag_skip_office_scene = 1
 	IF NOT IS_CHAR_IN_ANY_CAR scplayer 
 		SET_CHAR_HEADING scplayer 225.495
 	ENDIF
+
+	DO_FADE 150 FADE_IN
 ENDIF
 // ViceEx, skip intro office scene
 

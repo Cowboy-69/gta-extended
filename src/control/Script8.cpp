@@ -696,6 +696,17 @@ int8 CRunningScript::ProcessCommands4000To4099(int32 command)
 		CRubbish::UnlockMissionNewsStory(ScriptParams[0]);
 		return 0;
 #endif
+#ifdef EX_SET_VEHICLE_STEERING_ANGLE
+	case COMMAND_SET_VEHICLE_STEERING_ANGLE:
+	{
+		CollectParameters(&m_nIp, 2);
+		CVehicle* vehicle = CPools::GetVehiclePool()->GetAt(ScriptParams[0]);
+		script_assert(vehicle);
+		float steeringAngle = *(float*)&ScriptParams[1];
+		vehicle->m_fSteerAngle = DEGTORAD(steeringAngle);
+		return 0;
+	}
+#endif
 	default:
 		script_assert(0);
 	}

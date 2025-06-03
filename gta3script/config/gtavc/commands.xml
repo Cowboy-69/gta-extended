@@ -9352,5 +9352,11 @@
         <Arg Type="INT" Enum="NEWSPAPER"/>
       </Args>
     </Command>
+	<Command ID="0xfa9" Name="SET_VEHICLE_STEERING_ANGLE">
+      <Args>
+        <Arg Type="INT" Entity="CAR"/>
+        <Arg Type="FLOAT"/>
+      </Args>
+    </Command>
   </Commands>
 </GTA3Script>
