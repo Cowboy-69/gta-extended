@@ -44,8 +44,8 @@ CCopPed::CCopPed(eCopType copType, int32 modifier) : CPed(PEDTYPE_COP)
 		m_currentWeapon = WEAPONTYPE_UNARMED;
 		m_fArmour = 0.0f;
 		m_wepSkills = 208; /* TODO: what is this? seems unused */
-#ifdef IMPROVED_TECH_PART // AI
-		m_wepAccuracy = 84;
+#ifdef IMPROVED_TECH_PART // AI accuracy
+		m_wepAccuracy = 75;
 #else
 		m_wepAccuracy = 60;
 #endif
@@ -66,8 +66,8 @@ CCopPed::CCopPed(eCopType copType, int32 modifier) : CPed(PEDTYPE_COP)
 #endif
 		m_fArmour = 100.0f;
 		m_wepSkills = 176; /* TODO: what is this? seems unused */
-#ifdef IMPROVED_TECH_PART // AI
-		m_wepAccuracy = 80;
+#ifdef IMPROVED_TECH_PART // AI accuracy
+		m_wepAccuracy = 74;
 #else
 		m_wepAccuracy = 76;
 #endif
@@ -87,8 +87,8 @@ CCopPed::CCopPed(eCopType copType, int32 modifier) : CPed(PEDTYPE_COP)
 #endif
 		m_fArmour = 50.0f;
 		m_wepSkills = 32; /* TODO: what is this? seems unused */
-#ifdef IMPROVED_TECH_PART // AI
-		m_wepAccuracy = 78;
+#ifdef IMPROVED_TECH_PART // AI accuracy
+		m_wepAccuracy = 72;
 #else
 		m_wepAccuracy = 68;
 #endif
@@ -120,8 +120,8 @@ CCopPed::CCopPed(eCopType copType, int32 modifier) : CPed(PEDTYPE_COP)
 #endif
 		m_fArmour = 100.0f;
 		m_wepSkills = 32; /* TODO: what is this? seems unused */
-#ifdef IMPROVED_TECH_PART // AI
-		m_wepAccuracy = 84;
+#ifdef IMPROVED_TECH_PART // AI accuracy
+		m_wepAccuracy = 80;
 #else
 		m_wepAccuracy = 84;
 #endif
@@ -152,8 +152,8 @@ CCopPed::CCopPed(eCopType copType, int32 modifier) : CPed(PEDTYPE_COP)
 #endif
 		m_fArmour = 100.0f;
 		m_wepSkills = 176;
-#ifdef IMPROVED_TECH_PART // AI
-		m_wepAccuracy = 86;
+#ifdef IMPROVED_TECH_PART // AI accuracy
+		m_wepAccuracy = 73;
 #else
 		m_wepAccuracy = 76;
 #endif
