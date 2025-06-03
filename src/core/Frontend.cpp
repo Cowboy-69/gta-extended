@@ -3057,6 +3057,20 @@ CMenuManager::DrawBackground(bool transitionCall)
 			CSprite2d::Draw2DPolygon(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_STRETCH_X(menuBg.bottomRight_x), SCREEN_STRETCH_Y(menuBg.bottomRight_y),
 				SCREEN_WIDTH, 0.0f, SCREEN_STRETCH_X(menuBg.topRight_x), SCREEN_STRETCH_Y(menuBg.topRight_y), CRGBA(0, 0, 0, 255));
 #endif
+
+#ifdef EX_DISPLAYED_COLLECTIBLES // Map hints
+			if (m_nCurrScreen == MENUPAGE_MAP && m_displayCollectiblesState > 0) {
+				CRect rect = CRect(SCREEN_SCALE_FROM_RIGHT(40.0f), SCREEN_SCALE_FROM_BOTTOM(40.0f), SCREEN_SCALE_FROM_RIGHT(20.0f), SCREEN_SCALE_FROM_BOTTOM(20.0f));
+				if (m_displayCollectiblesState == 1)
+					CRadar::RadarSprites[RADAR_SPRITE_PACKAGE]->Draw(rect, CRGBA(255, 255, 255, 255));
+				else if (m_displayCollectiblesState == 2)
+					CRadar::RadarSprites[RADAR_SPRITE_STUNT]->Draw(rect, CRGBA(255, 255, 255, 255));
+				else if (m_displayCollectiblesState == 3)
+					CRadar::RadarSprites[RADAR_SPRITE_RAMPAGE]->Draw(rect, CRGBA(255, 255, 255, 255));
+				else if (m_displayCollectiblesState == 4)
+					CRadar::RadarSprites[RADAR_SPRITE_STORE]->Draw(rect, CRGBA(255, 255, 255, 255));
+			}
+#endif
 		}
 	} else {
 		menuBg.SaveCurrentCoors();
@@ -4547,6 +4561,8 @@ CMenuManager::AdditionalOptionInput(bool &goBack)
 
 #ifdef EX_DISPLAYED_COLLECTIBLES // Display switching
 			if (CPad::GetPad(0)->GetTabJustDown() || CPad::GetPad(0)->GetLeftShoulder1JustDown()) {
+				DMAudio.PlayFrontEndSound(SOUND_FRONTEND_ENTER_OR_ADJUST, 0);
+
 				if (m_displayCollectiblesState == 4)
 					m_displayCollectiblesState = 0;
 				else
