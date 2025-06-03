@@ -1944,6 +1944,7 @@ REMOVE_BLIP kent_contact_blip
 REMOVE_BLIP baron_contact_blip
 ADD_SPRITE_BLIP_FOR_CONTACT_POINT baron2X baron2Y baron2Z the_baron_blip baron_contact_blip
 START_NEW_SCRIPT baron_mission5_loop
+REQUEST_AUTO_SAVE
 RETURN
 		
 // *************************************** MISSION CLEANUP *********************************

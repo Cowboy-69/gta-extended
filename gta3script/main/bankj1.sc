@@ -1500,6 +1500,7 @@ OR IS_WANTED_LEVEL_GREATER player1 0
 						IF flag_had_cops_message_bankjob1 = 0
 							PRINT_NOW ( WANTED1 ) 5000 1 //"You have a wanted level loose the cops "
 							ADD_BLIP_FOR_COORD -3.8 -1265.8 12.0 spray_shop_blip_bank1  
+							SET_BLIP_ROUTE spray_shop_blip_bank1 TRUE
 							blob_flag = 0
 							flag_had_cops_message_bankjob1 = 1
 						ENDIF

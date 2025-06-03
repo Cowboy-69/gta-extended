@@ -2391,6 +2391,7 @@ IF NOT IS_CAR_DEAD escape_car
 			REMOVE_BLIP home_blip 
 			REMOVE_BLIP escape_car_blip
 			ADD_BLIP_FOR_COORD -1160.0 -605.9 10.7 home_blip 
+			SET_BLIP_ROUTE home_blip TRUE
 			blob_flag = 1
 		ENDIF 
 	ELSE
