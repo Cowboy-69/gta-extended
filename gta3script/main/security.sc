@@ -594,6 +594,36 @@ quick_stepping_inner:
 	++ outer_switch_quickstep
 	IF flag_zone = 1
 		IF outer_switch_quickstep > 1
+			IF counter_quickstep = 10
+				pickup_x = pickup_x - 3.7
+				pickup_y = pickup_y - 1.5
+				++ counter_quickstep
+			ENDIF
+			IF counter_quickstep = 9
+				pickup_y = pickup_y - 1.85
+				pickup_x = pickup_x + 0.75
+				++ counter_quickstep
+			ENDIF
+			IF counter_quickstep = 8
+				pickup_x = pickup_x + 3.7
+				pickup_y = pickup_y + 1.5
+				++ counter_quickstep
+			ENDIF
+			IF counter_quickstep = 7
+				pickup_y = pickup_y - 1.85
+				pickup_x = pickup_x + 0.75
+				++ counter_quickstep
+			ENDIF
+			IF counter_quickstep = 6
+				pickup_x = pickup_x - 3.7
+				pickup_y = pickup_y - 1.5
+				++ counter_quickstep
+			ENDIF
+			IF counter_quickstep = 5
+				pickup_y = pickup_y - 1.85
+				pickup_x = pickup_x + 0.75
+				++ counter_quickstep
+			ENDIF
 			IF counter_quickstep = 4
 				pickup_x = pickup_x + 3.7
 				pickup_y = pickup_y + 1.5
@@ -619,7 +649,7 @@ quick_stepping_inner:
 				pickup_y = pickup_y + 1.5
 				++ counter_quickstep
 			ENDIF
-			IF counter_quickstep > 4
+			IF counter_quickstep > 10
 				counter_quickstep = 0
 			ENDIF
 		ELSE
