@@ -3875,10 +3875,9 @@ CMenuManager::LoadAllTextures()
 		printf("LOAD frontend2\n");
 #ifdef VICE_EXTENDED // ViceExtended folder - fronten2.txd
 #ifdef MODLOADER // fronten2.txd
-		ModLoader_Fronten2Txd(frontendTxdSlot2, "MODELS/FRONTEN2.TXD");
+		ModLoader_Fronten2Txd(frontendTxdSlot2, "ViceExtended/MODELS/FRONTEN2.TXD");
 #else
-		//CTxdStore::LoadTxd(frontendTxdSlot2, "ViceExtended/MODELS/FRONTEN2.TXD");
-		CTxdStore::LoadTxd(frontendTxdSlot2, "MODELS/FRONTEN2.TXD");
+		CTxdStore::LoadTxd(frontendTxdSlot2, "ViceExtended/MODELS/FRONTEN2.TXD");
 #endif
 #else
 		CTxdStore::LoadTxd(frontendTxdSlot2, "MODELS/FRONTEN2.TXD");
