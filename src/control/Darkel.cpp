@@ -15,9 +15,6 @@
 #include "Text.h"
 #include "Vehicle.h"
 #include "GameLogic.h"
-#ifdef FIRING_AND_AIMING // fixing the game crash at the beginning of a rampage
-#include "Streaming.h"
-#endif
 
 #define FRENZY_ANY_PED -1
 #define FRENZY_ANY_CAR -2
@@ -325,13 +322,6 @@ CDarkel::StartFrenzy(eWeaponType weaponType, int32 time, uint16 kill, int32 mode
 	TimeLimit = time;
 	PreviousTime = time / 1000;
 
-#ifdef FIRING_AND_AIMING // fixing the game crash at the beginning of a rampage
-	if (weaponType == WEAPONTYPE_SNIPERRIFLE || weaponType == WEAPONTYPE_LASERSCOPE || weaponType == WEAPONTYPE_ROCKETLAUNCHER) {
-		CStreaming::RequestModel(MI_M4, STREAMFLAGS_DONT_REMOVE); // yeah, it's not right
-		CStreaming::LoadAllRequestedModels(false);
-	}
-#endif
-
 	CPlayerPed *player = FindPlayerPed();
 	if (fixedWeapon < WEAPONTYPE_TOTALWEAPONS) {
 		InterruptedWeaponSelected = player->GetWeapon()->m_eWeaponType;
@@ -357,11 +347,6 @@ CDarkel::StartFrenzy(eWeaponType weaponType, int32 time, uint16 kill, int32 mode
 	}
 	if (CDarkel::bStandardSoundAndMessages)
 		DMAudio.PlayFrontEndSound(SOUND_RAMPAGE_START, 0);
-
-#ifdef FIRING_AND_AIMING // fixing the game crash at the beginning of a rampage
-	if (weaponType == WEAPONTYPE_SNIPERRIFLE || weaponType == WEAPONTYPE_LASERSCOPE || weaponType == WEAPONTYPE_ROCKETLAUNCHER)
-		CStreaming::SetModelIsDeletable(MI_M4);
-#endif
 }
 
 void
