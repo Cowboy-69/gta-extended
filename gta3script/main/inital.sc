@@ -1925,7 +1925,7 @@ CREATE_PICKUP_WITH_AMMO grenade PICKUP_ON_STREET_SLOW 4 -939.8 -464.9 10.9 gun_m
 CREATE_PICKUP_WITH_AMMO python PICKUP_ON_STREET_SLOW 12 -1182.7 -61.1 11.4 gun_main12 //South Across water from junkyard   
 CREATE_PICKUP_WITH_AMMO buddyshot PICKUP_ON_STREET_SLOW 10 -1305.2 177.1 11.4 gun_main13 //Behind large hanger from junkyard   
 CREATE_PICKUP_WITH_AMMO laser PICKUP_ON_STREET_SLOW 14 -1114.3 -602.0 26.0 gun_main14 //Next to Kaufmann cabs sign in Lttle Havana (close to cuban cafe)   
-CREATE_PICKUP_WITH_AMMO DEAGLE PICKUP_ON_STREET_SLOW 14 -642.4 817.0 11.5 gun_main15 // Behind the police station in Downtown
+CREATE_PICKUP_WITH_AMMO DESERT_EAGLE PICKUP_ON_STREET_SLOW 14 -642.4 817.0 11.5 gun_main15 // Behind the police station in Downtown
 CREATE_PICKUP_WITH_AMMO STEYR PICKUP_ON_STREET_SLOW 60 -1695.0 -180.0 30.0 gun_main16 // In the back tower at the Army Hanger
 CREATE_PICKUP_WITH_AMMO M16 PICKUP_ON_STREET_SLOW 60 -881.0 -746.0 11.0 gun_main17 // Behind the police station in Little Havana
 

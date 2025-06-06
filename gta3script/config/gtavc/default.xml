@@ -295,7 +295,7 @@
       <Constant Name="M16" Value="6662"/>
       <Constant Name="SHOTGUN2" Value="6663"/>
       <Constant Name="UZIOLD" Value="6664"/>
-      <Constant Name="DEAGLE" Value="6665"/>
+      <Constant Name="DESERT_DEAGLE" Value="6665"/>
       <Constant Name="BERETTA" Value="6666"/>
       <Constant Name="STEYR" Value="6667"/>
     </Enum>
