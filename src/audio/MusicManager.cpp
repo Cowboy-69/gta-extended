@@ -214,6 +214,9 @@ cMusicManager::DisplayRadioStationName()
 		}
 
 #ifdef EX_RADIO_ICONS // Draw radio icons in the game
+		int textureFilterState;
+		RwRenderStateGet(rwRENDERSTATETEXTUREFILTER, &textureFilterState);
+		RwRenderStateSet(rwRENDERSTATETEXTUREFILTER, (void*)rwFILTERLINEAR);
 		if (pRetune == RADIO_OFF) {
 			FrontEndMenuManager.m_aFrontEndRadioSprites[10].Draw(CRect(SCREEN_WIDTH / 2 - SCREEN_SCALE_X(22.0f) + SCREEN_SCALE_X(15.0f) - SCREEN_STRETCH_Y(32.0f), SCREEN_SCALE_Y(22.0f) + SCREEN_SCALE_Y(15.0f) - SCREEN_STRETCH_Y(32.0f),
 																	   SCREEN_WIDTH / 2 - SCREEN_SCALE_X(22.0f) + SCREEN_SCALE_X(15.0f) + SCREEN_STRETCH_Y(32.0f), SCREEN_SCALE_Y(22.0f) + SCREEN_SCALE_Y(15.0f) + SCREEN_STRETCH_Y(32.0f)),
@@ -223,6 +226,7 @@ cMusicManager::DisplayRadioStationName()
 																			SCREEN_WIDTH / 2 - SCREEN_SCALE_X(22.0f) + SCREEN_SCALE_X(15.0f) + SCREEN_STRETCH_Y(32.0f), SCREEN_SCALE_Y(22.0f) + SCREEN_SCALE_Y(15.0f) + SCREEN_STRETCH_Y(32.0f)),
 																			CRGBA(255, 255, 255, 255));
 		}
+		RwRenderStateSet(rwRENDERSTATETEXTUREFILTER, (void*)textureFilterState);
 #else
 		CFont::SetJustifyOff();
 		CFont::SetBackgroundOff();

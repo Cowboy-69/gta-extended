@@ -136,7 +136,10 @@ CFileLoader::LoadLevel(const char *filename)
 		}else if(strncmp(line, "IDE", 3) == 0){
 			LoadingScreenLoadingFile(line + 4);
 #ifdef MODLOADER
-			LoadObjectTypes(ModLoader_RegisterAndGetIdeFile_Unsafe(line + 4));
+			if (strstr(line, "newVehicles.IDE") || strstr(line, "DEFAULT.IDE"))
+				LoadObjectTypes(line + 4);
+			else
+				LoadObjectTypes(ModLoader_RegisterAndGetIdeFile_Unsafe(line + 4));
 #else
 			LoadObjectTypes(line + 4);
 #endif

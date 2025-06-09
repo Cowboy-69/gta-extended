@@ -105,14 +105,13 @@ CCam::Process(void)
 		float curSenseX;
 		float curSenseY;
 
-		// Make more precise movements during aiming
 		if (ped->bIsAimingGun && !ped->m_pPointGunAt || ped->m_nPedState == PED_SNIPER_MODE) {
 			if (CPad::GetPad(0)->IsAffectedByController) {
-				curSenseX = FrontEndMenuManager.m_PrefsPadAimSensX / 2;
-				curSenseY = FrontEndMenuManager.m_PrefsPadAimSensY / 2;
+				curSenseX = FrontEndMenuManager.m_PrefsPadAimSensX;
+				curSenseY = FrontEndMenuManager.m_PrefsPadAimSensY;
 			} else {
-				curSenseX = FrontEndMenuManager.m_PrefsMouseAimSensX / 6;
-				curSenseY = FrontEndMenuManager.m_PrefsMouseAimSensY / 6;
+				curSenseX = FrontEndMenuManager.m_PrefsMouseAimSensX / 2;
+				curSenseY = FrontEndMenuManager.m_PrefsMouseAimSensY / 2;
 			}
 		} else {
 			if (CPad::GetPad(0)->IsAffectedByController) {
