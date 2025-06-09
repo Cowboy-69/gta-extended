@@ -354,6 +354,7 @@ extern CRGBA WaypointColor;
 #ifdef EX_DISTANT_LIGHTS
 extern bool bEnableDistantLights;
 #endif
+extern bool bMirrorModeByDefault;
 #endif
 
 #define DEBUGBREAK() __debugbreak();

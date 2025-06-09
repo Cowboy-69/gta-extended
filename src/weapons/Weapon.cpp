@@ -37,6 +37,7 @@
 #ifdef EX_CONTROL
 #include "Frontend.h"
 #endif
+#include "main.h"
 
 uint16 gReloadSampleTime[WEAPONTYPE_LAST_WEAPONTYPE] =
 {
@@ -70,7 +71,10 @@ Find3rdPersonCamTargetVectorFromCachedVectors(float dist, CVector pos, CVector& 
 		source = camSource;
 		target = camFront;
 		target += camUp * Tan(angleY);
-		target += CrossProduct(camFront, camUp) * Tan(angleX);
+		if (RwCameraGetMirror(Scene.camera))
+			target += CrossProduct(camFront, camUp) * Tan(-angleX);
+		else
+			target += CrossProduct(camFront, camUp) * Tan(angleX);
 		target.Normalise();
 		source += DotProduct(pos - source, target) * target;
 		target = dist * target + source;

@@ -25,6 +25,7 @@
 #ifdef EX_GPS
 #include "PathFind.h"
 #endif
+#include "main.h"
 
 float CRadar::m_radarRange;
 sRadarTrace CRadar::ms_RadarTrace[NUMRADARBLIPS];
@@ -970,7 +971,10 @@ void CRadar::DrawRotatingRadarSprite(CSprite2d* sprite, float x, float y, float 
 
 	for (uint32 i = 0; i < 4; i++) {
 		const float cornerAngle = i * HALFPI + correctedAngle;
-		curPosn[i].x = x + (0.0f * Cos(cornerAngle) + 1.0f * Sin(cornerAngle)) * sizeX;
+		if (RwCameraGetMirror(Scene.camera))
+			curPosn[i].x = x - (0.0f * Cos(cornerAngle) + 1.0f * Sin(cornerAngle)) * sizeX;
+		else
+			curPosn[i].x = x + (0.0f * Cos(cornerAngle) + 1.0f * Sin(cornerAngle)) * sizeX;
 		curPosn[i].y = y - (0.0f * Sin(cornerAngle) - 1.0f * Cos(cornerAngle)) * sizeY;
 	}
 
@@ -1617,7 +1621,10 @@ void CRadar::TransformRadarPointToScreenSpace(CVector2D &out, const CVector2D &i
 #endif
 	{
 #ifdef FIX_BUGS
-		out.x = (in.x + 1.0f) * 0.5f * SCREEN_SCALE_X(RADAR_WIDTH) + SCREEN_SCALE_X(RADAR_LEFT);
+		if (RwCameraGetMirror(Scene.camera))
+			out.x = (-in.x + 1.0f) * 0.5f * SCREEN_SCALE_X(RADAR_WIDTH) + SCREEN_SCALE_X(RADAR_LEFT);
+		else
+			out.x = (in.x + 1.0f) * 0.5f * SCREEN_SCALE_X(RADAR_WIDTH) + SCREEN_SCALE_X(RADAR_LEFT);
 #else
 		out.x = (in.x + 1.0f) * 0.5f * SCREEN_SCALE_X(RADAR_WIDTH) + RADAR_LEFT;
 #endif

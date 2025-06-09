@@ -207,11 +207,7 @@ CustomFrontendOptionsPopulate(void)
 #include "ini.h"
 
 #ifdef EX_FEATURES_INI
-#ifdef LIBERTY_EX // LibertyExtended folder - features.ini
 mINI::INIFile featuresIni("LibertyExtended/features.ini");
-#else
-mINI::INIFile featuresIni("features.ini");
-#endif
 mINI::INIStructure featuresCfg;
 
 uint8 bInitFeaturesIni = featuresIni.read(featuresCfg);
@@ -253,6 +249,7 @@ CRGBA WaypointColor = ReadAndGetWaypointColor("WaypointColorRGB");
 #ifdef EX_DISTANT_LIGHTS
 extern bool bEnableDistantLights = ReadAndGetFeature("EnableDistantLights");
 #endif
+extern bool bMirrorModeByDefault = ReadAndGetFeature("MirrorModeByDefault");
 #endif
 
 mINI::INIFile ini("re3.ini");
@@ -1228,6 +1225,15 @@ extern bool gbRenderWorld2;
 		DebugMenuAddCmd("Game", "Place Car on Road", PlaceOnRoad);
 		DebugMenuAddCmd("Game", "Switch car collision", SwitchCarCollision);
 		DebugMenuAddCmd("Game", "Toggle Comedy Controls", ToggleComedy);
+		DebugMenuAddCmd("Game", "Toggle mirror mode", [](){
+			if (RwCameraGetMirror(Scene.camera)) {
+				RwCameraSetMirror(Scene.camera, false);
+				//gBackfaceCulling = true;
+			} else {
+				RwCameraSetMirror(Scene.camera, true);
+				//gBackfaceCulling = false;
+			}
+		});
 
 		DebugMenuAddVarBool8("Game", "Toggle popping heads on headshot", &CPed::bPopHeadsOnHeadshot, nil);
 

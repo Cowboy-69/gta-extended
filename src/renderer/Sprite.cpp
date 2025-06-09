@@ -49,6 +49,10 @@ CSprite::CalcScreenCoors(const RwV3d &in, RwV3d *out, float *outw, float *outh, 
 	float recip = 1.0f/out->z;
 	out->x *= SCREEN_WIDTH * recip;
 	out->y *= SCREEN_HEIGHT * recip;
+
+	if (RwCameraGetMirror(Scene.camera))
+		out->x = SCREEN_WIDTH - out->x;
+
 	const float fov = DefaultFOV;
 	// this is used to scale correctly if you zoom in with sniper rifle
 	float fovScale = fov / CDraw::GetFOV();

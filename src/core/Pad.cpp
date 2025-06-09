@@ -34,6 +34,7 @@
 #include "PathFind.h"
 #include "Wanted.h"
 #include "General.h"
+#include "main.h"
 
 #ifdef GTA_PS2
 #include "eetypes.h"
@@ -1788,6 +1789,11 @@ int16 CPad::GetSteeringLeftRight(void)
 			int16 axis = NewState.LeftStickX;
 			int16 dpad = (NewState.DPadRight - NewState.DPadLeft) / 2;
 
+			if (RwCameraGetMirror(Scene.camera)) {
+				axis *= -1;
+				dpad *= -1;
+			}
+
 			if ( Abs(axis) > Abs(dpad) )
 				return axis;
 			else
@@ -1799,7 +1805,10 @@ int16 CPad::GetSteeringLeftRight(void)
 		case 1:
 		case 3:
 		{
-			return NewState.LeftStickX;
+			if (RwCameraGetMirror(Scene.camera))
+				return -NewState.LeftStickX;
+			else
+				return NewState.LeftStickX;
 
 			break;
 		}
@@ -1922,6 +1931,11 @@ int16 CPad::GetPedWalkLeftRight(void)
 
 #ifdef EX_CONTROL // GetPedWalkLeftRight
 	int16 axis = NewState.LeftStickX;
+
+	if (RwCameraGetMirror(Scene.camera)) {
+		axis *= -1;
+	}
+
 	if (Abs(axis) > FrontEndMenuManager.m_PrefsLeftStickDeadzone)
 		return axis;
 	else
@@ -1936,6 +1950,11 @@ int16 CPad::GetPedWalkLeftRight(void)
 			int16 axis = NewState.LeftStickX;
 			int16 dpad = (NewState.DPadRight - NewState.DPadLeft) / 2;
 
+			if (RwCameraGetMirror(Scene.camera)) {
+				axis *= -1;
+				dpad *= -1;
+			}
+
 			if ( Abs(axis) > Abs(dpad) )
 				return axis;
 			else
@@ -1947,7 +1966,10 @@ int16 CPad::GetPedWalkLeftRight(void)
 		case 1:
 		case 3:
 		{
-			return NewState.LeftStickX;
+			if (RwCameraGetMirror(Scene.camera))
+				return -NewState.LeftStickX;
+			else
+				return NewState.LeftStickX;
 
 			break;
 		}
@@ -3454,6 +3476,11 @@ int16 CPad::SniperModeLookLeftRight(void)
 {
 #ifdef EX_CONTROL // SniperModeLookLeftRight
 	int16 axis = NewState.RightStickX;
+
+	if (RwCameraGetMirror(Scene.camera)) {
+		axis *= -1;
+	}
+
 	if (Abs(axis) > FrontEndMenuManager.m_PrefsRightStickDeadzone)
 		return (axis > 0.f ? axis - FrontEndMenuManager.m_PrefsRightStickDeadzone : axis + FrontEndMenuManager.m_PrefsRightStickDeadzone);
 	else
@@ -3461,6 +3488,11 @@ int16 CPad::SniperModeLookLeftRight(void)
 #else
 	int16 axis = NewState.LeftStickX;
 	int16 dpad = (NewState.DPadRight - NewState.DPadLeft) / 2;
+
+	if (RwCameraGetMirror(Scene.camera)) {
+		axis *= -1;
+		dpad *= -1;
+	}
 
 	if ( Abs(axis) > Abs(dpad) )
 		return axis;
@@ -3505,6 +3537,10 @@ int16 CPad::SniperModeLookUpDown(void)
 int16 CPad::LookAroundLeftRight(void)
 {
 	float axis = GetPad(0)->NewState.RightStickX;
+
+	if (RwCameraGetMirror(Scene.camera)) {
+		axis *= -1;
+	}
 
 #ifdef EX_CONTROL // LookAroundLeftRight
 	if (Abs(axis) > FrontEndMenuManager.m_PrefsRightStickDeadzone && !GetLookBehindForPed())

@@ -2,6 +2,7 @@
 
 extern bool bDebugRenderGroups;
 extern bool gPS2alphaTest;
+extern bool gBackfaceCulling;
 
 void OpenCharsetSafe();
 void CreateDebugFont();

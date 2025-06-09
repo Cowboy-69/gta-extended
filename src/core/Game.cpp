@@ -225,6 +225,13 @@ CGame::InitialiseRenderWare(void)
 	RwCameraSetFarClipPlane(Scene.camera, 2000.0f);	// 250.0f on PS2 but who cares
 	RwCameraSetNearClipPlane(Scene.camera, 0.9f);
 	
+#ifdef EX_FEATURES_INI // MirrorModeByDefault
+	if (bMirrorModeByDefault) {
+		//gBackfaceCulling = false;
+		RwCameraSetMirror(Scene.camera, bMirrorModeByDefault);
+	}
+#endif
+
 	CameraSize(Scene.camera, nil, DEFAULT_VIEWWINDOW, DEFAULT_ASPECT_RATIO);
 	
 	/* Create a world */

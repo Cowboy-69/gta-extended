@@ -11,6 +11,7 @@
 #include "Camera.h"
 #include "World.h"
 #include "Entity.h"
+#include "main.h"
 
 cAudioManager AudioManager;
 
@@ -581,7 +582,16 @@ cAudioManager::ComputeVolume(uint8 emittingVolume, float maxDistance, float dist
 void
 cAudioManager::TranslateEntity(Const CVector *in, CVector *out)
 {
-	*out = MultiplyInverse(TheCamera.GetMatrix(), *in);
+	CMatrix cameraMatrix = TheCamera.GetMatrix();
+	if (RwCameraGetMirror(Scene.camera)) {
+		cameraMatrix.rx *= -1.0f;
+		cameraMatrix.ry *= -1.0f;
+		cameraMatrix.fx *= -1.0f;
+		cameraMatrix.fy *= -1.0f;
+		cameraMatrix.ux *= -1.0f;
+		cameraMatrix.uy *= -1.0f;
+	}
+	*out = MultiplyInverse(cameraMatrix, *in);
 }
 
 int32

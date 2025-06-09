@@ -331,6 +331,10 @@ CVehicle::FlyingControl(eFlightModel flightModel)
 			float fDirectionMultiplier = CPad::GetPad(0)->GetLookRight();
 			if (CPad::GetPad(0)->GetLookLeft())
 				fDirectionMultiplier = -1;
+
+			if (RwCameraGetMirror(Scene.camera))
+				fDirectionMultiplier *= -1.0f;
+
 			fRollAccel = (0.5f * fDirectionMultiplier + fSteerLR) * fRCRollMult;
 		}
 		else
@@ -429,6 +433,10 @@ CVehicle::FlyingControl(eFlightModel flightModel)
 			fRoll = CPad::GetPad(0)->GetLookLeft();
 			if (CPad::GetPad(0)->GetLookRight())
 				fRoll = -1.0f;
+
+			if (RwCameraGetMirror(Scene.camera))
+				fRoll *= -1.0f;
+
 			fYaw = CPad::GetPad(0)->GetSteeringLeftRight() / 128.0f;
 		}
 		if (CPad::GetPad(0)->GetHorn()) {

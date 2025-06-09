@@ -388,6 +388,8 @@ RwCamera    *RwCameraClone(RwCamera * camera);
 RwCamera    *RwCameraSetViewOffset(RwCamera *camera, const RwV2d *offset);
 RwCamera    *RwCameraSetViewWindow(RwCamera *camera, const RwV2d *viewWindow);
 RwCamera    *RwCameraSetProjection(RwCamera *camera, RwCameraProjection projection);
+RwCamera    *RwCameraSetMirror(RwCamera *camera, RwBool mirrored);
+RwBool       RwCameraGetMirror(const RwCamera *camera);
 RwCamera    *RwCameraSetNearClipPlane(RwCamera *camera, RwReal nearClip);
 RwCamera    *RwCameraSetFarClipPlane(RwCamera *camera, RwReal farClip);
 RwInt32      RwCameraRegisterPlugin(RwInt32 size, RwUInt32 pluginID, RwPluginObjectConstructor constructCB, RwPluginObjectDestructor destructCB, RwPluginObjectCopy copyCB);
