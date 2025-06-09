@@ -1072,6 +1072,7 @@ void CGame::Process(void)
 		CPad::DoCheats();
 		CClock::Update();
 		CWeather::Update();
+		rw::UpdateDayNightBalance();
 
 		PUSH_MEMID(MEMID_SCRIPT);
 		CTheScripts::Process();
@@ -1143,6 +1144,7 @@ void CGame::Process(void)
 	else if (CPhotoMode::IsPhotoModeEnabled()) {
 		CPhotoMode::ProcessControl();
 		CWeather::Update();
+		rw::UpdateDayNightBalance();
 
 #ifdef EX_DISTANT_LIGHTS // IsPhotoModeEnabled
 		if (bEnableDistantLights) {
