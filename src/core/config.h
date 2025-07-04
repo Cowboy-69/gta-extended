@@ -48,13 +48,15 @@
 		#define EX_MORE_GAMEPAD_CONTROLLERS
 	#endif
 
-	#if defined EX_VEHICLE && defined EX_SECOND_SAMPLE_BANK
-		#define EX_BURST_TYRES // from reVC
-	#endif
-
 	#ifdef EX_VEHICLE
 		#define EX_BREAKABLE_WINDSHIELDS // from reVC
 		#define EX_FIRE_TRUCK_WATER_CANNON
+
+		/* Emissive for vehicle lights via shader */
+
+		#ifdef EX_SECOND_SAMPLE_BANK
+			#define EX_BURST_TYRES // from reVC
+		#endif
 	#endif
 
 	#ifdef EX_DAMAGE

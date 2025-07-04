@@ -22,6 +22,11 @@
 
 extern RwTexture *gpWhiteTexture;	// from vehicle model info
 
+rw::VehicleFxParams rw::gVehicleFxParams = {
+	false, // bLightsOn
+	false, // bTailLightsOn
+};
+
 namespace CustomPipes {
 
 enum {
@@ -75,6 +80,173 @@ uploadSpecLights(void)
 	rw::d3d::d3ddevice->SetVertexShaderConstantF(VSLOC_specLights, (float*)&specLights, 3*(1 + NUMEXTRADIRECTIONALS));
 }
 
+bool
+isVehicleHeadLights(rw::Material* material) {
+	return material->color.red == 255 && material->color.green == 175 && material->color.blue == 0 ||
+		   material->color.red == 0 && material->color.green == 255 && material->color.blue == 199;
+}
+
+bool
+isVehicleTailLights(rw::Material* material) {
+	return material->color.red == 184 && material->color.green == 255 && material->color.blue == 0 ||
+		   material->color.red == 255 && material->color.green == 59 && material->color.blue == 0;
+}
+
+bool
+isVehicleLights(rw::Material* material) {
+	return isVehicleHeadLights(material) || isVehicleTailLights(material);
+}
+
+void
+matfxVehicleRender_Default(rw::d3d9::InstanceDataHeader *header, rw::d3d9::InstanceData *inst, int32 lightBits)
+{
+	using namespace rw;
+	using namespace rw::d3d;
+	using namespace rw::d3d9;
+
+	Material *m = inst->material;
+
+	// Vehicle lights
+	if (m->texture && isVehicleLights(m)) {
+		if (isVehicleHeadLights(m) && gVehicleFxParams.bLightsOn ||
+			isVehicleTailLights(m) && (gVehicleFxParams.bTailLightsOn || gVehicleFxParams.bLightsOn)) {
+
+			setVertexShader(default_amb_dir_VS);
+
+			float dayparam[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+			float nightparam[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+			d3ddevice->SetVertexShaderConstantF(VSLOC_dayParam, dayparam, 1);
+			d3ddevice->SetVertexShaderConstantF(VSLOC_nightParam, nightparam, 1);
+
+			float white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+			d3ddevice->SetVertexShaderConstantF(VSLOC_matColor, white, 1);
+
+			SetRenderState(VERTEXALPHA, 0);
+
+			struct  {
+				float emissiveMult;
+				float unused[3];
+			} fxParams;
+			fxParams.emissiveMult = 0.2f;
+			d3ddevice->SetPixelShaderConstantF(1, (float*)&fxParams, 1);
+
+			d3d::setTexture(0, m->texture);
+			setPixelShader(default_tex_emissive_PS);
+		} else {
+			if((lightBits & VSLIGHT_MASK) == 0)
+				setVertexShader(default_amb_VS);
+			else if((lightBits & VSLIGHT_MASK) == VSLIGHT_DIRECT)
+				setVertexShader(default_amb_dir_VS);
+			else
+				setVertexShader(default_all_VS);
+
+			float dayparam[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+			float nightparam[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+			d3ddevice->SetVertexShaderConstantF(VSLOC_dayParam, dayparam, 1);
+			d3ddevice->SetVertexShaderConstantF(VSLOC_nightParam, nightparam, 1);
+
+			float white[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+			d3ddevice->SetVertexShaderConstantF(VSLOC_matColor, dayparam, 1);
+
+			SetRenderState(VERTEXALPHA, inst->vertexAlpha || m->color.alpha != 255);
+
+			d3d::setTexture(0, m->texture);
+			setPixelShader(default_tex_PS);
+		}
+
+		drawInst(header, inst);
+
+		return;
+	}
+
+	// Pick a shader
+	if((lightBits & VSLIGHT_MASK) == 0)
+		setVertexShader(default_amb_VS);
+	else if((lightBits & VSLIGHT_MASK) == VSLIGHT_DIRECT)
+		setVertexShader(default_amb_dir_VS);
+	else
+		setVertexShader(default_all_VS);
+
+	float dayparam[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+	float nightparam[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	d3ddevice->SetVertexShaderConstantF(VSLOC_dayParam, dayparam, 1);
+	d3ddevice->SetVertexShaderConstantF(VSLOC_nightParam, nightparam, 1);
+
+	SetRenderState(VERTEXALPHA, inst->vertexAlpha || m->color.alpha != 255);
+
+	if(inst->material->texture){
+		d3d::setTexture(0, m->texture);
+		setPixelShader(default_tex_PS);
+	}else
+		setPixelShader(default_PS);
+
+	drawInst(header, inst);
+}
+
+void
+matfxVehicleRender_EnvMap(rw::d3d9::InstanceDataHeader *header, rw::d3d9::InstanceData *inst, int32 lightBits, rw::MatFX::Env *env)
+{
+	using namespace rw;
+	using namespace rw::d3d;
+	using namespace rw::d3d9;
+	
+	Material *m = inst->material;
+
+	if(env->tex == nil || env->coefficient == 0.0f){
+		matfxVehicleRender_Default(header, inst, lightBits);
+		return;
+	}
+
+	d3d::setTexture(1, env->tex);
+	uploadEnvMatrix(env->frame);
+
+	SetRenderState(SRCBLEND, BLENDONE);
+
+	static float zero[4];
+	static float one[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	struct  {
+		float shininess;
+		float disableFBA;
+		float unused[2];
+	} fxparams;
+	fxparams.shininess = env->coefficient;
+	fxparams.disableFBA = env->fbAlpha ? 0.0f : 1.0f;
+	d3ddevice->SetPixelShaderConstantF(PSLOC_shininess, (float*)&fxparams, 1);
+	// This clamps the vertex color below. With it we can achieve both PC and PS2 style matfx
+	if(MatFX::envMapApplyLight)
+		d3ddevice->SetVertexShaderConstantF(VSLOC_colorClamp, zero, 1);
+	else
+		d3ddevice->SetVertexShaderConstantF(VSLOC_colorClamp, one, 1);
+	RGBAf envcol[4];
+	if(MatFX::envMapUseMatColor)
+		convColor(envcol, &m->color);
+	else
+		convColor(envcol, &MatFX::envMapColor);
+	d3ddevice->SetVertexShaderConstantF(VSLOC_envColor, (float*)&envcol, 1);
+
+	// Pick a shader
+	if((lightBits & VSLIGHT_MASK) == 0)
+		setVertexShader(matfx_env_amb_VS);
+	else if((lightBits & VSLIGHT_MASK) == VSLIGHT_DIRECT)
+		setVertexShader(matfx_env_amb_dir_VS);
+	else
+		setVertexShader(matfx_env_all_VS);
+
+	rw::bool32 texAlpha = GETD3DRASTEREXT(env->tex->raster)->hasAlpha;
+
+	if(inst->material->texture){
+		d3d::setTexture(0, m->texture);
+		setPixelShader(matfx_env_tex_PS);
+	}else
+		setPixelShader(matfx_env_PS);
+
+	SetRenderState(VERTEXALPHA, texAlpha || inst->vertexAlpha || m->color.alpha != 255);
+
+	drawInst(header, inst);
+
+	SetRenderState(SRCBLEND, BLENDSRCALPHA);
+}
+
 void
 vehicleRenderCB(rw::Atomic *atomic, rw::d3d9::InstanceDataHeader *header)
 {
@@ -84,7 +256,43 @@ vehicleRenderCB(rw::Atomic *atomic, rw::d3d9::InstanceDataHeader *header)
 
 	// TODO: make this less of a kludge
 	if(VehiclePipeSwitch == VEHICLEPIPE_MATFX){
-		matFXGlobals.pipelines[rw::platform]->render(atomic);
+		uint32 flags = atomic->geometry->flags;
+		setStreamSource(0, (IDirect3DVertexBuffer9*)header->vertexStream[0].vertexBuffer,
+								   0, header->vertexStream[0].stride);
+		setIndices((IDirect3DIndexBuffer9*)header->indexBuffer);
+		setVertexDeclaration((IDirect3DVertexDeclaration9*)header->vertexDeclaration);
+
+		int vsBits = lightingCB_Shader(atomic);
+		uploadMatrices(atomic->getFrame()->getLTM());
+
+		bool normals = !!(atomic->geometry->flags & Geometry::NORMALS);
+
+		InstanceData *inst = header->inst;
+		for(uint32 i = 0; i < header->numMeshes; i++){
+			Material *m = inst->material;
+
+			setMaterial(flags, m->color, m->surfaceProps);
+
+			MatFX *matfx = MatFX::get(m);
+			if(matfx == nil)
+				matfxVehicleRender_Default(header, inst, vsBits);
+			else switch(matfx->type){
+			case MatFX::ENVMAP:
+				if(normals){
+					matfxVehicleRender_EnvMap(header, inst, vsBits, &matfx->fx[0].env);
+				}else{
+					matfxVehicleRender_Default(header, inst, vsBits);
+				}
+				break;
+			default:
+					matfxVehicleRender_Default(header, inst, vsBits);
+				break;
+			}
+
+			inst++;
+		}
+		d3d::setTexture(1, nil);
+		
 		return;
 	}
 

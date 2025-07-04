@@ -357,6 +357,9 @@ CTrain::PreRender(void)
 void
 CTrain::Render(void)
 {
+	rw::gVehicleFxParams.bLightsOn = true;
+	rw::gVehicleFxParams.bTailLightsOn = true;
+
 	CEntity::Render();
 }
 

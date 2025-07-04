@@ -2260,6 +2260,9 @@ CAutomobile::PreRender(void)
 void
 CAutomobile::Render(void)
 {
+	rw::gVehicleFxParams.bLightsOn = bLightsOn && GetStatus() != STATUS_WRECKED;
+	rw::gVehicleFxParams.bTailLightsOn = (bLightsOn || m_fBrakePedal > 0.0f && GetStatus() != STATUS_ABANDONED) && GetStatus() != STATUS_WRECKED;
+
 	int i;
 	CMatrix mat;
 	CVector pos;
