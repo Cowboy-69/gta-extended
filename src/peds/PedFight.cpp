@@ -3126,6 +3126,9 @@ CPed::InflictDamage(CEntity *damagedBy, eWeaponType method, float damage, ePedPi
 			case WEAPONTYPE_GRENADE:
 			case WEAPONTYPE_ROCKETLAUNCHER:
 			case WEAPONTYPE_EXPLOSION:
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // CPed::InflictDamage
+		    case WEAPONTYPE_GR_LAUNCHER:
+#endif
 				if (bExplosionProof)
 					return false;
 

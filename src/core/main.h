@@ -74,6 +74,11 @@ void LoadINIControllerSettings();
 void SaveINIControllerSettings();
 #endif
 
+#ifdef EX_COLLECT_UNUSED_IDS
+void
+CollectUnusedID();
+#endif // EX_COLLECT_UNUSED_IDS
+
 #ifdef NEW_RENDERER
 extern bool gbNewRenderer;
 bool FredIsInFirstPersonCam(void);

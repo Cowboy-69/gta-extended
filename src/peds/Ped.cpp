@@ -3107,6 +3107,26 @@ CPed::ProcessControl(void)
 			m_vecMoveFriction = CVector(0.0f, 0.0f, 0.0f);
 		}
 
+#ifdef EX_DOOM_MODE_ENHANCEMENTS
+		if(this->IsPlayer()
+			&& ((CPlayerPed *)this)->IsDoomMode() 
+			&& !CanWeRunAndFireWithWeapon()
+			//&& (m_nPedState == PED_AIM_GUN
+			//|| m_nPedState == PED_ATTACK) // if PED_ATTACK will be deleted it make player to slow down while shooting, maybe add flag or smt? (ANN)
+			) {
+			CAnimBlendAssociation *curGunMoveBackwardAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_GUNMOVE_BWD);
+			CAnimBlendAssociation *curGunMoveForwardAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_GUNMOVE_FWD);
+			CAnimBlendAssociation *curGunMoveLeftAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_GUNMOVE_L);
+			CAnimBlendAssociation *curGunMoveRightAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_GUNMOVE_R);
+
+			if((curGunMoveBackwardAssoc || curGunMoveForwardAssoc || curGunMoveLeftAssoc || curGunMoveRightAssoc) 
+				//&& m_nPedState != PED_ATTACK
+				)
+				this->m_vecAnimMoveDelta *= DOOM_MODE_SPEED_MODIFIER;
+		}
+
+#endif // EX_DOOM_MODE_ENHANCEMENTS
+
 		if (m_nPedState != PED_DIE || bIsPedDieAnimPlaying) {
 			RequestDelayedWeapon();
 			PlayFootSteps();
@@ -3119,8 +3139,15 @@ CPed::ProcessControl(void)
 				if (m_attachedTo) {
 					bIsInTheAir = false;
 				} else if (CheckIfInTheAir()) {
+#ifdef EX_DOOM_MODE_ENHANCEMENTS
+					if (!(((CPlayerPed *)this)->IsDoomMode())) {
 					SetInTheAir();
 					bHeadStuckInCollision = false;
+					}
+#else
+					SetInTheAir();
+					bHeadStuckInCollision = false;
+#endif // EX_DOOM_MODE_ENHANCEMENTS
 				}
 			}
 			if (bHeadStuckInCollision) {
@@ -4456,7 +4483,12 @@ bool
 CPed::IsPedInControl(void)
 {
 	return m_nPedState <= PED_STATES_NO_AI
-		&& !bIsInTheAir && !bIsLanding
+#ifdef EX_DOOM_MODE_ENHANCEMENTS
+		&& !(bIsInTheAir && !((CPlayerPed*)this)->IsDoomMode())
+#else
+	       && !bIsInTheAir
+#endif // EX_DOOM_MODE_ENHANCEMENTS
+		&& !bIsLanding
 		&& m_fHealth > 0.0f;
 }
 
@@ -6077,8 +6109,12 @@ CPed::InTheAir(void)
 					return;
 
 				bIsReadyToClimbing = false;
-#endif
-				if (m_vecMoveSpeed.z < -0.1f)
+#endif 
+				if(m_vecMoveSpeed.z < -0.1f 
+#ifdef EX_DOOM_MODE_ENHANCEMENTS
+					&& !(((CPlayerPed *)this)->IsDoomMode())
+#endif // EX_DOOM_MODE_ENHANCEMENTS
+				)
 					CAnimManager::BlendAnimation(GetClump(), ASSOCGRP_STD, ANIM_STD_FALL, 4.0f);
 			}
 		}
@@ -6096,6 +6132,23 @@ CPed::SetLanding(void)
 
 	if (fallAssoc && bIsDrowning)
 		return;
+
+#ifdef EX_DOOM_MODE_ENHANCEMENTS
+	if (((CPlayerPed*)this)->IsDoomMode()) {
+
+		//RpAnimBlendClumpSetBlendDeltas(GetClump(), ASSOC_PARTIAL, -1000.0f);
+		
+		//if(m_nPedState == PED_JUMP) RestorePreviousState();
+
+#ifdef CLIMBING
+		bIsReadyToClimbing = false;
+#endif
+
+		bIsInTheAir = false;
+		bIsLanding = false;
+		return;
+	}
+#endif // EX_DOOM_MODE_ENHANCEMENTS
 
 	RpAnimBlendClumpSetBlendDeltas(GetClump(), ASSOC_PARTIAL, -1000.0f);
 	if (fallAssoc || m_nPedType == PEDTYPE_COP && bKnockedUpIntoAir) {
@@ -10053,6 +10106,60 @@ CPed::SetJump(void)
 			return;
 	}
 #endif
+
+#ifdef EX_DOOM_MODE_ENHANCEMENTS
+	if (((CPlayerPed*)(this))->IsDoomMode()) {
+
+		float velocityFromAnim = 0.1f;
+		CAnimBlendAssociation *sprintAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_RUNFAST);
+
+		if(sprintAssoc) {
+			velocityFromAnim = 0.05f * sprintAssoc->blendAmount + 0.17f;
+		} else {
+			CAnimBlendAssociation *runAssoc = RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_RUN);
+			if(runAssoc) { velocityFromAnim = 0.07f * runAssoc->blendAmount + 0.1f; }
+		}
+
+		if(sq(velocityFromAnim) > m_vecMoveSpeed.MagnitudeSqr2D() || m_pCurrentPhysSurface) {
+
+#ifdef FREE_CAM
+		if(TheCamera.Cams[0].Using3rdPersonMouseCam() && !CCamera::bFreeCam) {
+#else
+		if(TheCamera.Cams[0].Using3rdPersonMouseCam()) {
+#endif
+
+#ifdef CLIMBING
+			if(!IsPlayer() && bClimbingPeds) {
+				m_vecMoveSpeed.x = GetForward().x * 0.15f;
+				m_vecMoveSpeed.y = GetForward().y * 0.15f;
+			} else {
+				float fpsAngle = WorkOutHeadingForMovingFirstPerson(m_fRotationCur);
+				m_vecMoveSpeed.x = -velocityFromAnim * Sin(fpsAngle);
+				m_vecMoveSpeed.y = velocityFromAnim * Cos(fpsAngle);
+			}
+#else
+			float fpsAngle = WorkOutHeadingForMovingFirstPerson(m_fRotationCur);
+			m_vecMoveSpeed.x = -velocityFromAnim * Sin(fpsAngle);
+			m_vecMoveSpeed.y = velocityFromAnim * Cos(fpsAngle);
+#endif
+		} else {
+			m_vecMoveSpeed.x = -velocityFromAnim * Sin(m_fRotationCur);
+			m_vecMoveSpeed.y = velocityFromAnim * Cos(m_fRotationCur);
+		}
+
+		if(m_pCurrentPhysSurface) {
+			m_vecMoveSpeed.x += m_pCurrentPhysSurface->m_vecMoveSpeed.x;
+			m_vecMoveSpeed.y += m_pCurrentPhysSurface->m_vecMoveSpeed.y;
+		}
+		}
+
+		ApplyMoveForce(0.0f, 0.0f, 8.5f);
+
+		bIsStanding = false;
+		bIsInTheAir = true;
+		return;
+	}
+#endif // EX_DOOM_MODE_ENHANCEMENTS
 
 	if (!bInVehicle && m_nPedState != PED_JUMP && !RpAnimBlendClumpGetAssociation(GetClump(), ANIM_STD_JUMP_LAUNCH) &&
 		(m_nSurfaceTouched != SURFACE_STEEP_CLIFF || DotProduct(GetForward(), m_vecDamageNormal) >= 0.0f)) {

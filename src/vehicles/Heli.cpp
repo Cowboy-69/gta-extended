@@ -1013,7 +1013,9 @@ CHeli::UpdateHelis(void)
 
 			CStats::PeopleKilledByPlayer += 2;
 			CStats::PedsKilledOfThisType[PEDTYPE_COP] += 2;
+#ifndef EX_NO_POLICE_HELI_SCORE
 			CWorld::Players[CWorld::PlayerInFocus].m_nMoney += 250;
+#endif // EX_NO_POLICE_HELI_SCORE
 			pos = CWorld::Players[CWorld::PlayerInFocus].m_pPed->GetPosition();
 			CWorld::Players[CWorld::PlayerInFocus].m_pPed->m_pWanted->RegisterCrime_Immediately(CRIME_SHOOT_HELI,
 				pos, i + 19843, false);

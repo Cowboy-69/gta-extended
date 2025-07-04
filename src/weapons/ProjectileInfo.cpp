@@ -160,6 +160,31 @@ CProjectileInfo::AddProjectile(CEntity *entity, eWeaponType weapon, CVector pos,
 			elasticity = 0.5f;
 			break;
 		}
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // AddProjectile
+		case WEAPONTYPE_GR_LAUNCHER_GRENADE:
+		{
+			float vy = GRENADE_LAUNCHER_PROJ_START_VELOCITY;
+		    time = CTimer::GetTimeInMilliseconds() + GRENADE_LAUNCHER_PROJ_TIME;
+		    if(ped->IsPlayer()) {
+				matrix.GetForward() = TheCamera.Cams[TheCamera.ActiveCam].Front;
+				matrix.GetUp() = TheCamera.Cams[TheCamera.ActiveCam].Up;
+				matrix.GetRight() = CrossProduct(-TheCamera.Cams[TheCamera.ActiveCam].Up, TheCamera.Cams[TheCamera.ActiveCam].Front);
+				matrix.GetPosition() = pos;
+			} else if(ped->m_pSeekTarget != nil) {
+				float ry = CGeneral::GetRadianAngleBetweenPoints(1.0f, ped->m_pSeekTarget->GetPosition().z, 1.0f, pos.z);
+				float rz = Atan2(-ped->GetForward().x, ped->GetForward().y);
+				vy = GRENADE_LAUNCHER_PROJ_START_VELOCITY * speed + 0.15f;
+				matrix.SetTranslate(0.0f, 0.0f, 0.0f);
+				matrix.Rotate(0.0f, ry, rz);
+				matrix.GetPosition() += pos;
+			} else {
+				matrix = ped->GetMatrix();
+			    }
+			velocity = Multiply3x3(matrix, CVector(0.0f, vy, 0.0f));
+			//gravity = false;
+			break;
+		}
+#endif
 		default:
 		Error("Undefined projectile type, AddProjectile, ProjectileInfo.cpp");
 		break;
@@ -197,6 +222,11 @@ CProjectileInfo::AddProjectile(CEntity *entity, eWeaponType weapon, CVector pos,
 		case WEAPONTYPE_GRENADE:
 		case WEAPONTYPE_DETONATOR_GRENADE:
 		ms_apProjectile[i] = new CProjectile(MI_GRENADE);
+		break;
+#endif
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // AddProjectile
+	    case WEAPONTYPE_GR_LAUNCHER_GRENADE:
+		ms_apProjectile[i] = new CProjectile(GRENADE_LAUNCHER_PROJ_MODEL_INDEX);
 		break;
 #endif
 		default: break;
@@ -256,6 +286,11 @@ CProjectileInfo::RemoveProjectile(CProjectileInfo *info, CProjectile *projectile
 		case WEAPONTYPE_ROCKET:
 			CExplosion::AddExplosion(nil, info->m_pSource->IsVehicle() ? ((CVehicle*)info->m_pSource)->pDriver : info->m_pSource, EXPLOSION_ROCKET, projectile->GetPosition(), 0);
 			break;
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // RemoveProjectile
+		case WEAPONTYPE_GR_LAUNCHER_GRENADE:
+			CExplosion::AddExplosion(nil, info->m_pSource, EXPLOSION_GRENADE, projectile->GetPosition(), 0);
+			break;
+#endif
 	}
 #ifdef SQUEEZE_PERFORMANCE
 	projectileInUse--;
@@ -280,6 +315,11 @@ CProjectileInfo::RemoveNotAdd(CEntity *entity, eWeaponType weaponType, CVector p
 		case WEAPONTYPE_ROCKET:
 			CExplosion::AddExplosion(nil, entity, EXPLOSION_ROCKET, pos, 0);
 			break;
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // RemoveProjectile
+		case WEAPONTYPE_GR_LAUNCHER_GRENADE:
+			CExplosion::AddExplosion(nil, entity, EXPLOSION_GRENADE, pos, 0);
+			break;
+#endif
 	}
 }
 
@@ -337,7 +377,11 @@ CProjectileInfo::Update()
 				CWorld::SetPedsChoking(projectilePos.x, projectilePos.y, projectilePos.z, 6.0f, gaProjectileInfo[i].m_pSource);
 		}
 
-		if (gaProjectileInfo[i].m_eWeaponType == WEAPONTYPE_ROCKET) {
+		if (gaProjectileInfo[i].m_eWeaponType == WEAPONTYPE_ROCKET
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // Update (Particles)
+		   || gaProjectileInfo[i].m_eWeaponType == WEAPONTYPE_GR_LAUNCHER_GRENADE
+#endif
+			) {
 			CParticle::AddParticlesAlongLine(PARTICLE_ROCKET_SMOKE, gaProjectileInfo[i].m_vecPos, projectilePos, CVector(0.0f, 0.0f, 0.0f), 0.7f, 0, 0, 0, 3000);
 		}
 
@@ -371,7 +415,22 @@ CProjectileInfo::Update()
 					}
 				}
 				CWorld::pIgnoreEntity = nil;
+			} 
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // Update (Detonation check)
+			else if(gaProjectileInfo[i].m_eWeaponType == WEAPONTYPE_GR_LAUNCHER_GRENADE) {
+				CVector pos = ms_apProjectile[i]->GetPosition();
+				CWorld::pIgnoreEntity = ms_apProjectile[i];
+
+				if(gaProjectileInfo[i].m_pSource == nil ||
+				   ((gaProjectileInfo[i].m_vecPos - gaProjectileInfo[i].m_pSource->GetPosition()).MagnitudeSqr() >= 2.0f)) {
+					if(ms_apProjectile[i]->bHasCollided ||
+					   !CWorld::GetIsLineOfSightClear(gaProjectileInfo[i].m_vecPos, pos, true, true, true, true, false, false)) {
+						RemoveProjectile(&gaProjectileInfo[i], ms_apProjectile[i]);
+					}
+				}
+				CWorld::pIgnoreEntity = nil;
 			}
+#endif 
 		} else {
 			if (gaProjectileInfo[i].m_eWeaponType == WEAPONTYPE_DETONATOR_GRENADE) {
 				CEntity *ent = gaProjectileInfo[i].m_pSource;

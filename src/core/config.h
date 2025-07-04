@@ -76,6 +76,40 @@
 
 	#define VICE_CRY
 
+	// ANN was here
+	
+	// tech stuff
+	#define EX_ADVANCED_DEBUG
+	#define EX_COPY_COORDS_COMMAND // TO DO: Implement
+	#define EX_COLLECT_UNUSED_IDS
+
+	#define EX_WEAPON_RECOIL_ENHANCEMENTS
+	#define EX_AK47_LCS_SOUNDS
+
+	#define EX_WEAPON_GRENADE_LAUNCHER
+	#define GRENADE_LAUNCHER_PROJ_TIME (10000)
+	#define GRENADE_LAUNCHER_PROJ_POWER (1.0f)
+	#define GRENADE_LAUNCHER_PROJ_START_VELOCITY (1.5f)
+	#define GRENADE_LAUNCHER_PROJ_MODEL_INDEX (MI_GRENADE) // I have custom model, but I need to convert it into VC
+
+	// DOOM MODE FEATURE
+	#define EX_DOOM_MODE_ENHANCEMENTS
+
+	// SPEED MODIFIER FOR DOOM MODE
+	#define DOOM_MODE_SPEED_MODIFIER (3.5f)
+
+	#define EX_NO_POLICE_HELI_SCORE
+
+	// Swim restriction
+	#define EX_SWIMMING_RESTRICTOR
+	#define SWIM_REST_BOUNDARY_X1 (-415.f)
+	#define SWIM_REST_BOUNDARY_Y1 (0.f) // below
+
+	#define SWIM_REST_BOUNDARY_X2 (-150.f)
+	#define SWIM_REST_BOUNDARY_Y2 (0.f) // above
+
+	//
+
 	#define EX_MORE_BUTTON_ICONS
 	#define EX_PC_KEY_ICONS
 

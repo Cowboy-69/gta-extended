@@ -42,6 +42,11 @@
 #include "Sprite.h"
 #endif
 
+#ifdef EX_SWIMMING_RESTRICTOR
+#include "Stats.h"
+#endif // EX_SWIMMING_RESTRICTOR
+
+
 #define PAD_MOVE_TO_GAME_WORLD_MOVE 60.0f
 
 bool CPlayerPed::bDontAllowWeaponChange;
@@ -434,8 +439,18 @@ void CPlayerPed::ProcessSwimming(void)
 
 	ApplyMoveForce(CVector(-m_vecMoveSpeed.x * 3.0f, -m_vecMoveSpeed.y * 3.0f, 0.0f));
 
+#ifdef EX_SWIMMING_RESTRICTOR
+	if(CStats::NoMoreHurricanes && 
+		((FindPlayerCoors().x < SWIM_REST_BOUNDARY_X1 && FindPlayerCoors().y < SWIM_REST_BOUNDARY_Y1) ||
+	    (FindPlayerCoors().x < SWIM_REST_BOUNDARY_X2 && FindPlayerCoors().y > SWIM_REST_BOUNDARY_Y2))) {
+		m_vecMoveSpeed.x *= 0.7f;
+		ApplyMoveForce(CVector(2.0f, -m_vecMoveSpeed.y * 3.0f, 0.0f));
+	}
+#endif // EX_SWIMMING_RESTRICTOR
+
 	if (!curSwimBreastAssoc && curSwimCrawlAssoc) {
-		DMAudio.PlayOneShot(m_audioEntityId, SOUND_MOVING_IN_WATER, 0.0f);
+		//DMAudio.PlayOneShot(m_audioEntityId, SOUND_MOVING_IN_WATER, 0.0f);
+		DMAudio.PlayOneShot(m_audioEntityId, SOUND_SWIM_SPLASH_FAST, 0.0f);
 
 		RwRGBA waterSprayCol = { 48, 48, 64, 0 };
 		CVector waterSprayPos = GetPosition() + GetForward() * 0.25f + CVector(0.0f, 0.0f, 1.0f);
@@ -515,10 +530,12 @@ void CPlayerPed::ProcessAiming(void)
 
 	float animSpeed;
 
+	// ANN: I think Shift slowing down is very confusing in DOOM Mode, also maybe use separate animation for speeding while aiming?
+	
 	if (pad->GetSprint() && (padLeftRight != 0 || padUpDown != 0))
-		animSpeed = 1.4f;
-	else if (IsDoomMode())
-		animSpeed = Clamp((m_fMoveSpeed * 3.5f) - 0.1f, 0.1f, 3.5f);
+		animSpeed = 1.6f; //1.4f; // ANN: increased the value so that the speed increase would be more noticeable
+	//else if (IsDoomMode())
+	//	animSpeed = Clamp((m_fMoveSpeed * 3.5f) - 0.1f, 0.1f, 3.5f);
 	else
 		animSpeed = Clamp(m_fMoveSpeed - 0.1f, 0.1f, 1.0f);
 
@@ -1831,7 +1848,11 @@ CPlayerPed::ProcessPlayerWeapon(CPad *padUsed)
 		if ((slot == WEAPONSLOT_SHOTGUN || slot == WEAPONSLOT_HANDGUN ||
 			slot == WEAPONSLOT_RIFLE || slot == WEAPONSLOT_SUBMACHINEGUN ||
 			weapon == WEAPONTYPE_M60 || weapon == WEAPONTYPE_MINIGUN ||
-			weapon == WEAPONTYPE_FLAMETHROWER || weapon == WEAPONTYPE_ROCKETLAUNCHER || bSniperCamera) &&
+			weapon == WEAPONTYPE_FLAMETHROWER || weapon == WEAPONTYPE_ROCKETLAUNCHER || bSniperCamera
+#ifdef EX_WEAPON_GRENADE_LAUNCHER
+			|| weapon == WEAPONTYPE_GR_LAUNCHER
+#endif
+			) &&
 			m_nMoveState != PEDMOVE_SPRINT) {
 
 			bool isFrontObstacle = false;
@@ -2437,7 +2458,11 @@ CPlayerPed::PlayerControlZelda(CPad *padUsed)
 		SetRealMoveAnim();
 
 #ifdef FIRING_AND_AIMING
-	if (bIsPlayerAiming)
+	if (bIsPlayerAiming 
+#ifdef EX_DOOM_MODE_ENHANCEMENTS
+		&& !IsDoomMode()
+#endif // EX_DOOM_MODE_ENHANCEMENTS
+		)
 		return;
 #endif
 
@@ -2447,8 +2472,15 @@ CPlayerPed::PlayerControlZelda(CPad *padUsed)
 #else
 		&& padUsed->JumpJustDown() && m_nPedState != PED_JUMP) {
 #endif
+#ifdef EX_DOOM_MODE_ENHANCEMENTS
+		if(!IsDoomMode()) {
+			ClearAttack();
+			ClearWeaponTarget();
+		}
+#else
 		ClearAttack();
 		ClearWeaponTarget();
+#endif // EX_DOOM_MODE_ENHANCEMENTS
 #ifdef CROUCH
 		if (bIsDucking) {
 			ClearDuck();

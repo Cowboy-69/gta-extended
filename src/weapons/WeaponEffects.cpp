@@ -102,6 +102,9 @@ CWeaponEffects::Render(void)
 #ifdef EX_WEAPON_STEYR // Crosshair during autoaim
 		0.5f,
 #endif
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // Crosshair during autoaim
+		0.5f,
+#endif
 	};
 
 

@@ -350,6 +350,20 @@ CWeapon::Fire(CEntity *shooter, CVector *fireSource)
 
 				break;
 			}
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // Fire
+			case WEAPONTYPE_GR_LAUNCHER:
+			        if(shooter->IsPed() && ((CPed *)shooter)->m_pSeekTarget != nil) {
+				        float distToTarget = (shooter->GetPosition() - ((CPed *)shooter)->m_pSeekTarget->GetPosition()).Magnitude();
+
+				        if(distToTarget > 8.0f || ((CPed *)shooter)->IsPlayer())
+					        fired = FireProjectile(shooter, source, GRENADE_LAUNCHER_PROJ_POWER);
+				        else
+					        fired = false;
+			        } else
+				        fired = FireProjectile(shooter, source, GRENADE_LAUNCHER_PROJ_POWER);
+
+			        break;
+#endif
 
 			case WEAPONTYPE_MOLOTOV:
 			case WEAPONTYPE_GRENADE:
@@ -495,6 +509,9 @@ CWeapon::Fire(CEntity *shooter, CVector *fireSource)
 				case WEAPONTYPE_ROCKETLAUNCHER:
 				case WEAPONTYPE_DETONATOR:
 				case WEAPONTYPE_HELICANNON:
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // KgsOfExplosivesUsed
+				case WEAPONTYPE_GR_LAUNCHER:
+#endif
 					CStats::KgsOfExplosivesUsed++;
 					break;
 			}
@@ -2426,49 +2443,93 @@ CWeapon::FireProjectile(CEntity *shooter, CVector *fireSource, float power)
 	CVector source, target;
 	eWeaponType projectileType = m_eWeaponType;
 
-	if ( m_eWeaponType == WEAPONTYPE_ROCKETLAUNCHER )
-	{
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // FireProjectile
+	switch(m_eWeaponType) {
+	case WEAPONTYPE_ROCKETLAUNCHER:
 		source = *fireSource;
 		projectileType = WEAPONTYPE_ROCKET;
 
-		if ( shooter->IsPed() && ((CPed*)shooter)->IsPlayer() )
-		{
+		if(shooter->IsPed() && ((CPed *)shooter)->IsPlayer()) {
 #ifndef FIRING_AND_AIMING
 			int16 mode = TheCamera.Cams[TheCamera.ActiveCam].Mode;
-			if (!( mode == CCam::MODE_M16_1STPERSON
-				|| mode == CCam::MODE_SNIPER
-				|| mode == CCam::MODE_ROCKETLAUNCHER
-				|| mode == CCam::MODE_M16_1STPERSON_RUNABOUT
-				|| mode == CCam::MODE_SNIPER_RUNABOUT
-				|| mode == CCam::MODE_ROCKETLAUNCHER_RUNABOUT) )
-			{
+			if(!(mode == CCam::MODE_M16_1STPERSON || mode == CCam::MODE_SNIPER || mode == CCam::MODE_ROCKETLAUNCHER ||
+			     mode == CCam::MODE_M16_1STPERSON_RUNABOUT || mode == CCam::MODE_SNIPER_RUNABOUT || mode == CCam::MODE_ROCKETLAUNCHER_RUNABOUT)) {
 				return false;
 			}
 #endif
 
 			*fireSource += TheCamera.Cams[TheCamera.ActiveCam].Front;
-		}
-		else
+		} else
 			*fireSource += shooter->GetForward();
 
 		target = *fireSource;
-	}
-	else
-	{
-		float dot = DotProduct(*fireSource-shooter->GetPosition(), shooter->GetForward());
+		break;
+	case WEAPONTYPE_GR_LAUNCHER:
+		source = *fireSource;
+		projectileType = WEAPONTYPE_GR_LAUNCHER_GRENADE;
 
-		if ( dot < 0.3f )
-			*fireSource += (0.3f-dot) * shooter->GetForward();
+		if(shooter->IsPed() && ((CPed *)shooter)->IsPlayer()) {
+#ifndef FIRING_AND_AIMING
+			int16 mode = TheCamera.Cams[TheCamera.ActiveCam].Mode;
+			if(!(mode == CCam::MODE_M16_1STPERSON || mode == CCam::MODE_SNIPER || mode == CCam::MODE_ROCKETLAUNCHER ||
+			     mode == CCam::MODE_M16_1STPERSON_RUNABOUT || mode == CCam::MODE_SNIPER_RUNABOUT || mode == CCam::MODE_ROCKETLAUNCHER_RUNABOUT)) {
+				return false;
+			}
+#endif
+
+			*fireSource += TheCamera.Cams[TheCamera.ActiveCam].Front;
+		} else
+			*fireSource += shooter->GetForward();
+
+		target = *fireSource;
+		break;
+	default:
+		float dot = DotProduct(*fireSource - shooter->GetPosition(), shooter->GetForward());
+
+		if(dot < 0.3f) *fireSource += (0.3f - dot) * shooter->GetForward();
 
 		target = *fireSource;
 
-		if ( target.z - shooter->GetPosition().z > 0.0f )
-			target += 0.6f*shooter->GetForward();
+		if(target.z - shooter->GetPosition().z > 0.0f) target += 0.6f * shooter->GetForward();
+
+		source = *fireSource - shooter->GetPosition();
+
+		source = *fireSource - DotProduct(source, shooter->GetForward()) * shooter->GetForward();
+		break;
+	}
+#else
+	if(m_eWeaponType == WEAPONTYPE_ROCKETLAUNCHER) {
+		source = *fireSource;
+		projectileType = WEAPONTYPE_ROCKET;
+
+		if(shooter->IsPed() && ((CPed *)shooter)->IsPlayer()) {
+#ifndef FIRING_AND_AIMING
+			int16 mode = TheCamera.Cams[TheCamera.ActiveCam].Mode;
+			if(!(mode == CCam::MODE_M16_1STPERSON || mode == CCam::MODE_SNIPER || mode == CCam::MODE_ROCKETLAUNCHER ||
+			     mode == CCam::MODE_M16_1STPERSON_RUNABOUT || mode == CCam::MODE_SNIPER_RUNABOUT || mode == CCam::MODE_ROCKETLAUNCHER_RUNABOUT)) {
+				return false;
+			}
+#endif
+
+			*fireSource += TheCamera.Cams[TheCamera.ActiveCam].Front;
+		} else
+			*fireSource += shooter->GetForward();
+
+		target = *fireSource;
+	} else {
+		float dot = DotProduct(*fireSource - shooter->GetPosition(), shooter->GetForward());
+
+		if(dot < 0.3f) *fireSource += (0.3f - dot) * shooter->GetForward();
+
+		target = *fireSource;
+
+		if(target.z - shooter->GetPosition().z > 0.0f) target += 0.6f * shooter->GetForward();
 
 		source = *fireSource - shooter->GetPosition();
 
 		source = *fireSource - DotProduct(source, shooter->GetForward()) * shooter->GetForward();
 	}
+#endif
 
 	if ( !CWorld::GetIsLineOfSightClear(source, target, true, true, false, true, false, false, false) )
 	{
@@ -3582,6 +3643,9 @@ CWeapon::IsType2Handed(void)
 #endif
 #ifdef EX_WEAPON_STEYR // IsType2Handed
 		m_eWeaponType == WEAPONTYPE_STEYR ||
+#endif
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // IsType2Handed
+		m_eWeaponType == WEAPONTYPE_GR_LAUNCHER ||
 #endif
 		m_eWeaponType == WEAPONTYPE_RUGER || m_eWeaponType == WEAPONTYPE_SNIPERRIFLE || m_eWeaponType == WEAPONTYPE_LASERSCOPE;
 }

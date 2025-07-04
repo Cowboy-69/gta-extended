@@ -251,6 +251,9 @@ struct
 #ifdef EX_WEAPON_STEYR // Icon
   { "steyr", "steyrA" },
 #endif
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // Icon
+  { "gr_launch", "gr_launchA" },
+#endif
 };
 
 RwTexture *gpSniperSightTex;
@@ -328,6 +331,9 @@ void CHud::Draw()
 #endif
 #ifdef EX_WEAPON_STEYR // Crosshair
 						|| WeaponType == WEAPONTYPE_STEYR
+#endif
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // Crosshair
+						|| WeaponType == WEAPONTYPE_GR_LAUNCHER
 #endif
 #ifdef EX_ROCKET_LAUNCHER_THIRD_PERSON_AIM
 						|| WeaponType == WEAPONTYPE_FLAMETHROWER || WeaponType == WEAPONTYPE_ROCKETLAUNCHER && bRocketLauncherThirdPersonAiming) {

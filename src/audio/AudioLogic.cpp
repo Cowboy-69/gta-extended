@@ -607,6 +607,9 @@ enum
 #ifdef EX_WEAPON_STEYR // Audio
 	PED_ONE_SHOT_WEAPON_STEYR_VOLUME = 95,
 #endif
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // Audio
+	PED_ONE_SHOT_WEAPON_GR_LAUNCHER_VOLUME = 100,
+#endif
 	PED_ONE_SHOT_WEAPON_SNIPERRIFLE_VOLUME = 110,
 	PED_ONE_SHOT_WEAPON_ROCKETLAUNCHER_VOLUME = 80,
 
@@ -4686,6 +4689,11 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 #endif
 				m_sQueueSample.m_nSampleIndex = SFX_RUGER_TAIL;
 				break;
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // Audio
+			case WEAPONTYPE_GR_LAUNCHER:
+				m_sQueueSample.m_nSampleIndex = SFX_GR_LAUNCHER_RELOAD;
+				break;
+#endif
 				break;
 			default:
 				continue;
@@ -4952,6 +4960,9 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 				m_sQueueSample.m_bStatic = TRUE;
 				stereo = TRUE;
 				break;
+#ifdef EX_AK47_LCS_SOUNDS
+			case WEAPONTYPE_AK47:
+#endif
 			case WEAPONTYPE_RUGER:
 				m_sQueueSample.m_nSampleIndex = SFX_RUGER_LEFT;
 				m_sQueueSample.m_nBankIndex = SFX_BANK_0;
@@ -5036,6 +5047,7 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 				SET_SOUND_REFLECTION(TRUE);
 				stereo = TRUE;
 				break;
+#ifndef EX_AK47_LCS_SOUNDS
 #ifdef EX_WEAPON_AK47 // Audio
 			case WEAPONTYPE_AK47:
 				m_sQueueSample.m_nSampleIndex = SFX_AK47_LEFT;
@@ -5057,6 +5069,7 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 				stereo = TRUE;
 				break;
 #endif
+#endif // !EX_AK47_LCS_SOUNDS
 #ifdef EX_WEAPON_M16 // Audio
 			case WEAPONTYPE_M16:
 				m_sQueueSample.m_nSampleIndex = SFX_M16_LEFT;
@@ -5123,6 +5136,7 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 			case WEAPONTYPE_STUBBY_SHOTGUN:
 #ifdef EX_WEAPON_SHOTGUN2 // Audio
 			case WEAPONTYPE_SHOTGUN2:
+
 #endif
 				m_sQueueSample.m_nSampleIndex = SFX_SHOTGUN_LEFT;
 				m_sQueueSample.m_nBankIndex = SFX_BANK_0;
@@ -5143,6 +5157,27 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 				SET_SOUND_REFLECTION(TRUE);
 				stereo = TRUE;
 				break;
+#ifdef EX_WEAPON_GRENADE_LAUNCHER:
+			case WEAPONTYPE_GR_LAUNCHER:
+				m_sQueueSample.m_nSampleIndex = SFX_GR_LAUNCHER_LEFT;
+				m_sQueueSample.m_nBankIndex = SFX_BANK_0;
+				m_sQueueSample.m_nCounter = iSound++;
+				narrowSoundRange = TRUE;
+				m_sQueueSample.m_nFrequency = SampleManager.GetSampleBaseFrequency(SFX_GR_LAUNCHER_LEFT);
+				m_sQueueSample.m_nFrequency += RandomDisplacement(m_sQueueSample.m_nFrequency >> 5);
+				m_sQueueSample.m_nPriority = 3;
+				m_sQueueSample.m_fSpeedMultiplier = 0.0f;
+				m_sQueueSample.m_MaxDistance = PED_ONE_SHOT_WEAPON_BULLET_ECHO_MAX_DIST;
+				maxDist = SQR(PED_ONE_SHOT_WEAPON_BULLET_ECHO_MAX_DIST);
+				m_sQueueSample.m_nLoopCount = 1;
+				RESET_LOOP_OFFSETS
+				Vol = PED_ONE_SHOT_WEAPON_GR_LAUNCHER_VOLUME;
+				SET_EMITTING_VOLUME(Vol);
+				m_sQueueSample.m_bIs2D = FALSE;
+				m_sQueueSample.m_bStatic = TRUE;
+				stereo = TRUE;
+				break;
+#endif
 			default:
 				continue;
 			}
@@ -5167,9 +5202,11 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 			case WEAPONTYPE_M4:
 			case WEAPONTYPE_M60:
 			case WEAPONTYPE_HELICANNON:
+#ifndef EX_AK47_LCS_SOUNDS
 #ifdef EX_WEAPON_AK47 // Audio
 			case WEAPONTYPE_AK47:
-#endif
+#endif // EX_WEAPON_AK47
+#endif // !EX_AK47_LCS_SOUNDS
 #ifdef EX_WEAPON_UZIOLD // Audio
 			case WEAPONTYPE_UZIOLD:
 #endif
@@ -5189,6 +5226,9 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 			case WEAPONTYPE_SPAS12_SHOTGUN:
 			case WEAPONTYPE_STUBBY_SHOTGUN:
 			case WEAPONTYPE_RUGER:
+#ifdef EX_AK47_LCS_SOUNDS
+			case WEAPONTYPE_AK47:
+#endif
 #ifdef EX_WEAPON_SHOTGUN2 // Audio
 			case WEAPONTYPE_SHOTGUN2:
 #endif
@@ -5205,6 +5245,13 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 				m_sQueueSample.m_nSampleIndex = SFX_RIFLE_RELOAD;
 				m_sQueueSample.m_nFrequency = SampleManager.GetSampleBaseFrequency(SFX_RIFLE_RELOAD);
 				break;
+#ifdef EX_WEAPON_GRENADE_LAUNCHER
+			case WEAPONTYPE_GR_LAUNCHER: 
+				// note: reload sound plays twice
+				//m_sQueueSample.m_nSampleIndex = SFX_GR_LAUNCHER_RELOAD;
+				//m_sQueueSample.m_nFrequency = SampleManager.GetSampleBaseFrequency(SFX_GR_LAUNCHER_RELOAD);
+				break;
+#endif
 			default:
 				continue;
 			}
@@ -5535,6 +5582,44 @@ cAudioManager::ProcessPedOneShots(cPedParams &params)
 			SET_EMITTING_VOLUME(Vol);
 			SET_LOOP_OFFSETS(m_sQueueSample.m_nSampleIndex)
 				m_sQueueSample.m_fSpeedMultiplier = 2.0f;
+			maxDist = BOAT_MOVING_OVER_WATER_MAX_DIST;
+			m_sQueueSample.m_bStatic = FALSE;
+			m_sQueueSample.m_nFramesToPlay = 6;
+			SET_SOUND_REVERB(TRUE);
+			SET_SOUND_REFLECTION(FALSE);
+			break;
+		// VCS Sounds
+		case SOUND_SWIM_SPLASH:
+			// this shid is scary
+			m_sQueueSample.m_nCounter = 38;
+			m_sQueueSample.m_nSampleIndex = SFX_SWIM_SPLASH;
+			m_sQueueSample.m_nBankIndex = SFX_BANK_0;
+			m_sQueueSample.m_bIs2D = FALSE;
+			m_sQueueSample.m_nPriority = 3;
+			m_sQueueSample.m_nFrequency = 10050;
+			m_sQueueSample.m_nLoopCount = 0;
+			Vol = 75;
+			SET_EMITTING_VOLUME(Vol);
+			SET_LOOP_OFFSETS(m_sQueueSample.m_nSampleIndex)
+			m_sQueueSample.m_fSpeedMultiplier = 1.0f;
+			maxDist = BOAT_MOVING_OVER_WATER_MAX_DIST;
+			m_sQueueSample.m_bStatic = FALSE;
+			m_sQueueSample.m_nFramesToPlay = 6;
+			SET_SOUND_REVERB(TRUE);
+			SET_SOUND_REFLECTION(FALSE);
+			break;
+		case SOUND_SWIM_SPLASH_FAST:
+			m_sQueueSample.m_nCounter = 38;
+			m_sQueueSample.m_nSampleIndex = SFX_SWIM_SPLASH;
+			m_sQueueSample.m_nBankIndex = SFX_BANK_0;
+			m_sQueueSample.m_bIs2D = FALSE;
+			m_sQueueSample.m_nPriority = 3;
+			m_sQueueSample.m_nFrequency = 22050;
+			m_sQueueSample.m_nLoopCount = 0;
+			Vol = 75;
+			SET_EMITTING_VOLUME(Vol);
+			SET_LOOP_OFFSETS(m_sQueueSample.m_nSampleIndex)
+			m_sQueueSample.m_fSpeedMultiplier = 1.0f;
 			maxDist = BOAT_MOVING_OVER_WATER_MAX_DIST;
 			m_sQueueSample.m_bStatic = FALSE;
 			m_sQueueSample.m_nFramesToPlay = 6;

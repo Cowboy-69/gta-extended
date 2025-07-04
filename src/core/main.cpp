@@ -163,6 +163,10 @@ bool gbNewRenderer;
 #define CLEARMODE (rwCAMERACLEARZ)
 #endif
 
+#ifdef EX_ADVANCED_DEBUG
+bool bDisplayFullInfo = false;
+#endif // EX_ADVANCED_DEBUG
+
 bool bDisplayNumOfAtomicsRendered = false;
 bool bDisplayPosn = false;
 
@@ -576,6 +580,14 @@ Initialise3D(void *param)
 	VarConsole.Add("Display posn and framerate", &bDisplayPosn, true);
 #endif
 
+#ifdef EX_ADVANCED_DEBUG
+	VarConsole.Add("Display posn and framerate", &bDisplayFullInfo, true);
+#endif // EX_ADVANCED_DEBUG
+
+#ifdef EX_COLLECT_UNUSED_IDS
+	DebugMenuAddCmd("Debug", "Collect Unused IDs", CollectUnusedID);
+#endif // EX_COLLECT_UNUSED_IDS
+
 	if (RsRwInitialize(param))
 	{
 		POP_MEMID();
@@ -954,18 +966,34 @@ return;
 
 	// Style taken from LCS, modified for III
 //	CFont::SetFontStyle(FONT_PAGER);
-	CFont::SetFontStyle(FONT_BANK);
+#ifdef EX_ADVANCED_DEBUG
+	CFont::SetFontStyle(FONT_STANDARD);
+#else
+CFont::SetFontStyle(FONT_BANK);
+#endif // EX_ADVANCED_DEBUG
 	CFont::SetBackgroundOff();
 	CFont::SetWrapx(640.0f);
 //	CFont::SetScale(0.5f, 0.75f);
+#ifdef EX_ADVANCED_DEBUG
+	CFont::SetScale(0.5f, 0.75f);
+#else
 	CFont::SetScale(0.4f, 0.75f);
+#endif // EX_ADVANCED_DEBUG
 	CFont::SetCentreOff();
 	CFont::SetCentreSize(640.0f);
 	CFont::SetJustifyOff();
 	CFont::SetPropOn();
+#ifdef EX_ADVANCED_DEBUG
+	CFont::SetColor(CRGBA(255, 150, 225, 255));
+#else
 	CFont::SetColor(CRGBA(200, 200, 200, 200));
+#endif // EX_ADVANCED_DEBUG
 	CFont::SetBackGroundOnlyTextOff();
 	CFont::SetDropShadowPosition(0);
+
+#ifdef EX_ADVANCED_DEBUG
+	float x;
+#endif // EX_ADVANCED_DEBUG
 
 	float y;
 
@@ -1072,7 +1100,63 @@ return;
 	y += 12.0f;
 #endif
 
+#ifdef EX_ADVANCED_DEBUG
+	x = 10.f;
+	y = 600.0f;
+#else
 	y = 132.0f;
+#endif // EX_ADVANCED_DEBUG
+
+#ifdef EX_ADVANCED_DEBUG
+	AsciiToUnicode("Pools usage:", gUString);
+	CFont::PrintString(x, y, gUString);
+	y += 12.0f;
+
+	sprintf(gString, "PtrNode: %d/%d", CPools::GetPtrNodePool()->GetNoOfUsedSpaces(), CPools::GetPtrNodePool()->GetSize());
+	AsciiToUnicode(gString, gUString);
+	CFont::PrintString(x, y, gUString);
+	y += 12.0f;
+
+	sprintf(gString, "EntryInfoNode: %d/%d", CPools::GetEntryInfoNodePool()->GetNoOfUsedSpaces(), CPools::GetEntryInfoNodePool()->GetSize());
+	AsciiToUnicode(gString, gUString);
+	CFont::PrintString(x, y, gUString);
+	y += 12.0f;
+
+	sprintf(gString, "Ped: %d/%d", CPools::GetPedPool()->GetNoOfUsedSpaces(), CPools::GetPedPool()->GetSize());
+	AsciiToUnicode(gString, gUString);
+	CFont::PrintString(x, y, gUString);
+	y += 12.0f;
+
+	sprintf(gString, "Vehicle: %d/%d", CPools::GetVehiclePool()->GetNoOfUsedSpaces(), CPools::GetVehiclePool()->GetSize());
+	AsciiToUnicode(gString, gUString);
+	CFont::PrintString(x, y, gUString);
+	y += 12.0f;
+
+	sprintf(gString, "Building: %d/%d", CPools::GetBuildingPool()->GetNoOfUsedSpaces(), CPools::GetBuildingPool()->GetSize());
+	AsciiToUnicode(gString, gUString);
+	CFont::PrintString(x, y, gUString);
+	y += 12.0f;
+
+	sprintf(gString, "Treadable: %d/%d", CPools::GetTreadablePool()->GetNoOfUsedSpaces(), CPools::GetTreadablePool()->GetSize());
+	AsciiToUnicode(gString, gUString);
+	CFont::PrintString(x, y, gUString);
+	y += 12.0f;
+
+	sprintf(gString, "Object: %d/%d", CPools::GetObjectPool()->GetNoOfUsedSpaces(), CPools::GetObjectPool()->GetSize());
+	AsciiToUnicode(gString, gUString);
+	CFont::PrintString(x, y, gUString);
+	y += 12.0f;
+
+	sprintf(gString, "Dummy: %d/%d", CPools::GetDummyPool()->GetNoOfUsedSpaces(), CPools::GetDummyPool()->GetSize());
+	AsciiToUnicode(gString, gUString);
+	CFont::PrintString(x, y, gUString);
+	y += 12.0f;
+
+	sprintf(gString, "AudioScriptObjects: %d/%d", CPools::GetAudioScriptObjectPool()->GetNoOfUsedSpaces(), CPools::GetAudioScriptObjectPool()->GetSize());
+	AsciiToUnicode(gString, gUString);
+	CFont::PrintString(x, y, gUString);
+	y += 12.0f;
+#else
 	AsciiToUnicode("Pools usage:", gUString);
 	CFont::PrintString(400.0f, y, gUString);
 	y += 12.0f;
@@ -1121,6 +1205,7 @@ return;
 	AsciiToUnicode(gString, gUString);
 	CFont::PrintString(400.0f, y, gUString);
 	y += 12.0f;
+#endif // EX_ADVANCED_DEBUG
 }
 
 void
@@ -1133,11 +1218,19 @@ DisplayGameDebugText()
 		SETTWEAKPATH("Debug");
 		TWEAKBOOL(bDisplayPosn);
 		TWEAKBOOL(bDisplayCheatStr);
+
+#ifdef EX_ADVANCED_DEBUG
+		TWEAKBOOL(bDisplayFullInfo);
+#endif // EX_ADVANCED_DEBUG
 	}
 
 	if(gbPrintMemoryUsage)
 		PrintMemoryUsage();
 #endif
+
+#ifdef EX_ADVANCED_DEBUG
+	CFont::SetDropShadowPosition(1);
+#endif // EX_ADVANCED_DEBUG
 
 	char str[200];
 	wchar ustr[200];
@@ -1254,7 +1347,9 @@ DisplayGameDebugText()
 		CFont::SetWrapx(SCREEN_STRETCH_X(DEFAULT_SCREEN_WIDTH));
 		CFont::SetFontStyle(FONT_STANDARD);
 		CFont::SetDropColor(CRGBA(0, 0, 0, 255));
+#ifndef EX_ADVANCED_DEBUG
 		CFont::SetDropShadowPosition(2);
+#endif // !EX_ADVANCED_DEBUG
 		CFont::SetColor(CRGBA(0, 0, 0, 255));
 		CFont::PrintString(41.0f, 41.0f, ustr);
 		
@@ -1282,7 +1377,184 @@ DisplayGameDebugText()
 		CFont::SetColor(CRGBA(255, 150, 225, 255));
 		CFont::PrintString(SCREEN_SCALE_X(DEFAULT_SCREEN_WIDTH * 0.5f), SCREEN_SCALE_FROM_BOTTOM(20.0f), ustr);
 	}
+
+#ifdef EX_ADVANCED_DEBUG
+
+	if(bDisplayFullInfo) {
+		CFont::SetPropOn();
+		CFont::SetBackgroundOff();
+		CFont::SetScale(SCREEN_SCALE_X(0.6f), SCREEN_SCALE_Y(0.8f));
+		CFont::SetCentreOff();
+		CFont::SetRightJustifyOff();
+		CFont::SetJustifyOff();
+		CFont::SetBackGroundOnlyTextOff();
+		CFont::SetWrapx(SCREEN_STRETCH_X(DEFAULT_SCREEN_WIDTH));
+		CFont::SetFontStyle(FONT_STANDARD);
+		CFont::SetDropColor(CRGBA(0, 0, 0, 255));
+		CFont::SetColor(CRGBA(255, 150, 225, 255));
+
+		float FI_x = 300.f, FI_y = 390.f, FI_offset_y = 25.f;
+
+		// Position output
+
+		sprintf(str, "X: %0.3f", FindPlayerCoors().x);
+		AsciiToUnicode(str, ustr);
+		CFont::PrintString(FI_x, FI_y, ustr);
+		FI_y += FI_offset_y;
+
+		sprintf(str, "Y: %0.3f", FindPlayerCoors().y);
+		AsciiToUnicode(str, ustr);
+		CFont::PrintString(FI_x, FI_y, ustr);
+		FI_y += FI_offset_y;
+
+		sprintf(str, "Z: %0.3f", FindPlayerCoors().z);
+		AsciiToUnicode(str, ustr);
+		CFont::PrintString(FI_x, FI_y, ustr);
+		FI_y += FI_offset_y;
+
+		// Speed vector
+
+		FI_y += FI_offset_y * 2.f;
+
+		sprintf(str, "SPEED: %0.2f", FindPlayerPed()->m_fMoveSpeed);
+		AsciiToUnicode(str, ustr);
+		CFont::PrintString(FI_x, FI_y, ustr);
+		FI_y += FI_offset_y;
+
+		sprintf(str, "VEC X: %0.2f", FindPlayerSpeed().x);
+		AsciiToUnicode(str, ustr);
+		CFont::PrintString(FI_x, FI_y, ustr);
+		FI_y += FI_offset_y;
+
+		sprintf(str, "VEC Y: %0.2f", FindPlayerSpeed().y);
+		AsciiToUnicode(str, ustr);
+		CFont::PrintString(FI_x, FI_y, ustr);
+		FI_y += FI_offset_y;
+
+		sprintf(str, "VEC Z: %0.2f", FindPlayerSpeed().z);
+		AsciiToUnicode(str, ustr);
+		CFont::PrintString(FI_x, FI_y, ustr);
+		FI_y += FI_offset_y;
+
+		// Player Info
+
+		FI_y += FI_offset_y * 2.f;
+
+		// Move state
+		sprintf(str, "Move State: %d", FindPlayerPed()->m_nMoveState);
+		AsciiToUnicode(str, ustr);
+		CFont::PrintString(FI_x, FI_y, ustr);
+		FI_y += FI_offset_y;
+
+		// Ped state
+		sprintf(str, "Ped State: %d", FindPlayerPed()->m_nPedState);
+		AsciiToUnicode(str, ustr);
+		CFont::PrintString(FI_x, FI_y, ustr);
+		FI_y += FI_offset_y;
+
+		// Camera
+
+		FI_x += 300.f;
+		FI_y = 390.f;
+
+		sprintf(str, "CAM X: %0.3f", TheCamera.Cams[TheCamera.ActiveCam].Source.x);
+		AsciiToUnicode(str, ustr);
+		CFont::PrintString(FI_x, FI_y, ustr);
+		FI_y += FI_offset_y;
+
+		sprintf(str, "CAM Y: %0.3f", TheCamera.Cams[TheCamera.ActiveCam].Source.y);
+		AsciiToUnicode(str, ustr);
+		CFont::PrintString(FI_x, FI_y, ustr);
+		FI_y += FI_offset_y;
+
+		sprintf(str, "CAM Z: %0.3f", TheCamera.Cams[TheCamera.ActiveCam].Source.z);
+		AsciiToUnicode(str, ustr);
+		CFont::PrintString(FI_x, FI_y, ustr);
+		FI_y += FI_offset_y;
+
+		FI_y += FI_offset_y * 2.f;
+
+		sprintf(str, "CAM FRONT X: %0.3f", TheCamera.Cams[TheCamera.ActiveCam].Front.x);
+		AsciiToUnicode(str, ustr);
+		CFont::PrintString(FI_x, FI_y, ustr);
+		FI_y += FI_offset_y;
+
+		sprintf(str, "CAM FRONT Y: %0.3f", TheCamera.Cams[TheCamera.ActiveCam].Front.y);
+		AsciiToUnicode(str, ustr);
+		CFont::PrintString(FI_x, FI_y, ustr);
+		FI_y += FI_offset_y;
+
+		sprintf(str, "CAM FRONT Z: %0.3f", TheCamera.Cams[TheCamera.ActiveCam].Front.z);
+		AsciiToUnicode(str, ustr);
+		CFont::PrintString(FI_x, FI_y, ustr);
+		FI_y += FI_offset_y;
+	}
+#endif // EX_ADVANCED_DEBUG
 }
+
+#ifdef EX_COLLECT_UNUSED_IDS
+void
+CollectUnusedID()
+{
+	bool bLastIdExists = true;
+	int32 iModelFirstNotExist;
+	int32 iNotExistsCounter = 0, iTotalNotExists = 0;
+	int32 iModelLastNotExist, iItemsCount = 0;
+
+	int iStartID = 1;
+	int iFinalID = 19999;
+	int iNewLineEach = 1;
+	int bInsertCount = 1;
+	int bInsertFinalTotal = 1;
+
+	char pBuffer[24] = "                      ";
+
+	int hFile = CFileMgr::OpenFile("free_id.txt", "w+");
+
+	if(hFile) {
+		for(int iModel = 0; iModel < 20000; iModel++) {
+			if(CModelInfo::GetModelInfo(iModel) == nil) {
+				if(bLastIdExists) {
+					iModelFirstNotExist = iModel;
+					bLastIdExists = FALSE;
+				}
+				iModelLastNotExist = iModel;
+				iNotExistsCounter++;
+				iTotalNotExists++;
+			} else {
+				if(!bLastIdExists) {
+					if(iModelLastNotExist == iModelFirstNotExist)
+						sprintf(pBuffer, "%i, ", iModelFirstNotExist);
+					else {
+						if(bInsertCount)
+							sprintf(pBuffer, "%i-%i(%i), ", iModelFirstNotExist, iModelLastNotExist, iNotExistsCounter);
+						else
+							sprintf(pBuffer, "%i-%i ", iModelFirstNotExist, iModelLastNotExist);
+					}
+					CFileMgr::Write(hFile, pBuffer, strlen(pBuffer));
+
+					if(iNewLineEach > 0) {
+						iItemsCount++;
+						if(iItemsCount >= iNewLineEach) {
+							sprintf(pBuffer, "\n");
+							CFileMgr::Write(hFile, pBuffer, strlen(pBuffer));
+							iItemsCount = 0;
+						}
+					}
+					bLastIdExists = TRUE;
+					iNotExistsCounter = 0;
+				}
+			}
+		}
+	}
+
+	CFileMgr::CloseFile(hFile);
+
+	AsciiToUnicode("Free ID list generated successfully!", gUString);
+	CMessages::AddMessageJumpQ(gUString, 2000, 0);
+}
+#endif // EX_COLLECT_UNUSED_IDS
+
 #endif
 
 #ifdef NEW_RENDERER

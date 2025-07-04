@@ -72,6 +72,9 @@ uint16 CWeaponInfo::ms_aReloadSampleTime[WEAPONTYPE_TOTALWEAPONS] =
 #ifdef EX_WEAPON_STEYR // WeaponInfo
 	89,			// STEYR
 #endif
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // WeaponInfo (ReloadSampleTime)
+	400,		// GR_LAUNCHER
+#endif
 };
 
 // Yeah...
@@ -98,6 +101,9 @@ int32 CWeaponInfo::ms_aMaxAmmoForWeapon[WEAPONTYPE_TOTALWEAPONS] =
 	-1,
 #endif
 #ifdef EX_WEAPON_STEYR // WeaponInfo
+	-1,
+#endif
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // WeaponInfo (MaxAmmoForWeapon)
 	-1,
 #endif
 };
@@ -162,6 +168,9 @@ char CWeaponInfo::ms_aWeaponNames[WEAPONTYPE_TOTALWEAPONS][32] =
 #endif
 #ifdef EX_WEAPON_STEYR // WeaponInfo
 	"Steyr",
+#endif
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // WeaponInfo (WeaponNames)
+	"Gr_launch",
 #endif
 };
 

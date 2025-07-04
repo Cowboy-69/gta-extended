@@ -1225,6 +1225,9 @@ CVehicle::InflictDamage(CEntity *damagedBy, eWeaponType weaponType, float damage
 	case WEAPONTYPE_MOLOTOV:
 	case WEAPONTYPE_ROCKET:
 	case WEAPONTYPE_EXPLOSION:
+#ifdef EX_WEAPON_GRENADE_LAUNCHER // CVehicle::InflictDamage
+	case WEAPONTYPE_GR_LAUNCHER:
+#endif
 		if (bExplosionProof)
 			return;
 		bFrightensDriver = true;
