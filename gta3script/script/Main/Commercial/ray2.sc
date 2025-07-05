@@ -469,7 +469,7 @@ WHILE NOT LOCATE_PLAYER_ANY_MEANS_2D player wh_x_rm2 wh_y_rm2 4.0 4.0 true
 			gate2_sfx1 = 1
 		ENDIF
 
-		WHILE NOT SLIDE_OBJECT phils_compnd_gate 147.249 214.823 10.599 0.0 0.1 0.0 FALSE
+		WHILE NOT SLIDE_OBJECT phils_compnd_gate1 147.249 214.823 10.599 0.0 0.1 0.0 FALSE
 			WAIT 0
 		ENDWHILE
 
@@ -896,7 +896,7 @@ WHILE counter_dead_varmints < 12
 		PLAY_MISSION_AUDIO		
 		PRINT_NOW (RM2_K) 4000 1 //"SHIT They're here! LOCK'N'LOAD!!"
 		flag_cartel_arrived = 2
-		/*WHILE NOT SLIDE_OBJECT phils_compnd_gate 147.249 214.323 10.599 0.0 0.1 0.0 FALSE
+		/*WHILE NOT SLIDE_OBJECT phils_compnd_gate1 147.249 214.323 10.599 0.0 0.1 0.0 FALSE
 			WAIT 0
 		ENDWHILE*/
 	ENDIF

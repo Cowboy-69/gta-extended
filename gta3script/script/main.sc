@@ -57,7 +57,7 @@ blob_flag = 0
 // *********************************TOTAL NUMBER OF MISSIONS********************************
 // *****************************************************************************************
 
-SET_TOTAL_NUMBER_OF_MISSIONS 73
+SET_TOTAL_NUMBER_OF_MISSIONS 0
 SET_PROGRESS_TOTAL 0
 
 // ********************************Player name for Cut-scene stuff**************************
@@ -84,7 +84,7 @@ VAR_INT subway_gate_suburban1, subway_gate_suburban2, tunnel_gate_suburban
 
 VAR_FLOAT joeydoor2_X joeydoor2_Y joeydoor2_Z joeydoor3_X joeydoor3_Y joeydoor3_Z 
 
-CREATE_OBJECT_NO_OFFSET playersdoor1 890.883 -307.74 8.75 playersdoor1
+CREATE_OBJECT_NO_OFFSET playersdoor 890.883 -307.74 8.75 playersdoor1
 DONT_REMOVE_OBJECT playersdoor1
 
 CREATE_OBJECT_NO_OFFSET faketarget 1078.7 -384.8 15.4 target1
@@ -138,8 +138,8 @@ CREATE_OBJECT_NO_OFFSET chnabankdoor 1035.6 -699.408 15.334 bankdoor2	//chnabank
 DONT_REMOVE_OBJECT bankdoor2
 SET_OBJECT_HEADING bankdoor2 180.0
 
-CREATE_OBJECT_NO_OFFSET backdoor1 891.056 -416.4373 14.955 backdoor1
-DONT_REMOVE_OBJECT backdoor1		 
+CREATE_OBJECT_NO_OFFSET backdoor 891.056 -416.4373 14.955 backdoor1
+DONT_REMOVE_OBJECT backdoor1
 
 CREATE_OBJECT_NO_OFFSET fuzballdoor 1001.673 -887.855 15.775 fuzz_door1
 SET_OBJECT_HEADING fuzz_door1 180.0
@@ -164,13 +164,13 @@ VAR_INT colombian_gate, helix_barrier1
 VAR_INT phils_compnd_gate1 flag_player_on_phil_mission
 VAR_INT inside_fence outside_fence
 																  
-CREATE_OBJECT_NO_OFFSET helix_barrier1 -73.137 -630.333 25.932 helix_barrier1
+CREATE_OBJECT_NO_OFFSET helix_barrier -73.137 -630.333 25.932 helix_barrier1
 DONT_REMOVE_OBJECT helix_barrier1
 
-CREATE_OBJECT_NO_OFFSET plysav_lftdr_lft1 103.85 -482.8 16.25 plysav_lftdr_lft1
+CREATE_OBJECT_NO_OFFSET plysav_lftdr_lft 103.85 -482.8 16.25 plysav_lftdr_lft1
 DONT_REMOVE_OBJECT plysav_lftdr_lft1
 
-CREATE_OBJECT_NO_OFFSET plysav_lftdr_rght1 102.192 -482.8 16.25 plysav_lftdr_rght1
+CREATE_OBJECT_NO_OFFSET plysav_lftdr_rght 102.192 -482.8 16.25 plysav_lftdr_rght1
 DONT_REMOVE_OBJECT plysav_lftdr_rght1
 SET_OBJECT_HEADING plysav_lftdr_rght1 180.0
 
@@ -209,10 +209,10 @@ CREATE_OBJECT_NO_OFFSET Columbiangate -363.05 250.455 61.355 Columbian_gate2
 DONT_REMOVE_OBJECT Columbian_gate2
 SET_OBJECT_HEADING Columbian_gate2 180.0
 
-CREATE_OBJECT_NO_OFFSET airportdoor11 -770.414 -599.292 11.847 airportdoor11
+CREATE_OBJECT_NO_OFFSET airportdoor1 -770.414 -599.292 11.847 airportdoor11
 DONT_REMOVE_OBJECT airportdoor11
 
-CREATE_OBJECT_NO_OFFSET airportdoor22 -770.414 -601.369 11.846 airportdoor22
+CREATE_OBJECT_NO_OFFSET airportdoor2 -770.414 -601.369 11.846 airportdoor22
 DONT_REMOVE_OBJECT airportdoor22
 
 // ******************************************Police Levels**********************************

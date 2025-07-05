@@ -1144,14 +1144,14 @@ OR NOT door2_closed = 0
 
 	IF airport_door_flag > 3 //open doors here
 	AND door1_closed = 0
-		IF SLIDE_OBJECT airportdoor1 -770.414 -597.865 11.847 0.1 0.1 0.1 0
+		IF SLIDE_OBJECT airportdoor11 -770.414 -597.865 11.847 0.1 0.1 0.1 0
 			door1_closed = 1
 		ENDIF
 	ENDIF
 
 	IF airport_door_flag > 3 //open doors here
 	AND door2_closed = 0
-		IF SLIDE_OBJECT airportdoor2 -770.414 -602.885 11.847 0.1 0.1 0.1 0
+		IF SLIDE_OBJECT airportdoor22 -770.414 -602.885 11.847 0.1 0.1 0.1 0
 			door2_closed = 1
 		ENDIF
 	ENDIF
@@ -1166,7 +1166,7 @@ OR NOT door2_closed = 0
 	IF airport_door_flag > 4 //CLOSE doors here
 	AND	door1_closed = 1
 		IF NOT IS_PLAYER_IN_AREA_2D player -773.75 -605.205 -768.76 -595.613 0 
-			IF SLIDE_OBJECT airportdoor1 -770.414 -599.292 11.847 0.1 0.1 0.1 0
+			IF SLIDE_OBJECT airportdoor11 -770.414 -599.292 11.847 0.1 0.1 0.1 0
 				door1_closed = 0
 			ENDIF
 		ENDIF
@@ -1175,7 +1175,7 @@ OR NOT door2_closed = 0
 	IF airport_door_flag > 4 //CLOSE doors here
 	AND	door2_closed = 1
 		IF NOT IS_PLAYER_IN_AREA_2D player -773.75 -605.205 -768.76 -595.613 0 
-			IF SLIDE_OBJECT airportdoor2 -770.414 -601.369 11.846 0.1 0.1 0.1 0
+			IF SLIDE_OBJECT airportdoor22 -770.414 -601.369 11.846 0.1 0.1 0.1 0
 				door2_closed = 0
 			ENDIF
 		ENDIF
@@ -1277,12 +1277,12 @@ mission_cleanup_ray6:
 flag_player_on_mission = 0
 flag_player_on_ray_mission = 0
 
-IF DOES_OBJECT_EXIST airportdoor1
-	SET_OBJECT_COORDINATES airportdoor1 -770.414 -599.292 11.847
+IF DOES_OBJECT_EXIST airportdoor11
+	SET_OBJECT_COORDINATES airportdoor11 -770.414 -599.292 11.847
 ENDIF
 
-IF DOES_OBJECT_EXIST airportdoor2
-	SET_OBJECT_COORDINATES airportdoor2 -770.414 -601.369 11.846
+IF DOES_OBJECT_EXIST airportdoor22
+	SET_OBJECT_COORDINATES airportdoor22 -770.414 -601.369 11.846
 ENDIF
 
 IF IS_PLAYER_IN_AREA_2D player -773.75 -605.205 -768.76 -595.613 0

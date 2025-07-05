@@ -7,7 +7,7 @@
 -fno-switch
 -fno-arrays
 -fno-const
--fno-scope-then-label
+-fscope-then-label
 -fno-underscore-idents
 -fno-streamed-scripts
 -fno-text-label-vars
@@ -18,7 +18,7 @@
 -fmission-var-limit=-1
 -fswitch-case-limit=-1
 -farray-elem-limit=-1
--fno-constant-checks
+-fconstant-checks
 --expect-var=scplayer,script_controlled_player:11
 --expect-var=player:132
 --expect-var=flag_player_on_mission:207

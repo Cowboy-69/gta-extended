@@ -621,8 +621,8 @@ IF DOES_OBJECT_EXIST tunnel_gate_suburban
 	DELETE_OBJECT tunnel_gate_suburban
 ENDIF
 
-IF DOES_OBJECT_EXIST helix_barrier
-	DELETE_OBJECT helix_barrier
+IF DOES_OBJECT_EXIST helix_barrier1
+	DELETE_OBJECT helix_barrier1
 ENDIF
 
 SWITCH_ROADS_ON 496.7 75.5 -30.0 484.0 44.2 0.0 //tunnel to suburbia

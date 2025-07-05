@@ -277,7 +277,7 @@ CHAR_LOOK_AT_PLAYER_ALWAYS eightball player
 
 OVERRIDE_NEXT_RESTART 811.90 -939.95 35.8 180.0 //Restarts at the bridge
 
-SET_OBJECT_HEADING playersdoor 0.0
+SET_OBJECT_HEADING playersdoor1 0.0
 
 SWITCH_WIDESCREEN ON
 
@@ -1001,7 +1001,7 @@ GET_CAR_HEADING car_eightball car_8ball_heading
 
 GET_CAR_COLOURS car_eightball car_colour1_8ball car_colour2_8ball 
 
-WHILE NOT ROTATE_OBJECT playersdoor 210.0 10.0 FALSE
+WHILE NOT ROTATE_OBJECT playersdoor1 210.0 10.0 FALSE
 
 	WAIT 0
 
@@ -1464,7 +1464,7 @@ OR NOT IS_CHAR_IN_CAR eightball car_eightball
 
 ENDWHILE
 
-WHILE NOT ROTATE_OBJECT playersdoor 0.0 10.0 FALSE
+WHILE NOT ROTATE_OBJECT playersdoor1 0.0 10.0 FALSE
 
 	WAIT 0
 
@@ -1533,7 +1533,7 @@ IF flag_reached_hideout = 1
 		POINT_CAMERA_AT_POINT 869.59 -311.53 8.53 jump_cut
 	ENDIF
 	
-	SET_OBJECT_HEADING playersdoor 0.0
+	SET_OBJECT_HEADING playersdoor1 0.0
 
 	LOAD_SPECIAL_CHARACTER 1 eight2
 	

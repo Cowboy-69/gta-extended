@@ -527,8 +527,8 @@ SET_CAR_CRUISE_SPEED beamer1_a1 15.0
 SET_CAR_CRUISE_SPEED beamer2_a1 14.0
 SET_CAR_CRUISE_SPEED beamer3_a1 13.0
 
-IF DOES_OBJECT_EXIST backdoor
-	GET_OBJECT_HEADING backdoor door_position_a1
+IF DOES_OBJECT_EXIST backdoor1
+	GET_OBJECT_HEADING backdoor1 door_position_a1
 ENDIF
 
 LOAD_MISSION_AUDIO A1_A
@@ -643,7 +643,7 @@ OR mafia_13_flag < 3
 		ELSE
 			door_position_a1 += 10.0
 		ENDIF
-		SET_OBJECT_HEADING backdoor door_position_a1
+		SET_OBJECT_HEADING backdoor1 door_position_a1
 		door_crash_flag = 1
 	ENDIF
 

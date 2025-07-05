@@ -449,7 +449,7 @@ phils_gate_inner:
 						gate2_sfx1 = 1
 					ENDIF
 
-					WHILE NOT SLIDE_OBJECT phils_compnd_gate 147.249 214.523 10.599 0.0 0.1 0.0 FALSE
+					WHILE NOT SLIDE_OBJECT phils_compnd_gate1 147.249 214.523 10.599 0.0 0.1 0.0 FALSE
 						WAIT 0
 					ENDWHILE
 
@@ -467,12 +467,12 @@ phils_gate_inner:
 						ADD_ONE_OFF_SOUND 147.249 214.523 10.599 SOUND_GATE_START_CLUNK
 					ENDIF
 
-					WHILE NOT SLIDE_OBJECT phils_compnd_gate 147.249 207.323 10.599 0.0 0.1 0.0 TRUE
-	//					GET_OBJECT_COORDINATES phils_compnd_gate objectx objecty objectz
+					WHILE NOT SLIDE_OBJECT phils_compnd_gate1 147.249 207.323 10.599 0.0 0.1 0.0 TRUE
+	//					GET_OBJECT_COORDINATES phils_compnd_gate1 objectx objecty objectz
 						WAIT 0
 					ENDWHILE
 		
-					GET_OBJECT_COORDINATES phils_compnd_gate objectx objecty objectz
+					GET_OBJECT_COORDINATES phils_compnd_gate1 objectx objecty objectz
 
 					IF gate2_sfx2 = 1
 						not_clunked_yet = 1

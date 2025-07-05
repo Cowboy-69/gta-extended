@@ -145,6 +145,37 @@
       <Constant Name="MOTION_BLUR_INTRO4"/>
     </Enum>
     <Enum Name="PEDGRP">
+	  <Constant Name="DEFAULT_PEDGRP"/>
+	  <Constant Name="REDLIGHT_PEDGRP"/>
+	  <Constant Name="REDLIGHT_NIGHT_PEDGRP"/>
+	  <Constant Name="LITTLEITALY_PEDGRP"/>
+	  <Constant Name="LITTLEITALY_NIGHT_PEDGRP"/>
+	  <Constant Name="CHINATOWN_PEDGRP"/>
+	  <Constant Name="CHINATOWN_NIGHT_PEDGRP"/>
+	  <Constant Name="DOCKS_PEDGRP"/>
+	  <Constant Name="DOCKS_NIGHT_PEDGRP"/>
+	  <Constant Name="PROJECTS_PEDGRP"/>
+	  <Constant Name="PROJECTS_NIGHT_PEDGRP"/>
+	  <Constant Name="INDUSTRIAL_PEDGRP"/>
+	  <Constant Name="INDUSTRIAL_NIGHT_PEDGRP"/>
+	  <Constant Name="SOUTH_AREA_PEDGRP"/>
+	  <Constant Name="SOUTH_AREA_NIGHT_PEDGRP"/>
+	  <Constant Name="STADIUM_PEDGRP"/>
+	  <Constant Name="STADIUM_NIGHT_PEDGRP"/>
+	  <Constant Name="HOSPITAL_PEDGRP"/>
+	  <Constant Name="HOSPITAL_NIGHT_PEDGRP"/>
+	  <Constant Name="CONSTRUCTION_PEDGRP"/>
+	  <Constant Name="CONSTRUCTION_NIGHT_PEDGRP"/>
+	  <Constant Name="SHOPPING_PEDGRP"/>
+	  <Constant Name="SHOPPING_NIGHT_PEDGRP"/>
+	  <Constant Name="UNIVERSITY_PEDGRP"/>
+	  <Constant Name="UNIVERSITY_NIGHT_PEDGRP"/>
+	  <Constant Name="PARK_PEDGRP"/>
+	  <Constant Name="PARK_NIGHT_PEDGRP"/>
+	  <Constant Name="AIRPORT_PEDGRP"/>
+	  <Constant Name="AIRPORT_NIGHT_PEDGRP"/>
+	  <Constant Name="SWANKSVILLE_PEDGRP"/>
+	  <Constant Name="SWANKSVILLE_NIGHT_PEDGRP"/>
     </Enum>
     <Enum Name="DOOR">
       <Constant Name="BONNET"/>
@@ -205,6 +236,7 @@
       <Constant Name="RADAR_SPRITE_ICE" Value="9"/>
       <Constant Name="RADAR_SPRITE_EL" Value="8"/>
       <Constant Name="RADAR_SPRITE_LIZ" Value="12"/>
+	  <Constant Name="RADAR_SPRITE_SAVE" Value="17"/>
     </Enum>
     
     <!--
@@ -242,6 +274,7 @@
       <Constant Name="CAR_BANSHEE" Value="119"/>
       <Constant Name="CAR_BARRACKS" Value="123"/>
       <Constant Name="CAR_BELLYUP" Value="132"/>
+	  <Constant Name="CAR_BFINJECT" Value="114"/>
       <Constant Name="CAR_BLISTA" Value="102"/>
       <Constant Name="CAR_BOBCAT" Value="112"/>
       <Constant Name="CAR_BORGNINE" Value="148"/>
@@ -373,9 +406,15 @@
       <Constant Name="FONT_HEADING"/>
     </Enum>
     <Enum Name="GANG">
-      <Constant Name="GANG_COLOMBIAN" Value="5"/>
-      <Constant Name="GANG_HOOD" Value="6"/>
-      <Constant Name="GANG_MAFIA" Value="0"/>
+      <Constant Name="GANG_MAFIA"/>
+	  <Constant Name="GANG_TRIAD"/>
+	  <Constant Name="GANG_DIABLO"/>
+	  <Constant Name="GANG_YAKUZA"/>
+	  <Constant Name="GANG_YARDIE"/>
+      <Constant Name="GANG_COLOMBIAN"/>
+      <Constant Name="GANG_HOOD"/>
+	  <Constant Name="GANG_FORELLI"/>
+	  <Constant Name="GANG_DARKEL"/>
     </Enum>
     <Enum Name="GARAGE">
       <Constant Name="GARAGE_NONE"/>
@@ -394,9 +433,9 @@
       <Constant Name="GARAGE_CRUSHER"/>
       <Constant Name="GARAGE_MISSION_KEEPCAR"/>
       <Constant Name="GARAGE_FOR_SCRIPT_TO_OPEN"/>
-      <Constant Name="GARAGE_HIDEOUT_ONE"/>
-      <Constant Name="GARAGE_HIDEOUT_TWO"/>
-      <Constant Name="GARAGE_HIDEOUT_THREE"/>
+      <Constant Name="GARAGE_HIDEOUT_INDUSTRIAL"/>
+      <Constant Name="GARAGE_HIDEOUT_COMMERCIAL"/>
+      <Constant Name="GARAGE_HIDEOUT_SUBURBAN"/>
       <Constant Name="GARAGE_FOR_SCRIPT_TO_OPEN_AND_CLOSE"/>
       <Constant Name="GARAGE_KEEPS_OPENING_FOR_SPECIFIC_CAR"/>
       <Constant Name="GARAGE_MISSION_KEEPCAR_REMAINCLOSED"/>
@@ -443,10 +482,21 @@
       <Constant Name="PEDTYPE_SPECIAL" Value="21"/>
     </Enum>
     <Enum Name="PICKUP">
-      <Constant Name="PICKUP_IN_SHOP" Value="1"/>
-      <Constant Name="PICKUP_ON_STREET" Value="2"/>
-      <Constant Name="PICKUP_ON_STREET_SLOW" Value="14"/>
-      <Constant Name="PICKUP_ONCE" Value="3"/>
+      <Constant Name="PICKUP_NONE = 0"/>
+		<Constant Name="PICKUP_IN_SHOP"/>
+		<Constant Name="PICKUP_ON_STREET"/>
+		<Constant Name="PICKUP_ONCE"/>
+		<Constant Name="PICKUP_ONCE_TIMEOUT"/>
+		<Constant Name="PICKUP_COLLECTABLE1"/>
+		<Constant Name="PICKUP_IN_SHOP_OUT_OF_STOCK"/>
+		<Constant Name="PICKUP_MONEY"/>
+		<Constant Name="PICKUP_MINE_INACTIVE"/>
+		<Constant Name="PICKUP_MINE_ARMED"/>
+		<Constant Name="PICKUP_NAUTICAL_MINE_INACTIVE"/>
+		<Constant Name="PICKUP_NAUTICAL_MINE_ARMED"/>
+		<Constant Name="PICKUP_FLOATINGPACKAGE"/>
+		<Constant Name="PICKUP_FLOATINGPACKAGE_FLOATING"/>
+		<Constant Name="PICKUP_ON_STREET_SLOW"/>
     </Enum>
     <Enum Name="POBJECT">
       <Constant Name="POBJECT_CATALINAS_GUNFLASH" Value="18"/>
@@ -498,6 +548,18 @@
       <Constant Name="SOUND_SWAT_PED_SHOUT" Value="101"/>
       <Constant Name="SOUND_TEST_1" Value="0"/>
       <Constant Name="SOUND_UNLOAD_GOLD" Value="83"/>
+	  <Constant Name="SOUND_LAUNDERETTE_LOOP_L" Value="41"/>
+	  <Constant Name="SOUND_RESTAURANT_CHINATOWN_LOOP_S" Value="42"/>
+      <Constant Name="SOUND_RESTAURANT_GENERIC_LOOP_2_S" Value="48"/>
+      <Constant Name="SOUND_RESTAURANT_ITALY_LOOP_S" Value="44"/>
+	  <Constant Name="SOUND_SHOP_LOOP_L" Value="53"/>
+	  <Constant Name="SOUND_DOCKS_LOOP_L" Value="57"/>
+	  <Constant Name="SOUND_HOME_LOOP_1_L" Value="59"/>
+	  <Constant Name="SOUND_CLUB_LOOP_1_L" Value="5"/>
+      <Constant Name="SOUND_CLUB_LOOP_2_L" Value="7"/>
+	  <Constant Name="SOUND_PIANO_BAR_LOOP_1_S" Value="60"/>
+	  <Constant Name="SOUND_AIRPORT_LOOP_L" Value="51"/>
+	  <Constant Name="SOUND_MISTYS_HOUSE_LOOP_L" Value="91"/>
     </Enum>
     <Enum Name="STATUS">
       <Constant Name="STATUS_PLAYER" Value="0"/>
