@@ -809,6 +809,7 @@ SET_CURRENT_PLAYER_WEAPON player WEAPONTYPE_SNIPERRIFLE
 SET_PLAYER_AS_LEADER ped_8ball_fm3 player
 
 ADD_BLIP_FOR_COORD 1529.0 -824.0 -100.0 radar_blip_coord2_fm3
+SET_BLIP_ROUTE radar_blip_coord2_fm3 TRUE
 
 WHILE GET_FADING_STATUS
 
@@ -833,6 +834,7 @@ WHILE GET_FADING_STATUS
 		SET_PLAYER_AS_LEADER ped_8ball_fm3 player
 		REMOVE_BLIP radar_blip_ped2_fm3
 		ADD_BLIP_FOR_COORD 1529.0 -824.0 -100.0 radar_blip_coord2_fm3
+		SET_BLIP_ROUTE radar_blip_coord2_fm3 TRUE
 		blob_flag = 1
 		flag_blip_on_eightball_fm3 = 0
 	ENDIF
@@ -869,6 +871,7 @@ OR NOT HAS_MISSION_AUDIO_LOADED
 		SET_PLAYER_AS_LEADER ped_8ball_fm3 player
 		REMOVE_BLIP radar_blip_ped2_fm3
 		ADD_BLIP_FOR_COORD 1529.0 -824.0 -100.0 radar_blip_coord2_fm3
+		SET_BLIP_ROUTE radar_blip_coord2_fm3 TRUE
 		blob_flag = 1
 		flag_blip_on_eightball_fm3 = 0
 	ENDIF
@@ -926,6 +929,7 @@ WHILE timera < 7000
 		SET_PLAYER_AS_LEADER ped_8ball_fm3 player
 		REMOVE_BLIP radar_blip_ped2_fm3
 		ADD_BLIP_FOR_COORD 1529.0 -824.0 -100.0 radar_blip_coord2_fm3
+		SET_BLIP_ROUTE radar_blip_coord2_fm3 TRUE
 		blob_flag = 1
 		flag_blip_on_eightball_fm3 = 0
 	ENDIF

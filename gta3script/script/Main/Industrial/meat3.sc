@@ -232,6 +232,7 @@ CLEAR_CHAR_THREAT_SEARCH wife_meat3
 TURN_CHAR_TO_FACE_COORD wife_meat3 1059.0 -378.0 100.0
 
 ADD_BLIP_FOR_CHAR wife_meat3 radar_blip_ped1_meat3
+SET_BLIP_ROUTE radar_blip_ped1_meat3 TRUE
 
 SET_CHAR_CANT_BE_DRAGGED_OUT wife_meat3 TRUE
 
@@ -342,6 +343,7 @@ PLAY_MISSION_AUDIO
 PRINT_NOW ( MEA3_B4 ) 7000 1 //"Marty wants to see me? Well it better be quick because I have a slot booked at the gym, and a hair appointment after that."
 
 ADD_BLIP_FOR_COORD 1205.7 -789.2 -100.0 radar_blip_coord2_meat3
+SET_BLIP_ROUTE radar_blip_coord2_meat3 TRUE
 
 IF HAS_MISSION_AUDIO_FINISHED
 	CLEAR_THIS_PRINT ( MEA3_B4 )
@@ -397,6 +399,7 @@ OR NOT IS_CHAR_IN_CAR wife_meat3 car_meat3
 	AND flag_player_had_car_message_meat3 = 1
 		REMOVE_BLIP radar_blip_car_meat3
 		ADD_BLIP_FOR_COORD 1205.7 -789.2 -100.0 radar_blip_coord2_meat3
+		SET_BLIP_ROUTE radar_blip_coord2_meat3 TRUE
 		flag_player_had_car_message_meat3 = 0
 		blob_flag = 1
 	ENDIF

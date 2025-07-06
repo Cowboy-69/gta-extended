@@ -267,6 +267,7 @@ SET_CAR_HEADING car_hm3 0.0
 SET_CAN_RESPRAY_CAR car_hm3 FALSE
 
 ADD_BLIP_FOR_CAR car_hm3 radar_blip_car1_hm3
+SET_BLIP_ROUTE radar_blip_car1_hm3 TRUE
 
 SET_TARGET_CAR_FOR_MISSION_GARAGE garage_hm3 car_hm3
 
@@ -308,6 +309,7 @@ REMOVE_BLIP radar_blip_car1_hm3
 PRINT_NOW ( HM3_1 ) 7000 1 //"Get to the garage but watch out if the car takes too much damage it will blow!
 
 ADD_BLIP_FOR_COORD 1354.7 -312.9 48.9 radar_blip_coord1_hm3
+SET_BLIP_ROUTE radar_blip_coord1_hm3 TRUE
 
 DISPLAY_ONSCREEN_COUNTER_WITH_STRING car_damage_hm3 COUNTER_DISPLAY_BAR ( DETON ) 
 
@@ -360,6 +362,7 @@ WHILE NOT IS_CAR_IN_MISSION_GARAGE garage_hm3
 	AND flag_player_had_car_message_hm3 = 1
 		REMOVE_BLIP radar_blip_car1_hm3
 		ADD_BLIP_FOR_COORD 1354.7 -312.9 48.9 radar_blip_coord1_hm3
+		SET_BLIP_ROUTE radar_blip_coord1_hm3 TRUE
 		flag_player_had_car_message_hm3 = 0
 	ENDIF
 	
@@ -380,6 +383,7 @@ CLEAR_ONSCREEN_TIMER timer_hm3
 PRINT_NOW ( HM3_2 ) 7000 1 //"Bring the car back and I want it mint - no damage!"
 
 ADD_BLIP_FOR_COORD -682.0 76.0 -100.0 radar_blip_coord2_hm3
+SET_BLIP_ROUTE radar_blip_coord2_hm3 TRUE
 
 flag_blip2_on = 1
 
@@ -444,6 +448,7 @@ OR IS_PLAYER_IN_CAR player car_hm3
 			
 				IF flag_blip2_on = 0
 					ADD_BLIP_FOR_COORD -682.0 76.0 -100.0 radar_blip_coord2_hm3
+					SET_BLIP_ROUTE radar_blip_coord2_hm3 TRUE
 					PRINT_NOW ( HM3_2 ) 7000 1 //"Bring the car back and I want it mint - no damage!"
 					flag_blip2_on = 1
 				ENDIF

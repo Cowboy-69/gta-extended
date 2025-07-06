@@ -216,6 +216,7 @@ ENDWHILE
 REQUEST_MODEL safehouse
 
 ADD_BLIP_FOR_COORD 378.0 -443.2 29.9 ray1_blip
+SET_BLIP_ROUTE ray1_blip TRUE
 
 PRINT_NOW RM1_1 5000 1 //"Check out the witness protection house."
 

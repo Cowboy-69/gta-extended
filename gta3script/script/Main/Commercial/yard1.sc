@@ -249,6 +249,7 @@ counter_placing = 0
 counter_joint_placing = 0
 
 ADD_BLIP_FOR_COORD start_x start_y -100.0 blip_start_yd1
+SET_BLIP_ROUTE blip_start_yd1 TRUE
 
 flag_leader = 0
 flag_random_yd1 = 0

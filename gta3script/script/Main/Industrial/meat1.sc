@@ -277,6 +277,7 @@ CLEAR_CHAR_THREAT_SEARCH bankmanager_meat1
 TURN_CHAR_TO_FACE_COORD bankmanager_meat1 1042.0 -695.0 -100.0
 
 ADD_BLIP_FOR_CHAR bankmanager_meat1 radar_blip_ped1_meat1
+SET_BLIP_ROUTE radar_blip_ped1_meat1 TRUE
 
 SET_CHAR_CANT_BE_DRAGGED_OUT bankmanager_meat1 TRUE
 
@@ -389,6 +390,7 @@ PLAY_MISSION_AUDIO
 PRINT_NOW ( MEA1_B4 ) 7000 1 //"Mr. Chonks sent you? Ok, take me to see him."
 
 ADD_BLIP_FOR_COORD 1205.7 -789.2 -100.0 radar_blip_coord2_meat1
+SET_BLIP_ROUTE radar_blip_coord2_meat1 TRUE
 
 IF HAS_MISSION_AUDIO_FINISHED 
 	CLEAR_THIS_PRINT ( MEA1_B4 )
@@ -452,6 +454,7 @@ OR NOT IS_CHAR_IN_CAR bankmanager_meat1 car_meat1
 	AND flag_player_had_car_message_meat1 = 1
 		REMOVE_BLIP radar_blip_car_meat1
 		ADD_BLIP_FOR_COORD 1205.7 -789.2 -100.0 radar_blip_coord2_meat1
+		SET_BLIP_ROUTE radar_blip_coord2_meat1 TRUE
 		flag_player_had_car_message_meat1 = 0
 		blob_flag = 1
 	ENDIF
@@ -672,6 +675,7 @@ SET_POLICE_IGNORE_PLAYER player OFF
 PRINT_SOON ( MEA1_B6 ) 5000 1 //"Take the car to the crusher to get rid of evidence, get out of the car and the crane will pick it up."
 
 ADD_BLIP_FOR_COORD 1138.0 52.0 -100.0 radar_blip_coord3_meat1
+SET_BLIP_ROUTE radar_blip_coord3_meat1 TRUE
 
 // waiting for the car to get to the area to be crushed
 
@@ -717,6 +721,7 @@ WHILE NOT IS_CAR_STOPPED_IN_AREA_3D car_meat1 1135.8 55.5 -1.0 1149.8 46.3 9.0 b
 		AND flag_player_had_car_message_meat1 = 1
 			REMOVE_BLIP radar_blip_car_meat1
 			ADD_BLIP_FOR_COORD 1138.0 52.0 -100.0 radar_blip_coord3_meat1
+			SET_BLIP_ROUTE radar_blip_coord3_meat1 TRUE
 			flag_player_had_car_message_meat1 = 0
 			blob_flag = 1
 		ENDIF
@@ -775,6 +780,7 @@ WHILE NOT IS_CRANE_LIFTING_CAR 1120.0 46.0 car_meat1
 		AND flag_player_had_car_message_meat1 = 1
 			REMOVE_BLIP radar_blip_car_meat1
 			ADD_BLIP_FOR_COORD 1138.0 52.0 -100.0 radar_blip_coord3_meat1
+			SET_BLIP_ROUTE radar_blip_coord3_meat1 TRUE
 			flag_player_had_car_message_meat1 = 0
 			blob_flag = 1
 		ENDIF

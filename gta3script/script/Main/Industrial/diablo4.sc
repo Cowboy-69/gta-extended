@@ -342,6 +342,7 @@ WHILE NOT IS_CAR_STOPPED_IN_AREA_3D diablo_collect_porn_van 976.5 -422.8 14.5 97
 		IF IS_PLAYER_IN_CAR player diablo_collect_porn_van
 			IF flag_car_blip_displayed_dm4 = TRUE
 				ADD_BLIP_FOR_COORD 973.9 -428.3 -100.0 blip2_porn_shop
+				SET_BLIP_ROUTE blip2_porn_shop TRUE
 				REMOVE_BLIP blip1_porn_van
 				CLEAR_THIS_PRINT  ( IN_VEH ) 
 			flag_car_blip_displayed_dm4 = FALSE

@@ -294,6 +294,7 @@ CREATE_CAR BOAT_PREDATOR 837.0 -1115.6 -0.2 players_boat_with_guns
 
 SET_CAR_HEADING players_boat_with_guns 140.0
 ADD_BLIP_FOR_CAR players_boat_with_guns players_boat_with_guns_blip
+SET_BLIP_ROUTE players_boat_with_guns_blip TRUE
 
 PRINT_NOW RM4_1 5000 1 //"Go steal a boat."
 

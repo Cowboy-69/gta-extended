@@ -215,6 +215,7 @@ ARM_CAR_WITH_BOMB explosive_truck CARBOMB_TIMED
 fish_factory_destroyed = 0
 
 ADD_BLIP_FOR_CAR explosive_truck blip1_tm5
+SET_BLIP_ROUTE blip1_tm5 TRUE
 
 	WHILE NOT IS_PLAYER_IN_CAR player explosive_truck
 		WAIT 0
@@ -272,6 +273,7 @@ WAIT 0
 			IF IS_PLAYER_IN_CAR player explosive_truck
 				IF flag_car_blip_displayed_tm5 = TRUE
 					ADD_BLIP_FOR_COORD 965.0 -1117.0 -100.0 blip2_tm5
+					SET_BLIP_ROUTE blip2_tm5 TRUE
 					blob_flag = 1
 					REMOVE_BLIP blip1_tm5
 				flag_car_blip_displayed_tm5 = FALSE

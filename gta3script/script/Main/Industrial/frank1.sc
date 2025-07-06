@@ -384,6 +384,7 @@ DO_FADE 0 FADE_OUT
 GET_CHAR_COORDINATES chico chico_x chico_y chico_z
 
 ADD_BLIP_FOR_COORD 775.5 -557.3 14.0 fm1_blip
+SET_BLIP_ROUTE fm1_blip TRUE
 
 REQUEST_MODEL PED_GANG_MAFIA_A
 REQUEST_MODEL CAR_SENTINEL
@@ -883,6 +884,7 @@ PRINT_NOW FM1_V 5000 1 //"C'mon Fido, let's go check out this party!"
 REMOVE_BLIP fm1_blip
 REMOVE_BLIP maria_blip
 ADD_BLIP_FOR_COORD 1256.6 -1099.3 -11.7 fm1_blip
+SET_BLIP_ROUTE fm1_blip TRUE
 
 CREATE_CHAR PEDTYPE_GANG_MAFIA PED_GANG_MAFIA_A 1267.73 -1109.24 11.0 doorman1
 SET_CHAR_HEADING doorman1 90.0
@@ -2089,6 +2091,7 @@ WHILE NOT IS_CHAR_IN_ANY_CAR maria //frankies_limo
 		SET_PLAYER_AS_LEADER maria player
 		REMOVE_BLIP fm1_blip
 		ADD_BLIP_FOR_COORD 1424.0 -183.5 50.0 fm1_blip
+		SET_BLIP_ROUTE fm1_blip TRUE
 		flag_blip_on_maria = 0
 	ENDIF
 
@@ -2140,6 +2143,7 @@ REMOVE_BLIP	fm1_blip
 flag_blip_on_maria = 0
 flag_blip_on_limo = 0
 ADD_BLIP_FOR_COORD 1424.0 -183.5 50.0 fm1_blip
+SET_BLIP_ROUTE fm1_blip TRUE
 
 WAIT 0
 
@@ -2183,6 +2187,7 @@ IF NOT chico_audio_flag = 24
 			SET_PLAYER_AS_LEADER maria player
 			REMOVE_BLIP fm1_blip
 			ADD_BLIP_FOR_COORD 1424.0 -183.5 50.0 fm1_blip
+			SET_BLIP_ROUTE fm1_blip TRUE
 			flag_blip_on_maria = 0
 		ENDIF
 
@@ -2199,6 +2204,7 @@ IF NOT chico_audio_flag = 24
 			AND flag_blip_on_limo = 1
 				REMOVE_BLIP fm1_blip
 				ADD_BLIP_FOR_COORD 1424.0 -183.5 50.0 fm1_blip
+				SET_BLIP_ROUTE fm1_blip TRUE
 				flag_blip_on_limo = 0
 			ENDIF
 		ENDIF
@@ -2255,6 +2261,7 @@ WHILE NOT IS_CAR_IN_MISSION_GARAGE frankie_garage
 		SET_PLAYER_AS_LEADER maria player
 		REMOVE_BLIP fm1_blip
 		ADD_BLIP_FOR_COORD 1424.0 -183.5 50.0 fm1_blip
+		SET_BLIP_ROUTE fm1_blip TRUE
 		flag_blip_on_limo = 0
 		flag_blip_on_maria = 0
 	ENDIF
@@ -2272,6 +2279,7 @@ WHILE NOT IS_CAR_IN_MISSION_GARAGE frankie_garage
 		AND flag_blip_on_limo = 1
 			REMOVE_BLIP fm1_blip
 			ADD_BLIP_FOR_COORD 1424.0 -183.5 50.0 fm1_blip
+			SET_BLIP_ROUTE fm1_blip TRUE
 			flag_blip_on_limo = 0
 		ENDIF
 	ENDIF

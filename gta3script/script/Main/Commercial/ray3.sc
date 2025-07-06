@@ -292,6 +292,7 @@ SET_CAR_CRUISE_SPEED ia_car_rm3 20.0
 SET_CAR_DRIVING_STYLE ia_car_rm3 2
 CAR_WANDER_RANDOMLY ia_car_rm3
 ADD_BLIP_FOR_CAR ia_car_rm3 prosecution_car_blip
+SET_BLIP_ROUTE prosecution_car_blip TRUE
 LOCK_CAR_DOORS ia_car_rm3 CARLOCK_LOCKED
 
 IF flag_player_on_mission = 0
@@ -490,6 +491,7 @@ IF ia_have_evidence_flag = 1
 		IF temporary_health_var > ia_car_current_health
 			PRINT_NOW ( RM3_4 ) 3000 1 //"IA HAVE DROPPED THE EVIDENCE"
 			SET_CAR_HEALTH ia_car_rm3 1000
+			SET_BLIP_ROUTE prosecution_car_blip FALSE
 			ia_car_current_health = 1000
 			ia_car_previous_health = 1000
 			ia_have_evidence_flag = 0

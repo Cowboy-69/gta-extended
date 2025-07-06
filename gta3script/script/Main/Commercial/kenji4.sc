@@ -333,6 +333,7 @@ CREATE_PICKUP briefcase pickup_once 236.8 -1580.0 25.7 briefcase1_km4
 flag_briefcase1_created_km4 = 1
 
 ADD_BLIP_FOR_PICKUP briefcase1_km4 radar_blip_coord2_km4 
+SET_BLIP_ROUTE radar_blip_coord2_km4 TRUE
 
 // waits for the player to get the first briefcase
 
@@ -353,6 +354,7 @@ CREATE_PICKUP briefcase pickup_once 119.56 -1110.51 25.66 briefcase2_km4
 flag_briefcase2_created_km4 = 1
 
 ADD_BLIP_FOR_PICKUP briefcase2_km4 radar_blip_coord3_km4 
+SET_BLIP_ROUTE radar_blip_coord3_km4 TRUE
 
 // creates Diablo 6 who is by the second briefcase
 
@@ -397,6 +399,7 @@ PRINT_NOW ( KM4_8 ) 5000 1 //"Briefcase collected!"
 REMOVE_BLIP radar_blip_coord3_km4
 
 ADD_BLIP_FOR_COORD -91.5 -484.2 15.2 radar_blip_coord5_km4
+SET_BLIP_ROUTE radar_blip_coord5_km4 TRUE
 
 WHILE NOT LOCATE_STOPPED_PLAYER_ANY_MEANS_3D player -91.5 -484.2 15.2 4.0 4.0 3.0 TRUE
 
@@ -643,6 +646,7 @@ SET_EVERYONE_IGNORE_PLAYER player OFF
 ADD_BLIP_FOR_COORD_OLD 938.0 -180.0 -100.0 5 BOTH radar_blip_coord1_km4
 
 CHANGE_BLIP_SCALE radar_blip_coord1_km4 3
+SET_BLIP_ROUTE radar_blip_coord1_km4 TRUE
 
 ADD_BLIP_FOR_COORD_OLD 930.0 -190.0 -100.0 1 BOTH radar_blip_dummy1_km4
 
@@ -868,6 +872,7 @@ ENDWHILE
 PRINT_NOW ( KM4_11 ) 5000 1 //"Take the money back to the casino!"
 
 ADD_BLIP_FOR_COORD 452.3 -1465.8 17.6 radar_blip_coord6_km4
+SET_BLIP_ROUTE radar_blip_coord6_km4 TRUE
 
 blob_flag = 1 
 

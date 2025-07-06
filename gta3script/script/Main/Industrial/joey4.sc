@@ -487,6 +487,7 @@ CLEAR_AREA 843.4 -663.8 15.0 10.0 TRUE
 
 ADD_BLIP_FOR_COORD 843.0 -660.0 -100.0 blip1_jm4
 CHANGE_BLIP_DISPLAY blip1_jm4 BLIP_ONLY
+SET_BLIP_ROUTE blip1_jm4 TRUE
 
 
 	CREATE_CHAR PEDTYPE_GANG_TRIAD PED_GANG_TRIAD_A 850.0 -663.0 14.7 triad1_jm4
@@ -539,6 +540,7 @@ blob_flag = 1
 		IF IS_PLAYER_IN_CAR player tonis_ride
 			IF flag_car_blip_displayed_jm4 = TRUE
 				ADD_BLIP_FOR_COORD 843.0 -660.0 -100.0 blip1_jm4
+				SET_BLIP_ROUTE blip1_jm4 TRUE
 				blob_flag = 1
 				REMOVE_BLIP blip2_jm4
 			flag_car_blip_displayed_jm4 = FALSE
@@ -940,6 +942,7 @@ SET_POLICE_IGNORE_PLAYER Player OFF
 
 ADD_BLIP_FOR_COORD 1216.8 -327.6 -100.0 blip3_jm4
 CHANGE_BLIP_DISPLAY blip3_jm4 BLIP_ONLY
+SET_BLIP_ROUTE blip3_jm4 TRUE
 
 	// CLOSE DOORS
 	WHILE NOT ROTATE_OBJECT laundrete_door1 0.0 10.0 FALSE
@@ -1014,6 +1017,7 @@ blob_flag = 1
 		IF IS_PLAYER_IN_CAR player tonis_ride
 			IF flag_car_blip_displayed_jm4 = TRUE
 				ADD_BLIP_FOR_COORD 1216.8 -327.6 -100.0 blip3_jm4
+				SET_BLIP_ROUTE blip3_jm4 TRUE
 				REMOVE_BLIP blip2_jm4
 				blob_flag = 1
 			flag_car_blip_displayed_jm4 = FALSE

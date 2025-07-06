@@ -399,6 +399,7 @@ SET_CHAR_HEADING yakuza1_km3 0.0
 GIVE_WEAPON_TO_CHAR yakuza1_km3 WEAPONTYPE_UZI 30000 // sets weapon to infinate ammo
 
 ADD_BLIP_FOR_CHAR yakuza1_km3 radar_blip_ped1_km3
+SET_BLIP_ROUTE radar_blip_ped1_km3 TRUE
 
 // waiting for the player to reach the yakuza gang members
 
@@ -425,6 +426,7 @@ OR NOT IS_PLAYER_STOPPED player
 	IF IS_PLAYER_IN_MODEL player CAR_YARDIE
 	AND flag_player_had_car_message_km3 = 1
 		ADD_BLIP_FOR_CHAR yakuza1_km3 radar_blip_ped1_km3
+		SET_BLIP_ROUTE radar_blip_ped1_km3 TRUE
 		flag_player_had_car_message_km3 = 0
 		blob_flag = 1
 	ENDIF
@@ -484,6 +486,7 @@ REMOVE_BLIP radar_blip_ped1_km3
 PRINT_NOW ( KM3_3 ) 5000 1 //"Okay the meeting is being held at XXXXXXX!"
 
 ADD_BLIP_FOR_COORD 231.1 -26.3 -100.0 radar_blip_coord2_km3
+SET_BLIP_ROUTE radar_blip_coord2_km3 TRUE
 
 // Colombian car 1
 
@@ -574,6 +577,7 @@ IF flag_yakuza1_km3_dead = 0
 			SET_PLAYER_AS_LEADER yakuza1_km3 player
 			REMOVE_BLIP radar_blip_ped1_km3
 	  		ADD_BLIP_FOR_COORD 231.1 -26.3 -100.0 radar_blip_coord2_km3
+			SET_BLIP_ROUTE radar_blip_coord2_km3 TRUE
 			flag_blip_on_yakuza_km3 = 0
 			blob_flag = 1
 		ENDIF
@@ -625,6 +629,7 @@ ENDIF
 	IF IS_PLAYER_IN_MODEL player CAR_YARDIE
 	AND flag_player_had_car_message_km3 = 1
 		ADD_BLIP_FOR_COORD 231.1 -26.3 -100.0 radar_blip_coord2_km3
+		SET_BLIP_ROUTE radar_blip_coord2_km3 TRUE
 		flag_player_had_car_message_km3 = 0
 		blob_flag = 1
 	ENDIF
@@ -684,6 +689,7 @@ IF flag_yakuza1_km3_dead = 0
 			SET_PLAYER_AS_LEADER yakuza1_km3 player
 			REMOVE_BLIP radar_blip_ped1_km3
 	  		ADD_BLIP_FOR_COORD 231.1 -26.3 -100.0 radar_blip_coord2_km3
+			SET_BLIP_ROUTE radar_blip_coord2_km3 TRUE
 			flag_blip_on_yakuza_km3 = 0
 			blob_flag = 1
 		ENDIF
@@ -1274,6 +1280,7 @@ ENDIF
 PRINT_NOW ( KM3_13 ) 5000 1 //"Take the briefcase back to the casino."
 
 ADD_BLIP_FOR_COORD 452.3 -1465.8 17.6 radar_blip_coord3_km3
+SET_BLIP_ROUTE radar_blip_coord3_km3 TRUE
 
 blob_flag = 1 
 

@@ -283,6 +283,7 @@ LOCK_CAR_DOORS mike_car CARLOCK_FORCE_SHUT_DOORS
 SET_CAR_HEADING mike_car 90.0
 SET_CAN_RESPRAY_CAR mike_car OFF
 ADD_BLIP_FOR_CAR mike_car blip1_jm1
+SET_BLIP_ROUTE blip1_jm1 TRUE
 countdown_jm1 = 361000
 DISPLAY_ONSCREEN_TIMER countdown_jm1
 
@@ -350,6 +351,7 @@ AND NOT IS_CAR_ARMED_WITH_BOMB mike_car CARBOMB_ONIGNITIONACTIVE
 			OR NOT IS_CAR_ARMED_WITH_BOMB mike_car CARBOMB_ONIGNITION
 				REMOVE_BLIP blip2_jm1
 				ADD_SPRITE_BLIP_FOR_COORD 1282.0 -104.0 -100.0 RADAR_SPRITE_BOMB blip2_jm1
+				SET_BLIP_ROUTE blip2_jm1 TRUE
 				REMOVE_BLIP blip1_jm1
 			ENDIF
 		flag_car_blip_displayed_jm1 = FALSE
@@ -401,6 +403,7 @@ AND NOT IS_CAR_ARMED_WITH_BOMB mike_car CARBOMB_ONIGNITIONACTIVE
 						IF flag_car_blip_displayed_jm1 = TRUE
 							REMOVE_BLIP	blip4_jm1
 							ADD_SPRITE_BLIP_FOR_COORD 925.0 -359.5 -100.0 RADAR_SPRITE_SPRAY blip4_jm1
+							SET_BLIP_ROUTE blip4_jm1 TRUE
 							REMOVE_BLIP blip1_jm1
 						flag_car_blip_displayed_jm1 = FALSE
 						ENDIF
@@ -471,6 +474,7 @@ OR IS_CAR_VISIBLY_DAMAGED mike_car
 		IF flag_car_blip_displayed_jm1 = TRUE
 			REMOVE_BLIP	blip3_jm1
 			ADD_BLIP_FOR_COORD 1335.0 -455.0 -100.0 blip3_jm1
+			SET_BLIP_ROUTE blip3_jm1 TRUE
 			REMOVE_BLIP blip1_jm1
 			blob_flag = 1
 		flag_car_blip_displayed_jm1 = FALSE
@@ -519,6 +523,7 @@ OR IS_CAR_VISIBLY_DAMAGED mike_car
 					IF flag_car_blip_displayed_jm1 = TRUE
 						REMOVE_BLIP	blip4_jm1
 						ADD_SPRITE_BLIP_FOR_COORD 925.0 -359.5 -100.0 RADAR_SPRITE_SPRAY blip4_jm1
+						SET_BLIP_ROUTE blip4_jm1 TRUE
 						REMOVE_BLIP blip1_jm1
 						blob_flag = 1
 					flag_car_blip_displayed_jm1 = FALSE

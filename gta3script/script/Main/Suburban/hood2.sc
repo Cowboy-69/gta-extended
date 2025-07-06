@@ -266,6 +266,7 @@ CREATE_CAR CAR_TOYZ -682.02 76.60 -100.0 mission_car_hm2
 //SET_CAR_HEADING mission_car_hm2 0.0
 
 ADD_BLIP_FOR_CAR mission_car_hm2 radar_blip_car1_hm2
+SET_BLIP_ROUTE radar_blip_car1_hm2 TRUE
 
 // waiting for the player to get into the control car
 

@@ -460,6 +460,7 @@ WHILE NOT IS_PLAYER_IN_MODEL player CAR_COLUMB
 ENDWHILE
 
 ADD_BLIP_FOR_COORD 52.0 -343.0 -100.0 radar_blip_coord2_love1
+SET_BLIP_ROUTE radar_blip_coord2_love1 TRUE
 
 // Random munber stuff to generate OGG position
 
@@ -749,6 +750,7 @@ WHILE NOT LOCATE_STOPPED_CHAR_ANY_MEANS_2D ojg_love1 49.0 -1550.0 3.0 4.0 blob_f
 		PRINT_NOW ( LOVE1_3 ) 7000 1 //"Thanks get me back to loves!"
 		REMOVE_BLIP radar_blip_coord2_love1
 		ADD_BLIP_FOR_COORD 49.1 -1550.5 -100.0 radar_blip_coord1_love1
+		SET_BLIP_ROUTE radar_blip_coord1_love1 TRUE
 		blob_flag = 1 
 		flag_ojg_in_group = 1
 	ENDIF
@@ -1188,6 +1190,7 @@ IF flag_ojg_in_group = 1
 		PRINT_NOW ( LOVE1_3 ) 7000 1 //"Thanks get me back to loves!"
 		REMOVE_BLIP radar_blip_ped1_love1
 		ADD_BLIP_FOR_COORD 49.1 -1550.5 -100.0 radar_blip_coord1_love1
+		SET_BLIP_ROUTE radar_blip_coord1_love1 TRUE
 		flag_blip_on_ojg_love1 = 0
 		blob_flag = 1
 	ENDIF

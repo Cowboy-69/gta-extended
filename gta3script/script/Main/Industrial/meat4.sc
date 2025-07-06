@@ -266,6 +266,7 @@ CLEAR_CHAR_THREAT_SEARCH loanshark_meat4
 TURN_CHAR_TO_FACE_COORD loanshark_meat4 895.0 -486.0 -100.0
 
 ADD_BLIP_FOR_CHAR loanshark_meat4 radar_blip_ped1_meat4
+SET_BLIP_ROUTE radar_blip_ped1_meat4 TRUE
 
 SET_CHAR_CANT_BE_DRAGGED_OUT loanshark_meat4 TRUE
 
@@ -299,6 +300,7 @@ OR NOT IS_PLAYER_IN_CAR player car_meat4
 	AND flag_player_had_car_message_meat4 = 1
 		REMOVE_BLIP radar_blip_car_meat4
 		ADD_BLIP_FOR_CHAR loanshark_meat4 radar_blip_ped1_meat4
+		SET_BLIP_ROUTE radar_blip_ped1_meat4 TRUE
 		flag_player_had_car_message_meat4 = 0
 		blob_flag = 1
 	ENDIF
@@ -381,6 +383,7 @@ IF HAS_MISSION_AUDIO_FINISHED
 ENDIF
 
 ADD_BLIP_FOR_COORD 1217.0 -794.0 -100.0 radar_blip_coord2_meat4
+SET_BLIP_ROUTE radar_blip_coord2_meat4 TRUE
 
 CREATE_CHAR PEDTYPE_CIVMALE PED_B_MAN2 1208.0 -789.0 13.9 owner_meat4
 
@@ -441,6 +444,7 @@ OR NOT IS_CHAR_IN_CAR loanshark_meat4 car_meat4
 	AND flag_player_had_car_message_meat4 = 1
 		REMOVE_BLIP radar_blip_car_meat4
 		ADD_BLIP_FOR_COORD 1217.0 -794.0 -100.0 radar_blip_coord2_meat4
+		SET_BLIP_ROUTE radar_blip_coord2_meat4 TRUE
 		flag_player_had_car_message_meat4 = 0
 		blob_flag = 1
 	ENDIF

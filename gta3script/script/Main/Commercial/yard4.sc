@@ -292,6 +292,7 @@ CREATE_CAR CAR_ESPERANTO abandoned_car_x abandoned_car_y -100.0 abandoned_car_y4
 SET_CAR_HEADING abandoned_car_y4 270.0
 CAR_SET_IDLE abandoned_car_y4
 ADD_BLIP_FOR_CAR abandoned_car_y4 blip_abandoned_car_y4
+SET_BLIP_ROUTE blip_abandoned_car_y4 TRUE
 
 CREATE_CAR CAR_PONY gen2_x gen2_y 27.0 gen2_van
 SET_CAR_HEADING gen2_van 345.0

@@ -752,6 +752,7 @@ IF controlmode = 3
 ENDIF
 
 ADD_BLIP_FOR_COORD 875.0 -309.0 -100.0 radar_blip_coord1_eightball
+SET_BLIP_ROUTE radar_blip_coord1_eightball TRUE
 
 timera = 0
 
@@ -811,6 +812,7 @@ WHILE timera < 10000
 			IF flag_car_message_8ball = 1
 				REMOVE_BLIP radar_blip_car1_eightball
 				ADD_BLIP_FOR_COORD 875.0 -309.0 -100.0 radar_blip_coord1_eightball
+				SET_BLIP_ROUTE radar_blip_coord1_eightball TRUE
 				flag_car_message_8ball = 0
 			ENDIF
 			
@@ -954,6 +956,7 @@ OR NOT HAS_MISSION_AUDIO_LOADED
 			IF flag_car_message_8ball = 1
 				REMOVE_BLIP radar_blip_car1_eightball
 				ADD_BLIP_FOR_COORD 875.0 -309.0 -100.0 radar_blip_coord1_eightball
+				SET_BLIP_ROUTE radar_blip_coord1_eightball TRUE
 				flag_car_message_8ball = 0
 			ENDIF
 			
@@ -1629,6 +1632,7 @@ IF IS_CHAR_DEAD eightball
 ENDIF
 
 ADD_BLIP_FOR_COORD 906.2 -426.0 -100.0 radar_blip_coord2_eightball  //Luigis blip
+SET_BLIP_ROUTE radar_blip_coord2_eightball TRUE
 
 LOAD_MISSION_AUDIO LIB_B
 
@@ -1672,6 +1676,7 @@ WHILE NOT HAS_MISSION_AUDIO_LOADED
 			IF flag_car_message_8ball = 1
 				REMOVE_BLIP radar_blip_car1_eightball
 			   	ADD_BLIP_FOR_COORD 906.2 -426.0 -100.0 radar_blip_coord2_eightball //Luigis
+				SET_BLIP_ROUTE radar_blip_coord2_eightball TRUE
 				flag_car_message_8ball = 0
 			ENDIF
 			
@@ -1728,6 +1733,7 @@ IF IS_CAR_DEAD car_eightball
 			IF flag_car_message_8ball = 1
 				REMOVE_BLIP radar_blip_car1_eightball
 			   	ADD_BLIP_FOR_COORD 906.2 -426.0 -100.0 radar_blip_coord2_eightball //Luigis
+				SET_BLIP_ROUTE radar_blip_coord2_eightball TRUE
 				flag_car_message_8ball = 0
 			ENDIF
 			
@@ -1785,6 +1791,7 @@ WHILE NOT HAS_MISSION_AUDIO_FINISHED
 			IF flag_car_message_8ball = 1
 				REMOVE_BLIP radar_blip_car1_eightball
 				ADD_BLIP_FOR_COORD 906.2 -426.0 -100.0 radar_blip_coord2_eightball //Luigis
+				SET_BLIP_ROUTE radar_blip_coord2_eightball TRUE
 				flag_car_message_8ball = 0
 			ENDIF
 			
@@ -1851,6 +1858,7 @@ OR NOT HAS_MISSION_AUDIO_LOADED
 			IF flag_car_message_8ball = 1
 				REMOVE_BLIP radar_blip_car1_eightball
 				ADD_BLIP_FOR_COORD 906.2 -426.0 -100.0 radar_blip_coord2_eightball //Luigis
+				SET_BLIP_ROUTE radar_blip_coord2_eightball TRUE
 				flag_car_message_8ball = 0
 			ENDIF
 			
@@ -2319,6 +2327,7 @@ SET_CHAR_HEADING girl1_lm1 90.0
 SET_ANIM_GROUP_FOR_CHAR girl1_lm1 ANIM_SEXY_WOMANPED
 
 ADD_BLIP_FOR_CHAR girl1_lm1 radar_blip_ped1_lm1
+SET_BLIP_ROUTE radar_blip_ped1_lm1 TRUE
 
 flag_blip_on_girl1_lm1 = 1
 
@@ -2408,6 +2417,7 @@ IF flag_girl_in_group_lm1 = 0
 
 			IF flag_blip_on_girl1_lm1 = 0
 				ADD_BLIP_FOR_CHAR girl1_lm1 radar_blip_ped1_lm1
+				SET_BLIP_ROUTE radar_blip_ped1_lm1 TRUE
 				flag_blip_on_girl1_lm1 = 1
 			ENDIF
 
@@ -2473,6 +2483,7 @@ IF flag_girl_in_group_lm1 = 0
 
 									IF flag_blip_on_girl1_lm1 = 0
 										ADD_BLIP_FOR_CHAR girl1_lm1 radar_blip_ped1_lm1
+										SET_BLIP_ROUTE radar_blip_ped1_lm1 TRUE
 										REMOVE_BLIP radar_blip_car1_lm1
 										flag_blip_on_girl1_lm1 = 1
 									ENDIF
@@ -2593,6 +2604,7 @@ CLEAR_THIS_PRINT ( LM1_9 )
 PRINT_NOW ( LM1_2 ) 7000 1 //"Hi take us to the Red Light District please, we'll be ever so 'grateful'!"
 
 ADD_BLIP_FOR_COORD 906.2 -426.0 -100.0 radar_blip_coord1_lm1
+SET_BLIP_ROUTE radar_blip_coord1_lm1 TRUE
 
 blob_flag = 1
 
@@ -2656,6 +2668,7 @@ OR NOT IS_PLAYER_STOPPED_IN_AREA_3D player 903.8 -420.2 14.0 908.3 -431.1 18.0 F
 			SET_PLAYER_AS_LEADER girl1_lm1 player
 			PRINT_NOW ( LM1_2 ) 7000 1 //"Hi take us to the Red Light District please, we'll be ever so 'grateful'!"
 			ADD_BLIP_FOR_COORD 906.2 -426.0 -100.0 radar_blip_coord1_lm1
+			SET_BLIP_ROUTE radar_blip_coord1_lm1 TRUE
 			REMOVE_BLIP radar_blip_ped1_lm1
 			blob_flag = 1
 			flag_blip_on_girl1_lm1 = 0

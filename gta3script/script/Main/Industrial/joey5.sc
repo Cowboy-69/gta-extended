@@ -215,6 +215,7 @@ REQUEST_MODEL CAR_SENTINEL
 
 CREATE_CAR CAR_CORPSE 867.2 -992.8 -100.0 deadman_car
 ADD_BLIP_FOR_CAR deadman_car blip1_j5
+SET_BLIP_ROUTE blip1_j5 TRUE
 
 CREATE_CAR CAR_SENTINEL 892.0 -992.3 4.6 lipsbrother1_car
 SET_CAR_HEADING lipsbrother1_car 90.0
@@ -392,6 +393,7 @@ WHILE NOT IS_CAR_STOPPED_IN_AREA_3D deadman_car 1135.8 55.5 -1.0 1149.8 46.3 30.
 				IF flag_car_blip_displayed_j5 = TRUE
 					ADD_BLIP_FOR_COORD 1139.0 54.5.0 -100.0 blip2_j5
 					CHANGE_BLIP_DISPLAY blip2_j5 BLIP_ONLY
+					SET_BLIP_ROUTE blip2_j5 TRUE
 					REMOVE_BLIP blip1_j5
 					flag_car_blip_displayed_j5 = FALSE
 					blob_flag = 1
@@ -466,6 +468,7 @@ WHILE NOT IS_CRANE_LIFTING_CAR 1120.0 46.0 deadman_car
 				IF flag_car_blip_displayed_j5 = TRUE
 					ADD_BLIP_FOR_COORD 1139.0 54.5.0 -100.0 blip2_j5
 					CHANGE_BLIP_DISPLAY blip2_j5 BLIP_ONLY
+					SET_BLIP_ROUTE blip2_j5 TRUE
 					REMOVE_BLIP blip1_j5
 					flag_car_blip_displayed_j5 = FALSE
 					blob_flag = 1

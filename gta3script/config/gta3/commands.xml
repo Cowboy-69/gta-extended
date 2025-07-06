@@ -7478,5 +7478,11 @@
     </Command>
 	  <Command ID="0xfa4" Name="IS_AUTO_SAVE_REQUESTED">
     </Command>
+    <Command ID="0xfa5" Name="SET_BLIP_ROUTE">
+      <Args>
+        <Arg Type="INT" Entity="BLIP"/>
+        <Arg Type="INT" Desc="Bool"/>
+      </Args>
+    </Command>
   </Commands>
 </GTA3Script>

@@ -225,6 +225,7 @@ SET_TARGET_CAR_FOR_MISSION_GARAGE garage_hm4 car_hm4
 //REMOVE_BLIP radar_blip_car1_hm4
 
 ADD_BLIP_FOR_COORD -1080.0 -163.2 -100.0 radar_blip_coord2_hm4
+SET_BLIP_ROUTE radar_blip_coord2_hm4 TRUE
 
 PRINT_NOW ( HM4_1 ) 7000 1 //"Head to the location where the cargo is scattered!"
 

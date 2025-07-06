@@ -378,6 +378,7 @@ rays_cutscene_flag = 0
 // Mission stuff goes here
 
 ADD_BLIP_FOR_COORD wh_x_rm2 wh_y_rm2 -100.0 blip_warehouse_rm2
+SET_BLIP_ROUTE blip_warehouse_rm2 TRUE
 
 //------------------REQUEST_MODELS ------------------------------
 

@@ -35,6 +35,9 @@
 #ifdef MODLOADER // main.scm
 #include "modloader.h"
 #endif
+#ifdef EX_GPS // Script: SET_BLIP_ROUTE
+#include "Radar.h"
+#endif
 
 // NB: on PS2 this file did not exist; ProcessCommands1000To1099 was in Script5.cpp and ProcessCommands1100To1199 was only added on PC
 // however to avoid redundant copies of code, Script6.cpp is used with PS2 defines
@@ -1391,6 +1394,12 @@ int8 CRunningScript::ProcessCommands4000To4099(int32 command)
 		return 0;
 	case COMMAND_IS_AUTO_SAVE_REQUESTED:
 		UpdateCompareFlag(bIsAutoSaveRequested);
+		return 0;
+#endif
+#ifdef EX_GPS // Script: SET_BLIP_ROUTE
+	case COMMAND_SET_BLIP_ROUTE:
+		CollectParameters(&m_nIp, 2);
+		CRadar::SetBlipRoute(ScriptParams[0], ScriptParams[1]);
 		return 0;
 #endif
 	default:

@@ -380,6 +380,7 @@ PRINT_NOW ( LM3_4 ) 7000 1 //"Now Pick up Misty!"
 LOAD_MISSION_AUDIO L2_A
 
 ADD_BLIP_FOR_COORD 937.9 -259.8 -100.0 radar_blip_coord1_lm3
+SET_BLIP_ROUTE radar_blip_coord1_lm3 TRUE
 
 // waiting for the player to get to Misty's flat
 
@@ -401,6 +402,7 @@ OR NOT HAS_MISSION_AUDIO_LOADED
 	IF IS_PLAYER_IN_ANY_CAR player
 	AND flag_player_got_message_lm3 = 1
 	   	ADD_BLIP_FOR_COORD 937.9 -259.8 -100.0 radar_blip_coord1_lm3
+		SET_BLIP_ROUTE radar_blip_coord1_lm3 TRUE
 		STORE_CAR_PLAYER_IS_IN player car_lm3
 		flag_player_got_message_lm3 = 0
 		blob_flag = 1
@@ -445,6 +447,7 @@ OR NOT IS_PLAYER_SITTING_IN_ANY_CAR player
 	IF IS_PLAYER_IN_ANY_CAR player
 	AND flag_player_got_message_lm3 = 1
 		ADD_BLIP_FOR_COORD 937.9 -259.8 -100.0 radar_blip_coord1_lm3
+		SET_BLIP_ROUTE radar_blip_coord1_lm3 TRUE
 		STORE_CAR_PLAYER_IS_IN player car_lm3
 		flag_player_got_message_lm3 = 0
 		blob_flag = 1
@@ -794,6 +797,7 @@ CLEAR_THIS_PRINT ( LM3_5 )
 PRINT_NOW ( LM3_2 ) 5000 1 //"Take Misty to see Joey Leone."
 
 ADD_BLIP_FOR_COORD 1196.0 -874.0 -100.0 radar_blip_coord2_lm3
+SET_BLIP_ROUTE radar_blip_coord2_lm3 TRUE
 
 blob_flag = 1
 
@@ -822,6 +826,7 @@ OR NOT LOCATE_STOPPED_CHAR_ANY_MEANS_2D misty_lm3 1196.0 -874.0 3.0 4.0 FALSE
 		PRINT_NOW ( LM3_2 ) 5000 1 //"Take Misty to see Joey Leone."
 		REMOVE_BLIP radar_blip_ped1_lm3
 	  	ADD_BLIP_FOR_COORD 1196.0 -874.0 -100.0 radar_blip_coord2_lm3
+		SET_BLIP_ROUTE radar_blip_coord2_lm3 TRUE
 		flag_blip_on_misty_lm3 = 0
 		blob_flag = 1
 	ENDIF 

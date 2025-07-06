@@ -182,6 +182,7 @@ WAIT 2000
 
 CREATE_PICKUP briefcase PICKUP_ONCE	934.9 -69.8 8.1 briefcase_diablo2
 ADD_BLIP_FOR_PICKUP	briefcase_diablo2 blip1_diablo2
+SET_BLIP_ROUTE blip1_diablo2 TRUE
 
 PRINT ( DIAB2_1 ) 5000 1 // Pick up briefcase
 
@@ -197,6 +198,7 @@ CREATE_CAR CAR_MRWHOOPEE 1381.0 -382.0 -100.0 icecream_van1
 CREATE_CHAR_INSIDE_CAR icecream_van1 PEDTYPE_CIVMALE PED_LI_MAN1 icecream_man1
 SET_CAR_DRIVING_STYLE icecream_van1 DRIVINGMODE_STOPFORCARS
 ADD_BLIP_FOR_CAR icecream_van1 blip1_icecream1
+SET_BLIP_ROUTE blip1_icecream1 TRUE
 
 PRINT_NOW ( DIAB2_2 ) 5000 1 // Find an icecream van
 
@@ -254,6 +256,7 @@ OR NOT IS_ICECREAM_JINGLE_ON icecreamvan_any
 		IF IS_PLAYER_IN_CAR player icecreamvan_any
 			IF flag_car_blip_displayed_dm2 = TRUE
 				ADD_BLIP_FOR_COORD 1219.7 -1137.2 -100.0 blip2_diablo2
+				SET_BLIP_ROUTE blip2_diablo2 TRUE
 				blob_flag = 1
 				REMOVE_BLIP blip1_icecream1
 				flag_car_blip_displayed_dm2 = FALSE

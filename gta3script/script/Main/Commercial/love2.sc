@@ -612,6 +612,7 @@ while_loop_2:
 
 		IF flag_carpark_blip = 0
 			ADD_BLIP_FOR_COORD 305.0 -545.0 30.0 blip_carpark
+			SET_BLIP_ROUTE blip_carpark TRUE
 			flag_carpark_blip = 1
 		ENDIF
 

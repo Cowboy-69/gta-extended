@@ -39,7 +39,6 @@
 
 	#ifdef EX_CONTROL
 		#define EX_VIBRATION // For gamepad
-		#define EX_GPS // thank https://github.com/DK22Pac/plugin-sdk/tree/master/examples/GPS
 		#define EX_PC_WALK // Walking on the key
 		#define EX_RADAR_ZOOM // Radar zoom out on the key
 		#define EX_RELOAD // Reload on the key
@@ -84,6 +83,7 @@
 	#endif
 
 	#ifdef EX_OPCODES
+		#define EX_GPS // thank https://github.com/DK22Pac/plugin-sdk/tree/master/examples/GPS
 		#define EX_AUTO_SAVE
 	#endif
 

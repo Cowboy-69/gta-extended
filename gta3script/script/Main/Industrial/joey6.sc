@@ -199,6 +199,7 @@ LOAD_SPECIAL_CHARACTER 2 robber
 
 ADD_BLIP_FOR_COORD 1086.0 -227.0 -100.0 blip1_jm6
 CHANGE_BLIP_DISPLAY blip1_jm6 BLIP_ONLY
+SET_BLIP_ROUTE blip1_jm6 TRUE
 
 flag_displayed_horn_message_jm6 = 0
 flag_displayed_wanted_message_jm6 = 0
@@ -442,6 +443,7 @@ ENDWHILE
 	
 	ADD_BLIP_FOR_COORD 1038.0 -700.0 -100.0 blip3_jm6
 	//CHANGE_BLIP_DISPLAY blip3_jm6 BLIP_ONLY
+	SET_BLIP_ROUTE blip3_jm6 TRUE
 	flag_displayed_wanted_message_jm6 = 0
 	
 		
@@ -1184,6 +1186,7 @@ ENDWHILE
 
 	ADD_BLIP_FOR_COORD 1086.0 -227.0 -100.0 blip2_jm6
 	CHANGE_BLIP_DISPLAY blip2_jm6 BLIP_ONLY
+	SET_BLIP_ROUTE blip2_jm6 TRUE
 	
 //SAMPLE4*********************************************************
 	LOAD_MISSION_AUDIO J6_C

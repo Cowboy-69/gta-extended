@@ -149,6 +149,9 @@ public:
 #ifdef EX_RADAR_ZOOM
 	static int32 RadarZoomOutTimer;
 #endif
+#ifdef EX_GPS // Script: SET_BLIP_ROUTE
+	static int RouteBlipId;
+#endif
 #ifdef MENU_MAP
 	static CSprite2d WaypointSprite;
 	static int TargetMarkerId;
@@ -178,6 +181,7 @@ public:
 #ifdef EX_GPS
 	static void DrawGPS();
 	static void Setup2dVertex(RwIm2DVertex& vertex, float x, float y, CRGBA color);
+	static void SetBlipRoute(int32 i, bool bEnable);
 #endif
 	static int32 GetActualBlipArrayIndex(int32 i);
 	static int32 GetNewUniqueBlipIndex(int32 i);

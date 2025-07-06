@@ -538,6 +538,7 @@ WHILE NOT HAS_MISSION_AUDIO_FINISHED
 ENDWHILE
 
 ADD_BLIP_FOR_COORD driveby_x driveby_y -100.0 blip_driveby_yd2
+SET_BLIP_ROUTE blip_driveby_yd2 TRUE
 
 SET_PED_DENSITY_MULTIPLIER 1.0
 SET_POLICE_IGNORE_PLAYER player off
@@ -686,6 +687,7 @@ CLEAR_ONSCREEN_COUNTER body_count_yd2
 back_to_yardie_turf:
 
 ADD_BLIP_FOR_COORD yd2turf_x yd2turf_y 26.0 blip_driveby_yd2
+SET_BLIP_ROUTE blip_driveby_yd2 TRUE
 
 IF NOT IS_CAR_DEAD gang_car_yd2
 	WHILE NOT LOCATE_STOPPED_CAR_3D gang_car_yd2 yd2turf_x yd2turf_y 26.0 5.0 5.0 5.0 true   

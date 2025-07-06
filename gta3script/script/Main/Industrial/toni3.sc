@@ -259,6 +259,7 @@ SET_CAR_STRONG carry_car TRUE
 SET_CAR_PROOFS carry_car TRUE TRUE TRUE TRUE TRUE
 //ADD_BLIP_FOR_CAR carry_car blip1_t3
 ADD_BLIP_FOR_COORD 1191.7 -870.0 -100.0	blip1_t3
+SET_BLIP_ROUTE blip1_t3 TRUE
 SET_CAN_RESPRAY_CAR carry_car OFF
 //SET_RADIO_CHANNEL carry_car 1 -1
 
@@ -474,6 +475,7 @@ OR IS_WANTED_LEVEL_GREATER Player 0
 	IF IS_PLAYER_IN_CAR player carry_car
 		IF flag_car_blip_displayed = TRUE
 			ADD_BLIP_FOR_COORD 906.2 -426.0 -100.0 blip3_t3
+			SET_BLIP_ROUTE blip3_t3 TRUE
 			blob_flag = 1
 			REMOVE_BLIP blip1_t3
 		flag_car_blip_displayed = FALSE
@@ -541,6 +543,7 @@ OR IS_WANTED_LEVEL_GREATER Player 0
 				IF flag_car_blip_displayed = TRUE
 					//ADD_BLIP_FOR_COORD 925.0 -359.5 -100.0 blip5_t3
 					ADD_SPRITE_BLIP_FOR_COORD 925.0 -359.5 -100.0 RADAR_SPRITE_SPRAY blip5_t3
+					SET_BLIP_ROUTE blip5_t3 TRUE
 					REMOVE_BLIP blip1_t3
 				flag_car_blip_displayed = FALSE
 				ENDIF
@@ -689,6 +692,7 @@ OR IS_WANTED_LEVEL_GREATER Player 0
 	IF IS_PLAYER_IN_CAR player carry_car
 		IF flag_car_blip_displayed = TRUE
 			ADD_BLIP_FOR_COORD 1200.5 -322.5 -100.0 blip4_t3
+			SET_BLIP_ROUTE blip4_t3 TRUE
 			blob_flag = 1
 			REMOVE_BLIP blip1_t3
 		flag_car_blip_displayed = FALSE
@@ -757,6 +761,7 @@ OR IS_WANTED_LEVEL_GREATER Player 0
 			IF IS_PLAYER_IN_CAR player carry_car
 				IF flag_car_blip_displayed = TRUE
 					ADD_SPRITE_BLIP_FOR_COORD 925.0 -359.5 -100.0 RADAR_SPRITE_SPRAY blip5_t3
+					SET_BLIP_ROUTE blip5_t3 TRUE
 					REMOVE_BLIP blip1_t3
 				flag_car_blip_displayed = FALSE
 				ENDIF
@@ -1021,6 +1026,7 @@ WHILE NOT IS_CAR_IN_MISSION_GARAGE frankie_garage
 			IF flag_car_blip_displayed = TRUE
 				ADD_BLIP_FOR_COORD 1428.6 -183.1 -100.0 blip2_t3
 				CHANGE_BLIP_DISPLAY blip2_t3 BLIP_ONLY
+				SET_BLIP_ROUTE blip2_t3 TRUE
 				REMOVE_BLIP blip1_t3
 			flag_car_blip_displayed = FALSE
 			ENDIF

@@ -350,6 +350,7 @@ SET_CAR_ONLY_DAMAGED_BY_PLAYER car2_d1 TRUE
 SET_CAR_ONLY_DAMAGED_BY_PLAYER car3_d1 TRUE
 
 ADD_BLIP_FOR_COORD 1042.9772 -858.7398 13.7827 blip_chase_d1
+SET_BLIP_ROUTE blip_chase_d1 TRUE
 
 PRINT_NOW DIAB1_4 5000 1 //"~g~Get a fast car and get to the starting grid."					
 

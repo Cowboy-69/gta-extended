@@ -437,22 +437,40 @@ blippage:
 			IF IS_COLLISION_IN_MEMORY LEVEL_INDUSTRIAL
 				REMOVE_BLIP blip_garage_yd3
 				ADD_SPRITE_BLIP_FOR_COORD 925.3 -359.2 11.0 RADAR_SPRITE_SPRAY blip_garage_yd3
+				SET_BLIP_ROUTE blip_garage_yd3 TRUE
 				//flag_blip_spray = 1
 			ENDIF
 			IF IS_COLLISION_IN_MEMORY LEVEL_COMMERCIAL
 				REMOVE_BLIP blip_garage_yd3
 				ADD_SPRITE_BLIP_FOR_COORD 380.4 -493.8 26.2 RADAR_SPRITE_SPRAY blip_garage_yd3
+				SET_BLIP_ROUTE blip_garage_yd3 TRUE
 				//flag_blip_spray = 1
 			ENDIF
 			IF IS_COLLISION_IN_MEMORY LEVEL_SUBURBAN
 				REMOVE_BLIP blip_garage_yd3
 				ADD_SPRITE_BLIP_FOR_COORD -1142.1 34.0 59.0 RADAR_SPRITE_SPRAY blip_garage_yd3
+				SET_BLIP_ROUTE blip_garage_yd3 TRUE
 				//flag_blip_spray = 1
 			ENDIF
 
 	ELSE
 		REMOVE_BLIP blip_garage_yd3
 		ADD_BLIP_FOR_COORD blip_x_yd3 blip_y_yd3 -100.0 blip_garage_yd3
+		
+		IF IS_PLAYER_IN_MODEL player CAR_DIABLOS
+		AND flag_diablo_delivered_yd3 = 0
+			SET_BLIP_ROUTE blip_garage_yd3 TRUE
+		ENDIF
+
+		IF IS_PLAYER_IN_MODEL player CAR_MAFIA
+		AND flag_mafia_delivered_yd3 = 0
+			SET_BLIP_ROUTE blip_garage_yd3 TRUE
+		ENDIF
+
+		IF IS_PLAYER_IN_MODEL player CAR_YAKUZA
+		AND flag_yakuzacar_delivered_yd3 = 0
+			SET_BLIP_ROUTE blip_garage_yd3 TRUE
+		ENDIF
 	ENDIF
 
 RETURN
@@ -469,6 +487,7 @@ damage_check:
 					IF flag_garage_message = 0
 						PRINT_NOW (YD3_L) 3000 1 //Now take it to the garage!
 						SET_TARGET_CAR_FOR_MISSION_GARAGE garage_yd3 gangcar_yd3
+						SET_BLIP_ROUTE blip_garage_yd3 TRUE
 						flag_garage_message = 1
 						flag_dam_message = 0
 						loop_2_passport = 1

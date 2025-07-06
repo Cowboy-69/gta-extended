@@ -209,6 +209,7 @@ CREATE_CAR BOAT_SPEEDER 837.0 -1115.6 -0.2 players_boat
 SET_CAR_HEADING players_boat 140.0
 
 ADD_BLIP_FOR_CAR players_boat players_boat_blip
+SET_BLIP_ROUTE players_boat_blip TRUE
 
 PRINT_NOW LOVE3_1 5000 1
 
@@ -522,6 +523,7 @@ IF packages_collected = 6
 	PRINT_NOW LOVE3_2 5000 1 // "You have them all.  Take the package to Donald Love"
 	REMOVE_BLIP	plane_blip
 	ADD_BLIP_FOR_COORD 87.3 -1548.6 27.255 plane_blip //130.0 -1585.0 26.0
+	SET_BLIP_ROUTE plane_blip TRUE
 	temporary_time_drug = 0
 	GOTO garage_loop_l3
 ENDIF

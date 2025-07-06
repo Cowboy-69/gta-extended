@@ -425,6 +425,7 @@ SET_CAR_HEADING car_lm2 301.0
 CHANGE_CAR_LOCK car_lm2 CARLOCK_LOCKED
 
 ADD_BLIP_FOR_CHAR victim_ped_lm2 radar_blip_ped1_lm2
+SET_BLIP_ROUTE radar_blip_ped1_lm2 TRUE
 
 IF NOT IS_CHAR_DEAD victim_ped_lm2
 		
@@ -650,6 +651,7 @@ SET_FREE_RESPRAYS ON
 REMOVE_BLIP radar_blip_car1_lm2
 
 ADD_SPRITE_BLIP_FOR_COORD 924.0 -361.0 10.0 RADAR_SPRITE_SPRAY radar_blip_coord1_lm2
+SET_BLIP_ROUTE radar_blip_coord1_lm2 TRUE
 
 ADD_SPHERE 925.1 -350.5 9.3 2.5 sphere1_lm2 
 
@@ -689,6 +691,7 @@ OR NOT IS_PLAYER_STOPPED_IN_AREA_2D player 922.6 -366.1 928.6 -354.3 FALSE
 	AND flag_player_had_car_message_lm2 = 1
 		REMOVE_BLIP radar_blip_car1_lm2
 		ADD_SPRITE_BLIP_FOR_COORD 924.0 -361.0 10.0 RADAR_SPRITE_SPRAY radar_blip_coord1_lm2
+		SET_BLIP_ROUTE radar_blip_coord1_lm2 TRUE
 
 			IF flag_had_spray_help = 0 
 				ADD_SPHERE 925.1 -350.5 9.3 2.5 sphere1_lm2
@@ -715,6 +718,7 @@ REMOVE_SPHERE sphere1_lm2
 REMOVE_BLIP radar_blip_coord1_lm2
 
 ADD_BLIP_FOR_COORD 1087.0 -574.0 -100.0 radar_blip_coord2_lm2
+SET_BLIP_ROUTE radar_blip_coord2_lm2 TRUE
 
 ADD_SPHERE 1088.4 -574.4 13.7 2.5 sphere2_lm2
 
@@ -769,6 +773,7 @@ IF flag_car_in_garage_lm2 = 0
 	AND flag_player_had_car_message_lm2 = 1
 		REMOVE_BLIP radar_blip_car1_lm2 
 		ADD_BLIP_FOR_COORD 1087.0 -574.0 -100.0 radar_blip_coord2_lm2
+		SET_BLIP_ROUTE radar_blip_coord2_lm2 TRUE
 
 		IF flag_player_had_garage_message_lm2 = 0 
 			ADD_SPHERE 1088.4 -574.4 13.7 2.5 sphere2_lm2

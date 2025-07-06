@@ -306,6 +306,7 @@ TURN_CHAR_TO_FACE_COORD victim1_meat2 869.0 -615.0 -100.0
 SET_CHAR_CANT_BE_DRAGGED_OUT victim1_meat2 TRUE
 
 ADD_BLIP_FOR_CHAR victim1_meat2 radar_blip_ped1_meat2
+SET_BLIP_ROUTE radar_blip_ped1_meat2 TRUE
 
 CREATE_CHAR PEDTYPE_CIVMALE PED_CRIMINAL2 871.0 -612.0 -100.0 victim2_meat2
 
@@ -462,6 +463,7 @@ REMOVE_BLIP radar_blip_ped2_meat2
 PRINT_NOW ( MEA2_B4 ) 7000 1 //"Take us to the Bitch'n Dog Food Factory"
 
 ADD_BLIP_FOR_COORD 1205.7 -789.2 -100.0 radar_blip_coord2_meat2
+SET_BLIP_ROUTE radar_blip_coord2_meat2 TRUE
 
 blob_flag = 1
 
@@ -753,6 +755,7 @@ SET_POLICE_IGNORE_PLAYER player OFF
 PRINT_SOON ( MEA2_B6 ) 5000 1 //"Take the car to the crusher to get rid of evidence, get out of the car and the crane will pick it up."
 
 ADD_SPRITE_BLIP_FOR_COORD 924.0 -361.0 10.0 RADAR_SPRITE_SPRAY radar_blip_coord3_meat2 
+SET_BLIP_ROUTE radar_blip_coord3_meat2 TRUE
 
 HAS_RESPRAY_HAPPENED sprayshop1
 
@@ -782,6 +785,7 @@ OR NOT IS_PLAYER_STOPPED_IN_AREA_2D player 922.6 -366.1 928.6 -354.3 FALSE
 	AND flag_player_had_car_message_meat2 = 1
 		REMOVE_BLIP radar_blip_car_meat2
 		ADD_SPRITE_BLIP_FOR_COORD 924.0 -361.0 10.0 RADAR_SPRITE_SPRAY radar_blip_coord3_meat2
+		SET_BLIP_ROUTE radar_blip_coord3_meat2 TRUE
 		flag_player_had_car_message_meat2 = 0
 		blob_flag = 1
 	ENDIF
@@ -799,6 +803,7 @@ REMOVE_BLIP radar_blip_coord3_meat2
 PRINT_NOW ( MEA2_3 ) 5000 1 //"Dump the car by the road bridge in Chinatown."
 
 ADD_BLIP_FOR_COORD 1195.6 -805.0 13.7 radar_blip_coord4_meat2
+SET_BLIP_ROUTE radar_blip_coord4_meat2 TRUE
 
 blob_flag = 1
 
@@ -839,6 +844,7 @@ OR IS_PLAYER_IN_CAR player car_meat2
 		AND flag_player_had_car_message_meat2 = 1
 			REMOVE_BLIP radar_blip_car_meat2
 			ADD_BLIP_FOR_COORD 1195.6 -805.0 13.7 radar_blip_coord4_meat2
+			SET_BLIP_ROUTE radar_blip_coord4_meat2 TRUE
 			flag_player_had_car_message_meat2 = 0
 			blob_flag = 1
 		ENDIF

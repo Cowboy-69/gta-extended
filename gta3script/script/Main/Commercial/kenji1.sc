@@ -417,6 +417,7 @@ PRINT_NOW ( KM1_2 ) 5000 1 //"Get the car rigged with a bomb!"
 ADD_SPHERE 373.9 -576.4 25.1 4.0 sphere_km1
 
 ADD_SPRITE_BLIP_FOR_COORD 380.0 -577.0 25.1 RADAR_SPRITE_BOMB radar_blip_coord1_km1 
+SET_BLIP_ROUTE radar_blip_coord1_km1 TRUE
 
 // waiting for the cop car to be rigged
 
@@ -430,6 +431,7 @@ WHILE NOT flag_car_got_bomb_km1 = 1
 
 		IF flag_player_had_car_message_km1 = 1
 			ADD_SPRITE_BLIP_FOR_COORD 380.0 -577.0 25.1 RADAR_SPRITE_BOMB radar_blip_coord1_km1
+			SET_BLIP_ROUTE radar_blip_coord1_km1 TRUE
 
 			IF flag_player_had_dome_message_km1 = 0 
 				ADD_SPHERE 373.9 -576.4 25.1 4.0 sphere_km1
@@ -485,6 +487,7 @@ REMOVE_SPHERE sphere_km1
 PRINT_NOW ( KM1_5 ) 7000 1 //"Okay now go to the police station
 
 ADD_BLIP_FOR_COORD 327.0 -1086.0 -100.0 radar_blip_coord2_km1
+SET_BLIP_ROUTE radar_blip_coord2_km1 TRUE
 
 blob_flag = 1
 
@@ -516,6 +519,7 @@ WHILE counter_bomb_km1 = 0
 
 				IF flag_blip_on_km1 = 0
 					ADD_BLIP_FOR_COORD 327.0 -1086.0 -100.0 radar_blip_coord2_km1 // police station
+					SET_BLIP_ROUTE radar_blip_coord2_km1 TRUE
 					flag_blip_on_km1 = 1
 					blob_flag = 1
 				ENDIF
@@ -654,6 +658,7 @@ PRINT_NOW ( KM1_12 ) 7000 1 //"Get him to the dojo but get rid of the cops first
 ALTER_WANTED_LEVEL_NO_DROP player 3
 
 ADD_SPRITE_BLIP_FOR_COORD 379.0 -493.8 25.2 RADAR_SPRITE_SPRAY spray_blip_km1
+SET_BLIP_ROUTE spray_blip_km1 TRUE
 
 // waiting for the player to get rid of his wanted level
 
@@ -703,6 +708,7 @@ REMOVE_BLIP spray_blip_km1
 PRINT_NOW ( KM1_3 ) 7000 1 //"Get me to the Dojo!"
 
 ADD_BLIP_FOR_COORD 105.6 -1292.68 -100.0 radar_blip_coord3_km1
+SET_BLIP_ROUTE radar_blip_coord3_km1 TRUE
 
 flag_dojo_blip_on = 1
 
@@ -777,6 +783,7 @@ OR IS_WANTED_LEVEL_GREATER player 0
 
 			IF flag_dojo_blip_on = 0
 				ADD_BLIP_FOR_COORD 105.6 -1292.68 -100.0 radar_blip_coord3_km1
+				SET_BLIP_ROUTE radar_blip_coord3_km1 TRUE
 				PRINT_NOW ( KM1_3 ) 7000 1 //"Get me to the Dojo!"
 				blob_flag = 1
 				flag_dojo_blip_on = 1

@@ -448,6 +448,7 @@ SETUP_ZONE_CAR_INFO PORT_E NIGHT 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 PRINT_NOW ( FM2_11 ) 5000 1 //"Park out the front of Luigi's Club, Curly Bob will be leaving shortly."
 
 ADD_BLIP_FOR_COORD 907.0 -424.7 13.8 radar_blip_club_fm2
+SET_BLIP_ROUTE radar_blip_club_fm2 TRUE
 
 CREATE_CAR CAR_TAXI 906.9 -433.7 -100.0 car_fm2
 

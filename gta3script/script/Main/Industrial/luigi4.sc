@@ -376,6 +376,7 @@ GIVE_WEAPON_TO_CHAR pimp_lm4 WEAPONTYPE_SHOTGUN 30000  // sets weapon to infinat
 SET_CAR_MISSION car_lm4 MISSION_STOP_FOREVER
 
 ADD_BLIP_FOR_CAR car_lm4 radar_blip_car1_lm4
+SET_BLIP_ROUTE radar_blip_car1_lm4 TRUE
 
 flag_car_blip_on_lm4 = 1
 

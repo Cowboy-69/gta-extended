@@ -338,6 +338,7 @@ create_char_in_club_y =	-417.0//-415.78
 create_char_in_club_z =	15.3
 
 ADD_BLIP_FOR_COORD create_char_in_club_x create_char_in_club_y create_char_in_club_z mission_blip_am1
+SET_BLIP_ROUTE mission_blip_am1 TRUE
 
 bottom_of_steps_x =	885.53
 bottom_of_steps_y =	-417.0

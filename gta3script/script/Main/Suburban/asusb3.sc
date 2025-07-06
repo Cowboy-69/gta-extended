@@ -368,6 +368,7 @@ CREATE_CAR BOAT_REEFER -330.5 -1462.4 0.0 player_as3_boat
 SET_CAR_HEADING player_as3_boat 95.0
 
 ADD_BLIP_FOR_CAR player_as3_boat blip_as3_boat
+SET_BLIP_ROUTE blip_as3_boat TRUE
 flag_boat_blip = 1
 
 CREATE_PICKUP WEAPON_ROCKET PICKUP_ONCE -279.6 -1473.8 6.2 rocket_as3
@@ -528,6 +529,10 @@ loop_as3_1: //---player not at location and plane not triggered----------------
 
 	IF timer_as3 < 91000
 		IF flag_commence_approach = 0
+			IF flag_boat_blip = 1
+				SET_BLIP_ROUTE blip_as3_boat FALSE
+			ENDIF
+
 			START_DRUG_RUN
 			flag_commence_approach = 1
 			FIND_DRUG_PLANE_COORDINATES dodo_as3_x dodo_as3_y dodo_as3_z
@@ -1121,6 +1126,7 @@ ENDWHILE
 PRINT_NOW (STASH) 4000 1
 
 ADD_BLIP_FOR_COORD 367.25 -328.0 19.5 blip_stash
+SET_BLIP_ROUTE blip_stash TRUE
 
 WHILE NOT LOCATE_PLAYER_ON_FOOT_3D player 366.939 -328.025 18.5 1.0 1.0 4.0 true
 	WAIT 0
