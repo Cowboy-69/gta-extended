@@ -664,6 +664,7 @@ REMOVE_BLIP com_ammu_nation2
 REMOVE_BLIP com_sprayshop2
 START_NEW_SCRIPT asuka_mission3_loop
 START_NEW_SCRIPT kenji_mission1_loop
+REQUEST_AUTO_SAVE
 RETURN
 		
 

@@ -840,6 +840,11 @@ ENDIF
 
 flag_player_on_mission = 0
 flag_player_on_cop_mission = 0
+
+IF total_criminals_killed > 0
+	REQUEST_AUTO_SAVE
+ENDIF
+
 MISSION_HAS_FINISHED
 RETURN
 

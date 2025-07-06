@@ -1369,3 +1369,33 @@ int8 CRunningScript::ProcessCommands1100To1199(int32 command)
 	}
 	return -1;
 }
+
+#ifdef EX_OPCODES
+int8 CRunningScript::ProcessCommands4000To4099(int32 command)
+{
+	switch (command)
+	{
+#ifdef EX_AUTO_SAVE // Script
+	case COMMAND_DO_AUTO_SAVE:
+		DoAutoSave();
+		return 0;
+	case COMMAND_IS_AUTO_SAVE_IN_PROGRESS:
+		// TODO
+		UpdateCompareFlag(false);
+		return 0;
+	case COMMAND_GET_IS_AUTOSAVE_OFF:
+		UpdateCompareFlag(!FrontEndMenuManager.m_PrefsAutosave);
+		return 0;
+	case COMMAND_REQUEST_AUTO_SAVE:
+		bIsAutoSaveRequested = FrontEndMenuManager.m_PrefsAutosave;
+		return 0;
+	case COMMAND_IS_AUTO_SAVE_REQUESTED:
+		UpdateCompareFlag(bIsAutoSaveRequested);
+		return 0;
+#endif
+	default:
+		script_assert(0);
+	}
+	return -1;
+}
+#endif // EX_OPCODES

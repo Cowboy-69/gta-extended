@@ -1781,6 +1781,8 @@ START_NEW_SCRIPT sub_restart
 START_NEW_SCRIPT hospital_info_loop
 START_NEW_SCRIPT police_info_loop
 
+START_NEW_SCRIPT autosave_loop
+
 IF IS_PLAYER_PLAYING Player
 	SET_PLAYER_CONTROL Player on
 ENDIF
@@ -7248,4 +7250,44 @@ van_heist_garage_pager:
 	ENDIF
 
 	GOTO van_heist_garage_pager
+}
+
+// *********************************AUTO SAVE LOOP*******************************************
+autosave_loop:
+{
+	SCRIPT_NAME AUTOSAV
+
+autosave_loop_inner:
+	WAIT 250
+
+	IF IS_PLAYER_PLAYING player
+		IF flag_player_on_mission = 0
+			IF IS_AUTO_SAVE_REQUESTED
+
+				DO_AUTO_SAVE //THE GAME SAVES/RE-LOADS HERE!!!!!
+
+				WAIT 0
+
+				// If the player loads an autosave, the character will appear in one of the safehouses
+				IF LOCATE_PLAYER_ANY_MEANS_2D player 0.0 0.0 1.0 1.0 FALSE
+					IF flag_industrial_passed = 1
+						LOAD_SCENE 103.0 -478.5 14.9
+
+						SET_PLAYER_COORDINATES player 103.0 -478.5 14.9
+						SET_PLAYER_HEADING player 0.0
+					ELSE
+						LOAD_SCENE 888.6 -308.4 -100.0
+
+						SET_PLAYER_COORDINATES player 888.6 -308.4 -100.0
+						SET_PLAYER_HEADING player 90.0
+					ENDIF
+
+					SET_CAMERA_BEHIND_PLAYER
+				ENDIF
+
+			ENDIF
+		ENDIF
+	ENDIF
+
+	GOTO autosave_loop_inner
 }

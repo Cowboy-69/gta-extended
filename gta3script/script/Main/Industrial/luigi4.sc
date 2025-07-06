@@ -565,6 +565,8 @@ IF out_of_stock_pistol = 0
 	START_NEW_SCRIPT pistol_message
 ENDIF
 
+REQUEST_AUTO_SAVE
+
 RETURN
 		
 

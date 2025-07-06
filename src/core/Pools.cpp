@@ -460,10 +460,18 @@ INITSAVEBUF
 		CPed* pPed = GetPedPool()->GetSlot(i);
 		if (!pPed)
 			continue;
+#ifdef EX_FRONTEND // SavePedPool
+#ifdef MISSION_REPLAY
+		if ((!pPed->bInVehicle || (pPed == CWorld::Players[CWorld::PlayerInFocus].m_pPed && (IsQuickSave || bAutoSave))) && pPed->m_nPedType == PEDTYPE_PLAYER1)
+#else
+		if ((!pPed->bInVehicle || (pPed == CWorld::Players[CWorld::PlayerInFocus].m_pPed && bAutoSave)) && pPed->m_nPedType == PEDTYPE_PLAYER1)
+#endif
+#else
 #ifdef MISSION_REPLAY
 		if ((!pPed->bInVehicle || (pPed == CWorld::Players[CWorld::PlayerInFocus].m_pPed && IsQuickSave)) && pPed->m_nPedType == PEDTYPE_PLAYER1)
 #else
 		if (!pPed->bInVehicle && pPed->m_nPedType == PEDTYPE_PLAYER1)
+#endif
 #endif
 			nNumPeds++;
 	}
@@ -474,10 +482,18 @@ INITSAVEBUF
 		CPed* pPed = GetPedPool()->GetSlot(i);
 		if (!pPed)
 			continue;
+#ifdef EX_FRONTEND // SavePedPool
+#ifdef MISSION_REPLAY
+		if ((!pPed->bInVehicle || (pPed == CWorld::Players[CWorld::PlayerInFocus].m_pPed && (IsQuickSave || bAutoSave))) && pPed->m_nPedType == PEDTYPE_PLAYER1) {
+#else
+		if ((!pPed->bInVehicle || (pPed == CWorld::Players[CWorld::PlayerInFocus].m_pPed && bAutoSave)) && pPed->m_nPedType == PEDTYPE_PLAYER1) {
+#endif
+#else
 #ifdef MISSION_REPLAY
 		if ((!pPed->bInVehicle || (pPed == CWorld::Players[CWorld::PlayerInFocus].m_pPed && IsQuickSave)) && pPed->m_nPedType == PEDTYPE_PLAYER1) {
 #else
 		if (!pPed->bInVehicle && pPed->m_nPedType == PEDTYPE_PLAYER1) {
+#endif
 #endif
 			CopyToBuf(buf, pPed->m_nPedType);
 			CopyToBuf(buf, pPed->m_modelIndex);

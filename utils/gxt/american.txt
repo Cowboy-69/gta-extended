@@ -7169,7 +7169,7 @@ Slot 6 is free
 Slot 7 is free
 
 [FEM_SL8]
-Slot 8 is free
+Autosave slot is free
 
 [FEM_MM]
 MAIN MENU
@@ -8177,7 +8177,7 @@ Attack
 You cannot save the game at this time. To save the game, you must not be on a mission, not move or have a wanted level.
 
 [FET_AUT]
-Autosave
+AUTOSAVE
 
 [FEM_SL9]
 Autosave File Not Present

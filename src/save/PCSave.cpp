@@ -46,8 +46,16 @@ C_PcSave::SaveSlot(int32 slot)
 	_psGetUserFilesFolder();
 	int file = CFileMgr::OpenFile(ValidSaveName, "wb");
 	if (file != 0) {
+#ifdef EX_AUTO_SAVE // SaveSlot
+#ifdef MISSION_REPLAY
+		if (!IsQuickSave && !bAutoSave)
+#else
+		if (!bAutoSave)
+#endif
+#else
 #ifdef MISSION_REPLAY
 		if (!IsQuickSave)
+#endif
 #endif
 			DoGameSpecificStuffBeforeSave();
 		if (GenericSave(file)) {

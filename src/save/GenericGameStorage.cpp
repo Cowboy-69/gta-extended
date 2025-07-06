@@ -45,11 +45,20 @@
 #define SIZE_OF_SIMPLEVARS 0xBC
 #endif
 
+#ifdef EX_AUTO_SAVE // Slot
+#define AUTO_SAVE_SLOT 7
+#endif
+
 const uint32 SIZE_OF_ONE_GAME_IN_BYTES = 201729;
 
 #ifdef MISSION_REPLAY
 int8 IsQuickSave;
 const int PAUSE_SAVE_SLOT = SLOT_COUNT;
+#endif
+
+#ifdef EX_AUTO_SAVE
+bool bAutoSave = false;
+bool bIsAutoSaveRequested = false;
 #endif
 
 char DefaultPCSaveFileName[260];
@@ -434,6 +443,12 @@ CloseFile(int32 file)
 void
 DoGameSpecificStuffAfterSucessLoad()
 {
+#ifdef EX_AUTO_SAVE // Move the player to the desired location after loading autosave
+	if (FrontEndMenuManager.m_nCurrSaveSlot == AUTO_SAVE_SLOT) {
+		FindPlayerPed()->SetPosition(CVector(0.0f, 0.0f, 0.0f));
+	}
+#endif
+
 	StillToFadeOut = true;
 	JustLoadedDontFadeInYet = true;
 	CTheScripts::Process();
@@ -603,6 +618,27 @@ RestoreForStartLoad()
 		}
 	}
 }
+
+#ifdef EX_AUTO_SAVE
+void DoAutoSave()
+{
+	bIsAutoSaveRequested = false;
+
+	if (!FrontEndMenuManager.m_PrefsAutosave)
+		return;
+
+	bAutoSave = true;
+
+#ifdef MISSION_REPLAY
+	IsQuickSave = false;
+#endif
+	
+	PcSaveHelper.SaveSlot(AUTO_SAVE_SLOT);
+	PcSaveHelper.PopulateSlotInfo();
+
+	re3_debug("DoAutoSave");
+}
+#endif
 
 int
 align4bytes(int32 size)

@@ -237,6 +237,9 @@ bool CMenuManager::m_PrefsGPS = true;
 int8 CMenuManager::m_PrefsFOV_FP = 90;
 bool CMenuManager::m_PrefsAutocenterCamInVeh_FP = true;
 #endif
+#ifdef EX_AUTO_SAVE // Menu
+bool CMenuManager::m_PrefsAutosave = true;
+#endif
 
 CMenuManager FrontEndMenuManager;
 
@@ -1380,6 +1383,9 @@ CMenuManager::Draw()
 #ifdef EX_FIRST_PERSON // MENUPAGE_FIRST_PERSON settings
 		case MENUPAGE_FIRST_PERSON:
 #endif
+#ifdef EX_FRONTEND // Other settings
+		case MENUPAGE_OTHER_SETTINGS:
+#endif
 			columnWidth = 50;
 			headerHeight = 0;
 			lineHeight = 20;
@@ -1806,6 +1812,14 @@ CMenuManager::Draw()
 #ifdef EX_FIRST_PERSON // Menu: On/Off
 			case MENUACTION_AUTOCENTER_IN_VEHICLE_FP:
 				if (m_PrefsAutocenterCamInVeh_FP)
+					rightText = TheText.Get("FEM_ON");
+				else
+					rightText = TheText.Get("FEM_OFF");
+				break;
+#endif
+#ifdef EX_AUTO_SAVE // Menu
+			case MENUACTION_AUTOSAVE:
+				if (m_PrefsAutosave)
 					rightText = TheText.Get("FEM_ON");
 				else
 					rightText = TheText.Get("FEM_OFF");
@@ -5972,6 +5986,9 @@ CMenuManager::ProcessButtonPresses(void)
 						SaveINIControllerSettings();
 #endif
 					}
+#ifdef EX_AUTO_SAVE // Menu
+					m_PrefsAutosave = true;
+#endif
 					SetHelperText(2);
 					break;
 				case MENUACTION_CTRLMETHOD:
@@ -6456,6 +6473,12 @@ CMenuManager::ProcessOnOffMenuOptions()
 #ifdef EX_FIRST_PERSON
 	case MENUACTION_AUTOCENTER_IN_VEHICLE_FP:
 		m_PrefsAutocenterCamInVeh_FP = !m_PrefsAutocenterCamInVeh_FP;
+		SaveSettings();
+		break;
+#endif
+#ifdef EX_AUTO_SAVE // Menu
+	case MENUACTION_AUTOSAVE:
+		m_PrefsAutosave = !m_PrefsAutosave;
 		SaveSettings();
 		break;
 #endif

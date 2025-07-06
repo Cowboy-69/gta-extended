@@ -596,6 +596,7 @@ IF flag_4x4_mission3_passed = 0
 	REGISTER_MISSION_PASSED T4X4_3
 	flag_4x4_mission3_passed = 1
 	PLAYER_MADE_PROGRESS 1 
+	REQUEST_AUTO_SAVE
 ENDIF
 
 //START_NEW_SCRIPT t4x4_mission2_loop

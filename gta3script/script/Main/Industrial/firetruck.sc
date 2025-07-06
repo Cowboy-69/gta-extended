@@ -620,6 +620,11 @@ MARK_MODEL_AS_NO_LONGER_NEEDED random_car_model
 
 flag_player_on_mission = 0
 flag_player_on_fire_mission	= 0
+
+IF total_score > 0
+	REQUEST_AUTO_SAVE
+ENDIF
+
 MISSION_HAS_FINISHED
 RETURN
 

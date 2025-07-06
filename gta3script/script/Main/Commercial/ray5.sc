@@ -655,6 +655,8 @@ ELSE
 	START_NEW_SCRIPT ray_mission6_loop
 ENDIF
 
+REQUEST_AUTO_SAVE
+
 RETURN
 		
 

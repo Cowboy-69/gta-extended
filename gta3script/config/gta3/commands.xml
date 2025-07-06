@@ -7468,5 +7468,15 @@
         <Arg Type="FLOAT"/>
       </Args>
     </Command>
+    <Command ID="0xfa0" Name="DO_AUTO_SAVE">
+    </Command>
+	  <Command ID="0xfa1" Name="IS_AUTO_SAVE_IN_PROGRESS">
+    </Command>
+	  <Command ID="0xfa2" Name="GET_IS_AUTOSAVE_OFF">
+    </Command>
+	  <Command ID="0xfa3" Name="REQUEST_AUTO_SAVE">
+    </Command>
+	  <Command ID="0xfa4" Name="IS_AUTO_SAVE_REQUESTED">
+    </Command>
   </Commands>
 </GTA3Script>

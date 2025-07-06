@@ -20,6 +20,9 @@ wchar *GetSavedGameDateAndTime(int32 slot);
 wchar *GetNameOfSavedGame(int32 slot);
 bool CheckDataNotCorrupt(int32 slot, char *name);
 bool RestoreForStartLoad();
+#ifdef EX_AUTO_SAVE
+void DoAutoSave();
+#endif
 int align4bytes(int32 size);
 
 #ifdef FIX_INCOMPATIBLE_SAVES
@@ -43,6 +46,10 @@ extern bool JustLoadedDontFadeInYet;
 extern bool StillToFadeOut;
 extern uint32 TimeStartedCountingForFade;
 extern uint32 TimeToStayFadedBeforeFadeOut;
+#ifdef EX_AUTO_SAVE
+extern bool bAutoSave;
+extern bool bIsAutoSaveRequested;
+#endif
 
 extern char SaveFileNameJustSaved[260]; // 8F2570
 

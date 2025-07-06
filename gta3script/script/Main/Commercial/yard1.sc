@@ -991,7 +991,7 @@ PRINT_WITH_NUMBER_NOW (Y1_1ST) counter_player_points 4000 1
 CLEAR_WANTED_LEVEL player
 ADD_SCORE player reward_yd1
 REGISTER_HIGHEST_SCORE 0 counter_player_points
-
+REQUEST_AUTO_SAVE
 RETURN
 		
 

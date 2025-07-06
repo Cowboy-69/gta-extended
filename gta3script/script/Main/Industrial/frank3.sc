@@ -2553,6 +2553,7 @@ flag_frankie_switched_off = 0
 ADD_SPRITE_BLIP_FOR_CONTACT_POINT 1455.7 -187.3 -100.0 RADAR_SPRITE_SAL frankie_contact_blip
 START_NEW_SCRIPT frankie_mission4_loop
 START_NEW_SCRIPT emergency_crane_pager
+REQUEST_AUTO_SAVE
 RETURN
 		
 

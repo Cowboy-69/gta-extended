@@ -885,6 +885,7 @@ ADD_SCORE player 2000
 flag_meat_mission2_passed = 1
 CLEAR_WANTED_LEVEL player
 START_NEW_SCRIPT meat_mission3_loop
+REQUEST_AUTO_SAVE
 RETURN
 
 

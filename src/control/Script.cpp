@@ -837,6 +837,10 @@ int8 CRunningScript::ProcessOneCommand()
 	else if (command < 1200)
 		retval = ProcessCommands1100To1199(command);
 #endif
+#ifdef EX_OPCODES
+	else if (command < 4100)
+		retval = ProcessCommands4000To4099(command);
+#endif
 #ifdef USE_ADVANCED_SCRIPT_DEBUG_OUTPUT
 	LogAfterProcessingCommand(command);
 #elif defined USE_BASIC_SCRIPT_DEBUG_OUTPUT

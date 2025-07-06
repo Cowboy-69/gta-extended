@@ -1923,6 +1923,11 @@ SET_WANTED_MULTIPLIER 1.0
 
 flag_player_on_mission = 0
 flag_player_on_ambulance_mission = 0
+
+IF saved_peds_this_go > 0
+	REQUEST_AUTO_SAVE
+ENDIF
+
 MISSION_HAS_FINISHED
 RETURN
 

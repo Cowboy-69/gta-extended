@@ -2516,6 +2516,7 @@ PLAYER_MADE_PROGRESS 1
 START_NEW_SCRIPT asuka_mission2_loop
 START_NEW_SCRIPT joeys_buggy_loop
 START_NEW_SCRIPT yardie_phone_start
+REQUEST_AUTO_SAVE
 RETURN									
 
 

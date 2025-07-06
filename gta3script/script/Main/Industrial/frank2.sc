@@ -1648,6 +1648,8 @@ IF flag_toni_mission5_passed = 0
 	REMOVE_BLIP frankie_contact_blip
 ENDIF
 
+REQUEST_AUTO_SAVE
+
 RETURN
 		
 

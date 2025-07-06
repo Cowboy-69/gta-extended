@@ -9,6 +9,7 @@
 
 #define LIBERTY_EX
 #ifdef LIBERTY_EX
+	// These macros are used to navigation; Disabling them individually is not recommended
 
 	#define EX_UTILS // Useful tools
 
@@ -23,12 +24,14 @@
 	#define EX_DAMAGE
 	#define EX_AI
 	#define EX_VEHICLE
+	#define EX_FRONTEND
 	#define EX_MISC
 	#define EX_VEHICLE_LOADER
 	#define EX_FEATURES_INI
 	#define EX_CHEATS
 	#define EX_BORDERLESS_WINDOW
 	#define EX_RADIO_ICONS
+	#define EX_OPCODES
 
 	#ifdef EX_PARTICLE
 		#define MOVING_MOON
@@ -78,6 +81,10 @@
 
 	#ifdef EX_FEATURES_INI
 		#define EX_DISTANT_LIGHTS // thank https://github.com/ThirteenAG/III.VC.SA.IV.Project2DFX/releases/tag/gta3
+	#endif
+
+	#ifdef EX_OPCODES
+		#define EX_AUTO_SAVE
 	#endif
 
 #endif

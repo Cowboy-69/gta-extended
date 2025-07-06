@@ -590,6 +590,7 @@ IF flag_mayhem_mission1_passed = 0
 	REGISTER_MISSION_PASSED MM_1 
 	flag_mayhem_mission1_passed = 1
 	PLAYER_MADE_PROGRESS 1 
+	REQUEST_AUTO_SAVE
 ENDIF
 //START_NEW_SCRIPT carpark_mission2_loop
 

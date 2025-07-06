@@ -424,6 +424,7 @@ import1_loop_inner:
 					SET_OBJECT_HEADING securicar_score_off 270.0
 					PLAYER_MADE_PROGRESS 1
 					industrial_slot1 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars1 2
@@ -434,6 +435,7 @@ import1_loop_inner:
 					SET_OBJECT_HEADING moonbeam_score_off 270.0
 					PLAYER_MADE_PROGRESS 1
 					industrial_slot2 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars1 3
@@ -444,6 +446,7 @@ import1_loop_inner:
 					SET_OBJECT_HEADING coach_score_off 270.0
 					PLAYER_MADE_PROGRESS 1
 					industrial_slot3 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars1 4
@@ -454,6 +457,7 @@ import1_loop_inner:
 					SET_OBJECT_HEADING flatbed_score_off 270.0
 					PLAYER_MADE_PROGRESS 1
 					industrial_slot4 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars1 5
@@ -464,6 +468,7 @@ import1_loop_inner:
 					SET_OBJECT_HEADING linerunner_score_off 270.0
 					PLAYER_MADE_PROGRESS 1
 					industrial_slot5 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars1 6
@@ -474,6 +479,7 @@ import1_loop_inner:
 					SET_OBJECT_HEADING trashmaster_score_off 270.0
 					PLAYER_MADE_PROGRESS 1
 					industrial_slot6 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars1 7
@@ -484,6 +490,7 @@ import1_loop_inner:
 					SET_OBJECT_HEADING patriot_score_off 270.0
 					PLAYER_MADE_PROGRESS 1
 					industrial_slot7 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars1 8
@@ -494,6 +501,7 @@ import1_loop_inner:
 					SET_OBJECT_HEADING whoopee_score_off 270.0
 					PLAYER_MADE_PROGRESS 1
 					industrial_slot8 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars1 9
@@ -504,6 +512,7 @@ import1_loop_inner:
 					SET_OBJECT_HEADING blista_score_off 270.0
 					PLAYER_MADE_PROGRESS 1
 					industrial_slot9 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars1 10
@@ -514,6 +523,7 @@ import1_loop_inner:
 					SET_OBJECT_HEADING mule_score_off 270.0
 					PLAYER_MADE_PROGRESS 1
 					industrial_slot10 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars1 11
@@ -524,6 +534,7 @@ import1_loop_inner:
 					SET_OBJECT_HEADING yankee_score_off 270.0
 					PLAYER_MADE_PROGRESS 1
 					industrial_slot11 = 1
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars1 12
@@ -534,6 +545,7 @@ import1_loop_inner:
 					SET_OBJECT_HEADING bobcat_score_off 270.0
 					PLAYER_MADE_PROGRESS 1
 					industrial_slot12 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars1 13
@@ -544,6 +556,7 @@ import1_loop_inner:
 					SET_OBJECT_HEADING dodo_score_off 270.0
 					PLAYER_MADE_PROGRESS 1
 					industrial_slot13 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars1 14
@@ -554,6 +567,7 @@ import1_loop_inner:
 					SET_OBJECT_HEADING bus_score_off 270.0
 					PLAYER_MADE_PROGRESS 1
 					industrial_slot14 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars1 15
@@ -564,6 +578,7 @@ import1_loop_inner:
 					SET_OBJECT_HEADING rumpo_score_off 270.0
 					PLAYER_MADE_PROGRESS 1
 					industrial_slot15 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars1 16
@@ -574,6 +589,7 @@ import1_loop_inner:
 					SET_OBJECT_HEADING pony_score_off 270.0
 					PLAYER_MADE_PROGRESS 1
 					industrial_slot16 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 			ELSE
@@ -810,6 +826,7 @@ military_crane_loop_inner:
 					ADD_SCORE player 200000
 					PLAYER_MADE_PROGRESS 7
 					cran_activated_before = 1
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF NOT IS_AREA_OCCUPIED 1565.9 -706.7 9.0 1577.2 -686.3 20.0 FALSE TRUE FALSE FALSE FALSE
@@ -952,6 +969,7 @@ import2_loop_inner:
 					SET_OBJECT_HEADING sentinet_score_off 180.0
 					PLAYER_MADE_PROGRESS 1
 					suburban_slot1 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars2 2
@@ -962,6 +980,7 @@ import2_loop_inner:
 					SET_OBJECT_HEADING cheetah_score_off 180.0
 					PLAYER_MADE_PROGRESS 1
 					suburban_slot2 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars2 3
@@ -972,6 +991,7 @@ import2_loop_inner:
 					SET_OBJECT_HEADING banshee_score_off 180.0
 					PLAYER_MADE_PROGRESS 1
 					suburban_slot3 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars2 4
@@ -982,6 +1002,7 @@ import2_loop_inner:
 					SET_OBJECT_HEADING idaho_score_off 180.0
 					PLAYER_MADE_PROGRESS 1
 					suburban_slot4 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars2 5
@@ -992,6 +1013,7 @@ import2_loop_inner:
 					SET_OBJECT_HEADING infernus_score_off 180.0
 					PLAYER_MADE_PROGRESS 1
 					suburban_slot5 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars2 6
@@ -1002,6 +1024,7 @@ import2_loop_inner:
 					SET_OBJECT_HEADING taxi_score_off 180.0
 					PLAYER_MADE_PROGRESS 1
 					suburban_slot6 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars2 7
@@ -1012,6 +1035,7 @@ import2_loop_inner:
 					SET_OBJECT_HEADING kuruma_score_off 180.0
 					PLAYER_MADE_PROGRESS 1
 					suburban_slot7 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars2 8
@@ -1022,6 +1046,7 @@ import2_loop_inner:
 					SET_OBJECT_HEADING stretch_score_off 180.0
 					PLAYER_MADE_PROGRESS 1
 					suburban_slot8 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars2 9
@@ -1032,6 +1057,7 @@ import2_loop_inner:
 					SET_OBJECT_HEADING perennial_score_off 180.0
 					PLAYER_MADE_PROGRESS 1
 					suburban_slot9 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars2 10
@@ -1042,6 +1068,7 @@ import2_loop_inner:
 					SET_OBJECT_HEADING stinger_score_off 180.0
 					PLAYER_MADE_PROGRESS 1
 					suburban_slot10 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars2 11
@@ -1052,6 +1079,7 @@ import2_loop_inner:
 					SET_OBJECT_HEADING manana_score_off 180.0
 					PLAYER_MADE_PROGRESS 1
 					suburban_slot11 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars2 12
@@ -1062,6 +1090,7 @@ import2_loop_inner:
 					SET_OBJECT_HEADING landstalker_score_off 180.0
 					PLAYER_MADE_PROGRESS 1
 					suburban_slot12 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars2 13
@@ -1072,6 +1101,7 @@ import2_loop_inner:
 					SET_OBJECT_HEADING stallion_score_off 180.0
 					PLAYER_MADE_PROGRESS 1
 					suburban_slot13 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars2 14
@@ -1082,6 +1112,7 @@ import2_loop_inner:
 					SET_OBJECT_HEADING injection_score_off 180.0
 					PLAYER_MADE_PROGRESS 1
 					suburban_slot14 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars2 15
@@ -1092,6 +1123,7 @@ import2_loop_inner:
 					SET_OBJECT_HEADING cabbie_score_off 180.0
 					PLAYER_MADE_PROGRESS 1
 					suburban_slot15 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 
 				IF HAS_IMPORT_GARAGE_SLOT_BEEN_FILLED collect_all_cars2 16
@@ -1102,6 +1134,7 @@ import2_loop_inner:
 					SET_OBJECT_HEADING esperanto_score_off 180.0
 					PLAYER_MADE_PROGRESS 1
 					suburban_slot16 = 1 
+					REQUEST_AUTO_SAVE
 				ENDIF
 			ELSE
 		//IF suburban_garage_slots_filled = 16
@@ -1332,6 +1365,7 @@ check_packages:
 	PLAYER_MADE_PROGRESS 1
 	ADD_PAGER_MESSAGE ( PAGEB1 ) 140 2 0
 	earned_free_pistol = 1
+	REQUEST_AUTO_SAVE
 
 	WHILE number_of_packages_collected < 20
 		WAIT 500
@@ -1341,6 +1375,7 @@ check_packages:
 	PLAYER_MADE_PROGRESS 1
 	ADD_PAGER_MESSAGE ( PAGEB2 ) 140 2 0
 	earned_free_uzi = 1
+	REQUEST_AUTO_SAVE
 
 	WHILE number_of_packages_collected < 30
 		WAIT 500
@@ -1350,6 +1385,7 @@ check_packages:
 	PLAYER_MADE_PROGRESS 1
 	ADD_PAGER_MESSAGE ( PAGEB5 ) 140 2 0
 	earned_free_grenades = 1
+	REQUEST_AUTO_SAVE
 
 	WHILE number_of_packages_collected < 40
 		WAIT 500
@@ -1359,6 +1395,7 @@ check_packages:
 	PLAYER_MADE_PROGRESS 1
 	ADD_PAGER_MESSAGE ( PAGEB4 ) 140 2 0
 	earned_free_shotgun = 1
+	REQUEST_AUTO_SAVE
 
 	WHILE number_of_packages_collected < 50
 		WAIT 500
@@ -1368,6 +1405,7 @@ check_packages:
 	PLAYER_MADE_PROGRESS 1
 	ADD_PAGER_MESSAGE ( PAGEB3 ) 140 2 0
 	earned_free_armour = 1
+	REQUEST_AUTO_SAVE
 	
 	WHILE number_of_packages_collected < 60
 		WAIT 500
@@ -1377,6 +1415,7 @@ check_packages:
 	PLAYER_MADE_PROGRESS 1
 	ADD_PAGER_MESSAGE ( PAGEB6 ) 140 2 0
 	earned_free_molotovs = 1
+	REQUEST_AUTO_SAVE
 
 	WHILE number_of_packages_collected < 70
 		WAIT 500
@@ -1386,6 +1425,7 @@ check_packages:
 	PLAYER_MADE_PROGRESS 1
 	ADD_PAGER_MESSAGE ( PAGEB7 ) 140 2 0
 	earned_free_ak47 = 1
+	REQUEST_AUTO_SAVE
 
 	WHILE number_of_packages_collected < 80
 		WAIT 500
@@ -1395,6 +1435,7 @@ check_packages:
 	PLAYER_MADE_PROGRESS 1
 	ADD_PAGER_MESSAGE ( PAGEB8 ) 140 2 0
 	earned_free_sniper = 1
+	REQUEST_AUTO_SAVE
 
 	WHILE number_of_packages_collected < 90
 		WAIT 500
@@ -1404,6 +1445,7 @@ check_packages:
 	PLAYER_MADE_PROGRESS 1
 	ADD_PAGER_MESSAGE ( PAGEB9 ) 140 2 0
 	earned_free_m16 = 1
+	REQUEST_AUTO_SAVE
 
 	WHILE number_of_packages_collected < 100
 		WAIT 500
@@ -1413,6 +1455,7 @@ check_packages:
 	PLAYER_MADE_PROGRESS 1
 	ADD_PAGER_MESSAGE ( PAGEB10 ) 140 2 0
 	earned_free_launcher = 1
+	REQUEST_AUTO_SAVE
 
 	TERMINATE_THIS_SCRIPT
 }

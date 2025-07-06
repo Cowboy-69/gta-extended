@@ -631,6 +631,9 @@ bool LoadINISettings()
 #ifdef NO_MOVIES
 	ReadIniIfExists("General", "NoMovies", &gbNoMovies);
 #endif
+#ifdef EX_AUTO_SAVE // ini
+	ReadIniIfExists("Other", "Autosave", &FrontEndMenuManager.m_PrefsAutosave);
+#endif
 
 #ifdef CUSTOM_FRONTEND_OPTIONS
 	bool migrate = cfg.get("FrontendOptions").size() != 0;
@@ -758,6 +761,9 @@ void SaveINISettings()
 #endif
 #ifdef NO_MOVIES
 	StoreIni("General", "NoMovies", gbNoMovies);
+#endif
+#ifdef EX_AUTO_SAVE // ini
+	StoreIni("Other", "Autosave", FrontEndMenuManager.m_PrefsAutosave);
 #endif
 #ifdef CUSTOM_FRONTEND_OPTIONS
 	for (int i = 0; i < MENUPAGES; i++) {

@@ -341,6 +341,9 @@ public:
 #if GTA_VERSION > GTA3_PS2_160
 	int8 ProcessCommands1100To1199(int32);
 #endif
+#ifdef EX_OPCODES
+	int8 ProcessCommands4000To4099(int32);
+#endif
 	void LocatePlayerCommand(int32, uint32*);
 	void LocatePlayerCharCommand(int32, uint32*);
 	void LocatePlayerCarCommand(int32, uint32*);

@@ -39,6 +39,9 @@
 #include "World.h"
 #include "Zones.h"
 #include "Wanted.h"
+#ifdef EX_AUTO_SAVE
+#include "GenericGameStorage.h"
+#endif
 
 int8 CRunningScript::ProcessCommands800To899(int32 command)
 {
@@ -1948,6 +1951,10 @@ int8 CRunningScript::ProcessCommands900To999(int32 command)
 	}
 	case COMMAND_ACTIVATE_SAVE_MENU:
 		FrontEndMenuManager.m_bSaveMenuActive = true;
+#ifdef EX_AUTO_SAVE
+		bAutoSave = false;
+		bIsAutoSaveRequested = false;
+#endif
 		return 0;
 	case COMMAND_HAS_SAVE_GAME_FINISHED:
 		UpdateCompareFlag(!FrontEndMenuManager.m_bMenuActive);

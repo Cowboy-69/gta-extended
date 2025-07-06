@@ -1479,6 +1479,8 @@ IF flag_diablo1_passed_before = 0
 	flag_diablo1_passed_before = 1
 ENDIF
 
+REQUEST_AUTO_SAVE
+
 RETURN
 		
 

@@ -735,6 +735,7 @@ SET_THREAT_FOR_PED_TYPE PEDTYPE_GANG_YARDIE THREAT_PLAYER1
 REMOVE_BLIP	yardie_contact_blip
 START_NEW_SCRIPT yardie_mission1_loop
 flag_yardie_mission1_passed = 0
+REQUEST_AUTO_SAVE
 RETURN
 		
 

@@ -31,6 +31,9 @@
 #include "World.h"
 #include "ZoneCull.h"
 #include "main.h"
+#if defined DEBUG && defined EX_AUTO_SAVE
+#include "GenericGameStorage.h"
+#endif
 
 
 void
@@ -76,6 +79,11 @@ CPlayerInfo::Clear(void)
 void
 CPlayerInfo::Process(void)
 {
+#if defined DEBUG && defined EX_AUTO_SAVE
+	if (CPad::GetPad(0)->GetCharJustDown(0x31)) { // 1
+		DoAutoSave();
+	}
+#endif
 #ifdef FIX_BUGS
 	if (CReplay::IsPlayingBack())
 		return;

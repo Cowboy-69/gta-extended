@@ -2452,6 +2452,7 @@ IF counter_no_of_girls_at_the_ball = 8
 	ADD_SCORE player 2000
 ENDIF
 REMOVE_BLIP luigi_contact_blip
+REQUEST_AUTO_SAVE
 RETURN		
 		
 
