@@ -83,8 +83,11 @@
 	#endif
 
 	#ifdef EX_OPCODES
+		#define EX_PED_VARIATIONS
 		#define EX_GPS // thank https://github.com/DK22Pac/plugin-sdk/tree/master/examples/GPS
 		#define EX_AUTO_SAVE
+		#define EX_UNLOCK_MISSION_NEWS_STORY
+		#define EX_SET_VEHICLE_STEERING_ANGLE
 	#endif
 
 #endif

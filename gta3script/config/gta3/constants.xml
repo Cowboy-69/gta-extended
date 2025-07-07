@@ -612,5 +612,8 @@
       <Constant Name="WEAPONTYPE_UZI" Value="3"/>
       <Constant Name="WEAPONTYPE_UZI_DRIVEBY" Value="19"/>
     </Enum>
+    <Enum Name="NEWSPAPER">
+      <Constant Name="NEWSPAPER_INTRO"/>
+    </Enum>
   </Constants>
 </GTA3Script>

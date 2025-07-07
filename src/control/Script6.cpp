@@ -1378,6 +1378,18 @@ int8 CRunningScript::ProcessCommands4000To4099(int32 command)
 {
 	switch (command)
 	{
+#ifdef EX_PED_VARIATIONS // Script
+	case COMMAND_SET_CHAR_CLOTHING_VARIATION:
+	{
+		
+		return 0;
+	}
+	case COMMAND_GET_CHAR_CLOTHING_VARIATION:
+	{
+		
+		return 0;
+	}
+#endif
 #ifdef EX_AUTO_SAVE // Script
 	case COMMAND_DO_AUTO_SAVE:
 		DoAutoSave();
@@ -1401,6 +1413,22 @@ int8 CRunningScript::ProcessCommands4000To4099(int32 command)
 		CollectParameters(&m_nIp, 2);
 		CRadar::SetBlipRoute(ScriptParams[0], ScriptParams[1]);
 		return 0;
+#endif
+#ifdef EX_UNLOCK_MISSION_NEWS_STORY // Script
+	case COMMAND_UNLOCK_MISSION_NEWS_STORY:
+		
+		return 0;
+#endif
+#ifdef EX_SET_VEHICLE_STEERING_ANGLE
+	case COMMAND_SET_VEHICLE_STEERING_ANGLE:
+	{
+		CollectParameters(&m_nIp, 2);
+		CVehicle* vehicle = CPools::GetVehiclePool()->GetAt(ScriptParams[0]);
+		script_assert(vehicle);
+		float steeringAngle = *(float*)&ScriptParams[1];
+		vehicle->m_fSteerAngle = DEGTORAD(steeringAngle);
+		return 0;
+	}
 #endif
 	default:
 		script_assert(0);
