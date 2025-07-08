@@ -3595,6 +3595,15 @@ CMenuManager::DrawFrontEndNormal()
 		}
 	}
 
+#ifdef EX_AUTO_SAVE // Draw rect at autosave slot
+	if (m_nCurrScreen == MENUPAGE_CHOOSE_LOAD_SLOT || m_nCurrScreen == MENUPAGE_CHOOSE_DELETE_SLOT) {
+		CSprite2d::Draw2DPolygon(StretchX(10.0f), MENU_Y(270.0f),
+								 SCREEN_STRETCH_FROM_RIGHT(11.0f), MENU_Y(270.0f),
+								 StretchX(10.0f), MENU_Y(290.0f),
+								 SCREEN_STRETCH_FROM_RIGHT(11.0f), MENU_Y(290.0f), CRGBA(25, 150, 200, FadeIn(LIST_BACKGROUND_COLOR.a)));
+	}
+#endif
+
 #ifdef RED_DELETE_BACKGROUND
 	if (m_nCurrScreen == MENUPAGE_CHOOSE_DELETE_SLOT || m_nCurrScreen == MENUPAGE_DELETE_SLOT_CONFIRM) {
 		CSprite2d::Draw2DPolygon(0.0f, 0.0f,

@@ -3274,7 +3274,7 @@ Register MemCard One
 Ячейка 7 свободна
 
 [FEM_SL8]
-Ячейка 8 свободна
+Ячейка автосохранения свободна
 
 [FEM_SOG]
 Save Only The Game
@@ -8185,13 +8185,13 @@ GPS
 You cannot save the game at this time. To save the game, you must not be on a mission, not move or have a wanted level.
 
 [FET_AUT]
-Autosave
+АВТОСОХРАНЕНИЕ
 
 [FEM_SL9]
 Autosave File Not Present
 
 [FEO_OTH]
-OTHER SETTINGS
+ДРУГИЕ НАСТРОЙКИ
 
 [FED_BRL]
 БЕЗ РАМОК
