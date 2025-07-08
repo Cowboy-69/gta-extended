@@ -201,7 +201,7 @@ DONT_REMOVE_OBJECT outside_fence
 VAR_INT newtowerdoor11 Columbian_gate2
 VAR_INT airportdoor11 airportdoor22
 
-CREATE_OBJECT_NO_OFFSET	newtowerdoor11 -664.313 2.883 19.51 newtowerdoor11
+CREATE_OBJECT_NO_OFFSET	newtowerdoor1 -664.313 2.883 19.51 newtowerdoor11
 DONT_REMOVE_OBJECT newtowerdoor11
 SET_OBJECT_HEADING newtowerdoor11 180.0
 
@@ -1602,6 +1602,10 @@ VAR_INT door_crash_flag //Variables used to close Luigis Door in Asuka 1
 VAR_FLOAT door_position_a1 
 VAR_INT flag_bridge_created_8ball // Makes rubble on bridge
 VAR_INT com_ammu_nation2 com_sprayshop2 ammu2_blip_added 
+
+VAR_INT ind_ammu_nation_blip com_ammu_nation_blip
+VAR_INT ind_spray_shop_blip com_spray_shop_blip sub_spray_shop_blip
+VAR_INT ind_bomb_shop_blip com_bomb_shop_blip sub_bomb_shop_blip
 
 ammu2_blip_added = 0
 flag_bridge_created_8ball = 0
@@ -6244,9 +6248,10 @@ ind_save_loop_inner:
 						   
 			//SAVE HOUSE BLIP
 			IF created_ind_blip_before = 0 
-				REMOVE_BLIP	industrail_save_blip
-				ADD_SPRITE_BLIP_FOR_CONTACT_POINT 870.0 -308.2 -100.0 RADAR_SPRITE_SAVE industrail_save_blip
-				CHANGE_BLIP_DISPLAY industrail_save_blip BLIP_ONLY
+				//REMOVE_BLIP	industrail_save_blip
+				//ADD_SPRITE_BLIP_FOR_CONTACT_POINT 870.0 -308.2 -100.0 RADAR_SPRITE_SAVE industrail_save_blip
+				//CHANGE_BLIP_DISPLAY industrail_save_blip BLIP_ONLY
+				SET_BLIP_AS_SHORT_RANGE industrail_save_blip FALSE
 				created_ind_blip_before = 1
 			ENDIF		
 	
@@ -6345,7 +6350,8 @@ ind_save_loop_inner:
 		ELSE	// not in industrial
 
 			IF created_ind_blip_before = 1
-				REMOVE_BLIP industrail_save_blip
+				//REMOVE_BLIP industrail_save_blip
+				SET_BLIP_AS_SHORT_RANGE industrail_save_blip TRUE
 				created_ind_blip_before = 0
 			ENDIF
 
@@ -6632,9 +6638,10 @@ com_save_loop_inner:
 		 
 			//SAVE HOUSE BLIP
 			IF created_com_blip_before = 0
-				REMOVE_BLIP	commercial_save_blip
-				ADD_SPRITE_BLIP_FOR_CONTACT_POINT 103.3 -469.2 -100.0 RADAR_SPRITE_SAVE commercial_save_blip
-				CHANGE_BLIP_DISPLAY commercial_save_blip BLIP_ONLY
+				//REMOVE_BLIP	commercial_save_blip
+				//ADD_SPRITE_BLIP_FOR_CONTACT_POINT 103.3 -469.2 -100.0 RADAR_SPRITE_SAVE commercial_save_blip
+				//CHANGE_BLIP_DISPLAY commercial_save_blip BLIP_ONLY
+				SET_BLIP_AS_SHORT_RANGE commercial_save_blip FALSE
 				created_com_blip_before = 1
 			ENDIF
 
@@ -6736,7 +6743,8 @@ com_save_loop_inner:
 		ELSE	// not in commercial
 
 			IF created_com_blip_before = 1
-				REMOVE_BLIP commercial_save_blip
+				//REMOVE_BLIP commercial_save_blip
+				SET_BLIP_AS_SHORT_RANGE commercial_save_blip TRUE
 				created_com_blip_before = 0
 			ENDIF
 
@@ -6763,6 +6771,19 @@ com_restart_inner:
 				ADD_HOSPITAL_RESTART 183.5 -17.8 16.2 180.0
 				ADD_POLICE_RESTART 340.3 -1123.4 25.0 180.0
 				SET_MAX_WANTED_LEVEL 5
+
+				ADD_SPRITE_BLIP_FOR_CONTACT_POINT 103.3 -469.2 -100.0 RADAR_SPRITE_SAVE commercial_save_blip
+				CHANGE_BLIP_DISPLAY commercial_save_blip BLIP_ONLY
+
+				ADD_SPRITE_BLIP_FOR_COORD 350.2 -719.9 25.4 RADAR_SPRITE_WEAPON com_ammu_nation_blip
+				SET_BLIP_AS_SHORT_RANGE com_ammu_nation_blip TRUE
+
+				ADD_SPRITE_BLIP_FOR_COORD 379.0 -493.8 25.2 RADAR_SPRITE_SPRAY com_spray_shop_blip
+				SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip TRUE
+
+				ADD_SPRITE_BLIP_FOR_COORD 380.0 -577.0 25.1 RADAR_SPRITE_BOMB com_bomb_shop_blip
+				SET_BLIP_AS_SHORT_RANGE com_bomb_shop_blip TRUE
+
 				TERMINATE_THIS_SCRIPT
 			ENDIF
 		ENDIF
@@ -6890,9 +6911,10 @@ sub_save_loop_inner:
 	
 			//SAVE HOUSE BLIP
 			IF created_sub_blip_before = 0
-				REMOVE_BLIP	suburban_save_blip
-				ADD_SPRITE_BLIP_FOR_CONTACT_POINT -665.0 -6.5 -100.0 RADAR_SPRITE_SAVE suburban_save_blip
-				CHANGE_BLIP_DISPLAY suburban_save_blip BLIP_ONLY
+				//REMOVE_BLIP	suburban_save_blip
+				//ADD_SPRITE_BLIP_FOR_CONTACT_POINT -665.0 -6.5 -100.0 RADAR_SPRITE_SAVE suburban_save_blip
+				//CHANGE_BLIP_DISPLAY suburban_save_blip BLIP_ONLY
+				SET_BLIP_AS_SHORT_RANGE suburban_save_blip FALSE
 				created_sub_blip_before = 1
 			ENDIF
 
@@ -6990,7 +7012,8 @@ sub_save_loop_inner:
 		ELSE //	not in suburban
 
 			IF created_sub_blip_before = 1
-				REMOVE_BLIP	suburban_save_blip
+				//REMOVE_BLIP	suburban_save_blip
+				SET_BLIP_AS_SHORT_RANGE suburban_save_blip TRUE
 				created_sub_blip_before = 0
 			ENDIF
 
@@ -7017,6 +7040,16 @@ sub_restart_inner:
 				ADD_HOSPITAL_RESTART -1253.0 -138.2 57.8 90.0
 				ADD_POLICE_RESTART -1259.5 -44.5 57.8 90.0
 				SET_MAX_WANTED_LEVEL 6
+
+				ADD_SPRITE_BLIP_FOR_CONTACT_POINT -665.0 -6.5 -100.0 RADAR_SPRITE_SAVE suburban_save_blip
+				CHANGE_BLIP_DISPLAY suburban_save_blip BLIP_ONLY
+
+				ADD_SPRITE_BLIP_FOR_COORD -1142.1 34.0 59.0 RADAR_SPRITE_SPRAY sub_spray_shop_blip
+				SET_BLIP_AS_SHORT_RANGE sub_spray_shop_blip TRUE
+
+				ADD_SPRITE_BLIP_FOR_COORD -1082.293 59.096 58.607 RADAR_SPRITE_BOMB sub_bomb_shop_blip
+				SET_BLIP_AS_SHORT_RANGE sub_bomb_shop_blip TRUE
+
 				TERMINATE_THIS_SCRIPT
 			ENDIF
 		ENDIF
@@ -7158,6 +7191,9 @@ pistol_message:
 				CREATE_PICKUP WEAPON_COLT45 PICKUP_IN_SHOP 1068.5 -400.8 15.2 SHOP_COLT45_2	//AMMU NATION
    				ADD_PAGER_MESSAGE ( COLT_IN ) 140 2 0
    				out_of_stock_pistol = 1
+
+				ADD_SPRITE_BLIP_FOR_COORD 1070.81 -396.97 14.2 RADAR_SPRITE_WEAPON ind_ammu_nation_blip
+				SET_BLIP_AS_SHORT_RANGE ind_ammu_nation_blip TRUE
 			ENDIF
 
 		ENDIF

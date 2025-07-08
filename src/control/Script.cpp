@@ -838,6 +838,10 @@ int8 CRunningScript::ProcessOneCommand()
 		retval = ProcessCommands1100To1199(command);
 #endif
 #ifdef EX_OPCODES
+	else if (command < 1300)
+		retval = ProcessCommands1200To1299(command);
+	else if (command < 1400)
+		retval = ProcessCommands1300To1399(command);
 	else if (command < 4100)
 		retval = ProcessCommands4000To4099(command);
 #endif

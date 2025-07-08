@@ -7468,6 +7468,24 @@
         <Arg Type="FLOAT"/>
       </Args>
     </Command>
+    <Command ID="0x4ce" Name="ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD">
+      <Args>
+        <Arg Type="FLOAT" Desc="X Coord"/>
+        <Arg Type="FLOAT" Desc="Y Coord"/>
+        <Arg Type="FLOAT" Desc="Z Coord"/>
+        <Arg Type="INT" Enum="RADAR_SPRITE"/>
+        <Arg Type="INT" Out="true" Entity="BLIP"/>
+      </Args>
+    </Command>
+    <Command ID="0x570" Name="ADD_SHORT_RANGE_SPRITE_BLIP_FOR_CONTACT_POINT">
+      <Args>
+        <Arg Type="FLOAT" Desc="X Coord"/>
+        <Arg Type="FLOAT" Desc="Y Coord"/>
+        <Arg Type="FLOAT" Desc="Z Coord"/>
+        <Arg Type="INT" Enum="RADAR_SPRITE"/>
+        <Arg Type="INT" Out="true" Entity="BLIP"/>
+      </Args>
+    </Command>
     <Command ID="0xfa0" Name="SET_CHAR_CLOTHING_VARIATION">
       <Args>
         <Arg Type="INT" Entity="CHAR"/>
@@ -7482,7 +7500,7 @@
     </Command>
 	  <Command ID="0xfa2" Name="SET_BLIP_ROUTE">
       <Args>
-		<Arg Type="INT" Entity="BLIP"/>
+		    <Arg Type="INT" Entity="BLIP"/>
         <Arg Type="INT" Desc="Bool"/>
       </Args>
     </Command>
@@ -7505,6 +7523,17 @@
       <Args>
         <Arg Type="INT" Entity="CAR"/>
         <Arg Type="FLOAT"/>
+      </Args>
+    </Command>
+    <Command ID="0xfaa" Name="SET_BLIP_AS_SHORT_RANGE">
+      <Args>
+        <Arg Type="INT" Entity="BLIP"/>
+        <Arg Type="INT" Desc="Bool"/>
+      </Args>
+    </Command>
+    <Command ID="0xfab" Name="IS_BLIP_SHORT_RANGE">
+      <Args>
+        <Arg Type="INT" Entity="BLIP"/>
       </Args>
     </Command>
   </Commands>

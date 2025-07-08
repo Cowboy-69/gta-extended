@@ -2850,6 +2850,10 @@ PLAYER_MADE_PROGRESS 1
 flag_luigi_mission1_passed = 1
 CLEAR_WANTED_LEVEL player
 ADD_SPRITE_BLIP_FOR_CONTACT_POINT 892.8 -425.8 13.9 RADAR_SPRITE_LUIGI luigi_contact_blip  // New blip down alleyway
+
+ADD_SPRITE_BLIP_FOR_CONTACT_POINT 870.0 -308.2 -100.0 RADAR_SPRITE_SAVE industrail_save_blip
+CHANGE_BLIP_DISPLAY industrail_save_blip BLIP_ONLY
+
 START_NEW_SCRIPT luigi_mission2_loop
 START_NEW_SCRIPT blob_help_loop
 START_NEW_SCRIPT luigi_message

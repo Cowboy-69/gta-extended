@@ -1374,6 +1374,56 @@ int8 CRunningScript::ProcessCommands1100To1199(int32 command)
 }
 
 #ifdef EX_OPCODES
+int8 CRunningScript::ProcessCommands1200To1299(int32 command)
+{
+	switch (command)
+	{
+#ifdef EX_SHORT_RANGE_BLIP_OPCODES // Script
+	case COMMAND_ADD_SHORT_RANGE_SPRITE_BLIP_FOR_COORD:
+	{
+		CollectParameters(&m_nIp, 4);
+		CVector pos = *(CVector*)&ScriptParams[0];
+		if (pos.z <= MAP_Z_LOW_LIMIT)
+			pos.z = CWorld::FindGroundZForCoord(pos.x, pos.y);
+		CRadar::GetActualBlipArrayIndex(CollectNextParameterWithoutIncreasingPC(m_nIp));
+		int id = CRadar::SetShortRangeCoordBlip(BLIP_COORD, pos, 5, BLIP_DISPLAY_BOTH);
+		CRadar::SetBlipSprite(id, ScriptParams[3]);
+		ScriptParams[0] = id;
+		StoreParameters(&m_nIp, 1);
+		return 0;
+	}
+#endif
+	default:
+		script_assert(0);
+	}
+	return -1;
+}
+
+int8 CRunningScript::ProcessCommands1300To1399(int32 command)
+{
+	switch (command)
+	{
+#ifdef EX_SHORT_RANGE_BLIP_OPCODES // Script
+	case COMMAND_ADD_SHORT_RANGE_SPRITE_BLIP_FOR_CONTACT_POINT:
+	{
+		CollectParameters(&m_nIp, 4);
+		CVector pos = *(CVector*)&ScriptParams[0];
+		if (pos.z <= MAP_Z_LOW_LIMIT)
+			pos.z = CWorld::FindGroundZForCoord(pos.x, pos.y);
+		CRadar::GetActualBlipArrayIndex(CollectNextParameterWithoutIncreasingPC(m_nIp));
+		int id = CRadar::SetShortRangeCoordBlip(BLIP_COORD, pos, 2, BLIP_DISPLAY_BOTH);
+		CRadar::SetBlipSprite(id, ScriptParams[3]);
+		ScriptParams[0] = id;
+		StoreParameters(&m_nIp, 1);
+		return 0;
+	}
+#endif
+	default:
+		script_assert(0);
+	}
+	return -1;
+}
+
 int8 CRunningScript::ProcessCommands4000To4099(int32 command)
 {
 	switch (command)
@@ -1429,6 +1479,18 @@ int8 CRunningScript::ProcessCommands4000To4099(int32 command)
 		vehicle->m_fSteerAngle = DEGTORAD(steeringAngle);
 		return 0;
 	}
+#endif
+#ifdef EX_SHORT_RANGE_BLIP_OPCODES // Script
+	case COMMAND_SET_BLIP_AS_SHORT_RANGE:
+		CollectParameters(&m_nIp, 2);
+		CRadar::SetBlipShortRange(ScriptParams[0], ScriptParams[1]);
+		return 0;
+#endif
+#ifdef EX_SHORT_RANGE_BLIP_OPCODES // Script
+	case COMMAND_IS_BLIP_SHORT_RANGE:
+		CollectParameters(&m_nIp, 1);
+		UpdateCompareFlag(CRadar::IsBlipShortRange(ScriptParams[0]));
+		return 0;
 #endif
 	default:
 		script_assert(0);

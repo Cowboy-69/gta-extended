@@ -754,8 +754,10 @@ SET_POLICE_IGNORE_PLAYER player OFF
 
 PRINT_SOON ( MEA2_B6 ) 5000 1 //"Take the car to the crusher to get rid of evidence, get out of the car and the crane will pick it up."
 
-ADD_SPRITE_BLIP_FOR_COORD 924.0 -361.0 10.0 RADAR_SPRITE_SPRAY radar_blip_coord3_meat2 
-SET_BLIP_ROUTE radar_blip_coord3_meat2 TRUE
+//ADD_SPRITE_BLIP_FOR_COORD 924.0 -361.0 10.0 RADAR_SPRITE_SPRAY radar_blip_coord3_meat2 
+//SET_BLIP_ROUTE radar_blip_coord3_meat2 TRUE
+SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip FALSE
+SET_BLIP_ROUTE ind_spray_shop_blip TRUE
 
 HAS_RESPRAY_HAPPENED sprayshop1
 
@@ -776,7 +778,9 @@ OR NOT IS_PLAYER_STOPPED_IN_AREA_2D player 922.6 -366.1 928.6 -354.3 FALSE
 	AND flag_player_had_car_message_meat2 = 0
 		PRINT_NOW ( IN_VEH ) 5000 1 //"Get back into the vehicle and get on with the mission!"
 		ADD_BLIP_FOR_CAR car_meat2 radar_blip_car_meat2
-		REMOVE_BLIP radar_blip_coord3_meat2
+		//REMOVE_BLIP radar_blip_coord3_meat2
+		SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip TRUE
+		SET_BLIP_ROUTE ind_spray_shop_blip FALSE
 		flag_player_had_car_message_meat2 = 1
 		blob_flag = 0
 	ENDIF
@@ -784,8 +788,10 @@ OR NOT IS_PLAYER_STOPPED_IN_AREA_2D player 922.6 -366.1 928.6 -354.3 FALSE
 	IF IS_PLAYER_IN_CAR player car_meat2
 	AND flag_player_had_car_message_meat2 = 1
 		REMOVE_BLIP radar_blip_car_meat2
-		ADD_SPRITE_BLIP_FOR_COORD 924.0 -361.0 10.0 RADAR_SPRITE_SPRAY radar_blip_coord3_meat2
-		SET_BLIP_ROUTE radar_blip_coord3_meat2 TRUE
+		//ADD_SPRITE_BLIP_FOR_COORD 924.0 -361.0 10.0 RADAR_SPRITE_SPRAY radar_blip_coord3_meat2
+		//SET_BLIP_ROUTE radar_blip_coord3_meat2 TRUE
+		SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip FALSE
+		SET_BLIP_ROUTE ind_spray_shop_blip TRUE
 		flag_player_had_car_message_meat2 = 0
 		blob_flag = 1
 	ENDIF
@@ -798,7 +804,9 @@ OR NOT IS_PLAYER_STOPPED_IN_AREA_2D player 922.6 -366.1 928.6 -354.3 FALSE
 
 ENDWHILE
 
-REMOVE_BLIP radar_blip_coord3_meat2
+//REMOVE_BLIP radar_blip_coord3_meat2
+SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip TRUE
+SET_BLIP_ROUTE ind_spray_shop_blip FALSE
 
 PRINT_NOW ( MEA2_3 ) 5000 1 //"Dump the car by the road bridge in Chinatown."
 
@@ -910,8 +918,10 @@ REMOVE_BLIP radar_blip_ped1_meat2
 REMOVE_BLIP radar_blip_ped2_meat2
 REMOVE_BLIP radar_blip_car_meat2
 REMOVE_BLIP radar_blip_coord2_meat2
-REMOVE_BLIP radar_blip_coord3_meat2
+//REMOVE_BLIP radar_blip_coord3_meat2
 REMOVE_BLIP radar_blip_coord4_meat2
+SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip TRUE
+SET_BLIP_ROUTE ind_spray_shop_blip FALSE
 MISSION_HAS_FINISHED
 RETURN
 

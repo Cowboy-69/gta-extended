@@ -213,11 +213,17 @@ void CRadar::ClearBlip(int32 i)
 	if (index != -1) {
 		SetRadarMarkerState(index, false);
 		ms_RadarTrace[index].m_bInUse = false;
+#ifdef EX_FRONTEND // ClearBlip
+		ms_RadarTrace[index].m_eBlipType = BLIP_NONE;
+		ms_RadarTrace[index].m_eBlipDisplay = BLIP_DISPLAY_NEITHER;
+		ms_RadarTrace[index].m_eRadarSprite = RADAR_SPRITE_NONE;
+#else
 #ifndef MENU_MAP
 		// Ssshhh
 		ms_RadarTrace[index].m_eBlipType = BLIP_NONE;
 		ms_RadarTrace[index].m_eBlipDisplay = BLIP_DISPLAY_NEITHER;
 		ms_RadarTrace[index].m_eRadarSprite = RADAR_SPRITE_NONE;
+#endif
 #endif
 #ifdef EX_GPS // Script: SET_BLIP_ROUTE
 		if (index == RouteBlipId)
@@ -554,10 +560,12 @@ void CRadar::DrawBlips()
 
 		CEntity *blipEntity = nil;
 		for(int blipId = 0; blipId < NUMRADARBLIPS; blipId++) {
+#ifndef EX_FRONTEND // DrawBlips
 #ifdef MENU_MAP
 			// A little hack to reuse cleared blips in menu map. hehe
 			if (!CMenuManager::bMenuMapActive || ms_RadarTrace[blipId].m_eBlipType == BLIP_CAR ||
 				ms_RadarTrace[blipId].m_eBlipType == BLIP_CHAR || ms_RadarTrace[blipId].m_eBlipType == BLIP_OBJECT)
+#endif
 #endif
 			if (!ms_RadarTrace[blipId].m_bInUse)
 				continue;
@@ -600,21 +608,26 @@ void CRadar::DrawBlips()
 								TransformRealWorldPointToRadarSpace(in, blipEntity->GetPosition());
 								float dist = LimitRadarPoint(in);
 								TransformRadarPointToScreenSpace(out, in);
-								if (ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_NONE) {
-									DrawRadarSprite(ms_RadarTrace[blipId].m_eRadarSprite, out.x, out.y, CalculateBlipAlpha(dist));
-								} else {
-#ifdef TRIANGULAR_BLIPS
-								    const CVector &pos = FindPlayerCentreOfWorld_NoSniperShift();
-									const CVector &blipPos = blipEntity->GetPosition();
-									uint8 mode = BLIP_MODE_TRIANGULAR_UP;
-									if (blipPos.z - pos.z <= 2.0f) {
-										if (blipPos.z - pos.z < -4.0f) mode = BLIP_MODE_TRIANGULAR_DOWN;
-										else mode = BLIP_MODE_SQUARE;
-									}
-									ShowRadarTraceWithHeight(out.x, out.y, ms_RadarTrace[blipId].m_wScale, (uint8)(color >> 24), (uint8)(color >> 16), (uint8)(color >> 8), 255, mode);
-#else
-									ShowRadarTrace(out.x, out.y, ms_RadarTrace[blipId].m_wScale, (uint8)(color >> 24), (uint8)(color >> 16), (uint8)(color >> 8), 255);
+#ifdef EX_SHORT_RANGE_BLIP_OPCODES
+								if (!ms_RadarTrace[blipId].m_bShortRange || dist <= 1.0f || FrontEndMenuManager.bMenuMapActive)
 #endif
+								{
+									if (ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_NONE) {
+										DrawRadarSprite(ms_RadarTrace[blipId].m_eRadarSprite, out.x, out.y, CalculateBlipAlpha(dist));
+									} else {
+#ifdef TRIANGULAR_BLIPS
+										const CVector &pos = FindPlayerCentreOfWorld_NoSniperShift();
+										const CVector &blipPos = blipEntity->GetPosition();
+										uint8 mode = BLIP_MODE_TRIANGULAR_UP;
+										if (blipPos.z - pos.z <= 2.0f) {
+											if (blipPos.z - pos.z < -4.0f) mode = BLIP_MODE_TRIANGULAR_DOWN;
+											else mode = BLIP_MODE_SQUARE;
+										}
+										ShowRadarTraceWithHeight(out.x, out.y, ms_RadarTrace[blipId].m_wScale, (uint8)(color >> 24), (uint8)(color >> 16), (uint8)(color >> 8), 255, mode);
+#else
+										ShowRadarTrace(out.x, out.y, ms_RadarTrace[blipId].m_wScale, (uint8)(color >> 24), (uint8)(color >> 16), (uint8)(color >> 8), 255);
+#endif
+									}
 								}
 							}
 						}
@@ -639,21 +652,26 @@ void CRadar::DrawBlips()
 							TransformRealWorldPointToRadarSpace(in, ms_RadarTrace[blipId].m_vec2DPos);
 							float dist = LimitRadarPoint(in);
 							TransformRadarPointToScreenSpace(out, in);
-							if (ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_NONE) {
-								DrawRadarSprite(ms_RadarTrace[blipId].m_eRadarSprite, out.x, out.y, CalculateBlipAlpha(dist));
-							} else {
-#ifdef TRIANGULAR_BLIPS
-							    const CVector &pos = FindPlayerCentreOfWorld_NoSniperShift();
-							    const CVector &blipPos = ms_RadarTrace[blipId].m_vecPos;
-								uint8 mode = BLIP_MODE_TRIANGULAR_UP;
-								if (blipPos.z - pos.z <= 2.0f) {
-									if (blipPos.z - pos.z < -4.0f) mode = BLIP_MODE_TRIANGULAR_DOWN;
-									else mode = BLIP_MODE_SQUARE;
-								}
-								ShowRadarTraceWithHeight(out.x, out.y, ms_RadarTrace[blipId].m_wScale, (uint8)(color >> 24), (uint8)(color >> 16), (uint8)(color >> 8), 255, mode);
-#else
-								ShowRadarTrace(out.x, out.y, ms_RadarTrace[blipId].m_wScale, (uint8)(color >> 24), (uint8)(color >> 16), (uint8)(color >> 8), 255);
+#ifdef EX_SHORT_RANGE_BLIP_OPCODES
+							if (!ms_RadarTrace[blipId].m_bShortRange || dist <= 1.0f || FrontEndMenuManager.bMenuMapActive)
 #endif
+							{
+								if (ms_RadarTrace[blipId].m_eRadarSprite != RADAR_SPRITE_NONE) {
+									DrawRadarSprite(ms_RadarTrace[blipId].m_eRadarSprite, out.x, out.y, CalculateBlipAlpha(dist));
+								} else {
+	#ifdef TRIANGULAR_BLIPS
+									const CVector &pos = FindPlayerCentreOfWorld_NoSniperShift();
+									const CVector &blipPos = ms_RadarTrace[blipId].m_vecPos;
+									uint8 mode = BLIP_MODE_TRIANGULAR_UP;
+									if (blipPos.z - pos.z <= 2.0f) {
+										if (blipPos.z - pos.z < -4.0f) mode = BLIP_MODE_TRIANGULAR_DOWN;
+										else mode = BLIP_MODE_SQUARE;
+									}
+									ShowRadarTraceWithHeight(out.x, out.y, ms_RadarTrace[blipId].m_wScale, (uint8)(color >> 24), (uint8)(color >> 16), (uint8)(color >> 8), 255, mode);
+	#else
+									ShowRadarTrace(out.x, out.y, ms_RadarTrace[blipId].m_wScale, (uint8)(color >> 24), (uint8)(color >> 16), (uint8)(color >> 8), 255);
+	#endif
+								}
 							}
 						}
 					}
@@ -1298,6 +1316,9 @@ CRadar::Initialise()
 		ms_RadarTrace[i].m_BlipIndex = 1;
 		SetRadarMarkerState(i, false);
 		ms_RadarTrace[i].m_bInUse = false;
+#ifdef EX_SHORT_RANGE_BLIP_OPCODES
+		ms_RadarTrace[i].m_bShortRange = false;
+#endif
 		ms_RadarTrace[i].m_eBlipType = BLIP_NONE;
 		ms_RadarTrace[i].m_eBlipDisplay = BLIP_DISPLAY_NEITHER;
 		ms_RadarTrace[i].m_eRadarSprite = RADAR_SPRITE_NONE;
@@ -1459,6 +1480,9 @@ int CRadar::SetCoordBlip(eBlipType type, CVector pos, int32 color, eBlipDisplay 
 	ms_RadarTrace[nextBlip].m_nColor = color;
 	ms_RadarTrace[nextBlip].m_bDim = 1;
 	ms_RadarTrace[nextBlip].m_bInUse = 1;
+#ifdef EX_SHORT_RANGE_BLIP_OPCODES
+	ms_RadarTrace[nextBlip].m_bShortRange = false;
+#endif
 	ms_RadarTrace[nextBlip].m_Radius = 1.0f;
 	ms_RadarTrace[nextBlip].m_vec2DPos = pos;
 	ms_RadarTrace[nextBlip].m_vecPos = pos;
@@ -1484,6 +1508,9 @@ int CRadar::SetEntityBlip(eBlipType type, int32 handle, int32 color, eBlipDispla
 	ms_RadarTrace[nextBlip].m_nColor = color;
 	ms_RadarTrace[nextBlip].m_bDim = 1;
 	ms_RadarTrace[nextBlip].m_bInUse = 1;
+#ifdef EX_SHORT_RANGE_BLIP_OPCODES
+	ms_RadarTrace[nextBlip].m_bShortRange = false;
+#endif
 	ms_RadarTrace[nextBlip].m_Radius = 1.0f;
 	ms_RadarTrace[nextBlip].m_nEntityHandle = handle;
 	ms_RadarTrace[nextBlip].m_wScale = 1;
@@ -1491,6 +1518,40 @@ int CRadar::SetEntityBlip(eBlipType type, int32 handle, int32 color, eBlipDispla
 	ms_RadarTrace[nextBlip].m_eRadarSprite = RADAR_SPRITE_NONE;
 	return GetNewUniqueBlipIndex(nextBlip);
 }
+
+#ifdef EX_SHORT_RANGE_BLIP_OPCODES
+int32
+CRadar::SetShortRangeCoordBlip(eBlipType type, CVector pos, uint32 color, eBlipDisplay display)
+{
+	int index = SetCoordBlip(type, pos, color, display);
+	if (index == -1)
+		return -1;
+	ms_RadarTrace[GetActualBlipArrayIndex(index)].m_bShortRange = true;
+	return index;
+}
+
+void
+CRadar::SetBlipShortRange(int32 i, bool bEnable)
+{
+	int index = GetActualBlipArrayIndex(i);
+
+	if (index == -1)
+		return;
+
+	ms_RadarTrace[index].m_bShortRange = bEnable;
+}
+
+bool
+CRadar::IsBlipShortRange(int32 i)
+{
+	int index = GetActualBlipArrayIndex(i);
+
+	if (index == -1)
+		return false;
+
+	return ms_RadarTrace[index].m_bShortRange;
+}
+#endif
 
 void CRadar::SetRadarMarkerState(int32 counter, bool flag)
 {

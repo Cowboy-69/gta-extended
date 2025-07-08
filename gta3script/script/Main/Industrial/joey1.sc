@@ -352,6 +352,7 @@ AND NOT IS_CAR_ARMED_WITH_BOMB mike_car CARBOMB_ONIGNITIONACTIVE
 				REMOVE_BLIP blip2_jm1
 				ADD_SPRITE_BLIP_FOR_COORD 1282.0 -104.0 -100.0 RADAR_SPRITE_BOMB blip2_jm1
 				SET_BLIP_ROUTE blip2_jm1 TRUE
+				SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip TRUE
 				REMOVE_BLIP blip1_jm1
 			ENDIF
 		flag_car_blip_displayed_jm1 = FALSE
@@ -402,8 +403,10 @@ AND NOT IS_CAR_ARMED_WITH_BOMB mike_car CARBOMB_ONIGNITIONACTIVE
 					IF IS_PLAYER_IN_CAR player mike_car
 						IF flag_car_blip_displayed_jm1 = TRUE
 							REMOVE_BLIP	blip4_jm1
-							ADD_SPRITE_BLIP_FOR_COORD 925.0 -359.5 -100.0 RADAR_SPRITE_SPRAY blip4_jm1
-							SET_BLIP_ROUTE blip4_jm1 TRUE
+							//ADD_SPRITE_BLIP_FOR_COORD 925.0 -359.5 -100.0 RADAR_SPRITE_SPRAY blip4_jm1
+							//SET_BLIP_ROUTE blip4_jm1 TRUE
+							SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip FALSE
+							SET_BLIP_ROUTE ind_spray_shop_blip TRUE
 							REMOVE_BLIP blip1_jm1
 						flag_car_blip_displayed_jm1 = FALSE
 						ENDIF
@@ -413,6 +416,8 @@ AND NOT IS_CAR_ARMED_WITH_BOMB mike_car CARBOMB_ONIGNITIONACTIVE
 						IF flag_car_blip_displayed_jm1 = FALSE
 						ADD_BLIP_FOR_CAR mike_car blip1_jm1
 						REMOVE_BLIP blip4_jm1
+						SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip TRUE
+						SET_BLIP_ROUTE ind_spray_shop_blip FALSE
 						PRINT_NOW ( IN_VEH ) 5000 1 //"Get back in the car!"
 						flag_car_blip_displayed_jm1 = TRUE
 						ENDIF
@@ -475,6 +480,7 @@ OR IS_CAR_VISIBLY_DAMAGED mike_car
 			REMOVE_BLIP	blip3_jm1
 			ADD_BLIP_FOR_COORD 1335.0 -455.0 -100.0 blip3_jm1
 			SET_BLIP_ROUTE blip3_jm1 TRUE
+			SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip TRUE
 			REMOVE_BLIP blip1_jm1
 			blob_flag = 1
 		flag_car_blip_displayed_jm1 = FALSE
@@ -522,8 +528,10 @@ OR IS_CAR_VISIBLY_DAMAGED mike_car
 				IF IS_PLAYER_IN_CAR player mike_car
 					IF flag_car_blip_displayed_jm1 = TRUE
 						REMOVE_BLIP	blip4_jm1
-						ADD_SPRITE_BLIP_FOR_COORD 925.0 -359.5 -100.0 RADAR_SPRITE_SPRAY blip4_jm1
-						SET_BLIP_ROUTE blip4_jm1 TRUE
+						//ADD_SPRITE_BLIP_FOR_COORD 925.0 -359.5 -100.0 RADAR_SPRITE_SPRAY blip4_jm1
+						//SET_BLIP_ROUTE blip4_jm1 TRUE
+						SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip FALSE
+						SET_BLIP_ROUTE ind_spray_shop_blip TRUE
 						REMOVE_BLIP blip1_jm1
 						blob_flag = 1
 					flag_car_blip_displayed_jm1 = FALSE
@@ -534,6 +542,8 @@ OR IS_CAR_VISIBLY_DAMAGED mike_car
 					IF flag_car_blip_displayed_jm1 = FALSE
 					ADD_BLIP_FOR_CAR mike_car blip1_jm1
 					REMOVE_BLIP blip4_jm1
+					SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip TRUE
+					SET_BLIP_ROUTE ind_spray_shop_blip FALSE
 					PRINT_NOW ( IN_VEH ) 5000 1 //"Get back in the car!"
 					blob_flag = 0
 					flag_car_blip_displayed_jm1 = TRUE
@@ -850,6 +860,10 @@ ENDIF
 REGISTER_MISSION_PASSED JM1
 PLAYER_MADE_PROGRESS 1
 REMOVE_CHAR_ELEGANTLY lips
+
+ADD_SPRITE_BLIP_FOR_COORD 1282.0 -104.0 14.782 RADAR_SPRITE_BOMB ind_bomb_shop_blip
+SET_BLIP_AS_SHORT_RANGE ind_bomb_shop_blip TRUE
+
 START_NEW_SCRIPT joey_mission2_loop
 REQUEST_AUTO_SAVE
 RETURN
@@ -866,6 +880,8 @@ REMOVE_BLIP blip1_jm1
 REMOVE_BLIP blip2_jm1
 REMOVE_BLIP blip3_jm1
 REMOVE_BLIP blip4_jm1
+SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip TRUE
+SET_BLIP_ROUTE ind_spray_shop_blip FALSE
 MARK_MODEL_AS_NO_LONGER_NEEDED CAR_IDAHO
 UNLOAD_SPECIAL_CHARACTER 3
 CLEAR_ONSCREEN_TIMER countdown_jm1

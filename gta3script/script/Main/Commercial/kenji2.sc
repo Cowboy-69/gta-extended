@@ -571,9 +571,10 @@ IF flag_car1_in_garage = 0
 					ENDIF
 
 					IF flag_spray_blip_on_car1_km2 = 0
-						ADD_SPRITE_BLIP_FOR_COORD 379.0 -493.8 25.2 RADAR_SPRITE_SPRAY spray_blip_km2
-						SET_BLIP_ROUTE radar_blip_coord1_km2 FALSE
-						SET_BLIP_ROUTE spray_blip_km2 TRUE
+						//ADD_SPRITE_BLIP_FOR_COORD 379.0 -493.8 25.2 RADAR_SPRITE_SPRAY spray_blip_km2
+						//SET_BLIP_ROUTE spray_blip_km2 TRUE
+						SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip FALSE
+						SET_BLIP_ROUTE com_spray_shop_blip TRUE
 						flag_spray_blip_on_car1_km2 = 1
 					ENDIF
 										
@@ -584,7 +585,8 @@ IF flag_car1_in_garage = 0
 					flag_player_damage_message_car1_km2 = 0
 
 					IF flag_spray_blip_on_car1_km2 = 1
-						REMOVE_BLIP spray_blip_km2
+						//REMOVE_BLIP spray_blip_km2
+						SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip TRUE
 						SET_BLIP_ROUTE radar_blip_coord1_km2 TRUE
 						flag_spray_blip_on_car1_km2 = 0
 					ENDIF
@@ -595,7 +597,9 @@ IF flag_car1_in_garage = 0
 			flag_player_damage_message_car1_km2 = 0
 						
 			IF flag_spray_blip_on_car1_km2 = 1
-				REMOVE_BLIP spray_blip_km2
+				//REMOVE_BLIP spray_blip_km2
+				SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip TRUE
+				SET_BLIP_ROUTE com_spray_shop_blip FALSE
 				flag_spray_blip_on_car1_km2 = 0
 			ENDIF
 									
@@ -799,9 +803,10 @@ IF flag_car3_in_garage = 0
 						ENDIF
 						
 						IF flag_spray_blip_on_car3_km2 = 0
-							ADD_SPRITE_BLIP_FOR_COORD 379.0 -493.8 25.2 RADAR_SPRITE_SPRAY spray_blip_km2
-							SET_BLIP_ROUTE radar_blip_coord1_km2 FALSE
-							SET_BLIP_ROUTE spray_blip_km2 TRUE
+							//ADD_SPRITE_BLIP_FOR_COORD 379.0 -493.8 25.2 RADAR_SPRITE_SPRAY spray_blip_km2
+							//SET_BLIP_ROUTE spray_blip_km2 TRUE
+							SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip FALSE
+							SET_BLIP_ROUTE com_spray_shop_blip TRUE
 							flag_spray_blip_on_car3_km2 = 1
 						ENDIF	
 
@@ -811,7 +816,8 @@ IF flag_car3_in_garage = 0
 						flag_player_damage_message_car3_km2 = 0
 
 						IF flag_spray_blip_on_car3_km2 = 1
-							REMOVE_BLIP spray_blip_km2
+							//REMOVE_BLIP spray_blip_km2
+							SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip TRUE
 							SET_BLIP_ROUTE radar_blip_coord1_km2 TRUE
 							flag_spray_blip_on_car3_km2 = 0
 						ENDIF
@@ -821,7 +827,9 @@ IF flag_car3_in_garage = 0
 				flag_player_damage_message_car3_km2 = 0
 
 				IF flag_spray_blip_on_car3_km2 = 1
-					REMOVE_BLIP spray_blip_km2
+					//REMOVE_BLIP spray_blip_km2
+					SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip TRUE
+					SET_BLIP_ROUTE com_spray_shop_blip FALSE
 					flag_spray_blip_on_car3_km2 = 0
 				ENDIF
 
@@ -913,9 +921,10 @@ IF flag_car4_in_garage = 0
 					ENDIF
 
 					IF flag_spray_blip_on_car4_km2 = 0
-						ADD_SPRITE_BLIP_FOR_COORD 379.0 -493.8 25.2 RADAR_SPRITE_SPRAY spray_blip_km2
-						SET_BLIP_ROUTE radar_blip_coord1_km2 FALSE
-						SET_BLIP_ROUTE spray_blip_km2 TRUE
+						//ADD_SPRITE_BLIP_FOR_COORD 379.0 -493.8 25.2 RADAR_SPRITE_SPRAY spray_blip_km2
+						//SET_BLIP_ROUTE spray_blip_km2 TRUE
+						SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip FALSE
+						SET_BLIP_ROUTE com_spray_shop_blip TRUE
 						flag_spray_blip_on_car4_km2 = 1
 					ENDIF
 																			   
@@ -925,7 +934,8 @@ IF flag_car4_in_garage = 0
 					flag_player_damage_message_car4_km2 = 0
 
 					IF flag_spray_blip_on_car4_km2 = 1
-						REMOVE_BLIP spray_blip_km2
+						//REMOVE_BLIP spray_blip_km2
+						SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip TRUE
 						SET_BLIP_ROUTE radar_blip_coord1_km2 TRUE
 						flag_spray_blip_on_car4_km2 = 0
 					ENDIF
@@ -935,7 +945,9 @@ IF flag_car4_in_garage = 0
 				flag_player_damage_message_car4_km2 = 0
 
 				IF flag_spray_blip_on_car4_km2 = 1
-					REMOVE_BLIP spray_blip_km2
+					//REMOVE_BLIP spray_blip_km2
+					SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip TRUE
+					SET_BLIP_ROUTE com_spray_shop_blip FALSE
 					flag_spray_blip_on_car4_km2 = 0
 				ENDIF
 
@@ -1110,7 +1122,9 @@ REMOVE_BLIP radar_blip_car1_km2
 REMOVE_BLIP radar_blip_car3_km2
 REMOVE_BLIP radar_blip_car4_km2
 //REMOVE_BLIP radar_blip_car5_km2
-REMOVE_BLIP spray_blip_km2
+//REMOVE_BLIP spray_blip_km2
+SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip TRUE
+SET_BLIP_ROUTE com_spray_shop_blip FALSE
 MARK_MODEL_AS_NO_LONGER_NEEDED CAR_CHEETAH
 //MARK_MODEL_AS_NO_LONGER_NEEDED CAR_BANSHEE
 MARK_MODEL_AS_NO_LONGER_NEEDED CAR_STINGER

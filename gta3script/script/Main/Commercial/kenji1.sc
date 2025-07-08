@@ -416,8 +416,10 @@ PRINT_NOW ( KM1_2 ) 5000 1 //"Get the car rigged with a bomb!"
 
 ADD_SPHERE 373.9 -576.4 25.1 4.0 sphere_km1
 
-ADD_SPRITE_BLIP_FOR_COORD 380.0 -577.0 25.1 RADAR_SPRITE_BOMB radar_blip_coord1_km1 
-SET_BLIP_ROUTE radar_blip_coord1_km1 TRUE
+//ADD_SPRITE_BLIP_FOR_COORD 380.0 -577.0 25.1 RADAR_SPRITE_BOMB radar_blip_coord1_km1 
+//SET_BLIP_ROUTE radar_blip_coord1_km1 TRUE
+SET_BLIP_AS_SHORT_RANGE com_bomb_shop_blip FALSE
+SET_BLIP_ROUTE com_bomb_shop_blip TRUE
 
 // waiting for the cop car to be rigged
 
@@ -430,8 +432,10 @@ WHILE NOT flag_car_got_bomb_km1 = 1
 		STORE_CAR_PLAYER_IS_IN player mission_cop_car_km1
 
 		IF flag_player_had_car_message_km1 = 1
-			ADD_SPRITE_BLIP_FOR_COORD 380.0 -577.0 25.1 RADAR_SPRITE_BOMB radar_blip_coord1_km1
-			SET_BLIP_ROUTE radar_blip_coord1_km1 TRUE
+			//ADD_SPRITE_BLIP_FOR_COORD 380.0 -577.0 25.1 RADAR_SPRITE_BOMB radar_blip_coord1_km1
+			//SET_BLIP_ROUTE radar_blip_coord1_km1 TRUE
+			SET_BLIP_AS_SHORT_RANGE com_bomb_shop_blip FALSE
+			SET_BLIP_ROUTE com_bomb_shop_blip TRUE
 
 			IF flag_player_had_dome_message_km1 = 0 
 				ADD_SPHERE 373.9 -576.4 25.1 4.0 sphere_km1
@@ -455,7 +459,9 @@ WHILE NOT flag_car_got_bomb_km1 = 1
 
 		IF flag_player_had_car_message_km1 = 0
 			PRINT_NOW ( KM1_4 ) 7000 1 //"Get a cop car and get on with the mission"
-			REMOVE_BLIP radar_blip_coord1_km1
+			//REMOVE_BLIP radar_blip_coord1_km1
+			SET_BLIP_AS_SHORT_RANGE com_bomb_shop_blip TRUE
+			SET_BLIP_ROUTE com_bomb_shop_blip FALSE
 			REMOVE_SPHERE sphere_km1
 			flag_player_had_car_message_km1 = 1
 		ENDIF
@@ -480,7 +486,9 @@ WHILE NOT flag_car_got_bomb_km1 = 1
 	    
 ENDWHILE
 
-REMOVE_BLIP radar_blip_coord1_km1
+//REMOVE_BLIP radar_blip_coord1_km1
+SET_BLIP_AS_SHORT_RANGE com_bomb_shop_blip TRUE
+SET_BLIP_ROUTE com_bomb_shop_blip FALSE
 
 REMOVE_SPHERE sphere_km1
 
@@ -513,7 +521,9 @@ WHILE counter_bomb_km1 = 0
 			OR IS_CAR_ARMED_WITH_BOMB mission_cop_car_km1 CARBOMB_TIMEDACTIVE
 
 				IF flag_player_had_bomb_message_km1 = 1
-					REMOVE_BLIP radar_blip_coord1_km1  // bombshop
+					//REMOVE_BLIP radar_blip_coord1_km1  // bombshop
+					SET_BLIP_AS_SHORT_RANGE com_bomb_shop_blip TRUE
+					SET_BLIP_ROUTE com_bomb_shop_blip FALSE
 					flag_player_had_bomb_message_km1 = 0
 				ENDIF
 
@@ -566,7 +576,10 @@ WHILE counter_bomb_km1 = 0
 
 					IF flag_player_had_bomb_message_km1 = 0
 						PRINT_NOW ( KM1_6 ) 7000 1 //"Get a bomb fitted to the car!"
-						ADD_SPRITE_BLIP_FOR_COORD 380.0 -577.0 25.1 RADAR_SPRITE_BOMB radar_blip_coord1_km1 //bombshop
+						//ADD_SPRITE_BLIP_FOR_COORD 380.0 -577.0 25.1 RADAR_SPRITE_BOMB radar_blip_coord1_km1 //bombshop
+						//SET_BLIP_ROUTE radar_blip_coord1_km1 TRUE
+						SET_BLIP_AS_SHORT_RANGE com_bomb_shop_blip FALSE
+						SET_BLIP_ROUTE com_bomb_shop_blip TRUE
 						flag_player_had_bomb_message_km1 = 1
 					
 						IF flag_blip_on_km1 = 1
@@ -593,7 +606,9 @@ WHILE counter_bomb_km1 = 0
 			ENDIF
 						
 			IF flag_player_had_bomb_message_km1 = 1
-		   		REMOVE_BLIP radar_blip_coord1_km1  // bombshop
+		   		//REMOVE_BLIP radar_blip_coord1_km1  // bombshop
+				SET_BLIP_AS_SHORT_RANGE com_bomb_shop_blip TRUE
+				SET_BLIP_ROUTE com_bomb_shop_blip FALSE
 				flag_player_had_bomb_message_km1 = 0
 			ENDIF	
 
@@ -657,8 +672,10 @@ PRINT_NOW ( KM1_12 ) 7000 1 //"Get him to the dojo but get rid of the cops first
 
 ALTER_WANTED_LEVEL_NO_DROP player 3
 
-ADD_SPRITE_BLIP_FOR_COORD 379.0 -493.8 25.2 RADAR_SPRITE_SPRAY spray_blip_km1
-SET_BLIP_ROUTE spray_blip_km1 TRUE
+//ADD_SPRITE_BLIP_FOR_COORD 379.0 -493.8 25.2 RADAR_SPRITE_SPRAY spray_blip_km1
+//SET_BLIP_ROUTE spray_blip_km1 TRUE
+SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip FALSE
+SET_BLIP_ROUTE com_spray_shop_blip TRUE
 
 // waiting for the player to get rid of his wanted level
 
@@ -687,7 +704,9 @@ WHILE IS_WANTED_LEVEL_GREATER player 0
 		IF flag_blip_on_yakuza_ped1_km1 = 0
 			PRINT_NOW ( HEY6 ) 5000 1 //You have left the Yakuza Kanbu behind go and get him!"
 			ADD_BLIP_FOR_CHAR yakuza_ped1_km1 radar_blip_ped1_km1
-			REMOVE_BLIP spray_blip_km1
+			//REMOVE_BLIP spray_blip_km1
+			SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip TRUE
+			SET_BLIP_ROUTE com_spray_shop_blip FALSE
 			flag_blip_on_yakuza_ped1_km1 = 1
 		ENDIF
 				
@@ -696,14 +715,18 @@ WHILE IS_WANTED_LEVEL_GREATER player 0
 	IF LOCATE_PLAYER_ANY_MEANS_CHAR_2D player yakuza_ped1_km1 8.0 8.0 FALSE
 	AND flag_blip_on_yakuza_ped1_km1 = 1
 		SET_PLAYER_AS_LEADER yakuza_ped1_km1 player
-		ADD_SPRITE_BLIP_FOR_COORD 379.0 -493.8 25.2 RADAR_SPRITE_SPRAY spray_blip_km1
+		//ADD_SPRITE_BLIP_FOR_COORD 379.0 -493.8 25.2 RADAR_SPRITE_SPRAY spray_blip_km1
+		SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip FALSE
+		SET_BLIP_ROUTE com_spray_shop_blip TRUE
 		REMOVE_BLIP radar_blip_ped1_km1
 	   	flag_blip_on_yakuza_ped1_km1 = 0
 	ENDIF
 	
 ENDWHILE
 
-REMOVE_BLIP spray_blip_km1  
+//REMOVE_BLIP spray_blip_km1  
+SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip TRUE
+SET_BLIP_ROUTE com_spray_shop_blip FALSE
 
 PRINT_NOW ( KM1_3 ) 7000 1 //"Get me to the Dojo!"
 
@@ -740,7 +763,9 @@ OR IS_WANTED_LEVEL_GREATER player 0
 		ENDIF
 
 		IF flag_spray_blip_on_km1 = 1
-			REMOVE_BLIP spray_blip_km1
+			//REMOVE_BLIP spray_blip_km1
+			SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip TRUE
+			SET_BLIP_ROUTE com_spray_shop_blip FALSE
 			flag_spray_blip_on_km1 = 0
 			flag_player_got_cops_message_km1 = 0
 		ENDIF 
@@ -761,7 +786,9 @@ OR IS_WANTED_LEVEL_GREATER player 0
 
 			IF flag_blip_on_yakuza_ped1_km1 = 0
    				PRINT_NOW ( WANTED1 ) 7000 1 //"Get rid of the cops!"
-				ADD_SPRITE_BLIP_FOR_COORD 379.0 -493.8 25.2 RADAR_SPRITE_SPRAY spray_blip_km1 
+				//ADD_SPRITE_BLIP_FOR_COORD 379.0 -493.8 25.2 RADAR_SPRITE_SPRAY spray_blip_km1 
+				SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip FALSE
+				SET_BLIP_ROUTE com_spray_shop_blip TRUE
    				flag_player_got_cops_message_km1 = 1
 				flag_spray_blip_on_km1 = 1
 			ENDIF
@@ -771,7 +798,9 @@ OR IS_WANTED_LEVEL_GREATER player 0
 	 	flag_player_got_cops_message_km1 = 0
 
 		IF flag_spray_blip_on_km1 = 1
-			REMOVE_BLIP spray_blip_km1
+			//REMOVE_BLIP spray_blip_km1
+			SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip TRUE
+			SET_BLIP_ROUTE com_spray_shop_blip FALSE
 			flag_spray_blip_on_km1 = 0
 		ENDIF
 
@@ -805,6 +834,9 @@ OR IS_WANTED_LEVEL_GREATER player 0
 	ENDIF  
 
 ENDWHILE
+
+SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip TRUE
+SET_BLIP_ROUTE com_spray_shop_blip FALSE
 
 REMOVE_BLIP radar_blip_coord3_km1
 
@@ -945,11 +977,15 @@ REMOVE_SOUND cell_beating
 MARK_MODEL_AS_NO_LONGER_NEEDED PED_GANG_YAKUZA_A
 MARK_MODEL_AS_NO_LONGER_NEEDED rubble01
 MARK_MODEL_AS_NO_LONGER_NEEDED rubble02 
-REMOVE_BLIP radar_blip_coord1_km1
+//REMOVE_BLIP radar_blip_coord1_km1
+SET_BLIP_AS_SHORT_RANGE com_bomb_shop_blip TRUE
+SET_BLIP_ROUTE com_bomb_shop_blip FALSE
 REMOVE_BLIP radar_blip_coord2_km1
 REMOVE_BLIP radar_blip_coord3_km1
 REMOVE_BLIP radar_blip_ped1_km1
-REMOVE_BLIP spray_blip_km1
+//REMOVE_BLIP spray_blip_km1
+SET_BLIP_AS_SHORT_RANGE com_spray_shop_blip TRUE
+SET_BLIP_ROUTE com_spray_shop_blip FALSE
 REMOVE_SPHERE sphere_km1
 MISSION_HAS_FINISHED
 RETURN

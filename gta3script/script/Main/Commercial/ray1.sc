@@ -257,7 +257,9 @@ WHILE NOT IS_PROJECTILE_IN_AREA 376.5 -445.2 28.1 380.1 -441.2 31.7 // THE WINDO
 		IF get_away_car = 0
 			PRINT_NOW RM1_4 5000 1//"You have run out of grenades! Get some more from ammunation"
 			REMOVE_BLIP	ray1_blip
-			ADD_SPRITE_BLIP_FOR_COORD 345.5 -713.5 26.1 RADAR_SPRITE_WEAPON ray1_blip
+			//ADD_SPRITE_BLIP_FOR_COORD 345.5 -713.5 26.1 RADAR_SPRITE_WEAPON ray1_blip
+			SET_BLIP_AS_SHORT_RANGE com_ammu_nation_blip FALSE
+			SET_BLIP_ROUTE com_ammu_nation_blip TRUE
 			police_guard2 = 1
 		ENDIF
 	ENDIF
@@ -265,6 +267,8 @@ WHILE NOT IS_PROJECTILE_IN_AREA 376.5 -445.2 28.1 380.1 -441.2 31.7 // THE WINDO
 	IF police_guard2 = 1
 		IF get_away_car > 0
 			PRINT_NOW RM1_5 5000 1//"Get back to the safehouse and torch it"
+			SET_BLIP_AS_SHORT_RANGE com_ammu_nation_blip TRUE
+			SET_BLIP_ROUTE com_ammu_nation_blip FALSE
 			REMOVE_BLIP	ray1_blip
 			ADD_BLIP_FOR_COORD 378.0 -443.2 29.9 ray1_blip
 			police_guard2 = 0
@@ -272,6 +276,9 @@ WHILE NOT IS_PROJECTILE_IN_AREA 376.5 -445.2 28.1 380.1 -441.2 31.7 // THE WINDO
 	ENDIF
 
 ENDWHILE
+
+SET_BLIP_AS_SHORT_RANGE com_ammu_nation_blip TRUE
+SET_BLIP_ROUTE com_ammu_nation_blip FALSE
 
 DESTROY_PROJECTILES_IN_AREA 376.1 -445.2 28.1 380.1 -441.2 31.7
 
@@ -544,6 +551,9 @@ RETURN
 mission_cleanup_ray1:
 
 REMOVE_BLIP ray1_blip
+
+SET_BLIP_AS_SHORT_RANGE com_ammu_nation_blip TRUE
+SET_BLIP_ROUTE com_ammu_nation_blip FALSE
 
 REMOVE_PARTICLE_EFFECTS_IN_AREA 372.0 -449.0 25.0 383.0 -436.0 33.0
 

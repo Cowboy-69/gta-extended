@@ -88,6 +88,7 @@
 		#define EX_AUTO_SAVE
 		#define EX_UNLOCK_MISSION_NEWS_STORY
 		#define EX_SET_VEHICLE_STEERING_ANGLE
+		#define EX_SHORT_RANGE_BLIP_OPCODES
 	#endif
 
 #endif

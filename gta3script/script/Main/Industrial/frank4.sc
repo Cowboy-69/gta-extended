@@ -899,8 +899,8 @@ bridge_is_damaged = 1
 	DELETE_OBJECT tunnel_gate_industrial
 
 IF ammu2_blip_added = 0
-	ADD_SPRITE_BLIP_FOR_COORD 345.5 -713.5 26.1 RADAR_SPRITE_WEAPON com_ammu_nation2
-	ADD_SPRITE_BLIP_FOR_COORD 379.0 -493.8 25.2 RADAR_SPRITE_SPRAY com_sprayshop2
+	//ADD_SPRITE_BLIP_FOR_COORD 345.5 -713.5 26.1 RADAR_SPRITE_WEAPON com_ammu_nation2
+	//ADD_SPRITE_BLIP_FOR_COORD 379.0 -493.8 25.2 RADAR_SPRITE_SPRAY com_sprayshop2
 	ammu2_blip_added = 1
 ENDIF
 

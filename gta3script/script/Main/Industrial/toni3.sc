@@ -542,8 +542,10 @@ OR IS_WANTED_LEVEL_GREATER Player 0
 			IF IS_PLAYER_IN_CAR player carry_car
 				IF flag_car_blip_displayed = TRUE
 					//ADD_BLIP_FOR_COORD 925.0 -359.5 -100.0 blip5_t3
-					ADD_SPRITE_BLIP_FOR_COORD 925.0 -359.5 -100.0 RADAR_SPRITE_SPRAY blip5_t3
-					SET_BLIP_ROUTE blip5_t3 TRUE
+					//ADD_SPRITE_BLIP_FOR_COORD 925.0 -359.5 -100.0 RADAR_SPRITE_SPRAY blip5_t3
+					//SET_BLIP_ROUTE blip5_t3 TRUE
+					SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip FALSE
+					SET_BLIP_ROUTE ind_spray_shop_blip TRUE
 					REMOVE_BLIP blip1_t3
 				flag_car_blip_displayed = FALSE
 				ENDIF
@@ -552,7 +554,9 @@ OR IS_WANTED_LEVEL_GREATER Player 0
 			IF NOT IS_PLAYER_IN_CAR player carry_car
 				IF flag_car_blip_displayed = FALSE
 					ADD_BLIP_FOR_CAR carry_car blip1_t3
-					REMOVE_BLIP blip5_t3
+					//REMOVE_BLIP blip5_t3
+					SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip TRUE
+					SET_BLIP_ROUTE ind_spray_shop_blip FALSE
 					PRINT_NOW ( IN_VEH ) 5000 1 //"Get back in the carry_car!"
 					flag_car_blip_displayed = TRUE
 				ENDIF
@@ -560,7 +564,9 @@ OR IS_WANTED_LEVEL_GREATER Player 0
 
 		ENDWHILE
 
-			REMOVE_BLIP blip5_t3
+			//REMOVE_BLIP blip5_t3
+			SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip TRUE
+			SET_BLIP_ROUTE ind_spray_shop_blip FALSE
 			GOTO pick_up_Luigi			
 	ENDIF
 	
@@ -760,8 +766,10 @@ OR IS_WANTED_LEVEL_GREATER Player 0
 
 			IF IS_PLAYER_IN_CAR player carry_car
 				IF flag_car_blip_displayed = TRUE
-					ADD_SPRITE_BLIP_FOR_COORD 925.0 -359.5 -100.0 RADAR_SPRITE_SPRAY blip5_t3
-					SET_BLIP_ROUTE blip5_t3 TRUE
+					//ADD_SPRITE_BLIP_FOR_COORD 925.0 -359.5 -100.0 RADAR_SPRITE_SPRAY blip5_t3
+					//SET_BLIP_ROUTE blip5_t3 TRUE
+					SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip FALSE
+					SET_BLIP_ROUTE ind_spray_shop_blip TRUE
 					REMOVE_BLIP blip1_t3
 				flag_car_blip_displayed = FALSE
 				ENDIF
@@ -770,7 +778,9 @@ OR IS_WANTED_LEVEL_GREATER Player 0
 			IF NOT IS_PLAYER_IN_CAR player carry_car
 				IF flag_car_blip_displayed = FALSE
 					ADD_BLIP_FOR_CAR carry_car blip1_t3
-					REMOVE_BLIP blip5_t3
+					//REMOVE_BLIP blip5_t3
+					SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip TRUE
+					SET_BLIP_ROUTE ind_spray_shop_blip FALSE
 					PRINT_NOW ( IN_VEH ) 5000 1 //"Get back in the carry_car!"
 					flag_car_blip_displayed = TRUE
 				ENDIF
@@ -778,7 +788,9 @@ OR IS_WANTED_LEVEL_GREATER Player 0
 
 		ENDWHILE
 
-		REMOVE_BLIP blip5_t3
+		//REMOVE_BLIP blip5_t3
+		SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip TRUE
+		SET_BLIP_ROUTE ind_spray_shop_blip FALSE
 		GOTO pick_up_toni
 	ENDIF
 	
@@ -1484,7 +1496,9 @@ REMOVE_BLIP blip1_t3
 REMOVE_BLIP blip2_t3
 REMOVE_BLIP blip3_t3
 REMOVE_BLIP blip4_t3
-REMOVE_BLIP blip5_t3
+//REMOVE_BLIP blip5_t3
+SET_BLIP_AS_SHORT_RANGE ind_spray_shop_blip TRUE
+SET_BLIP_ROUTE ind_spray_shop_blip FALSE
 REMOVE_CHAR_ELEGANTLY joey
 REMOVE_CHAR_ELEGANTLY luigi
 REMOVE_CHAR_ELEGANTLY toni

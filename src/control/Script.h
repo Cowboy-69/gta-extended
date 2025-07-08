@@ -342,6 +342,8 @@ public:
 	int8 ProcessCommands1100To1199(int32);
 #endif
 #ifdef EX_OPCODES
+	int8 ProcessCommands1200To1299(int32);
+	int8 ProcessCommands1300To1399(int32);
 	int8 ProcessCommands4000To4099(int32);
 #endif
 	void LocatePlayerCommand(int32, uint32*);

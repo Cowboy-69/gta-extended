@@ -1396,6 +1396,59 @@ void CPad::UpdatePads(void)
 	OldKeyState = NewKeyState;
 	NewKeyState = TempKeyState;
 #endif
+
+#ifdef DEBUG // Set/get player coordinates to/from clipboard
+	if (ControlsManager.GetIsKeyboardKeyJustDown((RsKeyCodes)'U')) {
+		if (OpenClipboard(PSGLOBAL(window))) {
+			auto clipboardData = GlobalAlloc(GMEM_FIXED, 32);
+			char pos[32];
+			if (FindPlayerVehicle())
+				snprintf(pos, sizeof pos, "%.3f %.3f %.3f", FindPlayerVehicle()->GetPosition().x, FindPlayerVehicle()->GetPosition().y, FindPlayerVehicle()->GetPosition().z);
+			else
+				snprintf(pos, sizeof pos, "%.3f %.3f %.3f", FindPlayerCoors().x, FindPlayerCoors().y, FindPlayerCoors().z);
+			memcpy(clipboardData, pos, 32);
+
+			EmptyClipboard();
+			SetClipboardData(CF_TEXT, clipboardData);
+			CloseClipboard();
+		}
+	} else if (ControlsManager.GetIsKeyboardKeyJustDown((RsKeyCodes)'Y')) {
+		if (OpenClipboard(PSGLOBAL(window))) {
+			HANDLE hData = GetClipboardData(CF_TEXT);
+            
+			char* clipboardData = static_cast<char*>(GlobalLock(hData));
+
+			GlobalUnlock(hData);
+			CloseClipboard();
+
+			char clipboardText[100];
+			strcpy(clipboardText, clipboardData);
+
+			char *posText[3];
+			posText[0] = "0.0";
+			posText[1] = "0.0";
+			posText[2] = "0.0";
+
+			int curTokenPos = 0;
+
+			char *token = strtok(clipboardText, " ");
+			while (token != NULL) {
+				if (curTokenPos > 2)
+					break;
+
+				posText[curTokenPos] = (char*)malloc(strlen(token) + 1);
+				strcpy(posText[curTokenPos],token);
+				curTokenPos++;
+				token = strtok(NULL, " ");
+			}
+            
+			CVector pos = CVector(atof(posText[0]), atof(posText[1]), atof(posText[2]));
+			if (!pos.IsZero()) {
+				FindPlayerPed()->SetPosition(pos);
+			}
+		}
+	}
+#endif
 }
 
 void CPad::ProcessPCSpecificStuff(void)
