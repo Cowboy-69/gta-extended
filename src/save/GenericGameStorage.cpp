@@ -200,6 +200,7 @@ GenericSave(int file)
 	WriteDataToBufferPointer(buf, TheCamera.PedZoomIndicator);
 #endif
 #ifdef LIBERTY_EX // Liberty Extended version
+	CGame::libertyExtendedVersion = LIBERTYEX_VER_2507;
 	WriteDataToBufferPointer(buf, CGame::libertyExtendedVersion);
 #endif
 	assert(buf - work_buff == SIZE_OF_SIMPLEVARS);
@@ -335,6 +336,9 @@ GenericLoad()
 #endif
 #ifdef LIBERTY_EX // Liberty Extended version
 	ReadDataFromBufferPointer(buf, CGame::libertyExtendedVersion);
+
+	if (CGame::libertyExtendedVersion < LIBERTYEX_VER_2507)
+		USERERROR("This save is not supported for this version!");
 #endif
 	assert(buf - work_buff == SIZE_OF_SIMPLEVARS);
 #ifdef MISSION_REPLAY

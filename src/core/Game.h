@@ -12,6 +12,8 @@ enum eLevelName {
 #ifdef LIBERTY_EX // Liberty Extended version
 enum eLibertyExtendedVersion {
 	LIBERTYEX_VER_1_0,
+	LIBERTYEX_VER_2_0,
+	LIBERTYEX_VER_2507,
 };
 #endif
 

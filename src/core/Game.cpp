@@ -110,7 +110,7 @@ bool CGame::russianGame = false;
 bool CGame::japaneseGame = false;
 #endif
 #ifdef LIBERTY_EX // Liberty Extended version
-uint8 CGame::libertyExtendedVersion = LIBERTYEX_VER_1_0;
+uint8 CGame::libertyExtendedVersion = LIBERTYEX_VER_2507;
 #endif
 
 int gameTxdSlot;
