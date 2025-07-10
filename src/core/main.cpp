@@ -1868,7 +1868,14 @@ FrontendIdle(void)
 void
 InitialiseGame(void)
 {
+#ifdef EX_MISC // Splash screen
+	int index = CGeneral::GetRandomNumberInRange(1, 26);
+	char splashName[16];
+	sprintf(splashName, "loadsc%d", index);
+	LoadingScreen(nil, nil, splashName);
+#else
 	LoadingScreen(nil, nil, "loadsc0");
+#endif
 	CGame::Initialise("DATA\\GTA3.DAT");
 }
 

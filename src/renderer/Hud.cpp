@@ -197,11 +197,19 @@ void CHud::Initialise()
 	m_Wants_To_Draw_3dMarkers = true;
 
 	int HudTXD = CTxdStore::AddTxdSlot("hud");
+#ifdef LIBERTY_EX // LibertyExtended folder - hud.txd
+#ifdef MODLOADER // hud.txd
+	ModLoader_HudTxd(HudTXD, "LibertyExtended/MODELS/HUD.TXD");
+#else
+	CTxdStore::LoadTxd(HudTXD, "LibertyExtended/MODELS/HUD.TXD");
+#endif
+#else
 #ifdef MODLOADER // hud.txd
 	ModLoader_HudTxd(HudTXD, "MODELS/HUD.TXD");
 #else
 	CTxdStore::LoadTxd(HudTXD, "MODELS/HUD.TXD");
 #endif
+#endif // LIBERTY_EX
 	CTxdStore::AddRef(HudTXD);
 	CTxdStore::PopCurrentTxd();
 	CTxdStore::SetCurrentTxd(HudTXD);

@@ -2463,7 +2463,14 @@ WinMain(HINSTANCE instance,
 						
 						printf("Into TheGame!!!\n");
 #else				
+#ifdef EX_MISC // Splash screen
+						if(CGame::frenchGame || CGame::germanGame || !CGame::nastyGame)
+							LoadingScreen(nil, nil, "mainsc2");
+						else
+							LoadingScreen(nil, nil, "mainsc1");
+#else
 						LoadingScreen(nil, nil, "loadsc0");
+#endif
 #endif
 						if ( !CGame::InitialiseOnceAfterRW() )
 							RsGlobal.quit = TRUE;
@@ -2480,7 +2487,14 @@ WinMain(HINSTANCE instance,
 #ifndef PS2_MENU
 					case GS_INIT_FRONTEND:
 					{
+#ifdef EX_MISC // Splash screen
+						if(CGame::frenchGame || CGame::germanGame || !CGame::nastyGame)
+							LoadingScreen(nil, nil, "mainsc2");
+						else
+							LoadingScreen(nil, nil, "mainsc1");
+#else
 						LoadingScreen(nil, nil, "loadsc0");
+#endif
 						
 						FrontEndMenuManager.m_bGameNotLoaded = true;
 						
