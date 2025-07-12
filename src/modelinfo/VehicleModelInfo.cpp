@@ -893,12 +893,21 @@ CVehicleModelInfo::LoadVehicleColours(void)
 	int colors[16];
 	int n;
 
+#ifdef LIBERTY_EX // LibertyExtended folder - carcols.dat
+	CFileMgr::ChangeDir("\\LibertyExtended\\");
+#ifdef MODLOADER
+	fd = ModLoader_CarcolsDat("DATA\\CARCOLS.DAT", "r");
+#else
+	fd = CFileMgr::OpenFile("DATA\\CARCOLS.DAT", "r");
+#endif
+#else
 	CFileMgr::ChangeDir("\\DATA\\");
 #ifdef MODLOADER
 	fd = ModLoader_CarcolsDat("CARCOLS.DAT", "r");
 #else
 	fd = CFileMgr::OpenFile("CARCOLS.DAT", "r");
 #endif
+#endif // LIBERTY_EX
 	CFileMgr::ChangeDir("\\");
 
 	for(i = 0; i < 256; i++)

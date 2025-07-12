@@ -2164,6 +2164,16 @@ CAutomobile::PreRender(void)
 			CVector pos = GetPosition() - 4.0f*GetForward();
 			if(Damage.GetLightStatus(VEHLIGHT_REAR_LEFT) == LIGHT_STATUS_OK ||
 			   Damage.GetLightStatus(VEHLIGHT_REAR_RIGHT) == LIGHT_STATUS_OK) {
+#ifdef EX_VEHICLE // Directional light for taillights
+				if(m_fBrakePedal > 0.0f)
+					CPointLights::AddLight(CPointLights::LIGHT_DIRECTIONAL, pos, -GetForward(),
+						10.0f, 1.0f, 0.0f, 0.0f,
+						CPointLights::FOG_NONE, false);
+				else
+					CPointLights::AddLight(CPointLights::LIGHT_DIRECTIONAL, pos, -GetForward(),
+						7.0f, 0.6f, 0.0f, 0.0f,
+						CPointLights::FOG_NONE, false);
+#else
 				if(m_fBrakePedal > 0.0f)
 					CPointLights::AddLight(CPointLights::LIGHT_POINT, pos, CVector(0.0f, 0.0f, 0.0f),
 						10.0f, 1.0f, 0.0f, 0.0f,
@@ -2172,6 +2182,7 @@ CAutomobile::PreRender(void)
 					CPointLights::AddLight(CPointLights::LIGHT_POINT, pos, CVector(0.0f, 0.0f, 0.0f),
 						7.0f, 0.6f, 0.0f, 0.0f,
 						CPointLights::FOG_NONE, false);
+#endif
 			}
 		}
 	}else if(GetStatus() != STATUS_ABANDONED && GetStatus() != STATUS_WRECKED){
