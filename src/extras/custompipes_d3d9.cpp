@@ -325,20 +325,63 @@ vehicleRenderCB(rw::Atomic *atomic, rw::d3d9::InstanceDataHeader *header)
 
 		SetRenderState(VERTEXALPHA, inst->vertexAlpha || m->color.alpha != 255);
 
-		reflProps[2] = m->surfaceProps.specular * VehicleShininess;
-		reflProps[3] = m->surfaceProps.specular == 0.0f ? 0.0f : VehicleSpecularity;
-		d3ddevice->SetVertexShaderConstantF(VSLOC_reflProps, reflProps, 1);
+		// Vehicle lights
+		if (m->texture && isVehicleLights(m)) {
+			if (isVehicleHeadLights(m) && gVehicleFxParams.bLightsOn ||
+				isVehicleTailLights(m) && (gVehicleFxParams.bTailLightsOn || gVehicleFxParams.bLightsOn)) {
 
-		setMaterial(flags, m->color, m->surfaceProps);
+				float dayparam[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+				float nightparam[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+				d3ddevice->SetVertexShaderConstantF(VSLOC_dayParam, dayparam, 1);
+				d3ddevice->SetVertexShaderConstantF(VSLOC_nightParam, nightparam, 1);
 
-		if(m->texture)
-			d3d::setTexture(0, m->texture);
-		else
-			d3d::setTexture(0, gpWhiteTexture);
-		setPixelShader(neoVehicle_PS);
+				//float white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+				//d3ddevice->SetVertexShaderConstantF(VSLOC_matColor, white, 1);
 
-		drawInst(header, inst);
-		inst++;
+				struct  {
+					float emissiveMult;
+					float unused[3];
+				} fxParams;
+				fxParams.emissiveMult = 0.2f;
+				d3ddevice->SetPixelShaderConstantF(1, (float*)&fxParams, 1);
+
+				d3d::setTexture(0, m->texture);
+				setPixelShader(default_tex_emissive_PS);
+			} else {
+				reflProps[2] = m->surfaceProps.specular * VehicleShininess;
+				reflProps[3] = m->surfaceProps.specular == 0.0f ? 0.0f : VehicleSpecularity;
+				d3ddevice->SetVertexShaderConstantF(VSLOC_reflProps, reflProps, 1);
+
+				setMaterial(flags, m->color, m->surfaceProps);
+
+				float white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+				d3ddevice->SetVertexShaderConstantF(VSLOC_matColor, white, 1);
+
+				if(m->texture)
+					d3d::setTexture(0, m->texture);
+				else
+					d3d::setTexture(0, gpWhiteTexture);
+				setPixelShader(neoVehicle_PS);
+			}
+
+			drawInst(header, inst);
+			inst++;
+		} else {
+			reflProps[2] = m->surfaceProps.specular * VehicleShininess;
+			reflProps[3] = m->surfaceProps.specular == 0.0f ? 0.0f : VehicleSpecularity;
+			d3ddevice->SetVertexShaderConstantF(VSLOC_reflProps, reflProps, 1);
+
+			setMaterial(flags, m->color, m->surfaceProps);
+
+			if(m->texture)
+				d3d::setTexture(0, m->texture);
+			else
+				d3d::setTexture(0, gpWhiteTexture);
+			setPixelShader(neoVehicle_PS);
+
+			drawInst(header, inst);
+			inst++;
+		}
 	}
 	d3d::setTexture(1, nil);
 
